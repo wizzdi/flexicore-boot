@@ -3,7 +3,10 @@ package com.flexicore.data.jsoncontainers;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.flexicore.exceptions.ExceptionHolder;
 import com.flexicore.interfaces.ErrorCodeException;
+import com.flexicore.interfaces.JaxRSProviderPlugin;
+import com.flexicore.interfaces.ServicePlugin;
 import org.jboss.resteasy.spi.DefaultOptionsMethodException;
+import org.pf4j.Extension;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -25,8 +28,9 @@ import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 @Provider
+@Extension
 @Service
-public class BadRequestExceptionMapper implements ExceptionMapper<Exception>  {
+public class BadRequestExceptionMapper implements ExceptionMapper<Exception>, JaxRSProviderPlugin {
 
     private Logger logger= Logger.getLogger("application");
 

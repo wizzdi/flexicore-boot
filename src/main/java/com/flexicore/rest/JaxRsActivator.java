@@ -6,7 +6,6 @@
  ******************************************************************************/
 package com.flexicore.rest;
 
-import com.flexicore.data.jsoncontainers.ObjectMapperContextResolver;
 import com.flexicore.interfaces.ServicePlugin;
 import org.jboss.resteasy.core.ResourceMethodRegistry;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
@@ -44,7 +43,7 @@ public class JaxRsActivator extends Application implements ServicePlugin {
     private static Set<Object> singletons=Collections.synchronizedSet(new LinkedHashSet<>());
 
     public JaxRsActivator() {
-        singletons.add(new ObjectMapperContextResolver());
+
     }
 
 
@@ -70,7 +69,7 @@ public class JaxRsActivator extends Application implements ServicePlugin {
 	}
 
     public static void addProvider(Class<?> provider) {
-        providers.add(provider);
+        singletons.add(provider);
 
     }
 

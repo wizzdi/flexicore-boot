@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 
 @Configuration
 @Extension
@@ -24,6 +25,7 @@ public class MongoConnectionService implements ServicePlugin {
 
 
     @Bean
+    @Primary
     public MongoClient produceMongoClient() {
         MongoClientSettings build = MongoClientSettings.builder()
                 .applyConnectionString(new ConnectionString(connectionString))

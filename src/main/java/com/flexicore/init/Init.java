@@ -3,10 +3,8 @@ package com.flexicore.init;
 
 import com.flexicore.annotations.OperationsInside;
 import com.flexicore.annotations.plugins.PluginInfo;
-import com.flexicore.interfaces.AspectPlugin;
-import com.flexicore.interfaces.Plugin;
-import com.flexicore.interfaces.RestServicePlugin;
-import com.flexicore.interfaces.ServicePlugin;
+import com.flexicore.events.PluginsLoadedEvent;
+import com.flexicore.interfaces.*;
 import com.flexicore.interfaces.dynamic.InvokerInfo;
 import com.flexicore.model.Clazz;
 import com.flexicore.model.Tenant;
@@ -19,6 +17,7 @@ import com.flexicore.service.SecurityService;
 import com.flexicore.service.impl.ClassScannerService;
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.jboss.resteasy.springboot.ResteasyEmbeddedServletInitializer;
 import org.pf4j.Extension;
 import org.pf4j.PluginManager;
 import org.pf4j.PluginWrapper;
@@ -26,12 +25,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.aop.aspectj.annotation.AspectJProxyFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Lazy;
-import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
-import javax.ws.rs.ext.Provider;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -56,8 +55,7 @@ public class Init implements ServicePlugin {
     private PluginManager pluginManager;
 
     @EventListener
-    public void getStartingContext(ContextRefreshedEvent contextRefreshedEvent) throws Exception {
-
+    public void getStartingContext(PluginsLoadedEvent contextRefreshedEvent) throws Exception {
         logger.info("registering classes");
         classScannerService.registerClasses();
         logger.info("Initializing classes");
@@ -89,6 +87,8 @@ public class Init implements ServicePlugin {
         List<? extends AspectPlugin> aspects = pluginManager.getExtensions(AspectPlugin.class);
 
         for (PluginWrapper startedPlugin : startedPlugins) {
+
+
             logger.info("REST Registration handling plugin: " + startedPlugin);
 
             List<? extends RestServicePlugin> restPlugins = pluginManager.getExtensions(RestServicePlugin.class, startedPlugin.getPluginId());
@@ -106,25 +106,17 @@ public class Init implements ServicePlugin {
                 } catch (Exception e) {
                     logger.error("Failed registering REST service " + plugin.getClass(), e);
                 }
-
-
             }
 
 
+            List<JaxRSProviderPlugin> jaxRSProviderPlugins = pluginManager.getExtensions(JaxRSProviderPlugin.class, startedPlugin.getPluginId());
+            for (JaxRSProviderPlugin jaxRSProviderPlugin : jaxRSProviderPlugins) {
+                JaxRsActivator.addSingletones(jaxRSProviderPlugin);
+                logger.debug("registered JAX-RS provider " + jaxRSProviderPlugin);
+            }
             List<Class<? extends Plugin>> classes = pluginManager.getExtensionClasses(Plugin.class, startedPlugin.getPluginId());
             for (Class<? extends Plugin> c : classes) {
 
-            /*if (c.isAnnotationPresent(ServerEndpoint.class)) {
-                try {
-                    serverContainer.addEndpoint(c);
-                } catch (DeploymentException e) {
-                    logger.log(Level.SEVERE,"failed adding WS",e);
-                }
-            }
-*/
-                if (c.isAnnotationPresent(Provider.class)) {
-                    JaxRsActivator.addProvider(c);
-                }
                 if (c.isAnnotationPresent(OperationsInside.class)) {
                     classScannerService.registerOperationsInclass(c); // Adds
                 }

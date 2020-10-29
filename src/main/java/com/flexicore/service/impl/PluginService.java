@@ -36,10 +36,6 @@ public class PluginService implements com.flexicore.service.PluginService {
 
     private Logger logger = Logger.getLogger(getClass().getCanonicalName());
 
-    @Lazy
-    @Autowired
-    private PluginManager pluginManager;
-
 
 
     @Override

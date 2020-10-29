@@ -14,6 +14,9 @@ import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.flexicore.converters.CustomOffsetDateTimeSerializer;
 import com.flexicore.data.jsoncontainers.Views.Unrefined;
+import com.flexicore.interfaces.JaxRSProviderPlugin;
+import com.flexicore.interfaces.ServicePlugin;
+import org.pf4j.Extension;
 
 import javax.ws.rs.ext.ContextResolver;
 import javax.ws.rs.ext.Provider;
@@ -23,7 +26,8 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Provider
-public class ObjectMapperContextResolver implements ContextResolver<ObjectMapper> {
+@Extension
+public class ObjectMapperContextResolver implements ContextResolver<ObjectMapper>, JaxRSProviderPlugin {
 
     private Map<ClassLoader, ObjectMapper> classLoaderObjectMapperMap = new ConcurrentHashMap<>();
     private static ObjectMapper defaultMapper = null;
