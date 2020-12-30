@@ -62,7 +62,7 @@
         <connection>scm:git:git://wizzdi/flexicore-boot-starter-web.git</connection>
         <developerConnection>scm:git:git@github.com:wizzdi/flexicore-boot-starter-web.git</developerConnection>
         <url>https://github.com/wizzdi/flexicore-boot-starter-web</url>
-        <tag>FlexiCore-Boot-${version}</tag>
+        <tag>flexicore-boot-starter-web-${version}</tag>
     </scm>
 
     <dependencyManagement>
