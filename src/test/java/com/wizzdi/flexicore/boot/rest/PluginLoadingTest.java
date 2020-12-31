@@ -54,7 +54,7 @@ public class PluginLoadingTest {
 	@Test
 	public void testNoFailedPlugins() {
 		ResponseEntity<String> test = restTemplate.getForEntity("/test", String.class);
-		Assertions.assertEquals(test.getStatusCodeValue(),200);
+		Assertions.assertEquals(200,test.getStatusCodeValue());
 		String body = test.getBody();
 		Assertions.assertNotNull(body);
 		logger.info("received "+body+" from plugin controller");
