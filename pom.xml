@@ -15,7 +15,7 @@
 
     </properties>
     <name>FlexiCore Boot Test Helper</name>
-    <description>flexicore boot test helper</description>
+    <description>flexicore boot test helper contains a copy of the relevant test classes in https://github.com/pf4j/pf4j</description>
     <url>https://wizzdi.com</url>
 
     <licenses>
