@@ -110,6 +110,8 @@ public class PluginJar {
 		/**
 		 * Add extra attributes to the {@code manifest} file.
 		 * As possible attribute name please see {@link ManifestPluginDescriptorFinder}.
+		 * @param manifestAttributes minifest attributes to add
+		 * @return this builder
 		 */
 		public Builder manifestAttributes(Map<String, String> manifestAttributes) {
 			this.manifestAttributes.putAll(manifestAttributes);
@@ -120,6 +122,9 @@ public class PluginJar {
 		/**
 		 * Add extra attribute to the {@code manifest} file.
 		 * As possible attribute name please see {@link ManifestPluginDescriptorFinder}.
+		 * @param name name of manifest key
+		 * @param value name of manifest value
+		 * @return this builder
 		 */
 		public Builder manifestAttribute(String name, String value) {
 			manifestAttributes.put(name, value);
