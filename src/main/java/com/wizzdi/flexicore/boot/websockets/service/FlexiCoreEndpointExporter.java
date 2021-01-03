@@ -23,6 +23,7 @@ import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 @Component
@@ -34,6 +35,7 @@ public class FlexiCoreEndpointExporter extends ServerEndpointExporter {
     @Autowired
     private FlexiCorePluginManager flexiCorePluginManager;
     private static final AtomicBoolean init=new AtomicBoolean(false);
+    private static final Set<String> registeredEps=new ConcurrentSkipListSet<>();
     @Override
     protected void registerEndpoints() {
         if(init.compareAndSet(false,true)){
@@ -66,7 +68,14 @@ public class FlexiCoreEndpointExporter extends ServerEndpointExporter {
             if(alterConfiguration){
                 alterConfiguration(toRegister);
             }
-            this.registerEndpoint(toRegister);
+            ServerEndpoint serverEndpoint = toRegister.getAnnotation(ServerEndpoint.class);
+            if(registeredEps.add(serverEndpoint.value())){
+                this.registerEndpoint(toRegister);
+
+            }
+            else{
+                logger.warn("websocket endpoint "+serverEndpoint.value()+" already registered");
+            }
         }
 
         Map<String, ServerEndpointConfig> endpointConfigMap = context.getBeansOfType(ServerEndpointConfig.class);
