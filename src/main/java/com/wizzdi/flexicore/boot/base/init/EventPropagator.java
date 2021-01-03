@@ -39,7 +39,7 @@ public class EventPropagator {
      * @param event event to send to all plugin contexts
      */
     @EventListener
-    public void handleContextStart(EventObject event) {
+    public void handleEvent(EventObject event) {
         if (!eventsInProcess.contains(event)) {
             Object eventToPrint = event instanceof PayloadApplicationEvent ? ((PayloadApplicationEvent<?>) event).getPayload() : event;
 

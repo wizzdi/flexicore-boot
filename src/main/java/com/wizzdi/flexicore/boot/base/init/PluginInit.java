@@ -34,6 +34,9 @@ public class PluginInit implements InitializingBean {
     private ApplicationContext applicationContext;
     @Autowired
     private ApplicationEventPublisher eventPublisher;
+
+    @Autowired
+    private EventPropagator eventPropagator;
     private static final AtomicBoolean init=new AtomicBoolean(false);
 
 
@@ -47,6 +50,7 @@ public class PluginInit implements InitializingBean {
             List<PluginWrapper> startedPlugins = pluginManager.getStartedPlugins().stream().sorted(PLUGIN_COMPARATOR).collect(Collectors.toList());
             PluginsLoadedEvent event = new PluginsLoadedEvent(applicationContext, startedPlugins);
             eventPublisher.publishEvent(event);
+            eventPropagator.handleEvent(event);
         }
 
     }
