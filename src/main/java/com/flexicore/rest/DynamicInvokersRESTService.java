@@ -35,11 +35,11 @@ import java.util.stream.Collectors;
 @Path("/dynamicInvokers")
 @RequestScoped
 @Component
+@Extension
 @OperationsInside
 @Protected
 @Tag(name = "DynamicInvokers")
 @Tag(name = "Core")
-@Extension
 public class DynamicInvokersRESTService implements RESTService {
 	@Autowired
 	private DynamicInvokersService service;

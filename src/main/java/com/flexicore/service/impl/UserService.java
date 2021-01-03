@@ -29,6 +29,7 @@ import com.flexicore.data.BaselinkRepository;
 import com.flexicore.data.TenantRepository;
 import com.flexicore.data.UserRepository;
 import com.flexicore.data.jsoncontainers.*;
+import com.flexicore.events.LoginEvent;
 import com.flexicore.exceptions.BadRequestCustomException;
 import com.flexicore.exceptions.CheckYourCredentialsException;
 import com.flexicore.exceptions.UserNotFoundException;
@@ -46,13 +47,16 @@ import io.joshworks.restclient.http.MediaType;
 import io.joshworks.restclient.http.RestClient;
 import io.joshworks.restclient.http.mapper.ObjectMapper;
 import io.joshworks.restclient.http.mapper.ObjectMappers;
+import org.pf4j.Extension;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Primary;
-import org.pf4j.Extension;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -64,16 +68,17 @@ import java.time.ZoneId;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 @Primary
-@Extension
 @Component
+@Extension
 public class UserService implements com.flexicore.service.UserService {
 
-    private Logger log = Logger.getLogger(getClass().getCanonicalName());
+    private static final Logger log = LoggerFactory.getLogger(UserService.class);
+
+    @Autowired
+    private java.util.logging.Logger utilLogger;
 
     @Autowired
     private UserRepository userrepository;
@@ -89,6 +94,8 @@ public class UserService implements com.flexicore.service.UserService {
 
     @Autowired
     private TokenService tokenService;
+    @Autowired
+    private ApplicationEventPublisher applicationEventPublisher;
 
     @Bean
     @Scope(value = ConfigurableBeanFactory.SCOPE_SINGLETON)
@@ -302,7 +309,7 @@ public class UserService implements com.flexicore.service.UserService {
             }
             return runningUser;
         }
-        JWTClaims claims = tokenService.parseClaimsAndVerifyClaims(authenticationKey, log);
+        JWTClaims claims = tokenService.parseClaimsAndVerifyClaims(authenticationKey, utilLogger);
         if (claims != null) {
             String email = claims.getSubject();
             User user = userrepository.findByEmail(email);
@@ -310,6 +317,7 @@ public class UserService implements com.flexicore.service.UserService {
             runningUser.setExpiresDate(claims.getExpiration() != null ? claims.getExpiration().toInstant().atZone(ZoneId.of("UTC")).toOffsetDateTime() : null);
             Collection<String> readTenantsRaw = (Collection<String>) claims.get(tokenService.READ_TENANTS);
             String writeTenant = (String) claims.get(tokenService.WRITE_TENANT);
+            Boolean totpVerified=(Boolean)claims.get(tokenService.TOTP_VERIFIED);
             Set<String> tenantIds = runningUser.getTenants().parallelStream().map(f -> f.getId()).collect(Collectors.toSet());
             if (writeTenant != null && tenantIds.contains(writeTenant)) {
                 Tenant tenant = userrepository.findByIdOrNull(Tenant.class, writeTenant);
@@ -322,6 +330,10 @@ public class UserService implements com.flexicore.service.UserService {
                 runningUser.setTenants(tenants);
                 runningUser.setImpersonated(true);
             }
+            if(totpVerified!=null){
+                runningUser.setTotpVerified(totpVerified);
+            }
+
             loggedusers.put(authenticationKey, runningUser);
             return runningUser;
         }
@@ -437,7 +449,7 @@ public class UserService implements com.flexicore.service.UserService {
         if (user == null) {
             long start = System.currentTimeMillis();
             user = bundle.getMail() != null ? userrepository.findByEmail(bundle.getMail()) : (bundle.getPhoneNumber() != null ? findUserByPhoneNumberOrNull(bundle.getPhoneNumber(), null) : null);
-            log.log(Level.INFO, "Time taken to find user by email is: " + (System.currentTimeMillis() - start));
+            log.info("Time taken to find user by email is: " + (System.currentTimeMillis() - start));
             if (user == null) {
                 if (bundle.getMail() != null) {
                     throw new UserNotFoundException("User for email: " + bundle.getMail() + " was not found");
@@ -486,7 +498,7 @@ public class UserService implements com.flexicore.service.UserService {
             }
 
         } else {
-            JWTClaims claims = tokenService.parseClaimsAndVerifyClaims(authenticationkey, log);
+            JWTClaims claims = tokenService.parseClaimsAndVerifyClaims(authenticationkey, utilLogger);
             if (claims != null && (claims.getExpiration() == null || OffsetDateTime.now().isBefore(claims.getExpiration().toInstant().atZone(ZoneId.of("UTC")).toOffsetDateTime()))) {
                 blacklist.put(authenticationkey, authenticationkey);
                 return true;
@@ -740,6 +752,9 @@ public class UserService implements com.flexicore.service.UserService {
         }
         OffsetDateTime expirationDate = OffsetDateTime.now().plusSeconds(authenticationRequest.getSecondsValid() != 0 ? authenticationRequest.getSecondsValid() : jwtSecondsValid);
         String jwtToken = tokenService.getJwtToken(user, expirationDate);
+        if(!user.isTotpEnabled()){
+            applicationEventPublisher.publishEvent(new LoginEvent(user));
+        }
         return new AuthenticationResponse().setAuthenticationKey(jwtToken).setTokenExpirationDate(expirationDate).setUserId(user.getId());
 
     }
@@ -767,10 +782,11 @@ public class UserService implements com.flexicore.service.UserService {
     @Override
     public ImpersonateResponse impersonate(ImpersonateRequest impersonateRequest, SecurityContext securityContext) {
         User user = securityContext.getUser();
+        boolean totpVerified = securityContext.isTotpVerified();
         OffsetDateTime expirationDate = OffsetDateTime.now().plusSeconds(jwtSecondsValid);
         String writeTenant = impersonateRequest.getCreationTenant().getId();
         Set<String> readTenants = impersonateRequest.getReadTenants().parallelStream().map(f -> f.getId()).collect(Collectors.toSet());
-        String jwtToken = tokenService.getJwtToken(user, expirationDate, writeTenant, readTenants);
+        String jwtToken = tokenService.getJwtToken(user, expirationDate, writeTenant, readTenants,totpVerified);
         return new ImpersonateResponse().setAuthenticationKey(jwtToken);
 
     }

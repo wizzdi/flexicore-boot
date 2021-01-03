@@ -1,15 +1,15 @@
 package com.flexicore.service.impl;
 
 import com.flexicore.annotations.Baseclassroot;
-import com.flexicore.data.impl.BaseclassRepository;
+import com.flexicore.data.BaseclassRepository;
 import com.flexicore.model.Baseclass;
 import com.flexicore.model.FilteringInformationHolder;
 import com.flexicore.model.Tenant;
 import com.flexicore.request.BaseclassCreate;
 import com.flexicore.security.SecurityContext;
+import org.pf4j.Extension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
-import org.pf4j.Extension;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,8 +19,8 @@ import java.util.Map;
 import java.util.Set;
 
 @Primary
-@Extension
 @Component
+@Extension
 public class BaseclassNewService implements com.flexicore.service.BaseclassNewService {
     @Autowired
     @Baseclassroot

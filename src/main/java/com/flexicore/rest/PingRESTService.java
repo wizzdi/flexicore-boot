@@ -15,6 +15,8 @@ import com.flexicore.model.Baseclass;
 import com.flexicore.service.impl.BaseclassService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.pf4j.Extension;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -23,8 +25,6 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * no need to intercept for security here.
@@ -42,7 +42,7 @@ public class PingRESTService implements RESTService {
     @Autowired
     private BaseclassService baseclassService;
 
-   private Logger logger = Logger.getLogger(getClass().getCanonicalName());
+   private static final Logger logger = LoggerFactory.getLogger(PingRESTService.class);
 
 
     @GET
@@ -50,6 +50,7 @@ public class PingRESTService implements RESTService {
     @IOperation(access = Access.allow, Name = "pingServer", Description = "ping Server for availability")
     @LogExecutionTime
     public boolean ping() {
+        //return Initializator.getInit();
         return true;
 
     }
@@ -77,7 +78,7 @@ public class PingRESTService implements RESTService {
             return true;
 
         } catch (Exception e) {
-            logger.log(Level.SEVERE, "DB ISSUE", e);
+            logger.error( "DB ISSUE", e);
         }
         return false;
 

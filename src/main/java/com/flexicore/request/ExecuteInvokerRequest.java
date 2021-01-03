@@ -8,6 +8,7 @@ import com.flexicore.data.jsoncontainers.CrossLoaderResolver;
 import com.flexicore.data.jsoncontainers.FCTypeResolver;
 import com.flexicore.model.dynamic.ExecutionContext;
 
+import java.time.OffsetDateTime;
 import java.util.Set;
 
 public class ExecuteInvokerRequest {
@@ -19,6 +20,7 @@ public class ExecuteInvokerRequest {
     private String invokerMethodName;
     @JsonIgnore
     private ExecutionContext executionContext;
+    private OffsetDateTime lastExecuted;
 
 
     public Set<String> getInvokerNames() {
@@ -58,6 +60,15 @@ public class ExecuteInvokerRequest {
 
     public <T extends ExecuteInvokerRequest> T setExecutionContext(ExecutionContext executionContext) {
         this.executionContext = executionContext;
+        return (T) this;
+    }
+
+    public OffsetDateTime getLastExecuted() {
+        return lastExecuted;
+    }
+
+    public <T extends ExecuteInvokerRequest> T setLastExecuted(OffsetDateTime lastExecuted) {
+        this.lastExecuted = lastExecuted;
         return (T) this;
     }
 }

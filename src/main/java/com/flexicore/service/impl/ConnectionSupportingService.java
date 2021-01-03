@@ -7,16 +7,16 @@ import com.flexicore.model.FilteringInformationHolder;
 import com.flexicore.request.GetConnectedGeneric;
 import com.flexicore.request.GetDisconnectedGeneric;
 import com.flexicore.security.SecurityContext;
+import org.pf4j.Extension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
-import org.pf4j.Extension;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
 
 @Primary
-@Extension
 @Component
+@Extension
 public class ConnectionSupportingService implements com.flexicore.service.ConnectionSupportingService {
 
     @Autowired

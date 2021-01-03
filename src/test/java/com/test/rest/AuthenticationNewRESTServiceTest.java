@@ -1,6 +1,6 @@
-package com.flexicore.rest;
+package com.test.rest;
 
-import com.flexicore.init.FlexiCoreApplication;
+import com.test.init.FlexiCoreApplication;
 import com.flexicore.request.AuthenticationRequest;
 import com.flexicore.response.AuthenticationResponse;
 import org.junit.jupiter.api.Test;

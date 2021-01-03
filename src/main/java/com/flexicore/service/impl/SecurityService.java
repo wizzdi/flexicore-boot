@@ -7,7 +7,7 @@ import com.flexicore.annotations.rest.Delete;
 import com.flexicore.annotations.rest.Read;
 import com.flexicore.annotations.rest.Update;
 import com.flexicore.annotations.rest.Write;
-import com.flexicore.data.impl.BaseclassRepository;
+import com.flexicore.data.BaseclassRepository;
 import com.flexicore.data.jsoncontainers.OperationInfo;
 import com.flexicore.model.*;
 import com.flexicore.request.BaselinkFilter;
@@ -17,21 +17,22 @@ import com.flexicore.response.PermissionSummaryEntry;
 import com.flexicore.response.PermissionSummaryResponse;
 import com.flexicore.security.RunningUser;
 import com.flexicore.security.SecurityContext;
+import org.pf4j.Extension;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
-import org.pf4j.Extension;
 import org.springframework.stereotype.Component;
 
 import javax.ws.rs.BadRequestException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.*;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 @Primary
-@Extension
 @Component
+@Extension
 public class SecurityService implements com.flexicore.service.SecurityService {
     /**
      *
@@ -40,7 +41,7 @@ public class SecurityService implements com.flexicore.service.SecurityService {
     @Autowired
     @Baseclassroot
     BaseclassRepository baseclassrpository;
-    private Logger logger = Logger.getLogger(getClass().getCanonicalName());
+    private static final Logger logger = LoggerFactory.getLogger(SecurityService.class);
     @Autowired
     UserService userservice;
     @Autowired
@@ -148,7 +149,10 @@ public class SecurityService implements com.flexicore.service.SecurityService {
         boolean impersonated = runningUser.isImpersonated();
 
         Operation operation = operationrepository.findById(operationId);
-        return new SecurityContext(tenants, user, operation, tenantToCreateIn).setImpersonated(impersonated);
+        return new SecurityContext(tenants, user, operation, tenantToCreateIn)
+                .setImpersonated(impersonated)
+                .setTotpVerified(runningUser.isTotpVerified())
+                .setExpiresDate(runningUser.getExpiresDate());
 
 
     }

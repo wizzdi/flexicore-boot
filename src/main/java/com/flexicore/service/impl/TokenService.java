@@ -9,13 +9,13 @@ import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.apache.commons.io.FileUtils;
+import org.pf4j.Extension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Primary;
-import org.pf4j.Extension;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -32,8 +32,8 @@ import java.util.logging.Logger;
 
 
 @Primary
-@Extension
 @Component
+@Extension
 public class TokenService implements com.flexicore.service.TokenService {
 
 
@@ -59,6 +59,10 @@ public class TokenService implements com.flexicore.service.TokenService {
     }
     @Override
     public String getJwtToken(User user, OffsetDateTime expirationDate, String writeTenant, Set<String> readTenants) {
+        return getJwtToken(user, expirationDate, writeTenant, readTenants,false);
+    }
+    @Override
+    public String getJwtToken(User user, OffsetDateTime expirationDate, String writeTenant, Set<String> readTenants,boolean totpVerified) {
 
         Map<String, Object> claims=new HashMap<>();
         if(writeTenant!=null){
@@ -66,6 +70,9 @@ public class TokenService implements com.flexicore.service.TokenService {
         }
         if(readTenants!=null && !readTenants.isEmpty()){
             claims.put(READ_TENANTS,readTenants);
+        }
+        if(user.isTotpEnabled()){
+            claims.put(TOTP_VERIFIED,totpVerified);
         }
         return  Jwts.builder()
                 .setSubject(user.getEmail())

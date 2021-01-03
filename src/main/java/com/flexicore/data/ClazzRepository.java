@@ -10,21 +10,22 @@ import com.flexicore.data.impl.BaseclassRepository;
 import com.flexicore.model.Baseclass;
 import com.flexicore.model.Clazz;
 import com.flexicore.model.QueryInformationHolder;
-import org.springframework.context.annotation.Primary;
 import org.pf4j.Extension;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Set;
-import java.util.logging.Logger;
 
 
 @Primary
-@Extension
 @Component
+@Extension
 public class ClazzRepository extends BaseclassRepository {
 
-   private Logger logger = Logger.getLogger(getClass().getCanonicalName());
+   private static final Logger logger = LoggerFactory.getLogger(ClazzRepository.class);
 
     @Override
     public Clazz findById(String id) {

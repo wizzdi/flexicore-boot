@@ -3,10 +3,9 @@ package com.flexicore.data.jsoncontainers;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.flexicore.exceptions.ExceptionHolder;
 import com.flexicore.interfaces.ErrorCodeException;
-import com.flexicore.interfaces.JaxRSProviderPlugin;
-import com.flexicore.interfaces.ServicePlugin;
 import org.jboss.resteasy.spi.DefaultOptionsMethodException;
-import org.pf4j.Extension;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -22,17 +21,14 @@ import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.Spliterator;
 import java.util.Spliterators;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 @Provider
-@Extension
 @Service
-public class BadRequestExceptionMapper implements ExceptionMapper<Exception>, JaxRSProviderPlugin {
+public class BadRequestExceptionMapper implements ExceptionMapper<Exception>  {
 
-    private Logger logger= Logger.getLogger("application");
+    private static final Logger logger= LoggerFactory.getLogger(BadRequestExceptionMapper.class);
 
     private Response.ResponseBuilder badBuilder =Response.status(Response.Status.BAD_REQUEST).type(MediaType.APPLICATION_JSON);
     private Response.ResponseBuilder internalBuilder =Response.status(Response.Status.INTERNAL_SERVER_ERROR).type(MediaType.APPLICATION_JSON);
@@ -50,7 +46,7 @@ public class BadRequestExceptionMapper implements ExceptionMapper<Exception>, Ja
             return ((DefaultOptionsMethodException) exception).getResponse();
         }
 
-        logger.log(Level.SEVERE,"error",exception);
+        logger.error("error",exception);
         Response response = exception instanceof WebApplicationException? ((WebApplicationException) exception).getResponse():null;
 
         int errorCode=exception instanceof ErrorCodeException ?((ErrorCodeException) exception).getErrorCode():-1;
@@ -70,7 +66,8 @@ public class BadRequestExceptionMapper implements ExceptionMapper<Exception>, Ja
 
 
         Response.ResponseBuilder builder=response!=null?Response.fromResponse(response):(bad?badBuilder:internalBuilder);
-        return  builder.entity(new ExceptionHolder(statusCode,errorCode, showExceptionsInHttpResponse||bad?exception.getMessage(): exceptionPlaceHolder)).build();
+        String message = showExceptionsInHttpResponse || bad ? exception.getMessage() : exceptionPlaceHolder;
+        return  builder.entity(new ExceptionHolder(statusCode,errorCode, message)).build();
     }
 
     private boolean isJsonMediaType(){

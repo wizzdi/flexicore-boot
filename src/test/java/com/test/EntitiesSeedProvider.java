@@ -1,4 +1,4 @@
-package com.flexicore;
+package com.test;
 
 import com.flexicore.model.Baseclass;
 import com.flexicore.test.EntityProviderClasses;

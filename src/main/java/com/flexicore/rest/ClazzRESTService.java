@@ -22,6 +22,8 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.pf4j.Extension;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -31,17 +33,16 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Logger;
 
 //documented ion the 28 of June 2016
 @Path("/clazz")
 @RequestScoped
 @Component
+@Extension
 @OperationsInside
 @Protected
 @Tag(name = "Core")
 @Tag(name = "Clazz")
-@Extension
 public class ClazzRESTService implements RESTService {
 
     //DONE: provide a service to get a list of clazzes.
@@ -56,7 +57,7 @@ public class ClazzRESTService implements RESTService {
     private BaseclassService baseclassService;
 
 
-    private Logger log = Logger.getLogger(getClass().getCanonicalName());
+    private static final Logger log = LoggerFactory.getLogger(ClazzRESTService.class);
 
 
     @POST

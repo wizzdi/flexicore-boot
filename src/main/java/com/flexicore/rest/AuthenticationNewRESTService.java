@@ -34,12 +34,12 @@ import javax.ws.rs.core.MediaType;
  */
 @RequestScoped
 @Component
+@Extension
 @OperationsInside
 @Tag(name = "AuthenticationNew")
 @Path("/authenticationNew")
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
-@Extension
 public class AuthenticationNewRESTService implements RestServicePlugin {
 
     @Autowired

@@ -13,8 +13,10 @@ import com.flexicore.model.Clazz;
 import com.flexicore.model.User;
 import com.flexicore.request.ClazzFilter;
 import com.flexicore.security.SecurityContext;
-import org.springframework.context.annotation.Primary;
 import org.pf4j.Extension;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Named;
@@ -22,16 +24,15 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Named
 @Primary
-@Extension
 @Component
+@Extension
 public class ClazzService implements FlexiCoreService{
-	private Logger logger = Logger.getLogger(getClass().getCanonicalName());
+	private static final Logger logger = LoggerFactory.getLogger(ClazzService.class);
 
 
 	public List<Clazz> getallClazz(User user) {

@@ -14,21 +14,22 @@ import com.flexicore.request.RoleFilter;
 import com.flexicore.request.RoleToBaseclassCreate;
 import com.flexicore.request.RoleUpdate;
 import com.flexicore.security.SecurityContext;
+import org.pf4j.Extension;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
-import org.pf4j.Extension;
 import org.springframework.stereotype.Component;
 
 import javax.ws.rs.BadRequestException;
 import java.util.*;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 @Primary
-@Extension
 @Component
+@Extension
 public class RoleService implements com.flexicore.service.RoleService {
-	private Logger log = Logger.getLogger(getClass().getCanonicalName());
+	private static final Logger log = LoggerFactory.getLogger(RoleService.class);
 
 	@Autowired
 	private RoleRepository rolerepository;

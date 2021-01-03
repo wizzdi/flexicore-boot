@@ -14,7 +14,7 @@ import com.flexicore.annotations.IOperation;
 import com.flexicore.annotations.IOperation.Access;
 import com.flexicore.annotations.OperationsInside;
 import com.flexicore.annotations.Protected;
-import com.flexicore.data.impl.BaseclassRepository;
+import com.flexicore.data.BaseclassRepository;
 import com.flexicore.data.jsoncontainers.PaginationResponse;
 import com.flexicore.data.jsoncontainers.SetBaseclassTenantRequest;
 import com.flexicore.interfaces.RESTService;
@@ -38,6 +38,8 @@ import io.swagger.v3.oas.annotations.servers.Server;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.apache.commons.csv.CSVFormat;
 import org.pf4j.Extension;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -51,13 +53,12 @@ import java.io.UnsupportedEncodingException;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 @Protected
 @RequestScoped
 @Component
+@Extension
 @OperationsInside
 @Path("/baseclass")
 @OpenAPIDefinition(
@@ -93,7 +94,6 @@ import java.util.stream.Collectors;
 
 @Tag(name = "Core")
 @Tag(name = "Baseclasses")
-@Extension
 public class BaseclassRESTService implements RESTService {
     @Autowired
     @Baseclassroot
@@ -105,10 +105,7 @@ public class BaseclassRESTService implements RESTService {
     @Autowired
     private BaseclassNoSQLService baseclassNoSQLService;
 
-
-    private Logger log = Logger.getLogger(getClass().getCanonicalName());
-
-   private Logger logger = Logger.getLogger(getClass().getCanonicalName());
+   private static final Logger logger = LoggerFactory.getLogger(BaseclassRESTService.class);
 
 
     @POST
@@ -247,7 +244,7 @@ public class BaseclassRESTService implements RESTService {
         try {
             c = Class.forName(filteringInformationHolder.getClassName());
         } catch (ClassNotFoundException e) {
-            logger.log(Level.SEVERE, "cannot find class ", e);
+            logger.error( "cannot find class ", e);
             throw new BadRequestException("No Class " + filteringInformationHolder.getClassName());
         }
         return new ParameterInfo(c);
@@ -305,10 +302,10 @@ public class BaseclassRESTService implements RESTService {
             return true;
 
         } catch (ClassNotFoundException e) {
-            logger.log(Level.SEVERE, "unable to find type", e);
+            logger.error( "unable to find type", e);
             throw new BadRequestException("no type " + className);
         } catch (IOException e) {
-            logger.log(Level.SEVERE, "could not deserialize ", e);
+            logger.error( "could not deserialize ", e);
 
         }
         return false;
@@ -604,7 +601,7 @@ public class BaseclassRESTService implements RESTService {
         try {
             converted = java.net.URLDecoder.decode(name, "UTF-8");
         } catch (UnsupportedEncodingException e1) {
-            log.log(Level.SEVERE, "Error while converting name" + classname, e1);
+            logger.error( "Error while converting name" + classname, e1);
             throw new ClientErrorException(Response.Status.BAD_REQUEST, e1);
         }
         Class<T> clazz;
@@ -612,10 +609,10 @@ public class BaseclassRESTService implements RESTService {
             clazz = (Class<T>) Class.forName(classname);
             long start = System.currentTimeMillis();
             List<T> baseclass = repository.getByName(converted, clazz, null, securityContext);
-            log.log(Level.INFO, "Find by name took: " + (System.currentTimeMillis() - start) + " MS");
+            logger.info( "Find by name took: " + (System.currentTimeMillis() - start) + " MS");
             return baseclass;
         } catch (ClassNotFoundException e) {
-            log.log(Level.SEVERE, "unable to find class: " + classname, e);
+            logger.error( "unable to find class: " + classname, e);
             throw new ClientErrorException(Response.Status.BAD_REQUEST, e);
         }
 
@@ -641,10 +638,10 @@ public class BaseclassRESTService implements RESTService {
             if(result==null){
                 throw new BadRequestException("no baseclass of type "+clazz.getSimpleName() +" with id "+id);
             }
-            log.log(Level.INFO, "Find by id took: " + (System.currentTimeMillis() - start) + " MS");
+            logger.info( "Find by id took: " + (System.currentTimeMillis() - start) + " MS");
             return result;
         } catch (ClassNotFoundException e) {
-            log.log(Level.SEVERE, "unable to find class: " + classname, e);
+            logger.error( "unable to find class: " + classname, e);
             throw new ClientErrorException(Response.Status.BAD_REQUEST, e);
         }
 
@@ -671,10 +668,10 @@ public class BaseclassRESTService implements RESTService {
             long start = System.currentTimeMillis();
             QueryInformationHolder<T> queryInformationHolder = new QueryInformationHolder<>(filteringInformationHolder, clazz, securityContext);
             List<T> baseclass = baseclassService.getAllByKeyWordAndCategory(queryInformationHolder);
-            log.log(Level.INFO, "Find by name took: " + (System.currentTimeMillis() - start) + " MS");
+            logger.info( "Find by name took: " + (System.currentTimeMillis() - start) + " MS");
             return baseclass;
         } catch (ClassNotFoundException e) {
-            log.log(Level.SEVERE, "unable to find class: " + classname, e);
+            logger.error( "unable to find class: " + classname, e);
             throw new ClientErrorException(Response.Status.BAD_REQUEST, e);
         }
 

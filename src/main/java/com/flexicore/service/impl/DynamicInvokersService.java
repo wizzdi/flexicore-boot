@@ -8,29 +8,27 @@ package com.flexicore.service.impl;
 
 import com.flexicore.data.DynamicInvokersRepository;
 import com.flexicore.data.jsoncontainers.PaginationResponse;
+import com.flexicore.interfaces.Syncable;
 import com.flexicore.interfaces.dynamic.Invoker;
 import com.flexicore.model.Baseclass;
 import com.flexicore.model.FileResource;
 import com.flexicore.model.Operation;
 import com.flexicore.model.dynamic.*;
 import com.flexicore.request.*;
-import com.flexicore.response.ExecuteInvokerResponse;
-import com.flexicore.response.ExecuteInvokersResponse;
-import com.flexicore.response.InvokerInfo;
-import com.flexicore.response.InvokerMethodInfo;
+import com.flexicore.response.*;
 import com.flexicore.security.SecurityContext;
 import com.flexicore.utils.InheritanceUtils;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 import org.apache.commons.io.ByteOrderMark;
 import org.apache.commons.lang3.StringUtils;
+import org.pf4j.Extension;
 import org.pf4j.PluginManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Primary;
-import org.pf4j.Extension;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -45,8 +43,8 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Primary
-@Extension
 @Component
+@Extension
 public class DynamicInvokersService implements com.flexicore.service.DynamicInvokersService {
 
     private static List<InvokerInfo> equipmentHandlersListingCache = null;
@@ -140,7 +138,7 @@ public class DynamicInvokersService implements com.flexicore.service.DynamicInvo
         Map<String, DynamicInvoker> dynamicInvokerMap = getAllInvokers(new InvokersFilter().setInvokerTypes(invokerMap.keySet()), null).getList().parallelStream().collect(Collectors.toMap(f -> f.getCanonicalName(), f -> f));
         Map<String, Map<String, Operation>> invokersOperations = getInvokerOperations(new InvokersOperationFilter().setInvokers(new ArrayList<>(dynamicInvokerMap.values())), null)
                 .parallelStream().collect(Collectors.groupingBy(f -> f.getDynamicInvoker().getCanonicalName(), Collectors.toMap(f -> f.getId(), f -> f)));
-        List<ExecuteInvokerResponse> responses = new ArrayList<>();
+        List<ExecuteInvokerResponse<?>> responses = new ArrayList<>();
         Object executionParametersHolder = executeInvokerRequest.getExecutionParametersHolder();
         if (executionParametersHolder instanceof ExecutionParametersHolder) {
             ExecutionParametersHolder executionParametersHolderActual = (ExecutionParametersHolder) executionParametersHolder;
@@ -160,7 +158,7 @@ public class DynamicInvokersService implements com.flexicore.service.DynamicInvo
                 if (invoker == null) {
                     String msg = "No Handler " + invokerName;
                     logger.error(msg);
-                    responses.add(new ExecuteInvokerResponse(invokerName, false, msg));
+                    responses.add(new ExecuteInvokerResponse<>(invokerName, false, msg));
                     continue;
                 }
                 Class<? extends Invoker> clazz = invoker.getClass();
@@ -196,10 +194,22 @@ public class DynamicInvokersService implements com.flexicore.service.DynamicInvo
                                 }
                             }
                             Object ret = method.invoke(invoker, parameters);
+                            ExecuteInvokerResponse<?> e=null;
+                            if(ret instanceof PaginationResponse){
+                                PaginationResponse<?> paginationResponse= (PaginationResponse<?>) ret;
+                                if(!paginationResponse.getList().isEmpty()){
+                                    Object o=paginationResponse.getList().get(0);
+                                    if(o instanceof Syncable){
+                                        e=new ExecuteInvokerResponseSyncable(invokerName,true, (PaginationResponse<? extends Syncable>) paginationResponse);
+                                    }
+                                 }
+                            }
 
                             //auditingService.addAuditingJob(new AuditingJob(securityContext,null,ret,System.currentTimeMillis()-start, Date.from(Instant.now()), DefaultAuditingTypes.REST.name()));
-
-                            responses.add(new ExecuteInvokerResponse(invokerName, true, ret));
+                            if(e==null){
+                                e= new ExecuteInvokerResponse<>(invokerName, true, ret);
+                            }
+                            responses.add(e);
                             break;
 
                         } else {
@@ -210,7 +220,7 @@ public class DynamicInvokersService implements com.flexicore.service.DynamicInvo
                 }
             } catch (Exception e) {
                 logger.error( "failed executing " + invokerName, e);
-                responses.add(new ExecuteInvokerResponse(invokerName, false, e));
+                responses.add(new ExecuteInvokerResponse<>(invokerName, false, e));
             }
 
         }
@@ -237,6 +247,7 @@ public class DynamicInvokersService implements com.flexicore.service.DynamicInvo
     public ExecuteInvokerRequest getExecuteInvokerRequest(DynamicExecution dynamicExecution, ExecutionContext executionContext, SecurityContext securityContext) {
         Set<String> invokerNames = dynamicInvokersRepository.getAllServiceCanonicalNames(dynamicExecution).parallelStream().map(f -> f.getServiceCanonicalName()).collect(Collectors.toSet());
         return new ExecuteInvokerRequest()
+                .setLastExecuted(dynamicExecution.getLastExecuted())
                 .setInvokerNames(invokerNames)
                 .setInvokerMethodName(dynamicExecution.getMethodName())
                 .setExecutionContext(executionContext)
@@ -437,7 +448,7 @@ public class DynamicInvokersService implements com.flexicore.service.DynamicInvo
         try (Writer out = new OutputStreamWriter(new FileOutputStream(file, true), StandardCharsets.UTF_8);
              CSVPrinter csvPrinter = new CSVPrinter(out, format)) {
 
-            for (ExecuteInvokerResponse respons : executeInvokersResponse.getResponses()) {
+            for (ExecuteInvokerResponse<?> respons : executeInvokersResponse.getResponses()) {
                 if (respons.getResponse() instanceof Collection) {
                     Collection<?> collection = (Collection<?>) respons.getResponse();
                     exportCollection(fieldToName, fieldNameToMethod, csvPrinter, collection);

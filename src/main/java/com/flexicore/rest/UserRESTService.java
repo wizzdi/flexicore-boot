@@ -25,6 +25,8 @@ import com.flexicore.service.impl.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.pf4j.Extension;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -34,8 +36,6 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 
 @Path("/users")
@@ -51,7 +51,7 @@ public class UserRESTService implements RESTService {
 
     @Autowired
     private UserService userService;
-   private Logger logger = Logger.getLogger(getClass().getCanonicalName());
+   private static final Logger logger = LoggerFactory.getLogger(UserRESTService.class);
 
 
     /**
@@ -73,7 +73,7 @@ public class UserRESTService implements RESTService {
         QueryInformationHolder<User> queryInformationHolder = new QueryInformationHolder<>(getAllOfType,  User.class, securityContext);
         long start = System.currentTimeMillis();
         List<User> users = userService.getAllFiltered(queryInformationHolder);
-        logger.log(Level.INFO, "got page at " + (System.currentTimeMillis() - start) + " millisecs");
+        logger.info( "got page at " + (System.currentTimeMillis() - start) + " millisecs");
         return users;
     }
 

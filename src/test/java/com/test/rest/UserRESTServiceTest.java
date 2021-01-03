@@ -1,9 +1,9 @@
-package com.flexicore.rest;
+package com.test.rest;
 
 import com.flexicore.annotations.IOperation;
 import com.flexicore.annotations.rest.All;
 import com.flexicore.data.jsoncontainers.PaginationResponse;
-import com.flexicore.init.FlexiCoreApplication;
+import com.test.init.FlexiCoreApplication;
 import com.flexicore.model.*;
 import com.flexicore.request.*;
 import com.flexicore.response.AuthenticationResponse;

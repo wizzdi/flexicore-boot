@@ -15,7 +15,6 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.flexicore.converters.CustomOffsetDateTimeSerializer;
 import com.flexicore.data.jsoncontainers.Views.Unrefined;
 import com.flexicore.interfaces.JaxRSProviderPlugin;
-import com.flexicore.interfaces.ServicePlugin;
 import org.pf4j.Extension;
 
 import javax.ws.rs.ext.ContextResolver;

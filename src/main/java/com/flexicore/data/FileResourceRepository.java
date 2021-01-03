@@ -6,16 +6,16 @@
  ******************************************************************************/
 package com.flexicore.data;
 
-import org.pf4j.Extension;
-import org.springframework.stereotype.Component;
+import com.flexicore.annotations.InheritedComponent;
 import com.flexicore.data.impl.BaseclassRepository;
 import com.flexicore.model.*;
 import com.flexicore.request.FileResourceFilter;
 import com.flexicore.request.ZipFileFilter;
 import com.flexicore.request.ZipFileToFileResourceFilter;
 import com.flexicore.security.SecurityContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Primary;
-import org.pf4j.Extension;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.TypedQuery;
@@ -24,19 +24,17 @@ import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 
 @Primary
-@Extension
-@Component
+@InheritedComponent
 
 @Transactional
 public class FileResourceRepository extends BaseclassRepository {
 
 
-   private Logger logger = Logger.getLogger(getClass().getCanonicalName());
+   private static final Logger logger = LoggerFactory.getLogger(FileResourceRepository.class);
 
     public void persist(Object o) {
         em.persist(o);

@@ -3,27 +3,25 @@ package com.flexicore.service.impl;
 import com.google.crypto.tink.*;
 import com.google.crypto.tink.aead.AeadConfig;
 import com.google.crypto.tink.aead.AesGcmKeyManager;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.pf4j.Extension;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Primary;
-import org.pf4j.Extension;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
 import java.security.GeneralSecurityException;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 
 @Primary
-@Extension
 @Component
+@Extension
 public class EncryptionService implements com.flexicore.service.EncryptionService {
     private static Aead aead;
 
-    @Autowired
-    private  Logger logger;
+    private  static final Logger logger=LoggerFactory.getLogger(EncryptionService.class);
 
     @Value("${flexicore.security.encryption.tinkKeySetPath:/home/flexicore/keyset.json}")
     private String tinkKeySetPath;
@@ -51,7 +49,7 @@ public class EncryptionService implements com.flexicore.service.EncryptionServic
 
 
             } catch (Exception e) {
-                logger.log(Level.SEVERE, "failed loading keyHandle", e);
+                logger.error( "failed loading keyHandle", e);
             }
 
         }

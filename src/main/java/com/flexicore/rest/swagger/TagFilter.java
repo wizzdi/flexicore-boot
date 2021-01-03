@@ -50,7 +50,7 @@ public class TagFilter extends AbstractSpecFilter {
 
     @Override
     public Optional<Parameter> filterParameter(Parameter parameter, Operation operation, ApiDescription api, Map<String, List<String>> params, Map<String, String> cookies, Map<String, List<String>> headers) {
-        return super.filterParameter(parameter, operation, api, params, cookies, headers);
+        return parameter.getName()!=null&&parameter.getName().equalsIgnoreCase("securitycontext")? Optional.empty():super.filterParameter(parameter, operation, api, params, cookies, headers);
     }
 
     @Override

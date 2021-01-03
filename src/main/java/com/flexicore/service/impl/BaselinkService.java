@@ -16,11 +16,11 @@ import com.flexicore.request.BaselinkFilter;
 import com.flexicore.request.BaselinkMassCreate;
 import com.flexicore.request.BaselinkUpdate;
 import com.flexicore.security.SecurityContext;
+import org.pf4j.Extension;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
-import org.pf4j.Extension;
 import org.springframework.stereotype.Component;
 
 import javax.ws.rs.BadRequestException;
@@ -30,8 +30,8 @@ import java.util.stream.Collectors;
 
 
 @Primary
-@Extension
 @Component
+@Extension
 public class BaselinkService implements com.flexicore.service.BaselinkService {
    private Logger logger = LoggerFactory.getLogger(getClass().getCanonicalName());
     @Autowired

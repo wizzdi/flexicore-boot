@@ -13,6 +13,8 @@ import com.flexicore.interfaces.RESTService;
 import com.flexicore.service.impl.FileResourceService;
 import io.swagger.v3.oas.annotations.Parameter;
 import org.pf4j.Extension;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -21,7 +23,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
-import java.util.logging.Logger;
 
 @Path("/downloadUnsecure")
 @RequestScoped
@@ -33,7 +34,7 @@ public class DownloadUnsecureRESTService implements RESTService {
 	@Autowired
 	FileResourceService fileResourceService;
 
-	private Logger logger = Logger.getLogger(getClass().getCanonicalName());
+	private static final Logger logger = LoggerFactory.getLogger(DownloadUnsecureRESTService.class);
 
     @GET
     @Path("{id}")

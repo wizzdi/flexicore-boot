@@ -28,6 +28,8 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.pf4j.Extension;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -38,8 +40,6 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * @author avishayb
@@ -48,11 +48,11 @@ import java.util.logging.Logger;
 @Protected
 @RequestScoped
 @Component
+@Extension
 @OperationsInside
 @Path("/baselinks")
 @Tag(name = "Core")
 @Tag(name = "Baseclasses")
-@Extension
 public class 	BaselinkRESTService implements RESTService {
 	@Autowired
 	private BaselinkService service;
@@ -60,7 +60,7 @@ public class 	BaselinkRESTService implements RESTService {
 	@Autowired
 	private BaseclassService baseclassservice;
 
-	private Logger log = Logger.getLogger(getClass().getCanonicalName());
+	private static final Logger log = LoggerFactory.getLogger(BaselinkRESTService.class);
 
 	/**
 	 * generic way of linking (M2M) of any ? extends Baseclass with another one.
@@ -257,7 +257,7 @@ public class 	BaselinkRESTService implements RESTService {
 									@HeaderParam("currentpage")  @DefaultValue("-1") int currentpage,
 
 								  @Context SecurityContext securityContext) {
-		log.log(Level.INFO, "Finding sides: " + linkClazzName + " leftID: " + leftId + " rightID: " + rightId);
+		log.info( "Finding sides: " + linkClazzName + " leftID: " + leftId + " rightID: " + rightId);
 		if(filter==null){
 			filter=new FilteringInformationHolder();
 		}
@@ -269,10 +269,10 @@ public class 	BaselinkRESTService implements RESTService {
 		}
 		long start = System.currentTimeMillis();
 		Baseclass leftside = service.getById(leftId, Baseclass.class, null, securityContext);
-		log.log(Level.INFO, "Time taken to find by id: " + (System.currentTimeMillis() - start));
+		log.info( "Time taken to find by id: " + (System.currentTimeMillis() - start));
 		start = System.currentTimeMillis();
 		Baseclass rightside = service.getById(rightId, Baseclass.class, null, securityContext);
-		log.log(Level.INFO, "Time taken to find by id: " + (System.currentTimeMillis() - start));
+		log.info( "Time taken to find by id: " + (System.currentTimeMillis() - start));
 		start = System.currentTimeMillis();
 		Baseclass value = null;
 		if (!valueId.isEmpty()) {
@@ -282,7 +282,7 @@ public class 	BaselinkRESTService implements RESTService {
 			simpleValue = null;
 		}
 		List<T> baselink = service.findAllBySidesAndValue(clazz,leftside,rightside,value,simpleValue,filter,pagesize,currentpage,securityContext);
-		log.log(Level.INFO, "Time taken to find sides: " + (System.currentTimeMillis() - start));
+		log.info( "Time taken to find sides: " + (System.currentTimeMillis() - start));
 		return baselink;
 
 	}
@@ -320,7 +320,7 @@ public class 	BaselinkRESTService implements RESTService {
 												  @HeaderParam("currentpage")  @DefaultValue("-1") int currentpage,
 
 												  @Context SecurityContext securityContext) {
-		log.log(Level.INFO, "Finding sides: " + linkClazzName + " leftID: " + leftId + " rightID: " + rightId);
+		log.info( "Finding sides: " + linkClazzName + " leftID: " + leftId + " rightID: " + rightId);
 		Class<T> clazz;
 		try {
 			clazz = (Class<T>) Class.forName(linkClazzName);
@@ -329,10 +329,10 @@ public class 	BaselinkRESTService implements RESTService {
 		}
 		long start = System.currentTimeMillis();
 		Baseclass leftside = service.getById(leftId, Baseclass.class, null, securityContext);
-		log.log(Level.INFO, "Time taken to find by id: " + (System.currentTimeMillis() - start));
+		log.info( "Time taken to find by id: " + (System.currentTimeMillis() - start));
 		start = System.currentTimeMillis();
 		Baseclass rightside = service.getById(rightId, Baseclass.class, null, securityContext);
-		log.log(Level.INFO, "Time taken to find by id: " + (System.currentTimeMillis() - start));
+		log.info( "Time taken to find by id: " + (System.currentTimeMillis() - start));
 		start = System.currentTimeMillis();
 		Baseclass value = null;
 		if (!valueId.isEmpty()) {
@@ -342,7 +342,7 @@ public class 	BaselinkRESTService implements RESTService {
 			simpleValue = null;
 		}
 		List<Baseclass> baselink = service.getAllValues(clazz,leftside,rightside,value,simpleValue,filter,pagesize,currentpage,securityContext);
-		log.log(Level.INFO, "Time taken to find sides: " + (System.currentTimeMillis() - start));
+		log.info( "Time taken to find sides: " + (System.currentTimeMillis() - start));
 		return baselink;
 
 	}
@@ -363,7 +363,7 @@ public class 	BaselinkRESTService implements RESTService {
 			@PathParam("classname") String linkClazzName, @HeaderParam("value") @DefaultValue("") String valueId,
 			@HeaderParam("simpleValue") @DefaultValue("-1") String simpleValue,
 			@Context SecurityContext securityContext) {
-		log.log(Level.INFO, "Finding sides: " + linkClazzName + " leftID: " + leftId + " rightID: " + rightId);
+		log.info( "Finding sides: " + linkClazzName + " leftID: " + leftId + " rightID: " + rightId);
 		Class<? extends Baselink> clazz;
 		try {
 			clazz = (Class<? extends Baselink>) Class.forName(linkClazzName);
@@ -372,10 +372,10 @@ public class 	BaselinkRESTService implements RESTService {
 		}
 		long start = System.currentTimeMillis();
 		Baseclass leftside = service.getById(leftId, Baseclass.class, null, securityContext);
-		log.log(Level.INFO, "Time taken to find by id: " + (System.currentTimeMillis() - start));
+		log.info( "Time taken to find by id: " + (System.currentTimeMillis() - start));
 		start = System.currentTimeMillis();
 		Baseclass rightside = service.getById(rightId, Baseclass.class, null, securityContext);
-		log.log(Level.INFO, "Time taken to find by id: " + (System.currentTimeMillis() - start));
+		log.info( "Time taken to find by id: " + (System.currentTimeMillis() - start));
 		start = System.currentTimeMillis();
 		Baseclass value = null;
 		if (!valueId.isEmpty()) {
@@ -385,7 +385,7 @@ public class 	BaselinkRESTService implements RESTService {
 			simpleValue = null;
 		}
 		Baselink baselink = service.findBySidesAndValue(leftside, rightside, value, simpleValue, clazz);
-		log.log(Level.INFO, "Time taken to find sides: " + (System.currentTimeMillis() - start));
+		log.info( "Time taken to find sides: " + (System.currentTimeMillis() - start));
 
 		if (baselink == null) {
 			return Response.status(Status.NOT_FOUND).build();

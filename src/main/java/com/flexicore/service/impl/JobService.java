@@ -16,6 +16,7 @@ import com.flexicore.request.RegisterForJobUpdates;
 import com.flexicore.security.SecurityContext;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
+import org.pf4j.Extension;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.batch.core.JobExecution;
@@ -25,7 +26,6 @@ import org.springframework.batch.core.explore.JobExplorer;
 import org.springframework.batch.core.launch.JobLauncher;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
-import org.pf4j.Extension;
 import org.springframework.stereotype.Component;
 
 import javax.batch.operations.JobOperator;

@@ -1,6 +1,6 @@
-package com.flexicore.rest;
+package com.test.rest;
 
-import com.flexicore.init.FlexiCoreApplication;
+import com.test.init.FlexiCoreApplication;
 import com.flexicore.model.Role;
 import com.flexicore.model.User;
 import com.flexicore.request.AuthenticationRequest;

@@ -1,11 +1,11 @@
 package com.flexicore.response;
 
-public class ExecuteInvokerResponse {
+public class ExecuteInvokerResponse<E> {
   private boolean executed;
-  private Object response;
+  private E response;
   private String invokerName;
 
-    public ExecuteInvokerResponse(String invokerName, boolean executed, Object response) {
+    public ExecuteInvokerResponse(String invokerName, boolean executed, E response) {
         this.executed = executed;
         this.response = response;
         this.invokerName=invokerName;
@@ -15,16 +15,16 @@ public class ExecuteInvokerResponse {
         return executed;
     }
 
-    public ExecuteInvokerResponse setExecuted(boolean executed) {
+    public ExecuteInvokerResponse<E> setExecuted(boolean executed) {
         this.executed = executed;
         return this;
     }
 
-    public Object getResponse() {
+    public E getResponse() {
         return response;
     }
 
-    public ExecuteInvokerResponse setResponse(Object response) {
+    public ExecuteInvokerResponse<E> setResponse(E response) {
         this.response = response;
         return this;
     }
@@ -33,7 +33,7 @@ public class ExecuteInvokerResponse {
         return invokerName;
     }
 
-    public ExecuteInvokerResponse setInvokerName(String invokerName) {
+    public ExecuteInvokerResponse<E> setInvokerName(String invokerName) {
         this.invokerName = invokerName;
         return this;
     }

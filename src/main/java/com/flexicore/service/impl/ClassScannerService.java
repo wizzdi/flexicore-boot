@@ -6,45 +6,47 @@ import com.flexicore.annotations.IOperation;
 import com.flexicore.annotations.OperationsInside;
 import com.flexicore.annotations.rest.*;
 import com.flexicore.data.BaselinkRepository;
+import com.flexicore.data.ClazzRegistration;
 import com.flexicore.data.ClazzRepository;
-import com.flexicore.interfaces.ServicePlugin;
+import com.flexicore.interfaces.FlexiCoreService;
 import com.flexicore.interfaces.dynamic.InvokerInfo;
 import com.flexicore.interfaces.dynamic.InvokerMethodInfo;
 import com.flexicore.model.*;
 import com.flexicore.model.dynamic.DynamicInvoker;
-import com.flexicore.provider.EntitiesHolder;
 import com.flexicore.request.*;
 import com.flexicore.security.SecurityContext;
 import com.flexicore.service.PasswordGenerator;
 import com.flexicore.utils.InheritanceUtils;
 import com.google.common.collect.Lists;
+import com.wizzdi.flexicore.boot.jpa.service.EntitiesHolder;
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.apache.commons.io.FileUtils;
+import org.pf4j.Extension;
 import org.reflections.Reflections;
 import org.reflections.serializers.JsonSerializer;
 import org.reflections.util.FilterBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Primary;
-import org.pf4j.Extension;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.ManyToOne;
 import java.io.File;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 @Primary
-@Extension
 @Component
-public class ClassScannerService implements ServicePlugin {
+@Extension
+public class ClassScannerService implements FlexiCoreService {
 
     private static final String DEFAULT_TENANT_ID = "jgV8M9d0Qd6owkPPFrbWIQ";
     private static final String TENANT_TO_USER_ID = "Xk5siBx+TyWv+G6V+XuSdw";
@@ -53,11 +55,13 @@ public class ClassScannerService implements ServicePlugin {
     @Autowired
     OperationService operationService;
     @Autowired
+    ClazzRegistration clazzRegistration;
+    @Autowired
     ClazzRepository clazzrepository;
 
     @Autowired
     BaselinkRepository baselinkrepository;
-    private Logger logger = Logger.getLogger(getClass().getCanonicalName());
+    private static final Logger logger = LoggerFactory.getLogger(ClassScannerService.class);
 
     @Autowired
     private SecurityService securityService;
@@ -150,9 +154,9 @@ public class ClassScannerService implements ServicePlugin {
                     .setInvoker(dynamicInvoker);
             if (dynamicInvokersService.updateInvokerNoMerge(createInvokerRequest, createInvokerRequest.getInvoker())) {
                 toMergeInvokers.add(dynamicInvoker);
-                logger.fine("updated invoker " + dynamicInvoker.getCanonicalName());
+                logger.debug("updated invoker " + dynamicInvoker.getCanonicalName());
             } else {
-                logger.fine("invoker " + dynamicInvoker.getCanonicalName() + " already exists");
+                logger.debug("invoker " + dynamicInvoker.getCanonicalName() + " already exists");
 
             }
 
@@ -169,16 +173,18 @@ public class ClassScannerService implements ServicePlugin {
 
                 Operation operation = operationMap.get(operationId);
                 if (operation == null) {
-                    CreateOperationRequest createOperationRequest = new CreateOperationRequest()
-                            .setName(invokerMethodInfo.displayName().isEmpty() ? method.getName() : invokerMethodInfo.displayName())
-                            .setDescription(invokerMethodInfo.description())
-                            .setAccess(invokerMethodInfo.access())
+                    OperationCreate createOperationRequest = new OperationCreate()
+                            .setDefaultaccess(invokerMethodInfo.access())
                             .setDynamicInvoker(dynamicInvoker)
-                            .setId(operationId);
-                    operation = operationService.createOperationNoMerge(createOperationRequest);
+                            .setName(invokerMethodInfo.displayName().isEmpty() ? method.getName() : invokerMethodInfo.displayName())
+                            .setDescription(invokerMethodInfo.description());
+
+                    operation = operationService.createOperationNoMerge(createOperationRequest,securityContext);
+                    operation.setId(operationId);
+
                     toMergeOperations.add(operation);
                     operationMap.put(operation.getId(), operation);
-                    logger.fine("created operation " + operation.getName() + "(" + operationId + ") for invoker " + dynamicInvoker.getCanonicalName());
+                    logger.debug("created operation " + operation.getName() + "(" + operationId + ") for invoker " + dynamicInvoker.getCanonicalName());
 
                 } else {
                     UpdateOperationRequest updateOperationRequest = new UpdateOperationRequest()
@@ -190,9 +196,9 @@ public class ClassScannerService implements ServicePlugin {
                             .setOperation(operation);
                     if (operationService.updateOperationNoMerge(updateOperationRequest, updateOperationRequest.getOperation())) {
                         toMergeOperations.add(operation);
-                        logger.fine("updated operation " + operation.getName() + "(" + operationId + ") for invoker " + dynamicInvoker.getCanonicalName());
+                        logger.debug("updated operation " + operation.getName() + "(" + operationId + ") for invoker " + dynamicInvoker.getCanonicalName());
                     } else {
-                        logger.fine("operation " + operation.getName() + "(" + operationId + ") for invoker " + dynamicInvoker.getCanonicalName() + " already exists");
+                        logger.debug("operation " + operation.getName() + "(" + operationId + ") for invoker " + dynamicInvoker.getCanonicalName() + " already exists");
 
                     }
                 }
@@ -213,9 +219,11 @@ public class ClassScannerService implements ServicePlugin {
      */
     public void InitializeOperations() {
         initReflections();
+        SecurityContext securityContext = securityService.getAdminUserSecurityContext();
+
         Set<Class<?>> operationClasses = reflections.getTypesAnnotatedWith(OperationsInside.class, true);
         for (Class<?> annotated : operationClasses) {
-            registerOperationsInclass(annotated);
+            registerOperationsInclass(annotated,securityContext);
 
         }
         List<Object> toMerge = new ArrayList<>();
@@ -227,15 +235,15 @@ public class ClassScannerService implements ServicePlugin {
 
         Map<String, Operation> existing = baselinkrepository.findByIds(Operation.class, new HashSet<>(Arrays.asList(deleteId, readId, updateId, writeId, allId))).parallelStream().collect(Collectors.toMap(f -> f.getId(), f -> f));
         IOperation ioOperation = Delete.class.getDeclaredAnnotation(IOperation.class);
-        addOperation(ioOperation, deleteId, toMerge, existing);
+        addOperation(ioOperation, deleteId, toMerge, existing,securityContext);
         ioOperation = Read.class.getDeclaredAnnotation(IOperation.class);
-        addOperation(ioOperation, readId, toMerge, existing);
+        addOperation(ioOperation, readId, toMerge, existing,securityContext);
         ioOperation = Update.class.getDeclaredAnnotation(IOperation.class);
-        addOperation(ioOperation, updateId, toMerge, existing);
+        addOperation(ioOperation, updateId, toMerge, existing,securityContext);
         ioOperation = Write.class.getDeclaredAnnotation(IOperation.class);
-        addOperation(ioOperation, writeId, toMerge, existing);
+        addOperation(ioOperation, writeId, toMerge, existing,securityContext);
         ioOperation = All.class.getDeclaredAnnotation(IOperation.class);
-        addOperation(ioOperation, allId, toMerge, existing);
+        addOperation(ioOperation, allId, toMerge, existing,securityContext);
 
         baselinkrepository.massMerge(toMerge);
 
@@ -243,7 +251,7 @@ public class ClassScannerService implements ServicePlugin {
     }
 
 
-    public void registerOperationsInclass(Class<?> clazz) {
+    public void registerOperationsInclass(Class<?> clazz,SecurityContext securityContext) {
         List<Object> toMerge = new ArrayList<>();
         OperationsInside operationsInside = clazz.getAnnotation(OperationsInside.class);
         Map<String, IOperation> toHandle = new HashMap<>();
@@ -268,7 +276,7 @@ public class ClassScannerService implements ServicePlugin {
             Map<String, Operation> existing = toHandle.isEmpty() ? new HashMap<>() : clazzrepository.findByIds(Operation.class, toHandle.keySet()).parallelStream().collect(Collectors.toMap(f -> f.getId(), f -> f));
             for (Map.Entry<String, IOperation> stringIOperationEntry : toHandle.entrySet()) {
                 IOperation op = stringIOperationEntry.getValue();
-                Operation operation = addOperation(op, stringIOperationEntry.getKey(), toMerge, existing);
+                Operation operation = addOperation(op, stringIOperationEntry.getKey(), toMerge, existing,securityContext);
                 existing.put(operation.getId(), operation);
                 Class<? extends Baseclass>[] related = op.relatedClazzes();
                 opIdToRelated.put(operation.getId(), related);
@@ -341,18 +349,18 @@ public class ClassScannerService implements ServicePlugin {
 
 
 
-    private Operation addOperation(IOperation ioperation, String id, List<Object> toMerge, Map<String, Operation> existing) {
+    private Operation addOperation(IOperation ioperation, String id, List<Object> toMerge, Map<String, Operation> existing,SecurityContext securityContext) {
         Operation operation = existing.get(id);
         if (operation == null) {
-            CreateOperationRequest createOperationRequest = new CreateOperationRequest()
-                    .setAccess(ioperation.access())
+            OperationCreate createOperationRequest = new OperationCreate()
+                    .setDefaultaccess(ioperation.access())
                     .setDescription(ioperation.Description())
-                    .setId(id)
                     .setName(ioperation.Name());
-            operation = operationService.createOperationNoMerge(createOperationRequest);
+            operation = operationService.createOperationNoMerge(createOperationRequest,securityContext);
+            operation.setId(id);
             toMerge.add(operation);
 
-            logger.fine("Have created a new operation" + operation.toString());
+            logger.debug("Have created a new operation" + operation.toString());
 
 
         } else {
@@ -360,7 +368,7 @@ public class ClassScannerService implements ServicePlugin {
                 operation.setSystemObject(true);
                 toMerge.add(operation);
             }
-            logger.fine("operation already exists: " + operation);
+            logger.debug("operation already exists: " + operation);
 
         }
 
@@ -402,11 +410,15 @@ public class ClassScannerService implements ServicePlugin {
             return;
         }
         try {
+          /*  reflections=new org.reflections.Reflections(new org.reflections.util.ConfigurationBuilder()
+                    .filterInputsBy(new org.reflections.util.FilterBuilder().exclude("/test/java/*"))
+                    .setUrls(org.reflections.util.ClasspathHelper.forPackage("com.flexicore"))
+                    .setScanners(new org.reflections.scanners.TypeAnnotationsScanner()., new org.reflections.scanners.SubTypesScanner(false), new org.reflections.scanners.MethodAnnotationsScanner()));*/
             reflections = Reflections.collect("META-INF/reflections/", new FilterBuilder().include(".*-reflections.json"),new JsonSerializer());
 
 
         } catch (Exception e) {
-            logger.log(Level.SEVERE, "failed initializing reflections", e);
+            logger.error( "failed initializing reflections", e);
         }
 
 
@@ -420,7 +432,7 @@ public class ClassScannerService implements ServicePlugin {
     public List<Clazz> InitializeClazzes() {
 
         Set<Class<?>> entities = entitiesHolder.getEntities();
-        logger.fine("detected classes:  " + entities.parallelStream().map(e -> e.getCanonicalName()).collect(Collectors.joining(System.lineSeparator())));
+        logger.debug("detected classes:  " + entities.parallelStream().map(e -> e.getCanonicalName()).collect(Collectors.joining(System.lineSeparator())));
 
         Set<String> ids = entities.parallelStream().map(f -> Baseclass.generateUUIDFromString(f.getCanonicalName())).collect(Collectors.toSet());
         ids.add(Baseclass.generateUUIDFromString(Clazz.class.getCanonicalName()));
@@ -474,31 +486,77 @@ public class ClassScannerService implements ServicePlugin {
         if (clazz == null) {
             try {
 
-                clazz = new Clazz(classname, null);
-
-
+                clazz = Baselink.class.isAssignableFrom(claz) ? createClazzLink(claz, existing, defaults, toMerge) : new Clazz(classname, null);
                 clazz.setId(ID);
                 clazz.setDescription(annotatedclazz.Description());
                 clazz.setSystemObject(true);
                 toMerge.add(clazz);
                 existing.put(clazz.getId(), clazz);
-                logger.fine("Have created a new class " + clazz.toString());
+                logger.debug("Have created a new class " + clazz.toString());
             } catch (Exception e) {
-                logger.log(Level.SEVERE, "[register classes] Error while creating operation: ", e);
+                logger.error( "[register classes] Error while creating operation: ", e);
             }
 
         } else {
-            logger.fine("Clazz  allready exists: " + clazz);
+            logger.debug("Clazz  allready exists: " + clazz);
 
         }
         if (clazz != null) {
             baselinkrepository.addtocache(clazz);
         } else {
-            logger.severe("clazz for " + claz.getCanonicalName() + " was not registered");
+            logger.error("clazz for " + claz.getCanonicalName() + " was not registered");
         }
 
 
     }
+
+    private ClazzLink createClazzLink(Class<?> claz, Map<String, Clazz> existing, List<AnnotatedClazzWithName> defaults, List<Object> toMerge) {
+        //handle the case where a ClazzLink is needed
+        String classname = claz.getCanonicalName();
+        ClazzLink clazzLink = new ClazzLink(classname, null);
+        Class<?>[] params = new Class[0];
+        try {
+            Method l = claz.getDeclaredMethod("getLeftside", params);
+            Method r = claz.getDeclaredMethod("getRightside", params);
+            Clazz valueClazz = Baseclass.getClazzByName(Baseclass.class.getCanonicalName());
+            if (valueClazz == null) {
+                handleEntityClass(Baseclass.class, existing, defaults, toMerge);
+                valueClazz = Baseclass.getClazzByName(Baseclass.class.getCanonicalName());
+            }
+            try {
+                Method v = claz.getDeclaredMethod("getValue", params);
+                ManyToOne mtO = v.getAnnotation(ManyToOne.class);
+                Class<?> cv = mtO.targetEntity();
+                handleEntityClass(cv, existing, defaults, toMerge);
+                valueClazz = Baseclass.getClazzByName(cv.getCanonicalName());
+            } catch (NoSuchMethodException e) {
+                logger.info("there is not spesific decleration for value for: " + claz.getCanonicalName());
+
+            }
+            clazzLink.setValue(valueClazz);
+            if (l.isAnnotationPresent(ManyToOne.class)) {
+                ManyToOne mtO = l.getAnnotation(ManyToOne.class);
+                Class<?> cl = mtO.targetEntity();
+                handleEntityClass(cl, existing, defaults, toMerge);
+                Clazz lclazz = Baseclass.getClazzByName(cl.getCanonicalName());
+                clazzLink.setLeft(lclazz);
+
+            }
+            if (r.isAnnotationPresent(ManyToOne.class)) {
+                ManyToOne mtO = r.getAnnotation(ManyToOne.class);
+                Class<?> cr = mtO.targetEntity();
+                handleEntityClass(cr, existing, defaults, toMerge);
+                Clazz rclazz = Baseclass.getClazzByName(cr.getCanonicalName());
+                clazzLink.setRight(rclazz);
+
+            }
+        } catch (Exception e) {
+            logger.error( "failed setting clazzlink properties", e);
+        }
+        return clazzLink;
+    }
+
+
 
     private AnnotatedClazz generateAnnotatedClazz(Class<?> claz) {
         return new AnnotatedClazz() {
@@ -550,7 +608,7 @@ public class ClassScannerService implements ServicePlugin {
         TenantToUserCreate tenantToUserCreate = new TenantToUserCreate().setDefaultTenant(true).setUser(admin).setTenant(defaultTenant);
         TenantToUser tenantToUser=baselinkrepository.findByIdOrNull(TenantToUser.class, TENANT_TO_USER_ID);
         if(tenantToUser==null){
-            logger.fine("Creating Tenant To User link");
+            logger.debug("Creating Tenant To User link");
             tenantToUser=userService.createTenantToUserNoMerge(tenantToUserCreate,null);
             tenantToUser.setCreator(admin);
             tenantToUser.setId(TENANT_TO_USER_ID);
@@ -559,7 +617,7 @@ public class ClassScannerService implements ServicePlugin {
         else{
             if(userService.updateTenantToUserNoMerge(tenantToUserCreate,tenantToUser)){
                 toMerge.add(tenantToUser);
-                logger.fine("Updated Tenant To User");
+                logger.debug("Updated Tenant To User");
             }
         }
         RoleCreate roleCreate=new RoleCreate()
@@ -568,7 +626,7 @@ public class ClassScannerService implements ServicePlugin {
                 .setTenant(defaultTenant);
         Role superAdminRole=baselinkrepository.findByIdOrNull(Role.class, SUPER_ADMIN_ROLE_ID);
         if(superAdminRole==null){
-            logger.fine("Creating Super Admin role");
+            logger.debug("Creating Super Admin role");
             superAdminRole=roleService.createRoleNoMerge(roleCreate,null);
             superAdminRole.setCreator(admin);
             superAdminRole.setId(SUPER_ADMIN_ROLE_ID);
@@ -577,7 +635,7 @@ public class ClassScannerService implements ServicePlugin {
         RoleToUserCreate roleToUserCreate=new RoleToUserCreate().setRole(superAdminRole).setUser(admin).setTenant(defaultTenant);
         RoleToUser roleToUser=baselinkrepository.findByIdOrNull(RoleToUser.class, SUPER_ADMIN_TO_ADMIN_ID);
         if(roleToUser==null){
-            logger.fine("Creating Role To User Link");
+            logger.debug("Creating Role To User Link");
             roleToUser=userService.createRoleToUserNoMerge(roleToUserCreate,null);
             roleToUser.setCreator(admin);
             roleToUser.setId(SUPER_ADMIN_TO_ADMIN_ID);
@@ -586,7 +644,7 @@ public class ClassScannerService implements ServicePlugin {
         else{
             if(userService.updateRoleToUserNoMerge(roleToUserCreate,roleToUser)){
                 toMerge.add(roleToUser);
-                logger.fine("Updated Role To User Link");
+                logger.debug("Updated Role To User Link");
             }
         }
         baselinkrepository.massMerge(toMerge);
@@ -678,9 +736,9 @@ public class ClassScannerService implements ServicePlugin {
             doc.setId(id);
             doc.setDescription(doc.getDescription());
             baselinkrepository.merge(doc);
-            logger.fine("found new tag: " + tag.name());
+            logger.debug("found new tag: " + tag.name());
         } else {
-            logger.fine("tag: " + tag.name() + " already exist in the database");
+            logger.debug("tag: " + tag.name() + " already exist in the database");
         }
     }
 
@@ -692,7 +750,7 @@ public class ClassScannerService implements ServicePlugin {
             try {
                 InheritanceUtils.registerClass(c);
             } catch (Throwable e) {
-                logger.log(Level.SEVERE, "failed registering", e);
+                logger.error( "failed registering", e);
             }
 
         }
@@ -705,7 +763,7 @@ public class ClassScannerService implements ServicePlugin {
                 .setDescription("Default Tenant");
         Tenant defaultTenant = baselinkrepository.findByIdOrNull(Tenant.class, DEFAULT_TENANT_ID);
         if(defaultTenant==null){
-            logger.fine("Creating Default Tenant");
+            logger.debug("Creating Default Tenant");
             defaultTenant=tenantService.createTenantNoMerge(tenantCreate,null);
             defaultTenant.setId(DEFAULT_TENANT_ID);
             defaultTenant.setTenant(defaultTenant);
@@ -730,7 +788,7 @@ public class ClassScannerService implements ServicePlugin {
                 .setName("Admin");
         User admin = baselinkrepository.findByIdOrNull(User.class, systemAdminId);
         if(admin==null){
-            logger.fine("Creating Admin User");
+            logger.debug("Creating Admin User");
             admin=userService.createUserNoMerge(userCreate,null);
             admin.setCreator(admin);
             admin.setId(systemAdminId);

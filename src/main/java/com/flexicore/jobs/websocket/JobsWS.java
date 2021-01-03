@@ -10,13 +10,13 @@ import com.flexicore.jobs.messages.JobWSHelloMessage;
 import com.flexicore.model.Baseclass;
 import com.flexicore.security.SecurityContext;
 import com.flexicore.service.JobService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.websocket.*;
 import javax.websocket.server.PathParam;
 import javax.websocket.server.ServerEndpoint;
 import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Created by Asaf on 31/08/2016.
@@ -27,7 +27,7 @@ import java.util.logging.Logger;
 @PluginInfo(version = 1)
 public class JobsWS implements WebSocketPlugin {
 
-   private Logger logger = Logger.getLogger(getClass().getCanonicalName());
+   private static final Logger logger = LoggerFactory.getLogger(JobsWS.class);
 
 
 
@@ -43,7 +43,7 @@ public class JobsWS implements WebSocketPlugin {
         try {
             session.getBasicRemote().sendObject(new JobWSHelloMessage().setId(Baseclass.getBase64ID()).setSessionId(session.getId()));
         } catch (IOException |EncodeException e) {
-            logger.log(Level.SEVERE,"failed sending hello message",e);
+            logger.error("failed sending hello message",e);
         }
     }
 

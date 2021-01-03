@@ -8,11 +8,13 @@ package com.flexicore.service.impl;
 
 import com.flexicore.data.jsoncontainers.PluginType;
 import com.flexicore.model.ModuleManifest;
+import org.pf4j.Extension;
 import org.pf4j.PluginManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Primary;
-import org.pf4j.Extension;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
@@ -22,19 +24,22 @@ import java.util.*;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Primary
-@Extension
 @Component
+@Extension
 public class PluginService implements com.flexicore.service.PluginService {
 
 
     private Map<ModuleManifest, Map<Class<?>, List<Class<?>>>> pluginListing = new HashMap<>();
 
-    private Logger logger = Logger.getLogger(getClass().getCanonicalName());
+    private static final Logger logger = LoggerFactory.getLogger(PluginService.class);
+
+    @Lazy
+    @Autowired
+    private PluginManager pluginManager;
 
 
 
@@ -51,7 +56,7 @@ public class PluginService implements com.flexicore.service.PluginService {
     }
 
     @Override
-    public ModuleManifest readModule(File jar, Logger logger) {
+    public ModuleManifest readModule(File jar, java.util.logging.Logger logger) {
 
         PluginType pluginType = PluginType.Service;
         String originalPath = jar.getAbsolutePath();
@@ -60,7 +65,7 @@ public class PluginService implements com.flexicore.service.PluginService {
             JarFile jarFile = new JarFile(jar);
             JarEntry jarEntry = jarFile.getJarEntry("flexicore-manifest.mf");
             if(jarEntry==null){
-                logger.log(Level.SEVERE,"missing manifest File For: "+jar.getAbsolutePath());
+                logger.severe("missing manifest File For: "+jar.getAbsolutePath());
                 return moduleManifest;
             }
             InputStream inputStream = jarFile.getInputStream(jarEntry);

@@ -1,8 +1,6 @@
 package com.flexicore.interfaces;
 
-import org.pf4j.ExtensionPoint;
-
-public interface AspectPlugin extends Plugin, ExtensionPoint {
+public interface AspectPlugin extends com.wizzdi.flexicore.boot.rest.interfaces.AspectPlugin {
 	
 
 }

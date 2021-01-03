@@ -1,10 +1,12 @@
 package com.flexicore.init;
 
 import com.flexicore.data.IndexRepository;
-import com.flexicore.events.PluginsLoadedEvent;
+import com.flexicore.interfaces.ServicePlugin;
 import com.flexicore.model.Baseclass;
-import com.flexicore.provider.EntitiesHolder;
+import com.wizzdi.flexicore.boot.base.events.PluginsLoadedEvent;
+import com.wizzdi.flexicore.boot.jpa.service.EntitiesHolder;
 import org.apache.commons.lang3.tuple.Pair;
+import org.pf4j.Extension;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +22,8 @@ import javax.persistence.Table;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 @Component
-public class IndexCreator {
+@Extension
+public class IndexCreator implements ServicePlugin {
 
     private static final AtomicBoolean init=new AtomicBoolean(false);
     private static final Logger logger= LoggerFactory.getLogger(IndexCreator.class);

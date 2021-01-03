@@ -19,6 +19,8 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.pf4j.Extension;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -28,22 +30,22 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.util.logging.Logger;
 
 @Path("/download")
 @RequestScoped
 @Component
+@Extension
 @OperationsInside
 @Protected
 @Tag(name = "Download")
 @Tag(name = "Core")
-@Extension
+
 public class DownloadRESTService implements RESTService {
 
     @Autowired
-    FileResourceService fileResourceService;
+    private FileResourceService fileResourceService;
 
-    private Logger logger = Logger.getLogger(getClass().getCanonicalName());
+    private static final Logger logger = LoggerFactory.getLogger(DownloadRESTService.class);
 
     /**
      * download a file by its fileResource ID

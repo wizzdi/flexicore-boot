@@ -4,9 +4,9 @@ import com.flexicore.data.impl.BaseclassNoSQLRepository;
 import com.flexicore.model.nosql.BaseclassNoSQL;
 import com.flexicore.request.BaseclassNoSQLCreate;
 import com.flexicore.request.BaseclassNoSQLUpdate;
+import org.pf4j.Extension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
-import org.pf4j.Extension;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -16,8 +16,8 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @Primary
-@Extension
 @Component
+@Extension
 public class BaseclassNoSQLService implements com.flexicore.service.BaseclassNoSQLService {
 
 

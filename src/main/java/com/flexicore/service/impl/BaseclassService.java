@@ -10,7 +10,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.flexicore.annotations.Baseclassroot;
-import com.flexicore.data.impl.BaseclassRepository;
+import com.flexicore.data.BaseclassRepository;
 import com.flexicore.data.BaselinkRepository;
 import com.flexicore.data.jsoncontainers.CrossLoaderResolver;
 import com.flexicore.data.jsoncontainers.PaginationResponse;
@@ -30,11 +30,13 @@ import org.apache.commons.csv.CSVPrinter;
 import org.apache.commons.io.ByteOrderMark;
 import org.apache.commons.lang3.ClassUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
+import org.pf4j.Extension;
 import org.pf4j.PluginManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Primary;
-import org.pf4j.Extension;
 import org.springframework.stereotype.Component;
 
 import javax.persistence.OneToMany;
@@ -50,17 +52,16 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
+import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.time.ZonedDateTime;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 @Primary
-@Extension
 @Component
+@Extension
 public class BaseclassService implements com.flexicore.service.BaseclassService {
     @Autowired
     @Baseclassroot
@@ -69,7 +70,7 @@ public class BaseclassService implements com.flexicore.service.BaseclassService 
     @Autowired
     private BaselinkRepository baselinkRepository;
 
-    private Logger logger = Logger.getLogger(getClass().getCanonicalName());
+    private static final Logger logger = LoggerFactory.getLogger(BaseclassService.class);
     private static ObjectMapper objectMapper;
 
     @Autowired
@@ -98,7 +99,7 @@ public class BaseclassService implements com.flexicore.service.BaseclassService 
 
     }
 
-    private static final Set<String> knownTypes = new HashSet<>(Arrays.asList(OffsetDateTime.class.getCanonicalName(),
+    private static final Set<String> knownTypes = new HashSet<>(Arrays.asList(OffsetDateTime.class.getCanonicalName(),LocalDateTime.class.getCanonicalName(),
             Date.class.getCanonicalName(), ZonedDateTime.class.getCanonicalName(), List.class.getCanonicalName(), Map.class.getCanonicalName()));
 
 
@@ -321,12 +322,13 @@ public class BaseclassService implements com.flexicore.service.BaseclassService 
             }
             return example;
         } catch (Exception e) {
-            logger.log(Level.SEVERE, "failed getting example value for " + c.getCanonicalName(), e);
+            logger.error( "failed getting example value for " + c.getCanonicalName(), e);
         }
         return example;
     }
 
     private Object getKnownTypeValue(Class<?> c) {
+        if (c.equals(LocalDateTime.class)) return LocalDateTime.now();
         if (c.equals(OffsetDateTime.class)) return OffsetDateTime.now();
         if (c.equals(ZonedDateTime.class)) return ZonedDateTime.now();
         if (c.equals(Date.class)) return Date.from(Instant.now());
@@ -374,7 +376,7 @@ public class BaseclassService implements com.flexicore.service.BaseclassService 
                 out.write(ByteOrderMark.UTF_BOM);
 
             } catch (Exception e) {
-                logger.log(Level.SEVERE, "failed writing UTF-8 BOM", e);
+                logger.error( "failed writing UTF-8 BOM", e);
             }
 
 
@@ -384,7 +386,7 @@ public class BaseclassService implements com.flexicore.service.BaseclassService 
              CSVPrinter csvPrinter = new CSVPrinter(out, format)) {
             DynamicInvokersService.exportCollection(fieldToName, fieldNameToMethod, csvPrinter, collection);
         } catch (Exception e) {
-            logger.log(Level.SEVERE, "failed exporting data", e);
+            logger.error( "failed exporting data", e);
         }
 
 
@@ -714,13 +716,13 @@ public class BaseclassService implements com.flexicore.service.BaseclassService 
 
 
                 } catch (NoSuchMethodException e) {
-                    logger.log(Level.SEVERE, "unable to get method", e);
+                    logger.error( "unable to get method", e);
                 }
 
             }
         }
         msg = "no invoker matches  " + filteringInformationHolder.getResultType() + " with filter type " + filteringInformationHolder.getClass();
-        logger.log(Level.SEVERE, msg);
+        logger.error( msg);
 
         throw new BadRequestException(msg);
 

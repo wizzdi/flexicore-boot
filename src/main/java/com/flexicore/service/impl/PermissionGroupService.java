@@ -17,10 +17,10 @@ import com.flexicore.request.PermissionGroupCopy;
 import com.flexicore.request.PermissionGroupsFilter;
 import com.flexicore.request.UpdatePermissionGroup;
 import com.flexicore.security.SecurityContext;
+import org.pf4j.Extension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Primary;
-import org.pf4j.Extension;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,8 +29,8 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Primary
-@Extension
 @Component
+@Extension
 public class PermissionGroupService implements com.flexicore.service.PermissionGroupService {
 
     @Autowired

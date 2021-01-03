@@ -22,6 +22,7 @@ public class ParameterInfo {
     private boolean idRef;
     private boolean list;
     private boolean mandatory;
+    private boolean actionId;
     private Class<?> idRefType;
     private List<ParameterInfo> subParameters;
     private static Set<Class<?>> wrappers = new HashSet<>();
@@ -122,9 +123,11 @@ public class ParameterInfo {
         this.list = fieldInfo == null || fieldInfo.list();
         this.mandatory = fieldInfo != null && fieldInfo.mandatory();
         this.type = "com.flexicore.model.BaseclassIdFiltering";
-
         idRef = true;
         idRefType = fieldInfo != null ? fieldInfo.refType() : null;
+        this.actionId= fieldInfo != null && fieldInfo.actionId();
+
+
 
     }
 
@@ -273,6 +276,15 @@ public class ParameterInfo {
 
     public <T extends ParameterInfo> T setValueSteps(Double valueSteps) {
         this.valueSteps = valueSteps;
+        return (T) this;
+    }
+
+    public boolean isActionId() {
+        return actionId;
+    }
+
+    public <T extends ParameterInfo> T setActionId(boolean actionId) {
+        this.actionId = actionId;
         return (T) this;
     }
 }

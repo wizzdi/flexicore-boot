@@ -6,14 +6,15 @@
  ******************************************************************************/
 package com.flexicore.data;
 
-import org.pf4j.Extension;
-import org.springframework.stereotype.Component;
+import com.flexicore.annotations.InheritedComponent;
 import com.flexicore.data.impl.BaseclassRepository;
 import com.flexicore.model.*;
 import com.flexicore.request.BaselinkFilter;
 import com.flexicore.request.GetConnected;
 import com.flexicore.request.GetDisconnected;
 import com.flexicore.security.SecurityContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.*;
@@ -21,16 +22,14 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 
-@Component
-@Extension
+@InheritedComponent
 public class BaselinkRepository extends BaseclassRepository {
 
 
-	private Logger logger= Logger.getLogger(getClass().getCanonicalName());
+	private static final Logger logger= LoggerFactory.getLogger(BaselinkRepository.class);
 
 
 	public void clear(){

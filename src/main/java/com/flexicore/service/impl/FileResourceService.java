@@ -21,12 +21,12 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.input.BoundedInputStream;
 import org.jboss.resteasy.spi.HttpResponseCodes;
+import org.pf4j.Extension;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Primary;
-import org.pf4j.Extension;
 import org.springframework.stereotype.Component;
 import org.zeroturnaround.zip.ZipUtil;
 
@@ -48,8 +48,8 @@ import java.util.stream.Stream;
 
 
 @Primary
-@Extension
 @Component
+@Extension
 public class FileResourceService implements com.flexicore.service.FileResourceService {
     /**
      *
@@ -311,14 +311,14 @@ public class FileResourceService implements com.flexicore.service.FileResourceSe
             String fileName = file.getName();
             String ext = fileName.endsWith("tar.gz") ? "tar.gz" : FilenameUtils.getExtension(fileName);
             String actualFilename = !ext.isEmpty() ? UUID.randomUUID().toString() + "." + ext : UUID.randomUUID().toString();
-            fileResource = new FileResource(fileName, securityContext);
             FileResourceCreate fileResourceCreate = new FileResourceCreate()
                     .setFullPath(pathToFileResource)
                     .setMd5(md5)
                     .setOffset(0L)
                     .setActualFilename(actualFilename)
-                    .setOriginalFilename(fileName);
-            updateFileResourceNoMerge(fileResourceCreate, fileResource);
+                    .setOriginalFilename(fileName)
+                    .setName(fileName);
+            fileResource=createFileResource(fileResourceCreate,securityContext);
         }
         return fileResource;
 

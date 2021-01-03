@@ -13,21 +13,22 @@ import com.flexicore.events.TenantCreatedEvent;
 import com.flexicore.model.*;
 import com.flexicore.request.*;
 import com.flexicore.security.SecurityContext;
+import org.pf4j.Extension;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Primary;
-import org.pf4j.Extension;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.ws.rs.BadRequestException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Logger;
 
 @Primary
-@Extension
 @Component
+@Extension
 public class TenantService implements com.flexicore.service.TenantService {
     @Autowired
     private TenantRepository tenantRepository;
@@ -42,7 +43,7 @@ public class TenantService implements com.flexicore.service.TenantService {
     private BaseclassNewService baseclassService;
     @Autowired
     private ApplicationEventPublisher applicationEventPublisher;
-   private Logger logger = Logger.getLogger(getClass().getCanonicalName());
+   private static final Logger logger = LoggerFactory.getLogger(TenantService.class);
 
 
     @Override

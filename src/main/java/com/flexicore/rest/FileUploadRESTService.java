@@ -23,6 +23,8 @@ import com.flexicore.service.impl.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.pf4j.Extension;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -36,17 +38,16 @@ import java.io.InputStream;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Properties;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 @Path("/resources")
 @RequestScoped
 @Component
+@Extension
 @OperationsInside
 @Protected
 @Tag(name = "Upload")
 @Tag(name = "Core")
-@Extension
+
 public class FileUploadRESTService implements RESTService {
 
     @Autowired
@@ -54,7 +55,7 @@ public class FileUploadRESTService implements RESTService {
     @Autowired
     UserService userService;
 
-    private Logger logger = Logger.getLogger(getClass().getCanonicalName());
+    private static final Logger logger = LoggerFactory.getLogger(FileUploadRESTService.class);
 
 
     /**
@@ -76,7 +77,7 @@ public class FileUploadRESTService implements RESTService {
         try {
             fileResource = fileResourceService.getExistingFileResource(md5,securityContext);
         } catch (NoResultException e) {
-            logger.log(Level.INFO, "no file resource with md5: " + md5);
+            logger.info( "no file resource with md5: " + md5);
         }
 
         if (fileResource != null) {

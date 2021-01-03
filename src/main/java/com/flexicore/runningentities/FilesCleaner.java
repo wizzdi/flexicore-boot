@@ -5,6 +5,8 @@ import com.flexicore.interfaces.FlexiCoreService;
 import com.flexicore.model.FileResource;
 import com.flexicore.service.impl.FileResourceService;
 import org.pf4j.Extension;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Primary;
@@ -15,19 +17,17 @@ import java.time.OffsetDateTime;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 
 @Primary
-@Extension
 @Component
+@Extension
 public class FilesCleaner implements FlexiCoreService, Runnable {
 
     private boolean stop;
     @Autowired
     private FileResourceService fileResourceService;
-    private Logger logger = Logger.getLogger(getClass().getCanonicalName());
+    private static final Logger logger = LoggerFactory.getLogger(FilesCleaner.class);
 
     @Value("${flexicore.files.cleaner.checkInterval:3600000}")
     private long deletedFileCleanInterval;
@@ -55,14 +55,14 @@ public class FilesCleaner implements FlexiCoreService, Runnable {
                         logger.info("deleted files: " + deleted);
                     }
                     if (!failed.isEmpty()) {
-                        logger.severe("Failed Deleting files: " + failed);
+                        logger.error("Failed Deleting files: " + failed);
                     }
                 } catch (Exception e) {
-                    logger.log(Level.SEVERE, "cleaning files throed unexpected exception ", e);
+                    logger.error( "cleaning files throed unexpected exception ", e);
                 }
                 Thread.sleep(deletedFileCleanInterval);
             } catch (InterruptedException e) {
-                logger.log(Level.SEVERE, "interrupted while sleeping", e);
+                logger.error( "interrupted while sleeping", e);
                 stop = true;
             }
 

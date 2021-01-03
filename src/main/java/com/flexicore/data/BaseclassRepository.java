@@ -1,5 +1,6 @@
 package com.flexicore.data;
 
+import com.flexicore.interfaces.PluginRepository;
 import org.pf4j.Extension;
 import org.springframework.stereotype.Component;
 import com.flexicore.model.*;
@@ -17,7 +18,7 @@ import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Set;
 
-public interface BaseclassRepository {
+public interface BaseclassRepository extends PluginRepository {
 
     <T extends Baseclass> T findById(String id);
 

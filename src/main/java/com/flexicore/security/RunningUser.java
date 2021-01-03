@@ -24,6 +24,7 @@ public class RunningUser {
 	private OffsetDateTime expiresDate;
 	private Tenant defaultTenant;
 	private boolean impersonated;
+	private boolean totpVerified;
 
 
 	public RunningUser(User user, String jwtToken) {
@@ -113,6 +114,15 @@ public class RunningUser {
 
 	public <T extends RunningUser> T setImpersonated(boolean impersonated) {
 		this.impersonated = impersonated;
+		return (T) this;
+	}
+
+	public boolean isTotpVerified() {
+		return totpVerified;
+	}
+
+	public <T extends RunningUser> T setTotpVerified(boolean totpVerified) {
+		this.totpVerified = totpVerified;
 		return (T) this;
 	}
 }
