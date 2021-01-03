@@ -10,5 +10,6 @@ public @interface IdRefFieldInfo {
     boolean mandatory() default false;
     Class<?> refType() default Void.class;
     boolean list() default true;
-    
+    boolean actionId() default false;
+
 }

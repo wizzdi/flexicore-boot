@@ -11,8 +11,8 @@ import com.fasterxml.jackson.annotation.JsonView;
 import com.flexicore.annotations.AnnotatedClazz;
 import com.flexicore.annotations.FullTextSearch;
 import com.flexicore.annotations.FullTextSearchOptions;
-import com.flexicore.data.jsoncontainers.Views;
 import com.flexicore.security.SecurityContext;
+import com.wizzdi.flexicore.boot.jaxrs.annotations.Views;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 import javax.persistence.*;
@@ -57,6 +57,12 @@ public class User extends SecurityEntity {
     private OffsetDateTime emailVerificationTokenValid;
     @Column(columnDefinition = "timestamp with time zone")
     private OffsetDateTime lastVerificationDate;
+    @JsonView(Views.Full.class)
+    private String totpSecret;
+    @JsonView(Views.Full.class)
+    @Lob
+    private String totpRecoveryCodes;
+    private boolean totpEnabled;
 
 
     @JsonIgnore
@@ -263,6 +269,35 @@ public class User extends SecurityEntity {
 
     public <T extends User> T setApprovingUser(User approvingUser) {
         this.approvingUser = approvingUser;
+        return (T) this;
+    }
+
+    @JsonView(Views.Full.class)
+    public String getTotpSecret() {
+        return totpSecret;
+    }
+
+    public <T extends User> T setTotpSecret(String totpSecert) {
+        this.totpSecret = totpSecert;
+        return (T) this;
+    }
+
+    public boolean isTotpEnabled() {
+        return totpEnabled;
+    }
+
+    public <T extends User> T setTotpEnabled(boolean totpEnabled) {
+        this.totpEnabled = totpEnabled;
+        return (T) this;
+    }
+    @Lob
+    @JsonView(Views.Full.class)
+    public String getTotpRecoveryCodes() {
+        return totpRecoveryCodes;
+    }
+
+    public <T extends User> T setTotpRecoveryCodes(String totpRecoveryCodes) {
+        this.totpRecoveryCodes = totpRecoveryCodes;
         return (T) this;
     }
 }

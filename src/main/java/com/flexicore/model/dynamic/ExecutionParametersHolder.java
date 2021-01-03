@@ -6,7 +6,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.fasterxml.jackson.databind.annotation.JsonTypeIdResolver;
 import com.fasterxml.jackson.databind.annotation.JsonTypeResolver;
-import com.flexicore.data.jsoncontainers.CrossLoaderResolver;
+import com.wizzdi.flexicore.boot.rest.resolvers.CrossLoaderResolver;
 import com.flexicore.data.jsoncontainers.FCTypeResolver;
 import com.flexicore.model.Baseclass;
 import com.flexicore.security.SecurityContext;

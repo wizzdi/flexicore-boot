@@ -9,7 +9,7 @@ package com.flexicore.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.flexicore.annotations.AnnotatedClazz;
-import com.flexicore.data.jsoncontainers.Views;
+import com.wizzdi.flexicore.boot.jaxrs.annotations.Views;
 import com.flexicore.security.SecurityContext;
 
 import javax.persistence.*;

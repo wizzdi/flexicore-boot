@@ -4,7 +4,8 @@ import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.fasterxml.jackson.databind.annotation.JsonTypeIdResolver;
-import com.flexicore.data.jsoncontainers.CrossLoaderResolver;
+import com.wizzdi.flexicore.boot.rest.resolvers.CrossLoaderResolver;
+
 
 import java.time.OffsetDateTime;
 
