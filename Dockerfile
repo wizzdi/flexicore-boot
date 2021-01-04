@@ -1,5 +1,5 @@
 
-FROM adoptopenjdk/openjdk11 as run
+FROM adoptopenjdk/openjdk11
 WORKDIR /app
 RUN apt-get update && apt-get -qq -y install wget libcurl4 openssl liblzma5  gnupg maven lsb-release
 ENV TZ=Israel
