@@ -1,25 +1,27 @@
 package com.wizzdi.flexicore.boot.jpa.service;
 
+import com.wizzdi.flexicore.boot.jpa.annotations.EnableFlexiCoreJPAPlugins;
 import org.reflections.Reflections;
 import org.reflections.util.ConfigurationBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
 
+import javax.persistence.Converter;
 import javax.persistence.Entity;
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -29,6 +31,8 @@ public class EntitiesProvider {
     private static final Logger logger= LoggerFactory.getLogger(EntitiesProvider.class);
     @Value("${flexicore.entities:/home/flexicore/entities}")
     private String entitiesPath;
+    @Autowired
+    private ApplicationContext context;
 
     /**
      * this will return all entities in flexicore and in ${flexicore.entities} path
@@ -43,12 +47,16 @@ public class EntitiesProvider {
     public EntitiesHolder getEntities() {
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
         List<URL> entitiesJarsUrls = getEntitiesJarsUrls();
+        Map<String, Object> beansWithAnnotation = context.getBeansWithAnnotation(SpringBootApplication.class);
+        entitiesJarsUrls.addAll(beansWithAnnotation.values().stream().map(f->f.getClass().getProtectionDomain().getCodeSource().getLocation()).collect(Collectors.toSet()));
         ConfigurationBuilder configuration = ConfigurationBuilder.build()
                 .addClassLoader(classLoader)
                 .setUrls(entitiesJarsUrls);
         Reflections reflections = new Reflections(configuration);
         Set<Class<?>> typesAnnotatedWith = reflections.getTypesAnnotatedWith(Entity.class);
-        return new EntitiesHolder(typesAnnotatedWith);
+        Set<Class<?>> converters = new HashSet<>(reflections.getTypesAnnotatedWith(Converter.class));
+        converters.addAll(typesAnnotatedWith);
+        return new EntitiesHolder(converters);
     }
 
 

@@ -1,9 +1,9 @@
 pipeline {
     agent {
-        docker {
-            image 'maven:3.6.3-openjdk-11'
-            args '-v /root/.m2:/root/.m2'
-        }
+        dockerfile true
+        reuseNode true
+        args '-v $HOME/.m2:/root/.m2:z -u root'
+
     }
     stages {
         stage('Initialize') {
