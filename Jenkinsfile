@@ -1,8 +1,11 @@
 pipeline {
     agent {
-        dockerfile true
-        reuseNode true
-        args '-v $HOME/.m2:/root/.m2:z -u root'
+        dockerfile {
+            reuseNode true
+            args '-v $HOME/.m2:/root/.m2:z -u root'
+        }
+
+
 
     }
     stages {
