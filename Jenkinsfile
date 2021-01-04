@@ -14,6 +14,7 @@ pipeline {
                 sh '''
                     echo "PATH = ${PATH}"
                     echo "M2_HOME = ${M2_HOME}"
+                    /usr/sbin/service postgresql start
                 '''
             }
         }
