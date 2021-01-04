@@ -13,7 +13,7 @@ USER postgres
 # Note: here we use ``&&\`` to run commands one after the other - the ``\``
 #       allows the RUN command to span multiple lines.
 RUN    /etc/init.d/postgresql start &&\
-    psql --command "CREATE USER flexicore-boot WITH SUPERUSER PASSWORD 'flexicore-boot';" &&\
+    psql --command "CREATE USER \"flexicore-boot\" WITH SUPERUSER PASSWORD 'flexicore-boot';" &&\
     createdb -O flexicore-boot flexicore-boot
 
 # Adjust PostgreSQL configuration so that remote connections to the
