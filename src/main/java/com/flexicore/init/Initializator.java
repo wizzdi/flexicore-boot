@@ -13,6 +13,7 @@ import com.flexicore.request.ClazzFilter;
 import com.flexicore.request.TenantFilter;
 import com.flexicore.service.BaseclassService;
 import com.flexicore.service.impl.ClassScannerService;
+import com.google.common.util.concurrent.AtomicDouble;
 import com.wizzdi.flexicore.boot.base.events.PluginsLoadedEvent;
 import org.pf4j.Extension;
 import org.slf4j.Logger;
@@ -21,6 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.event.EventListener;
 
 import java.io.File;
@@ -54,6 +56,7 @@ public class Initializator implements ServicePlugin {
 
 
     private static AtomicBoolean initFully = new AtomicBoolean(false);
+    private static final AtomicBoolean init=new AtomicBoolean(false);
 
     public static boolean getInit() {
         return initFully.get();
@@ -76,27 +79,29 @@ public class Initializator implements ServicePlugin {
      */
     @EventListener
     public void getStartingContext(PluginsLoadedEvent pluginsLoadedEvent) throws Exception {
+        if(init.compareAndSet(false,true)){
+            createFolderStructure();
+            logger.info("registering classes");
+            classScannerService.registerClasses();
+            logger.info("Initializing classes");
+            List<Clazz> clazzes = classScannerService.InitializeClazzes(); // must be done first!
 
-        createFolderStructure();
-        logger.info("registering classes");
-        classScannerService.registerClasses();
-        logger.info("Initializing classes");
-        List<Clazz> clazzes = classScannerService.InitializeClazzes(); // must be done first!
+            try {
+                classScannerService.createDefaultObjects();
+                logger.info("Initializing operations");
+                classScannerService.InitializeOperations();
 
-        try {
-            classScannerService.createDefaultObjects();
-            logger.info("Initializing operations");
-            classScannerService.InitializeOperations();
+                classScannerService.createSwaggerTags();
+                classScannerService.initializeInvokers();
 
-            classScannerService.createSwaggerTags();
-            classScannerService.initializeInvokers();
-
-            registerFilterClasses();
+                registerFilterClasses();
 
 
-        } catch (Exception ex) {
-            logger.error( "Error while initializing the system", ex);
+            } catch (Exception ex) {
+                logger.error( "Error while initializing the system", ex);
+            }
         }
+
 
 
     }

@@ -22,7 +22,7 @@
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <pf4j-spring.version>0.6.0</pf4j-spring.version>
+        <pf4j-spring.version>0.7.0</pf4j-spring.version>
         <swagger.version>2.1.2</swagger.version>
         <reflections>${project.build.outputDirectory}/META-INF/reflections/${project.artifactId}-reflections.json
         </reflections>
@@ -277,7 +277,7 @@
         <dependency>
             <groupId>com.wizzdi</groupId>
             <artifactId>flexicore-boot</artifactId>
-            <version>1.0.0</version>
+            <version>1.0.1</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -341,12 +341,6 @@
         <dependency>
             <groupId>org.junit.vintage</groupId>
             <artifactId>junit-vintage-engine</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.wizzdi</groupId>
-            <artifactId>flexicore-entities-provider</artifactId>
-            <version>1.0.1</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
