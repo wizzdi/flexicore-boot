@@ -69,7 +69,7 @@ public interface PermissionGroupService extends FlexiCoreService {
      * copies permission group with all its content , this will NOT copy any security links this group is participating in
      * @param permissionGroupCopy object describing the permission group to copied
      * @param securityContext security context of the user executing the action
-     * @return
+     * @return permission group
      */
     PermissionGroup copyPermissionGroup(PermissionGroupCopy permissionGroupCopy, SecurityContext securityContext);
 }

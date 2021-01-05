@@ -1,20 +1,16 @@
 package com.flexicore.service;
 
-import com.flexicore.interfaces.ServicePlugin;
 import com.mongodb.ConnectionString;
 import com.mongodb.MongoClientSettings;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
-import org.pf4j.Extension;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Primary;
 
 @Configuration
-@Extension
-public class MongoConnectionService implements ServicePlugin {
+public class MongoConnectionService {
 
 
     public static final String MONGO_DB = "MongoDB";
@@ -25,7 +21,6 @@ public class MongoConnectionService implements ServicePlugin {
 
 
     @Bean
-    @Primary
     public MongoClient produceMongoClient() {
         MongoClientSettings build = MongoClientSettings.builder()
                 .applyConnectionString(new ConnectionString(connectionString))

@@ -29,7 +29,7 @@ public interface TokenService extends FlexiCoreService {
      * @param expirationDate datetime at which the token will expire
      * @param writeTenant tenant that will be used when the user creates objects
      * @param readTenants tenants that the result set of request will be contained to
-     * @return
+     * @return token
      */
     String getJwtToken(User user, OffsetDateTime expirationDate, String writeTenant, Set<String> readTenants);
 
@@ -40,15 +40,15 @@ public interface TokenService extends FlexiCoreService {
      * @param writeTenant tenant that will be used when the user creates objects
      * @param readTenants tenants that the result set of request will be contained to
      * @param totpVerified true/false if token should be generated post totp verification
-     * @return
+     * @return token
      */
     String getJwtToken(User user, OffsetDateTime expirationDate, String writeTenant, Set<String> readTenants,boolean totpVerified);
 
     /**
      * parses jwt token into claims
-     * @param jwtToken
-     * @param logger
-     * @return
+     * @param jwtToken jwt token
+     * @param logger logger
+     * @return jwt claims
      */
     JWTClaims parseClaimsAndVerifyClaims(String jwtToken, Logger logger);
 }

@@ -73,8 +73,7 @@ public class Initializator implements ServicePlugin {
 
     /**
      * this is called by the container upon init.
-     *
-     * @return the starting context
+     * @param pluginsLoadedEvent event
      * @throws Exception if there is any issue starting the context
      */
     @EventListener

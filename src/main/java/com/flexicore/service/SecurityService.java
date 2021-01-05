@@ -46,16 +46,16 @@ public interface SecurityService extends FlexiCoreService {
 
     /**
      * validates #PermissionSummaryRequest
-     * @param permissionSummaryRequest
-     * @param securityContext
+     * @param permissionSummaryRequest request
+     * @param securityContext security context
      */
     void validate(PermissionSummaryRequest permissionSummaryRequest, SecurityContext securityContext);
 
     /**
      *  returns permission summary - that is if users have or dont have access to given objects
-     * @param permissionSummaryRequest
-     * @param securityContext
-     * @return
+     * @param permissionSummaryRequest request
+     * @param securityContext securitu context
+     * @return response
      */
     PermissionSummaryResponse getPermissionsSummary(PermissionSummaryRequest permissionSummaryRequest, SecurityContext securityContext);
 }

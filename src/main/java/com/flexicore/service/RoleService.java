@@ -19,7 +19,7 @@ public interface RoleService extends FlexiCoreService {
      *
      * @param roleCreate object used to create the role
      * @param securityContext security context of the user executing the action
-     * @return
+     * @return new role
      */
     Role createRole(RoleCreate roleCreate, SecurityContext securityContext);
 
@@ -27,7 +27,7 @@ public interface RoleService extends FlexiCoreService {
      *
      * @param roleCreate object used to create the role
      * @param securityContext security context of the user executing the action
-     * @return
+     * @return new role not merged
      */
     Role createRoleNoMerge(RoleCreate roleCreate, SecurityContext securityContext);
 
@@ -59,7 +59,7 @@ public interface RoleService extends FlexiCoreService {
      *
      * @param roleFilter object used to filter the roles
      * @param securityContext security context of the user executing the action
-     * @return
+     * @return list of roles
      */
     List<Role> listAllRoles(RoleFilter roleFilter, SecurityContext securityContext);
 
@@ -67,7 +67,7 @@ public interface RoleService extends FlexiCoreService {
      * updates role
      * @param roleCreate object used to update the role
      * @param securityContext security context of the user executing the action
-     * @return
+     * @return updated role
      */
     Role updateRole(RoleUpdate roleCreate, SecurityContext securityContext);
 }

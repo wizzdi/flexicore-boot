@@ -48,8 +48,8 @@ public interface PluginService extends FlexiCoreService {
     /**
      * reads manifest and registers as an external Module ( this will return on health checks etc)
      * @param manifestFile path to manifest file
-     * @return
-     * @throws IOException
+     * @return manifest
+     * @throws IOException if manifest cannot be loaded
      */
     static ModuleManifest registerExternalModule(File manifestFile) throws IOException {
         ModuleManifest moduleManifest=loadExternalModule(manifestFile);
@@ -60,8 +60,8 @@ public interface PluginService extends FlexiCoreService {
     /**
      * reads manifest into structured #ModuleManifest Object
      * @param manifestFile path to manifest file
-     * @return
-     * @throws IOException
+     * @return module manigest
+     * @throws IOException if manifest cnnot be loaded
      */
     static ModuleManifest loadExternalModule(File manifestFile) throws IOException {
         try(FileInputStream fileInputStream=new FileInputStream(manifestFile)){
@@ -74,8 +74,8 @@ public interface PluginService extends FlexiCoreService {
      * reads manifest into structured #ModuleManifest Object
      * @param manifestFile path to manifest file
      * @param inputStream input stream with manifest data
-     * @return
-     * @throws IOException
+     * @return manifest
+     * @throws IOException if manifest cannot be loaded
      */
     static ModuleManifest loadExternalModule(File manifestFile, InputStream inputStream) throws IOException {
         Properties properties=new Properties();

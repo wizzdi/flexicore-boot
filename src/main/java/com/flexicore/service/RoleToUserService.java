@@ -17,7 +17,7 @@ public interface RoleToUserService extends FlexiCoreService {
      *
      * @param roleToUserCreate object used to create the roleToUser
      * @param securityContext security context of the user executing the action
-     * @return
+     * @return new role to user
      */
     RoleToUser createRoleToUser(RoleToUserCreate roleToUserCreate, SecurityContext securityContext);
 
@@ -25,7 +25,7 @@ public interface RoleToUserService extends FlexiCoreService {
      *
      * @param roleToUserCreate object used to create the roleToUser
      * @param securityContext security context of the user executing the action
-     * @return
+     * @return role to user
      */
     RoleToUser createRoleToUserNoMerge(RoleToUserCreate roleToUserCreate, SecurityContext securityContext);
 
@@ -46,7 +46,7 @@ public interface RoleToUserService extends FlexiCoreService {
      *
      * @param roleToUserFilter object used to filter the roleToUsers
      * @param securityContext security context of the user executing the action
-     * @return
+     * @return list of role to users
      */
     List<RoleToUser> listAllRoleToUsers(RoleToUserFilter roleToUserFilter, SecurityContext securityContext);
 
@@ -54,7 +54,7 @@ public interface RoleToUserService extends FlexiCoreService {
      * updates roleToUser
      * @param roleToUserCreate object used to update the roleToUser
      * @param securityContext security context of the user executing the action
-     * @return
+     * @return updated role to user
      */
     RoleToUser updateRoleToUser(RoleToUserUpdate roleToUserCreate, SecurityContext securityContext);
 }

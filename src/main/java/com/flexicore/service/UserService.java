@@ -28,38 +28,38 @@ public interface UserService extends FlexiCoreService {
 
     /**
      * receives a list of entities to merge into the DB
-     * @param toMerge
+     * @param toMerge list to merge
      */
     void massMerge(List<?> toMerge);
 
     /**
      * creates a User
      * @param userCreate object used to create a user
-     * @param securityContext
-     * @return
+     * @param securityContext security context
+     * @return user
      */
     User createUser(UserCreate userCreate, SecurityContext securityContext);
 
     /**
      * creates a tenant to user link
-     * @param tenantToUserCreate
-     * @param securityContext
+     * @param tenantToUserCreate tenant to user create
+     * @param securityContext security context
      * @return the tenantToUser link created
      */
     TenantToUser createTenantToUserNoMerge(TenantToUserCreate tenantToUserCreate, SecurityContext securityContext);
 
     /**
      * creates a User
-     * @param createUser
-     * @param securityContext
+     * @param createUser create user
+     * @param securityContext security context
      * @return the created user
      */
     User createUserNoMerge(UserCreate createUser, SecurityContext securityContext);
 
     /**
      * updates a user
-     * @param user
-     * @param createUser
+     * @param user user
+     * @param createUser create user
      * @return if anything was changed
      */
     boolean updateUserNoMerge(User user, UserCreate createUser);
@@ -74,41 +74,42 @@ public interface UserService extends FlexiCoreService {
 
     /**
      * returns the authenticationKey related user tenants
-     * @param authenticationKey
-     * @return
+     * @param authenticationKey authenticationKey
+     * @return list of tenants
      */
     List<Tenant> getUserTenants(String authenticationKey);
 
     /**
      * returns user default tenant
-     * @param authenticationKey
-     * @return
+     * @param authenticationKey  authenticationKey
+     * @return tenant
      */
     Tenant getUserDefaultTenant(String authenticationKey);
 
     /**
      * logs in a user receiving an autheticationRequestHolder and an OPTIONAL user
      * this will validate the content of the bundle (password and mail/phonenumber)
-     * @param bundle
-     * @param user
-     * @return
-     * @throws UserNotFoundException
-     * @throws CheckYourCredentialsException
+     * @param bundle bundle
+     * @param user user
+     * @return running user
+     * @throws UserNotFoundException if user was not found
+     * @throws CheckYourCredentialsException if credentails were invalid
      */
     RunningUser login(AuthenticationRequestHolder bundle, User user)
                                             throws UserNotFoundException, CheckYourCredentialsException;
 
     /**
      * logs in a user
-     * @param user
-     * @return
+     * @param user user
+     * @return running user
      */
     RunningUser registerUserIntoSystem(User user);
 
     /**
      * logs in a user  , authenticationKey will expire at the given expirationDate
-     * @param user
-     * @return
+     * @param user user
+     * @param expirationDate expiration date
+     * @return running user
      */
     RunningUser registerUserIntoSystem(User user, OffsetDateTime expirationDate);
 
@@ -116,11 +117,11 @@ public interface UserService extends FlexiCoreService {
      * logs in a user receiving an autheticationRequestHolder and an OPTIONAL user
      * this will validate the content of the bundle (password and mail/phonenumber)
      * this wont return the authenticationKey for the user , the expected usage is calling authenticate and then calling registerUserIntoSystem
-     * @param bundle
-     * @param user
-     * @return
-     * @throws UserNotFoundException
-     * @throws CheckYourCredentialsException
+     * @param bundle bundle
+     * @param user user
+     * @return user
+     * @throws UserNotFoundException if user was not found
+     * @throws CheckYourCredentialsException if credentails were invalid
      */
     User authenticate(AuthenticationRequestHolder bundle, User user);
 
@@ -129,23 +130,23 @@ public interface UserService extends FlexiCoreService {
 
     /**
      * log outs a user
-     * @param authenticationkey
-     * @return
+     * @param authenticationkey authenticationKey
+     * @return true if it is logged out
      */
     boolean logOut(String authenticationkey);
 
 
     /**
      * given a verification code ( received by RestPasswordResponse), sets the user password to the given one.
-     * @param resetPasswordWithVerification
-     * @return
+     * @param resetPasswordWithVerification reset password
+     * @return reset password response
      */
     ResetPasswordResponse resetPasswordWithVerification(ResetPasswordWithVerification resetPasswordWithVerification);
 
     /**
      * finishing verification
-     * @param verifyMail
-     * @return
+     * @param verifyMail verify mail
+     * @return response
      */
     VerifyMailResponse verifyMail(VerifyMail verifyMail);
 
@@ -157,36 +158,36 @@ public interface UserService extends FlexiCoreService {
 
     /**
      * returns System admin user
-     * @return
+     * @return user
      */
     User getAdminUser();
 
     /**
      * validates user create object
-     * @param userCreate
-     * @param securityContext
+     * @param userCreate userCreate
+     * @param securityContext security context
      */
     void validateUserForCreate(UserCreate userCreate, SecurityContext securityContext);
 
     /**
      * validates user update object
-     * @param userUpdate
-     * @param securityContext
+     * @param userUpdate user update
+     * @param securityContext security context
      */
     void validateUserUpdate(UserUpdate userUpdate, SecurityContext securityContext);
 
     /**
      * same as {@link #validateUserForCreate(UserCreate, SecurityContext)}
-     * @param userCreate
-     * @param securityContext
+     * @param userCreate user create
+     * @param securityContext security context
      */
     void validateUser(UserCreate userCreate, SecurityContext securityContext);
 
     /**
      * updates user , null properties on #UserUpdate will be ignored
-     * @param userUpdate
-     * @param securityContext
-     * @return
+     * @param userUpdate user update
+     * @param securityContext security context
+     * @return user
      */
     User updateUser(UserUpdate userUpdate, SecurityContext securityContext);
 
@@ -203,39 +204,39 @@ public interface UserService extends FlexiCoreService {
 
         /**
          * validates user filtering object
-         * @param userFiltering
-         * @param securityContext
+         * @param userFiltering user filtering
+         * @param securityContext security context
          */
     void validate(UserFiltering userFiltering, SecurityContext securityContext);
 
     /**
      * validates authetication request
-     * @param authenticationRequest
-     * @param securityContext
+     * @param authenticationRequest authentication request
+     * @param securityContext security context
      */
     void validate(AuthenticationRequest authenticationRequest, SecurityContext securityContext);
 
     /**
      * logs in a user
-     * @param authenticationRequest
-     * @param securityContext
-     * @return
+     * @param authenticationRequest authentication request
+     * @param securityContext security context
+     * @return authentication response
      */
     AuthenticationResponse login(AuthenticationRequest authenticationRequest, SecurityContext securityContext);
 
     /**
      * validate impersonate request
-     * @param impersonateRequest
-     * @param securityContext
+     * @param impersonateRequest request
+     * @param securityContext context
      */
     void validate(ImpersonateRequest impersonateRequest, SecurityContext securityContext);
 
     /**
      * given a securityContext a writeTenant(optional - one of users tenants) and a list of read tenant (subset of user tenants)
      * will return an authenticationKey that will limit all requests to objects to the given list of read tenants and will create any object under writeTenant
-     * @param impersonateRequest
-     * @param securityContext
-     * @return
+     * @param impersonateRequest request
+     * @param securityContext context
+     * @return response
      */
     ImpersonateResponse impersonate(ImpersonateRequest impersonateRequest, SecurityContext securityContext);
 }
