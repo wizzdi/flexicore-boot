@@ -70,7 +70,6 @@ import java.util.stream.Collectors;
                 termsOfService = "share and care", contact = @Contact(name = "Flexicore Support", email = "avishay@flexi-core.com", url = "http://wizzdi.com"), license = @License(name = "Contact for license", url = "")), tags = {
         @Tag(name = "Core", description = "Flexicore core functions",externalDocs = @ExternalDocumentation(description = "definition docs desc",url = "wwww.wizzdi.com")),
         @Tag(name = "Baseclasses", description = "Handles Baseclasses generic operations"),
-        @Tag(name = "Categories", description = "Handle Categories management. Categories provide filtering of entities instances. Categories can be defined for sub-list of system entities"),
         @Tag(name = "PermissionGroup", description = "Permission Groups Api"),
 
         @Tag(name = "Authentication", description = "Manage Sign-in and Sign-up"),

@@ -19,6 +19,7 @@ import javax.persistence.Index;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.Table;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 @Component
@@ -32,7 +33,7 @@ public class IndexCreator implements ServicePlugin {
     private IndexRepository indexRepository;
 
     @Autowired
-    private EntitiesHolder entitiesHolder;
+    private List<EntitiesHolder> entitiesHolders;
 
     @Value("${flexicore.inheritence.strategy:SINGLE_TABLE}")
     private String inheritanceType;
@@ -40,14 +41,17 @@ public class IndexCreator implements ServicePlugin {
     @EventListener
     public void init(PluginsLoadedEvent o){
         if(init.compareAndSet(false,true)){
-            for (Class<?> entity : entitiesHolder.getEntities()) {
-                try {
-                    createIndex(entity);
-                }
-                catch (Exception e){
-                    logger.error("Failed creating index for "+entity.getName(),e);
+            for (EntitiesHolder entitiesHolder : entitiesHolders) {
+                for (Class<?> entity : entitiesHolder.getEntities()) {
+                    try {
+                        createIndex(entity);
+                    }
+                    catch (Exception e){
+                        logger.error("Failed creating index for "+entity.getName(),e);
+                    }
                 }
             }
+
         }
 
     }
