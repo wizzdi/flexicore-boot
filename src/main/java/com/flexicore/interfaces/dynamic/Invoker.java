@@ -1,9 +1,9 @@
 package com.flexicore.interfaces.dynamic;
 
-import com.flexicore.interfaces.ServicePlugin;
+import com.wizzdi.flexicore.boot.base.interfaces.Plugin;
 
 
-public interface Invoker extends ServicePlugin {
+public interface Invoker extends Plugin {
 
 
     Class<?> getHandlingClass();
