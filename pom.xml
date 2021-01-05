@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.wizzdi</groupId>
     <artifactId>flexicore-base-model</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
+    <version>1.0.0</version>
     <name>FlexiCore base model</name>
     <description>flexicore base model</description>
     <url>https://wizzdi.com</url>
@@ -57,7 +56,7 @@
         <connection>scm:git:git://wizzdi/flexicore-base-model.git</connection>
         <developerConnection>scm:git:git@github.com:wizzdi/flexicore-base-model.git</developerConnection>
         <url>https://github.com/wizzdi/flexicore-base-model</url>
-        <tag>flexicore-base-model-${version}</tag>
+        <tag>flexicore-base-model-1.0.0</tag>
     </scm>
     <dependencyManagement>
         <dependencies>
