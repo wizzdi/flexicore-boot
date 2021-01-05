@@ -25,6 +25,7 @@
         <pf4j-spring.version>0.6.0</pf4j-spring.version>
 
 
+        <spring-boot.version>2.3.0.RELEASE</spring-boot.version>
     </properties>
     <distributionManagement>
         <snapshotRepository>
@@ -63,7 +64,7 @@
             <dependency>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-dependencies</artifactId>
-                <version>2.3.0.RELEASE</version>
+                <version>${spring-boot.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
@@ -219,6 +220,22 @@
                     </execution>
                 </executions>
                 <dependencies>
+                    <dependency>
+                        <groupId>com.wizzdi</groupId>
+                        <artifactId>flexicore-boot</artifactId>
+                        <version>1.0.0</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>io.swagger.core.v3</groupId>
+                        <artifactId>swagger-jaxrs2</artifactId>
+                        <version>2.1.2</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.springframework.boot</groupId>
+                        <artifactId>spring-boot-starter-data-mongodb</artifactId>
+                        <version>${spring-boot.version}</version>
+                    </dependency>
+
                     <dependency>
                         <groupId>org.eclipse.persistence</groupId>
                         <artifactId>org.eclipse.persistence.jpa.modelgen.processor</artifactId>
