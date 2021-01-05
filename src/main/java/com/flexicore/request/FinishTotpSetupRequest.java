@@ -6,14 +6,14 @@ import com.flexicore.model.User;
 public class FinishTotpSetupRequest {
     @JsonIgnore
     private User user;
-    private String secret;
+    private String code;
 
-    public String getSecret() {
-        return secret;
+    public String getCode() {
+        return code;
     }
 
-    public <T extends FinishTotpSetupRequest> T setSecret(String secret) {
-        this.secret = secret;
+    public <T extends FinishTotpSetupRequest> T setCode(String code) {
+        this.code = code;
         return (T) this;
     }
 

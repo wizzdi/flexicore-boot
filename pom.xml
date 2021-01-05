@@ -19,8 +19,8 @@
     <properties>
         <version.compiler.plugin>3.3</version.compiler.plugin>
         <version.eclipselink>2.7.7</version.eclipselink>
-        <maven.compiler.source>1.8</maven.compiler.source>
-        <maven.compiler.target>1.8</maven.compiler.target>
+        <maven.compiler.source>11</maven.compiler.source>
+        <maven.compiler.target>11</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <pf4j-spring.version>0.7.0</pf4j-spring.version>
         <swagger.version>2.1.2</swagger.version>

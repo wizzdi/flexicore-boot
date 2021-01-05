@@ -3,7 +3,6 @@ package com.flexicore.service;
 import com.flexicore.data.UserRepository;
 import com.flexicore.events.LoginEvent;
 import com.flexicore.interfaces.FlexiCoreService;
-import com.flexicore.interfaces.ServicePlugin;
 import com.flexicore.model.User;
 import com.flexicore.request.*;
 import com.flexicore.response.FinishTotpSetupResponse;
@@ -145,9 +144,11 @@ public class TotpService implements FlexiCoreService {
         try {
             byte[] salt = user.getId().getBytes();
             String secret = getDecryptedSecret(totpSecret, salt);
-            if (!secret.equals(finishSetupTotp.getSecret())) {
-                throw new BadRequestException("given secret does not match the one setup");
+            if (!verifier.isValidCode(secret, finishSetupTotp.getCode())) {
+                throw new BadRequestException("given code does not match the one setup");
+
             }
+
         } catch (GeneralSecurityException e) {
             logger.error("failed decrypting totp", e);
             throw new InternalServerErrorException("failed decrypting totp");

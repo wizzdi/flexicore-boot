@@ -1,11 +1,11 @@
 package com.test.rest;
-
 import com.test.init.FlexiCoreApplication;
 import com.flexicore.model.Role;
 import com.flexicore.model.User;
 import com.flexicore.request.AuthenticationRequest;
 import com.flexicore.request.MassDeleteRequest;
 import com.flexicore.request.RoleCreate;
+import com.flexicore.request.UserCreate;
 import com.flexicore.response.AuthenticationResponse;
 import com.flexicore.response.MassDeleteResponse;
 import org.junit.jupiter.api.*;
@@ -72,7 +72,7 @@ public class BaseclassRESTServiceTest {
         ResponseEntity<User> categoryResponse = this.restTemplate.getForEntity("/FlexiCore/rest/baseclass/getbyid/"+category.getId()+"/"+User.class.getCanonicalName(), User.class);
         Assertions.assertEquals(400,categoryResponse.getStatusCodeValue());
 
-       roleResponse = this.restTemplate.postForEntity("/FlexiCore/rest/baseclass/massDelete", request, MassDeleteResponse.class);
+        roleResponse = this.restTemplate.postForEntity("/FlexiCore/rest/baseclass/massDelete", request, MassDeleteResponse.class);
         Assertions.assertEquals(200, roleResponse.getStatusCodeValue());
         body = roleResponse.getBody();
         Assertions.assertNotNull(body);

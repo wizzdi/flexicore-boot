@@ -764,14 +764,14 @@ public class UserService implements com.flexicore.service.UserService {
     public void validate(ImpersonateRequest impersonateRequest, SecurityContext securityContext) {
 
         String creationTenantId = impersonateRequest.getCreationTenantId();
-        Tenant creationTenant = userrepository.getByIdOrNull(creationTenantId, Tenant.class, null, securityContext);
+        Tenant creationTenant = securityContext.getTenants().stream().filter(f->f.getId().equals(creationTenantId)).findFirst().orElseThrow(()->new BadRequestException("no tenant with id " + creationTenantId));
         if (creationTenant == null) {
             throw new BadRequestException("no tenant with id " + creationTenantId);
         }
         impersonateRequest.setCreationTenant(creationTenant);
 
         Set<String> readTenantIds = impersonateRequest.getReadTenantsIds();
-        Map<String, Tenant> tenantMap = readTenantIds.isEmpty() ? new HashMap<>() : userrepository.listByIds(Tenant.class, readTenantIds, securityContext).parallelStream().collect(Collectors.toMap(f -> f.getId(), f -> f));
+        Map<String, Tenant> tenantMap =securityContext.getTenants().stream().filter(f->readTenantIds.contains(f.getId())).collect(Collectors.toMap(f -> f.getId(), f -> f));
         readTenantIds.removeAll(tenantMap.keySet());
         if (!readTenantIds.isEmpty()) {
             throw new BadRequestException("No Tenants with ids " + readTenantIds);

@@ -140,15 +140,15 @@ public class UserRESTServiceTest {
 
 
     }
-private String login(String email,String password){
-    AuthenticationRequest authenticationRequest = new AuthenticationRequest()
-            .setEmail(email)
-            .setPassword(password);
-    ResponseEntity<AuthenticationResponse> authenticationResponse = this.restTemplate.postForEntity("/FlexiCore/rest/authenticationNew/login", authenticationRequest, AuthenticationResponse.class);
-    AuthenticationResponse authenticationResponseBody = authenticationResponse.getBody();
-    Assertions.assertNotNull(authenticationResponseBody);
-    return authenticationResponseBody.getAuthenticationKey();
-}
+    private String login(String email,String password){
+        AuthenticationRequest authenticationRequest = new AuthenticationRequest()
+                .setEmail(email)
+                .setPassword(password);
+        ResponseEntity<AuthenticationResponse> authenticationResponse = this.restTemplate.postForEntity("/FlexiCore/rest/authenticationNew/login", authenticationRequest, AuthenticationResponse.class);
+        AuthenticationResponse authenticationResponseBody = authenticationResponse.getBody();
+        Assertions.assertNotNull(authenticationResponseBody);
+        return authenticationResponseBody.getAuthenticationKey();
+    }
 
     @Test
     @Order(4)
