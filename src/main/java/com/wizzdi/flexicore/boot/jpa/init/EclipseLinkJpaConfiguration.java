@@ -66,8 +66,9 @@ public class EclipseLinkJpaConfiguration extends JpaBaseConfiguration {
 
     @Bean
     @Primary
-    public LocalContainerEntityManagerFactoryBean entityManagerFactory(final EntityManagerFactoryBuilder builder, @Autowired DataSource dataSource, @Autowired EntitiesHolder entitiesHolder) throws ClassNotFoundException, MalformedURLException {
-        Set<Class<?>> entities = new HashSet<>(entitiesHolder.getEntities());
+    public LocalContainerEntityManagerFactoryBean entityManagerFactory(final EntityManagerFactoryBuilder builder, @Autowired DataSource dataSource, @Autowired List<EntitiesHolder> entitiesHolder) throws ClassNotFoundException, MalformedURLException {
+
+        Set<Class<?>> entities = entitiesHolder.stream().map(f->f.getEntities()).flatMap(Set::stream).collect(Collectors.toSet());
         logger.debug("Discovered Entities: " + entities.stream().map(f -> f.getCanonicalName()).collect(Collectors.joining(System.lineSeparator())));
         Class<?>[] entitiesArr = new Class<?>[entities.size()];
         entities.toArray(entitiesArr);
