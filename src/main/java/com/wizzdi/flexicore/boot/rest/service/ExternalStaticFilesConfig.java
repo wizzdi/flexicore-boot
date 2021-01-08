@@ -25,7 +25,7 @@ public class ExternalStaticFilesConfig {
 
     @Value("${flexicore.internalStaticLocation:classpath:/static/}")
     private String internalStaticLocation;
-    @Value("${flexicore.internalStaticLocation:/FlexiCore/**}")
+    @Value("${flexicore.internalStaticMapping:/FlexiCore/**}")
     private String internalStaticMapping;
 
     @Bean
