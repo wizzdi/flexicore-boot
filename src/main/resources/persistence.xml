@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<persistence version="2.1"
+             xmlns="http://xmlns.jcp.org/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xsi:schemaLocation="
+        http://xmlns.jcp.org/xml/ns/persistence
+        http://xmlns.jcp.org/xml/ns/persistence/persistence_2_1.xsd">
+
+    <persistence-unit name="primary" transaction-type="JTA">
+
+
+        <class>com.flexicore.model.Baseclass</class>
+        <class>com.flexicore.model.SecurityEntity</class>
+        <class>com.flexicore.model.SecurityUser</class>
+        <class>com.flexicore.model.Role</class>
+        <class>com.flexicore.model.RoleToUser</class>
+        <class>com.flexicore.model.PermissionGroup</class>
+        <class>com.flexicore.model.Baselink</class>
+        <class>com.flexicore.model.Clazz</class>
+        <class>com.flexicore.model.ClazzLink</class>
+        <class>com.flexicore.model.OperationCategory</class>
+        <class>com.flexicore.model.OperationToClazz</class>
+        <class>com.flexicore.model.PermissionGroupToBaseclass</class>
+        <class>com.flexicore.model.RoleToBaseclass</class>
+        <class>com.flexicore.model.SecurityLink</class>
+        <class>com.flexicore.model.SecurityOperation</class>
+        <class>com.flexicore.model.SecurityTenant</class>
+        <class>com.flexicore.model.SecurityWildcard</class>
+		<class>com.flexicore.model.TenantToBaseClassPremission</class>
+		<class>com.flexicore.model.TenantToUser</class>
+		<class>com.flexicore.model.UserToBaseClass</class>
+
+
+
+		<exclude-unlisted-classes>true</exclude-unlisted-classes>
+    </persistence-unit>
+
+</persistence>
