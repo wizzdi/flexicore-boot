@@ -2,7 +2,7 @@ package com.wizzdi.flexicore.security.service;
 
 import com.flexicore.model.Baseclass;
 import com.wizzdi.flexicore.boot.base.interfaces.Plugin;
-import com.flexicore.security.SecurityContext;
+import com.flexicore.security.SecurityContextBase;
 import com.wizzdi.flexicore.security.request.BaseclassCreate;
 import org.pf4j.Extension;
 import org.springframework.stereotype.Component;
@@ -36,7 +36,7 @@ public class BaseclassService implements Plugin {
 		return update;
 	}
 
-	public void validate(BaseclassCreate baseclassCreate, SecurityContext securityContext) {
+	public void validate(BaseclassCreate baseclassCreate, SecurityContextBase securityContext) {
 
 	}
 

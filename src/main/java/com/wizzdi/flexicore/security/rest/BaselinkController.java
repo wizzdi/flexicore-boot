@@ -2,7 +2,7 @@ package com.wizzdi.flexicore.security.rest;
 
 import com.flexicore.model.Baselink;
 import com.wizzdi.flexicore.boot.base.interfaces.Plugin;
-import com.flexicore.security.SecurityContext;
+import com.flexicore.security.SecurityContextBase;
 import com.wizzdi.flexicore.security.request.BaselinkCreate;
 import com.wizzdi.flexicore.security.request.BaselinkFilter;
 import com.wizzdi.flexicore.security.request.BaselinkUpdate;
@@ -23,19 +23,19 @@ public class BaselinkController implements Plugin {
 	private BaselinkService baselinkService;
 
 	@PostMapping("/create")
-	public Baselink create(@RequestBody BaselinkCreate baselinkCreate, @RequestAttribute SecurityContext securityContext){
+	public Baselink create(@RequestBody BaselinkCreate baselinkCreate, @RequestAttribute SecurityContextBase securityContext){
 		baselinkService.validate(baselinkCreate,securityContext);
 		return baselinkService.createBaselink(baselinkCreate,securityContext);
 	}
 
 	@PostMapping("/getAll")
-	public PaginationResponse<Baselink> getAll(@RequestBody BaselinkFilter baselinkFilter, @RequestAttribute SecurityContext securityContext){
+	public PaginationResponse<Baselink> getAll(@RequestBody BaselinkFilter baselinkFilter, @RequestAttribute SecurityContextBase securityContext){
 		baselinkService.validate(baselinkFilter,securityContext);
 		return baselinkService.getAllBaselinks(baselinkFilter,securityContext);
 	}
 
 	@PutMapping("/update")
-	public Baselink update(@RequestBody BaselinkUpdate baselinkUpdate, @RequestAttribute SecurityContext securityContext){
+	public Baselink update(@RequestBody BaselinkUpdate baselinkUpdate, @RequestAttribute SecurityContextBase securityContext){
 		String id=baselinkUpdate.getId();
 		Baselink baselink=id!=null?baselinkService.getByIdOrNull(id,Baselink.class,securityContext):null;
 		if(baselink==null){

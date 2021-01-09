@@ -1,7 +1,7 @@
 package com.wizzdi.flexicore.security.rest;
 
 import com.flexicore.model.RoleToUser;
-import com.flexicore.security.SecurityContext;
+import com.flexicore.security.SecurityContextBase;
 import com.wizzdi.flexicore.boot.base.interfaces.Plugin;
 import com.wizzdi.flexicore.security.request.RoleToUserCreate;
 import com.wizzdi.flexicore.security.request.RoleToUserFilter;
@@ -23,19 +23,19 @@ public class RoleToUserController implements Plugin {
 	private RoleToUserService roleToUserService;
 
 	@PostMapping("/create")
-	public RoleToUser create(@RequestBody RoleToUserCreate roleToUserCreate, @RequestAttribute SecurityContext securityContext){
+	public RoleToUser create(@RequestBody RoleToUserCreate roleToUserCreate, @RequestAttribute SecurityContextBase securityContext){
 		roleToUserService.validate(roleToUserCreate,securityContext);
 		return roleToUserService.createRoleToUser(roleToUserCreate,securityContext);
 	}
 
 	@PostMapping("/getAll")
-	public PaginationResponse<RoleToUser> getAll(@RequestBody RoleToUserFilter roleToUserFilter, @RequestAttribute SecurityContext securityContext){
+	public PaginationResponse<RoleToUser> getAll(@RequestBody RoleToUserFilter roleToUserFilter, @RequestAttribute SecurityContextBase securityContext){
 		roleToUserService.validate(roleToUserFilter,securityContext);
 		return roleToUserService.getAllRoleToUsers(roleToUserFilter,securityContext);
 	}
 
 	@PutMapping("/update")
-	public RoleToUser update(@RequestBody RoleToUserUpdate roleToUserUpdate, @RequestAttribute SecurityContext securityContext){
+	public RoleToUser update(@RequestBody RoleToUserUpdate roleToUserUpdate, @RequestAttribute SecurityContextBase securityContext){
 		String id=roleToUserUpdate.getId();
 		RoleToUser roleToUser=id!=null?roleToUserService.getByIdOrNull(id,RoleToUser.class,securityContext):null;
 		if(roleToUser==null){

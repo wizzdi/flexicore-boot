@@ -2,7 +2,7 @@ package com.wizzdi.flexicore.security.rest;
 
 import com.flexicore.model.PermissionGroup;
 import com.wizzdi.flexicore.boot.base.interfaces.Plugin;
-import com.flexicore.security.SecurityContext;
+import com.flexicore.security.SecurityContextBase;
 import com.wizzdi.flexicore.security.request.PermissionGroupCreate;
 import com.wizzdi.flexicore.security.request.PermissionGroupFilter;
 import com.wizzdi.flexicore.security.request.PermissionGroupUpdate;
@@ -23,19 +23,19 @@ public class PermissionGroupController implements Plugin {
 	private PermissionGroupService permissionGroupService;
 
 	@PostMapping("/create")
-	public PermissionGroup create(@RequestBody PermissionGroupCreate permissionGroupCreate, @RequestAttribute SecurityContext securityContext){
+	public PermissionGroup create(@RequestBody PermissionGroupCreate permissionGroupCreate, @RequestAttribute SecurityContextBase securityContext){
 		permissionGroupService.validate(permissionGroupCreate,securityContext);
 		return permissionGroupService.createPermissionGroup(permissionGroupCreate,securityContext);
 	}
 
 	@PostMapping("/getAll")
-	public PaginationResponse<PermissionGroup> getAll(@RequestBody PermissionGroupFilter permissionGroupFilter, @RequestAttribute SecurityContext securityContext){
+	public PaginationResponse<PermissionGroup> getAll(@RequestBody PermissionGroupFilter permissionGroupFilter, @RequestAttribute SecurityContextBase securityContext){
 		permissionGroupService.validate(permissionGroupFilter,securityContext);
 		return permissionGroupService.getAllPermissionGroups(permissionGroupFilter,securityContext);
 	}
 
 	@PutMapping("/update")
-	public PermissionGroup update(@RequestBody PermissionGroupUpdate permissionGroupUpdate, @RequestAttribute SecurityContext securityContext){
+	public PermissionGroup update(@RequestBody PermissionGroupUpdate permissionGroupUpdate, @RequestAttribute SecurityContextBase securityContext){
 		String id=permissionGroupUpdate.getId();
 		PermissionGroup permissionGroup=id!=null?permissionGroupService.getByIdOrNull(id,PermissionGroup.class,securityContext):null;
 		if(permissionGroup==null){

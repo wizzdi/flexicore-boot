@@ -2,7 +2,7 @@ package com.wizzdi.flexicore.security.rest;
 
 import com.flexicore.model.PermissionGroupToBaseclass;
 import com.wizzdi.flexicore.boot.base.interfaces.Plugin;
-import com.flexicore.security.SecurityContext;
+import com.flexicore.security.SecurityContextBase;
 import com.wizzdi.flexicore.security.request.PermissionGroupToBaseclassCreate;
 import com.wizzdi.flexicore.security.request.PermissionGroupToBaseclassFilter;
 import com.wizzdi.flexicore.security.request.PermissionGroupToBaseclassUpdate;
@@ -23,19 +23,19 @@ public class PermissionGroupToBaseclassController implements Plugin {
 	private PermissionGroupToBaseclassService permissionGroupToBaseclassService;
 
 	@PostMapping("/create")
-	public PermissionGroupToBaseclass create(@RequestBody PermissionGroupToBaseclassCreate permissionGroupToBaseclassCreate, @RequestAttribute SecurityContext securityContext){
+	public PermissionGroupToBaseclass create(@RequestBody PermissionGroupToBaseclassCreate permissionGroupToBaseclassCreate, @RequestAttribute SecurityContextBase securityContext){
 		permissionGroupToBaseclassService.validate(permissionGroupToBaseclassCreate,securityContext);
 		return permissionGroupToBaseclassService.createPermissionGroupToBaseclass(permissionGroupToBaseclassCreate,securityContext);
 	}
 
 	@PostMapping("/getAll")
-	public PaginationResponse<PermissionGroupToBaseclass> getAll(@RequestBody PermissionGroupToBaseclassFilter permissionGroupToBaseclassFilter, @RequestAttribute SecurityContext securityContext){
+	public PaginationResponse<PermissionGroupToBaseclass> getAll(@RequestBody PermissionGroupToBaseclassFilter permissionGroupToBaseclassFilter, @RequestAttribute SecurityContextBase securityContext){
 		permissionGroupToBaseclassService.validate(permissionGroupToBaseclassFilter,securityContext);
 		return permissionGroupToBaseclassService.getAllPermissionGroupToBaseclass(permissionGroupToBaseclassFilter,securityContext);
 	}
 
 	@PutMapping("/update")
-	public PermissionGroupToBaseclass update(@RequestBody PermissionGroupToBaseclassUpdate permissionGroupToBaseclassUpdate, @RequestAttribute SecurityContext securityContext){
+	public PermissionGroupToBaseclass update(@RequestBody PermissionGroupToBaseclassUpdate permissionGroupToBaseclassUpdate, @RequestAttribute SecurityContextBase securityContext){
 		String id=permissionGroupToBaseclassUpdate.getId();
 		PermissionGroupToBaseclass permissionGroupToBaseclass=id!=null?permissionGroupToBaseclassService.getByIdOrNull(id,PermissionGroupToBaseclass.class,securityContext):null;
 		if(permissionGroupToBaseclass==null){

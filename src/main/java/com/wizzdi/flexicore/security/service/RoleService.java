@@ -4,7 +4,7 @@ import com.flexicore.model.Baseclass;
 import com.flexicore.model.Role;
 import com.wizzdi.flexicore.boot.base.interfaces.Plugin;
 import com.wizzdi.flexicore.security.data.RoleRepository;
-import com.flexicore.security.SecurityContext;
+import com.flexicore.security.SecurityContextBase;
 import com.wizzdi.flexicore.security.request.RoleCreate;
 import com.wizzdi.flexicore.security.request.RoleFilter;
 import com.wizzdi.flexicore.security.request.RoleUpdate;
@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Set;
 
 @Extension
 @Component
@@ -25,14 +26,25 @@ public class RoleService implements Plugin {
 	private RoleRepository roleRepository;
 
 
-	public Role createRole(RoleCreate roleCreate, SecurityContext securityContext){
+	public Role createRole(RoleCreate roleCreate, SecurityContextBase securityContext){
 		Role role= createRoleNoMerge(roleCreate,securityContext);
 		roleRepository.merge(role);
 		return role;
 	}
 
+	public void merge(Object o){
+		roleRepository.merge(o);
+	}
+	public void massMerge(List<Object> list){
+		roleRepository.massMerge(list);
+	}
 
-	public Role createRoleNoMerge(RoleCreate roleCreate, SecurityContext securityContext){
+	public <T extends Baseclass> List<T> listByIds(Class<T> c,Set<String> ids,  SecurityContextBase securityContext) {
+		return roleRepository.listByIds(c, ids, securityContext);
+	}
+
+
+	public Role createRoleNoMerge(RoleCreate roleCreate, SecurityContextBase securityContext){
 		Role role=new Role(roleCreate.getName(),securityContext);
 		updateRoleNoMerge(roleCreate,role);
 		roleRepository.merge(role);
@@ -43,7 +55,7 @@ public class RoleService implements Plugin {
 		return securityEntityService.updateNoMerge(roleCreate,role);
 	}
 
-	public Role updateRole(RoleUpdate roleUpdate, SecurityContext securityContext){
+	public Role updateRole(RoleUpdate roleUpdate, SecurityContextBase securityContext){
 		Role role=roleUpdate.getRole();
 		if(updateRoleNoMerge(roleUpdate,role)){
 			roleRepository.merge(role);
@@ -51,25 +63,25 @@ public class RoleService implements Plugin {
 		return role;
 	}
 
-	public void validate(RoleCreate roleCreate, SecurityContext securityContext) {
+	public void validate(RoleCreate roleCreate, SecurityContextBase securityContext) {
 		securityEntityService.validate(roleCreate,securityContext);
 	}
 
-	public void validate(RoleFilter roleFilter, SecurityContext securityContext) {
+	public void validate(RoleFilter roleFilter, SecurityContextBase securityContext) {
 		securityEntityService.validate(roleFilter,securityContext);
 	}
 
-	public <T extends Baseclass> T getByIdOrNull(String id,Class<T> c, SecurityContext securityContext) {
+	public <T extends Baseclass> T getByIdOrNull(String id,Class<T> c, SecurityContextBase securityContext) {
 		return roleRepository.getByIdOrNull(id,c,securityContext);
 	}
 
-	public PaginationResponse<Role> getAllRoles(RoleFilter roleFilter, SecurityContext securityContext) {
+	public PaginationResponse<Role> getAllRoles(RoleFilter roleFilter, SecurityContextBase securityContext) {
 		List<Role> list= listAllRoles(roleFilter, securityContext);
 		long count=roleRepository.countAllRoles(roleFilter,securityContext);
 		return new PaginationResponse<>(list,roleFilter,count);
 	}
 
-	public List<Role> listAllRoles(RoleFilter roleFilter, SecurityContext securityContext) {
+	public List<Role> listAllRoles(RoleFilter roleFilter, SecurityContextBase securityContext) {
 		return roleRepository.listAllRoles(roleFilter, securityContext);
 	}
 }

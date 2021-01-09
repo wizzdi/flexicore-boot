@@ -2,7 +2,7 @@ package com.wizzdi.flexicore.security.rest;
 
 import com.flexicore.model.RoleToBaseclass;
 import com.wizzdi.flexicore.boot.base.interfaces.Plugin;
-import com.flexicore.security.SecurityContext;
+import com.flexicore.security.SecurityContextBase;
 import com.wizzdi.flexicore.security.request.RoleToBaseclassCreate;
 import com.wizzdi.flexicore.security.request.RoleToBaseclassFilter;
 import com.wizzdi.flexicore.security.request.RoleToBaseclassUpdate;
@@ -23,19 +23,19 @@ public class RoleToBaseclassController implements Plugin {
 	private RoleToBaseclassService roleToBaseclassService;
 
 	@PostMapping("/create")
-	public RoleToBaseclass create(@RequestBody RoleToBaseclassCreate roleToBaseclassCreate, @RequestAttribute SecurityContext securityContext){
+	public RoleToBaseclass create(@RequestBody RoleToBaseclassCreate roleToBaseclassCreate, @RequestAttribute SecurityContextBase securityContext){
 		roleToBaseclassService.validate(roleToBaseclassCreate,securityContext);
 		return roleToBaseclassService.createRoleToBaseclass(roleToBaseclassCreate,securityContext);
 	}
 
 	@PostMapping("/getAll")
-	public PaginationResponse<RoleToBaseclass> getAll(@RequestBody RoleToBaseclassFilter roleToBaseclassFilter, @RequestAttribute SecurityContext securityContext){
+	public PaginationResponse<RoleToBaseclass> getAll(@RequestBody RoleToBaseclassFilter roleToBaseclassFilter, @RequestAttribute SecurityContextBase securityContext){
 		roleToBaseclassService.validate(roleToBaseclassFilter,securityContext);
 		return roleToBaseclassService.getAllRoleToBaseclass(roleToBaseclassFilter,securityContext);
 	}
 
 	@PutMapping("/update")
-	public RoleToBaseclass update(@RequestBody RoleToBaseclassUpdate roleToBaseclassUpdate, @RequestAttribute SecurityContext securityContext){
+	public RoleToBaseclass update(@RequestBody RoleToBaseclassUpdate roleToBaseclassUpdate, @RequestAttribute SecurityContextBase securityContext){
 		String id=roleToBaseclassUpdate.getId();
 		RoleToBaseclass roleToBaseclass=id!=null?roleToBaseclassService.getByIdOrNull(id,RoleToBaseclass.class,securityContext):null;
 		if(roleToBaseclass==null){

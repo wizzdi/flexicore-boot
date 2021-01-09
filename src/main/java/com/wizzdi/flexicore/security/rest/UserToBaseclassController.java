@@ -5,7 +5,7 @@ import com.wizzdi.flexicore.boot.base.interfaces.Plugin;
 import com.wizzdi.flexicore.security.request.UserToBaseclassCreate;
 import com.wizzdi.flexicore.security.request.UserToBaseclassFilter;
 import com.wizzdi.flexicore.security.request.UserToBaseclassUpdate;
-import com.flexicore.security.SecurityContext;
+import com.flexicore.security.SecurityContextBase;
 import com.wizzdi.flexicore.security.response.PaginationResponse;
 import com.wizzdi.flexicore.security.service.UserToBaseclassService;
 import org.pf4j.Extension;
@@ -23,19 +23,19 @@ public class UserToBaseclassController implements Plugin {
 	private UserToBaseclassService userToBaseclassService;
 
 	@PostMapping("/create")
-	public UserToBaseClass create(@RequestBody UserToBaseclassCreate userToBaseclassCreate, @RequestAttribute SecurityContext securityContext){
+	public UserToBaseClass create(@RequestBody UserToBaseclassCreate userToBaseclassCreate, @RequestAttribute SecurityContextBase securityContext){
 		userToBaseclassService.validate(userToBaseclassCreate,securityContext);
 		return userToBaseclassService.createUserToBaseclass(userToBaseclassCreate,securityContext);
 	}
 
 	@PostMapping("/getAll")
-	public PaginationResponse<UserToBaseClass> getAll(@RequestBody UserToBaseclassFilter userToBaseclassFilter, @RequestAttribute SecurityContext securityContext){
+	public PaginationResponse<UserToBaseClass> getAll(@RequestBody UserToBaseclassFilter userToBaseclassFilter, @RequestAttribute SecurityContextBase securityContext){
 		userToBaseclassService.validate(userToBaseclassFilter,securityContext);
 		return userToBaseclassService.getAllUserToBaseclass(userToBaseclassFilter,securityContext);
 	}
 
 	@PutMapping("/update")
-	public UserToBaseClass update(@RequestBody UserToBaseclassUpdate userToBaseclassUpdate, @RequestAttribute SecurityContext securityContext){
+	public UserToBaseClass update(@RequestBody UserToBaseclassUpdate userToBaseclassUpdate, @RequestAttribute SecurityContextBase securityContext){
 		String id=userToBaseclassUpdate.getId();
 		UserToBaseClass userToBaseclass=id!=null?userToBaseclassService.getByIdOrNull(id,UserToBaseClass.class,securityContext):null;
 		if(userToBaseclass==null){

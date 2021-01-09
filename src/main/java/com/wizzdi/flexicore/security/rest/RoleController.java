@@ -2,7 +2,7 @@ package com.wizzdi.flexicore.security.rest;
 
 import com.flexicore.model.Role;
 import com.wizzdi.flexicore.boot.base.interfaces.Plugin;
-import com.flexicore.security.SecurityContext;
+import com.flexicore.security.SecurityContextBase;
 import com.wizzdi.flexicore.security.request.RoleCreate;
 import com.wizzdi.flexicore.security.request.RoleFilter;
 import com.wizzdi.flexicore.security.request.RoleUpdate;
@@ -23,19 +23,19 @@ public class RoleController implements Plugin {
 	private RoleService roleService;
 
 	@PostMapping("/create")
-	public Role create(@RequestBody RoleCreate roleCreate, @RequestAttribute SecurityContext securityContext){
+	public Role create(@RequestBody RoleCreate roleCreate, @RequestAttribute SecurityContextBase securityContext){
 		roleService.validate(roleCreate,securityContext);
 		return roleService.createRole(roleCreate,securityContext);
 	}
 
 	@PostMapping("/getAll")
-	public PaginationResponse<Role> getAll(@RequestBody RoleFilter roleFilter, @RequestAttribute SecurityContext securityContext){
+	public PaginationResponse<Role> getAll(@RequestBody RoleFilter roleFilter, @RequestAttribute SecurityContextBase securityContext){
 		roleService.validate(roleFilter,securityContext);
 		return roleService.getAllRoles(roleFilter,securityContext);
 	}
 
 	@PutMapping("/update")
-	public Role update(@RequestBody RoleUpdate roleUpdate, @RequestAttribute SecurityContext securityContext){
+	public Role update(@RequestBody RoleUpdate roleUpdate, @RequestAttribute SecurityContextBase securityContext){
 		String id=roleUpdate.getId();
 		Role role=id!=null?roleService.getByIdOrNull(id,Role.class,securityContext):null;
 		if(role==null){

@@ -2,7 +2,7 @@ package com.wizzdi.flexicore.security.rest;
 
 import com.flexicore.model.SecurityUser;
 import com.wizzdi.flexicore.boot.base.interfaces.Plugin;
-import com.flexicore.security.SecurityContext;
+import com.flexicore.security.SecurityContextBase;
 import com.wizzdi.flexicore.security.request.SecurityUserCreate;
 import com.wizzdi.flexicore.security.request.SecurityUserFilter;
 import com.wizzdi.flexicore.security.request.SecurityUserUpdate;
@@ -23,19 +23,19 @@ public class SecurityUserController implements Plugin {
 	private SecurityUserService securityUserService;
 
 	@PostMapping("/create")
-	public SecurityUser create(@RequestBody SecurityUserCreate securityUserCreate, @RequestAttribute SecurityContext securityContext){
+	public SecurityUser create(@RequestBody SecurityUserCreate securityUserCreate, @RequestAttribute SecurityContextBase securityContext){
 		securityUserService.validate(securityUserCreate,securityContext);
 		return securityUserService.createSecurityUser(securityUserCreate,securityContext);
 	}
 
 	@PostMapping("/getAll")
-	public PaginationResponse<SecurityUser> getAll(@RequestBody SecurityUserFilter securityUserFilter, @RequestAttribute SecurityContext securityContext){
+	public PaginationResponse<SecurityUser> getAll(@RequestBody SecurityUserFilter securityUserFilter, @RequestAttribute SecurityContextBase securityContext){
 		securityUserService.validate(securityUserFilter,securityContext);
 		return securityUserService.getAllSecurityUsers(securityUserFilter,securityContext);
 	}
 
 	@PutMapping("/update")
-	public SecurityUser update(@RequestBody SecurityUserUpdate securityUserUpdate, @RequestAttribute SecurityContext securityContext){
+	public SecurityUser update(@RequestBody SecurityUserUpdate securityUserUpdate, @RequestAttribute SecurityContextBase securityContext){
 		String id=securityUserUpdate.getId();
 		SecurityUser securityUser=id!=null?securityUserService.getByIdOrNull(id,SecurityUser.class,securityContext):null;
 		if(securityUser==null){

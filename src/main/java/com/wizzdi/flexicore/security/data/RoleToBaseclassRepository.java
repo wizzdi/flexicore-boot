@@ -4,7 +4,7 @@ import com.flexicore.model.RoleToBaseclass;
 import com.flexicore.model.Baseclass;
 import com.flexicore.model.Baseclass_;
 import com.wizzdi.flexicore.boot.base.interfaces.Plugin;
-import com.flexicore.security.SecurityContext;
+import com.flexicore.security.SecurityContextBase;
 import com.wizzdi.flexicore.security.request.RoleToBaseclassFilter;
 import org.pf4j.Extension;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +17,7 @@ import javax.persistence.TypedQuery;
 import javax.persistence.criteria.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 @Component
 @Extension
@@ -28,7 +29,7 @@ public class RoleToBaseclassRepository implements Plugin {
 	@Autowired
 	private SecurityLinkRepository securityLinkRepository;
 
-	public List<RoleToBaseclass> listAllRoleToBaseclasss(RoleToBaseclassFilter roleToBaseclassFilter, SecurityContext securityContext){
+	public List<RoleToBaseclass> listAllRoleToBaseclasss(RoleToBaseclassFilter roleToBaseclassFilter, SecurityContextBase securityContext){
 		CriteriaBuilder cb=em.getCriteriaBuilder();
 		CriteriaQuery<RoleToBaseclass> q=cb.createQuery(RoleToBaseclass.class);
 		Root<RoleToBaseclass> r=q.from(RoleToBaseclass.class);
@@ -41,11 +42,11 @@ public class RoleToBaseclassRepository implements Plugin {
 
 	}
 
-	public <T extends RoleToBaseclass> void addRoleToBaseclassPredicates(RoleToBaseclassFilter roleToBaseclassFilter, CriteriaBuilder cb, CommonAbstractCriteria q, Path<T> r, List<Predicate> predicates, SecurityContext securityContext) {
+	public <T extends RoleToBaseclass> void addRoleToBaseclassPredicates(RoleToBaseclassFilter roleToBaseclassFilter, CriteriaBuilder cb, CommonAbstractCriteria q, Path<T> r, List<Predicate> predicates, SecurityContextBase securityContext) {
 		securityLinkRepository.addSecurityLinkPredicates(roleToBaseclassFilter,cb,q,r,predicates,securityContext);
 	}
 
-	public long countAllRoleToBaseclasss(RoleToBaseclassFilter roleToBaseclassFilter, SecurityContext securityContext){
+	public long countAllRoleToBaseclasss(RoleToBaseclassFilter roleToBaseclassFilter, SecurityContextBase securityContext){
 		CriteriaBuilder cb=em.getCriteriaBuilder();
 		CriteriaQuery<Long> q=cb.createQuery(Long.class);
 		Root<RoleToBaseclass> r=q.from(RoleToBaseclass.class);
@@ -70,16 +71,11 @@ public class RoleToBaseclassRepository implements Plugin {
 		}
 	}
 
-	public <T extends Baseclass> T getByIdOrNull(String id,Class<T> c, SecurityContext securityContext) {
-		CriteriaBuilder cb=em.getCriteriaBuilder();
-		CriteriaQuery<T> q=cb.createQuery(c);
-		Root<T> r=q.from(c);
-		List<Predicate> predicates=new ArrayList<>();
-		predicates.add(cb.equal(r.get(Baseclass_.id),id));
-		baseclassRepository.addBaseclassPredicates(cb,q,r,predicates,securityContext);
-		q.select(r).where(predicates.toArray(Predicate[]::new));
-		TypedQuery<T> query = em.createQuery(q);
-		List<T> resultList = query.getResultList();
-		return resultList.isEmpty()?null:resultList.get(0);
+	public <T extends Baseclass> List<T> listByIds(Class<T> c,Set<String> ids,  SecurityContextBase securityContext) {
+		return baseclassRepository.listByIds(c, ids, securityContext);
+	}
+
+	public <T extends Baseclass> T getByIdOrNull(String id, Class<T> c, SecurityContextBase securityContext) {
+		return baseclassRepository.getByIdOrNull(id, c, securityContext);
 	}
 }

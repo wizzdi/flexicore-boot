@@ -3,9 +3,12 @@ package com.wizzdi.flexicore.security.data;
 import com.flexicore.annotations.IOperation;
 import com.flexicore.annotations.rest.All;
 import com.flexicore.model.*;
-import com.flexicore.security.SecurityContext;
+import com.flexicore.security.SecurityContextBase;
+import com.wizzdi.flexicore.boot.base.interfaces.Plugin;
 import com.wizzdi.flexicore.security.request.BaseclassFilter;
+import org.pf4j.Extension;
 import org.springframework.data.util.Pair;
+import org.springframework.stereotype.Component;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -17,11 +20,13 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public class BaseclassRepository {
+@Component
+@Extension
+public class BaseclassRepository implements Plugin {
 
 	@PersistenceContext
 	private EntityManager em;
-	private Operation allOp;
+	private SecurityOperation allOp;
 
 
 	public static <T> boolean addPagination(BaseclassFilter securityEntityFilter, TypedQuery<T> q){
@@ -32,16 +37,16 @@ public class BaseclassRepository {
 		return false;
 	}
 
-	public <T extends Baseclass> void addBaseclassPredicates(CriteriaBuilder cb, CommonAbstractCriteria q, Path<T> r, List<Predicate> predicates, SecurityContext securityContext) {
-		List<Tenant> tenants = securityContext.getTenants();
+	public <T extends Baseclass> void addBaseclassPredicates(CriteriaBuilder cb, CommonAbstractCriteria q, Path<T> r, List<Predicate> predicates, SecurityContextBase securityContext) {
+		List<? extends SecurityTenant> tenants = securityContext.getTenants();
 		SecurityUser securityUser=securityContext.getUser();
-		Operation op=securityContext.getOperation();
+		SecurityOperation op=securityContext.getOperation();
 		boolean impersonated= securityContext.isImpersonated();
 		Set<String> tenantIds = tenants.parallelStream().map(f -> f.getId()).collect(Collectors.toSet());
 
 		Map<String, List<Role>> rolesInTenants = securityContext.getRoleMap();
 
-		List<Role> roles = securityContext.getRoleMap().values().stream().flatMap(List::stream).collect(Collectors.toList());
+		List<Role> roles = rolesInTenants.values().stream().flatMap(List::stream).collect(Collectors.toList());
 		if (isSuperAdmin(roles)) {
 			return;
 		}
@@ -64,7 +69,7 @@ public class BaseclassRepository {
 			if (!tenants.isEmpty() && securityLink.getLeftside() instanceof SecurityUser) {
 				mid = r.get(Baseclass_.tenant).in(tenants);
 			} else {
-				if (securityLink.getLeftside() instanceof Tenant) {
+				if (securityLink.getLeftside() instanceof SecurityTenant) {
 					mid = cb.equal(r.get(Baseclass_.tenant), securityLink.getLeftside());
 				} else {
 					if (securityLink.getLeftside() instanceof Role) {
@@ -89,9 +94,9 @@ public class BaseclassRepository {
 						r.get(Baseclass_.tenant).in(tenants)));
 
 
-		Map<String, Tenant> tenantMap = tenants.parallelStream().collect(Collectors.toMap(f -> f.getId(), f -> f, (a, b) -> a));
+		Map<String, SecurityTenant> tenantMap = tenants.parallelStream().collect(Collectors.toMap(f -> f.getId(), f -> f, (a, b) -> a));
 		for (Map.Entry<String, List<Role>> entry : rolesInTenants.entrySet()) {
-			Tenant tenant = tenantMap.get(entry.getKey());
+			SecurityTenant tenant = tenantMap.get(entry.getKey());
 			if (tenant != null) {
 				Subquery<String> subPremissiveRole = getPremissiveSubQueryForRole(q, cb, entry.getValue(), op);
 				premissive = cb.or(premissive, cb.and(r.get(Baseclass_.clazz).get(Clazz_.id).in(subPremissiveRole), cb.equal(r.get(Baseclass_.tenant), tenant)));
@@ -139,9 +144,9 @@ public class BaseclassRepository {
 	/**
 	 * @param securityUser securityUser
 	 * @param op operation
-	 * @return a list of denied baseclasses  for securityUser using Operation
+	 * @return a list of denied baseclasses  for securityUser using SecurityOperation
 	 */
-	public Pair<List<Baseclass>, List<Baseclass>> getDenied(SecurityUser securityUser, Operation op) {
+	public Pair<List<Baseclass>, List<Baseclass>> getDenied(SecurityUser securityUser, SecurityOperation op) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<UserToBaseClass> q = cb.createQuery(UserToBaseClass.class);
 		Root<UserToBaseClass> r = q.from(UserToBaseClass.class);
@@ -189,7 +194,7 @@ public class BaseclassRepository {
 		return Pair.of(deniedUsersBase, deniedRolesBase);
 	}
 
-	private Subquery<String> getPermissionGroupSubQuery(CommonAbstractCriteria query, CriteriaBuilder cb, List<Role> roles, SecurityUser securityUser, List<Tenant> tenants, Operation op, Clazz clazz, List<Baseclass> userDenied, List<Baseclass> roleDenied) {
+	private Subquery<String> getPermissionGroupSubQuery(CommonAbstractCriteria query, CriteriaBuilder cb, List<Role> roles, SecurityUser securityUser, List<? extends SecurityTenant> tenants, SecurityOperation op, Clazz clazz, List<Baseclass> userDenied, List<Baseclass> roleDenied) {
 		Subquery<String> sub = query.subquery(String.class);
 		Root<SecurityLink> securityLinkRoot = sub.from(SecurityLink.class);
 		Join<SecurityLink, PermissionGroup> rightsideJoin = cb.treat(securityLinkRoot.join(SecurityLink_.rightside), PermissionGroup.class);
@@ -212,7 +217,7 @@ public class BaseclassRepository {
 	}
 
 	private Subquery<String> getBaseclassSpecificSubQeury(CommonAbstractCriteria query, CriteriaBuilder cb, List<Role> roles, SecurityUser securityUser
-			, List<Tenant> tenants, Operation op, Clazz clazz, List<Baseclass> userDenied, List<Baseclass> roleDenied) {
+			, List<? extends SecurityTenant> tenants, SecurityOperation op, Clazz clazz, List<Baseclass> userDenied, List<Baseclass> roleDenied) {
 		Subquery<String> sub = query.subquery(String.class);
 		Root<SecurityLink> securityLinkRoot = sub.from(SecurityLink.class);
 		Join<SecurityLink, Baseclass> rightsideJoin = securityLinkRoot.join(SecurityLink_.rightside);
@@ -227,8 +232,8 @@ public class BaseclassRepository {
 
 	}
 
-	private Predicate createBaseclassSpecificPredicate(CriteriaBuilder cb, List<Role> roles, SecurityUser securityUser, List<Tenant> tenants, Operation op, List<Baseclass> userDenied, List<Baseclass> roleDenied, Root<SecurityLink> securityLinkRoot, Root<UserToBaseClass> userToBaseClassRoot, Root<RoleToBaseclass> roleToBaseclassRoot, Root<TenantToBaseClassPremission> tenantToBaseClassPremissionRoot) {
-		Operation allOpId = getAllOperation();
+	private Predicate createBaseclassSpecificPredicate(CriteriaBuilder cb, List<Role> roles, SecurityUser securityUser, List<? extends SecurityTenant> tenants, SecurityOperation op, List<Baseclass> userDenied, List<Baseclass> roleDenied, Root<SecurityLink> securityLinkRoot, Root<UserToBaseClass> userToBaseClassRoot, Root<RoleToBaseclass> roleToBaseclassRoot, Root<TenantToBaseClassPremission> tenantToBaseClassPremissionRoot) {
+		SecurityOperation allOpId = getAllOperation();
 
 		Predicate rolesPredicate = cb.or();
 		if (!roles.isEmpty()) {
@@ -272,20 +277,20 @@ public class BaseclassRepository {
 		);
 	}
 
-	private Operation getAllOperation() {
+	private SecurityOperation getAllOperation() {
 		if (allOp == null) {
-			allOp = em.find(Operation.class,Baseclass.generateUUIDFromString(All.class.getCanonicalName()));
+			allOp = em.find(SecurityOperation.class,Baseclass.generateUUIDFromString(All.class.getCanonicalName()));
 		}
 		return allOp;
 	}
 
-	private Subquery<String> getPremissiveSubQueryForRole(CommonAbstractCriteria query, CriteriaBuilder cb, List<Role> roles, Operation op) {
+	private Subquery<String> getPremissiveSubQueryForRole(CommonAbstractCriteria query, CriteriaBuilder cb, List<Role> roles, SecurityOperation op) {
 
 		Subquery<String> subPremissive = query.subquery(String.class);
 		Root<SecurityLink> securityLinkRootPremissive = subPremissive.from(SecurityLink.class);
 		Join<SecurityLink, Clazz> rightside = cb.treat(securityLinkRootPremissive.join(SecurityLink_.rightside), Clazz.class);
 		Root<RoleToBaseclass> roleToBaseclassRoot = cb.treat(securityLinkRootPremissive, RoleToBaseclass.class);
-		Operation allOpId = getAllOperation();
+		SecurityOperation allOpId = getAllOperation();
 		Predicate rolesPredicatePremissive = cb.or();
 		if (!roles.isEmpty()) {
 			rolesPredicatePremissive = cb.and(
@@ -309,14 +314,14 @@ public class BaseclassRepository {
 
 	}
 
-	private Subquery<String> getPremissiveSubQueryForTenantAndUser(CommonAbstractCriteria query, CriteriaBuilder cb, SecurityUser securityUser, List<Tenant> tenants, Operation op) {
+	private Subquery<String> getPremissiveSubQueryForTenantAndUser(CommonAbstractCriteria query, CriteriaBuilder cb, SecurityUser securityUser, List<? extends SecurityTenant> tenants, SecurityOperation op) {
 
 		Subquery<String> subPremissive = query.subquery(String.class);
 		Root<SecurityLink> securityLinkRootPremissive = subPremissive.from(SecurityLink.class);
 		Join<SecurityLink, Clazz> rightside = cb.treat(securityLinkRootPremissive.join(SecurityLink_.rightside), Clazz.class);
 		Root<UserToBaseClass> userToBaseClassRoot = cb.treat(securityLinkRootPremissive, UserToBaseClass.class);
 		Root<TenantToBaseClassPremission> tenantToBaseClassPremissionRoot = cb.treat(securityLinkRootPremissive, TenantToBaseClassPremission.class);
-		Operation allOpId = getAllOperation();
+		SecurityOperation allOpId = getAllOperation();
 
 
 		Predicate userPredicatePremissive = cb.and(
@@ -342,7 +347,7 @@ public class BaseclassRepository {
 
 	}
 
-	private List<SecurityLink> getAllowAllLinks(CriteriaBuilder cb, List<Role> roles, SecurityUser securityUser, List<Tenant> tenants, Operation op) {
+	private List<SecurityLink> getAllowAllLinks(CriteriaBuilder cb, List<Role> roles, SecurityUser securityUser, List<? extends SecurityTenant> tenants, SecurityOperation op) {
      /*   Clazz tenantToBaseClassClazz = Baseclass.getClazzbyname(TenantToBaseClassPremission.class.getCanonicalName());
         Clazz roleToBaseClassClazz = Baseclass.getClazzbyname(RoleToBaseclass.class.getCanonicalName());
         Clazz userToBaseClassClazz = Baseclass.getClazzbyname(UserToBaseClass.class.getCanonicalName());*/
@@ -351,7 +356,7 @@ public class BaseclassRepository {
 		Root<UserToBaseClass> userToBaseClassRoot = cb.treat(securityLinkRootPremissive, UserToBaseClass.class);
 		Root<RoleToBaseclass> roleToBaseclassRoot = cb.treat(securityLinkRootPremissive, RoleToBaseclass.class);
 		Root<TenantToBaseClassPremission> tenantToBaseClassPremissionRoot = cb.treat(securityLinkRootPremissive, TenantToBaseClassPremission.class);
-		Operation allOpId = getAllOperation();
+		SecurityOperation allOpId = getAllOperation();
 
 		Predicate rolesPredicatePremissive = cb.or();
 		if (!roles.isEmpty()) {
@@ -401,6 +406,32 @@ public class BaseclassRepository {
 		}
 		return false;
 
+	}
+
+
+	public <T extends Baseclass> List<T> listByIds(Class<T> c,Set<String> ids, SecurityContextBase securityContext) {
+		CriteriaBuilder cb=em.getCriteriaBuilder();
+		CriteriaQuery<T> q=cb.createQuery(c);
+		Root<T> r=q.from(c);
+		List<Predicate> predicates=new ArrayList<>();
+		predicates.add(r.get(Baseclass_.id).in(ids));
+		addBaseclassPredicates(cb,q,r,predicates,securityContext);
+		q.select(r).where(predicates.toArray(Predicate[]::new));
+		TypedQuery<T> query = em.createQuery(q);
+		return query.getResultList();
+	}
+
+	public <T extends Baseclass> T getByIdOrNull(String id,Class<T> c, SecurityContextBase securityContext) {
+		CriteriaBuilder cb=em.getCriteriaBuilder();
+		CriteriaQuery<T> q=cb.createQuery(c);
+		Root<T> r=q.from(c);
+		List<Predicate> predicates=new ArrayList<>();
+		predicates.add(cb.equal(r.get(Baseclass_.id),id));
+		addBaseclassPredicates(cb,q,r,predicates,securityContext);
+		q.select(r).where(predicates.toArray(Predicate[]::new));
+		TypedQuery<T> query = em.createQuery(q);
+		List<T> resultList = query.getResultList();
+		return resultList.isEmpty()?null:resultList.get(0);
 	}
 
 }

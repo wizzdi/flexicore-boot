@@ -2,7 +2,7 @@ package com.wizzdi.flexicore.security.rest;
 
 import com.flexicore.model.TenantToBaseClassPremission;
 import com.wizzdi.flexicore.boot.base.interfaces.Plugin;
-import com.flexicore.security.SecurityContext;
+import com.flexicore.security.SecurityContextBase;
 import com.wizzdi.flexicore.security.request.TenantToBaseclassPermissionCreate;
 import com.wizzdi.flexicore.security.request.TenantToBaseclassPermissionFilter;
 import com.wizzdi.flexicore.security.request.TenantToBaseclassPermissionUpdate;
@@ -23,19 +23,19 @@ public class TenantToBaseclassPermissionController implements Plugin {
 	private TenantToBaseclassPermissionService tenantToBaseclassPermissionService;
 
 	@PostMapping("/create")
-	public TenantToBaseClassPremission create(@RequestBody TenantToBaseclassPermissionCreate tenantToBaseclassPermissionCreate, @RequestAttribute SecurityContext securityContext){
+	public TenantToBaseClassPremission create(@RequestBody TenantToBaseclassPermissionCreate tenantToBaseclassPermissionCreate, @RequestAttribute SecurityContextBase securityContext){
 		tenantToBaseclassPermissionService.validate(tenantToBaseclassPermissionCreate,securityContext);
 		return tenantToBaseclassPermissionService.createTenantToBaseclassPermission(tenantToBaseclassPermissionCreate,securityContext);
 	}
 
 	@PostMapping("/getAll")
-	public PaginationResponse<TenantToBaseClassPremission> getAll(@RequestBody TenantToBaseclassPermissionFilter tenantToBaseclassPermissionFilter, @RequestAttribute SecurityContext securityContext){
+	public PaginationResponse<TenantToBaseClassPremission> getAll(@RequestBody TenantToBaseclassPermissionFilter tenantToBaseclassPermissionFilter, @RequestAttribute SecurityContextBase securityContext){
 		tenantToBaseclassPermissionService.validate(tenantToBaseclassPermissionFilter,securityContext);
 		return tenantToBaseclassPermissionService.getAllTenantToBaseclassPermissions(tenantToBaseclassPermissionFilter,securityContext);
 	}
 
 	@PutMapping("/update")
-	public TenantToBaseClassPremission update(@RequestBody TenantToBaseclassPermissionUpdate tenantToBaseclassPermissionUpdate, @RequestAttribute SecurityContext securityContext){
+	public TenantToBaseClassPremission update(@RequestBody TenantToBaseclassPermissionUpdate tenantToBaseclassPermissionUpdate, @RequestAttribute SecurityContextBase securityContext){
 		String id=tenantToBaseclassPermissionUpdate.getId();
 		TenantToBaseClassPremission tenantToBaseclassPermission=id!=null?tenantToBaseclassPermissionService.getByIdOrNull(id,TenantToBaseClassPremission.class,securityContext):null;
 		if(tenantToBaseclassPermission==null){

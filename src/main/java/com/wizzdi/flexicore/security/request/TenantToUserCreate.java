@@ -2,7 +2,7 @@ package com.wizzdi.flexicore.security.request;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.flexicore.model.SecurityUser;
-import com.flexicore.model.Tenant;
+import com.flexicore.model.SecurityTenant;
 
 public class TenantToUserCreate extends BaselinkCreate{
 
