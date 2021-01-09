@@ -9,8 +9,8 @@ package com.flexicore.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.flexicore.annotations.AnnotatedClazz;
-import com.wizzdi.flexicore.boot.jaxrs.annotations.Views;
 import com.flexicore.security.SecurityContext;
+import com.wizzdi.flexicore.boot.rest.views.Views;
 
 import javax.persistence.*;
 import java.time.OffsetDateTime;

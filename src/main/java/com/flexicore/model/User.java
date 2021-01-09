@@ -12,7 +12,7 @@ import com.flexicore.annotations.AnnotatedClazz;
 import com.flexicore.annotations.FullTextSearch;
 import com.flexicore.annotations.FullTextSearchOptions;
 import com.flexicore.security.SecurityContext;
-import com.wizzdi.flexicore.boot.jaxrs.annotations.Views;
+import com.wizzdi.flexicore.boot.rest.views.Views;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 import javax.persistence.*;
@@ -29,7 +29,7 @@ import java.util.List;
 @Entity
 @Schema( description = "The basic entity for controlling access to system functions and objects")
 @FullTextSearch(supported = true)
-public class User extends SecurityEntity {
+public class User extends SecurityUser {
 
     private String email;
     private String homeDir;

@@ -27,7 +27,7 @@ import java.util.List;
 @AnnotatedClazz(Category="core", Name="Tenant", Description="Defines a way to run different isolated virtual database on a single physical one")
 @Entity
 @FullTextSearch(supported = true)
-public class Tenant extends SecurityEntity  {
+public class Tenant extends SecurityTenant  {
 
 	private String externalId;
 	@ManyToOne(targetEntity = FileResource.class)
