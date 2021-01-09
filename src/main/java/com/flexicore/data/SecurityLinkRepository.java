@@ -21,7 +21,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 
-@Component
+@Component("SecurityLinkRepositoryBase")
 @Extension
 public class SecurityLinkRepository extends BaseclassRepository {
  

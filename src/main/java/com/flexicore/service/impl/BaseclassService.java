@@ -60,7 +60,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 @Primary
-@Component
+@Component("BaseclassServiceBase")
 @Extension
 public class BaseclassService implements com.flexicore.service.BaseclassService {
     @Autowired

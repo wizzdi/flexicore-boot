@@ -85,7 +85,7 @@ public class BaseclassNewService implements com.flexicore.service.BaseclassNewSe
             baseclass.setTenant(baseclassCreate.getTenant());
             update = true;
         }
-        if (baseclassCreate.supportingDynamic()&&baseclassCreate.any() != null && !baseclassCreate.any().isEmpty()) {
+     /*   if (baseclassCreate.supportingDynamic()&&baseclassCreate.any() != null && !baseclassCreate.any().isEmpty()) {
             Map<String, Object> jsonNode = baseclass.getJsonNode();
             if (jsonNode == null) {
                 baseclass.setJsonNode(baseclassCreate.any());
@@ -103,7 +103,7 @@ public class BaseclassNewService implements com.flexicore.service.BaseclassNewSe
             }
 
 
-        }
+        }*/
         return update;
     }
 

@@ -92,11 +92,11 @@ public class ClazzRESTService implements RESTService {
     @Produces(MediaType.APPLICATION_JSON)
     @IOperation(access = Access.allow, Name = "getClazzFields", Description = "returns related Operations", relatedClazzes = {com.flexicore.model.Operation.class})
     @Operation(summary = "Get all Operations", description = "Get a list of all Operations defined for the this Class, Some Operations have meaning with some Classes only")
-    public List<com.flexicore.model.Operation> getAllOperations(@HeaderParam("authenticationkey") String authenticationkey,
+    public List<com.flexicore.model.SecurityOperation> getAllOperations(@HeaderParam("authenticationkey") String authenticationkey,
                                                                 @Parameter(description = "The canonical class name of the link required") @PathParam("clazzName") String clazzName, @Context SecurityContext securityContext) {
         Clazz c = clazzService.getclazz(clazzName);
         List<OperationToClazz> operations = baselinkService.findAllBySide(OperationToClazz.class, c, true, securityContext);
-        List<com.flexicore.model.Operation> ops = new ArrayList<>();
+        List<com.flexicore.model.SecurityOperation> ops = new ArrayList<>();
         for (OperationToClazz operationToClazz : operations) {
             ops.add(operationToClazz.getLeftside());
         }
@@ -106,7 +106,7 @@ public class ClazzRESTService implements RESTService {
 
     }
 
-    private void addDefaultOperations(List<com.flexicore.model.Operation> ops) {
+    private void addDefaultOperations(List<com.flexicore.model.SecurityOperation> ops) {
         ops.add(baselinkService.findById(Baseclass.generateUUIDFromString(Write.class.getCanonicalName())));
         ops.add(baselinkService.findById(Baseclass.generateUUIDFromString(Read.class.getCanonicalName())));
 

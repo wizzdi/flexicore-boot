@@ -29,7 +29,7 @@ import java.util.stream.Stream;
 
 @Named
 @Primary
-@Component
+@Component("ClazzServiceBase")
 @Extension
 public class ClazzService implements FlexiCoreService{
 	private static final Logger logger = LoggerFactory.getLogger(ClazzService.class);

@@ -166,9 +166,9 @@ public class UserRESTServiceTest {
         ResponseEntity<UserProfile> userProfileResponse = this.restTemplate.exchange("/FlexiCore/rest/users/getUserProfile",HttpMethod.POST, new HttpEntity<>(new UserProfileRequest()), UserProfile.class);
         UserProfile userProfile = userProfileResponse.getBody();
         Assertions.assertNotNull(userProfile);
-        User user = userProfile.getUser();
+        SecurityUser user = userProfile.getUser();
 
-        Tenant defaultTenant = this.user.getTenant();
+        SecurityTenant defaultTenant = this.user.getTenant();
         this.authenticationKey=adminToken;
 
         BaselinkMassCreate request = new BaselinkMassCreate()

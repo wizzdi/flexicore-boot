@@ -29,7 +29,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Primary
-@Component
+@Component("PermissionGroupServiceBase")
 @Extension
 public class PermissionGroupService implements com.flexicore.service.PermissionGroupService {
 

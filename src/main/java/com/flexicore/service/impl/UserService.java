@@ -43,6 +43,7 @@ import com.flexicore.service.TokenService;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.lambdaworks.crypto.SCryptUtil;
+import com.wizzdi.flexicore.security.service.SecurityUserService;
 import io.joshworks.restclient.http.MediaType;
 import io.joshworks.restclient.http.RestClient;
 import io.joshworks.restclient.http.mapper.ObjectMapper;
@@ -66,8 +67,11 @@ import java.io.IOException;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 @Primary
@@ -91,6 +95,8 @@ public class UserService implements com.flexicore.service.UserService {
 
     @Autowired
     private BaseclassNewService baseclassService;
+    @Autowired
+    private SecurityUserService securityUserService;
 
     @Autowired
     private TokenService tokenService;
@@ -196,7 +202,7 @@ public class UserService implements com.flexicore.service.UserService {
         List<Object> toMerge = new ArrayList<>();
         User user = createUserNoMerge(userCreate, securityContext);
         toMerge.add(user);
-        TenantToUserCreate tenantToUserCreate = new TenantToUserCreate().setDefaultTenant(true).setUser(user).setTenant(userCreate.getTenant());
+        TenantToUserCreate tenantToUserCreate = new TenantToUserCreate().setDefaultTenant(true).setUser(user).setTenant((Tenant) userCreate.getTenant());
         TenantToUser tenantToUser = createTenantToUserNoMerge(tenantToUserCreate, securityContext);
         toMerge.add(tenantToUser);
         userrepository.massMerge(toMerge);
@@ -241,7 +247,7 @@ public class UserService implements com.flexicore.service.UserService {
 
     @Override
     public boolean updateUserNoMerge(User user, UserCreate createUser) {
-        boolean update = baseclassService.updateBaseclassNoMerge(createUser, user);
+        boolean update = securityUserService.updateSecurityUserNoMerge(createUser, user);
 
         if (createUser.getEmail() != null && !createUser.getEmail().equals(user.getEmail())) {
             user.setEmail(createUser.getEmail());
@@ -480,11 +486,18 @@ public class UserService implements com.flexicore.service.UserService {
     private RunningUser createRunningUser(User user, String jwtKey) {
         RunningUser running = new RunningUser(user, jwtKey);
         List<TenantToUser> tenants = tenantRepository.getAllTenants(user);
-        running.setTenants(tenants.parallelStream().map(f -> f.getLeftside()).collect(Collectors.toList()));
-        running.setDefaultTenant(tenants.parallelStream().filter(f -> f.isDefualtTennant()).map(f -> f.getLeftside()).findFirst().orElse(null));
+        Map<String,List<Role>> roles=listAllRoleToUsers(new RoleToUserFilter().setUsers(Collections.singletonList(user)),null).stream().map(f->f.getLeftside()).filter(distinctByKey(Role::getId)).collect(Collectors.groupingBy(f->f.getTenant().getId()));
+        running.setTenants(tenants.parallelStream().map(f -> (Tenant)f.getLeftside()).collect(Collectors.toList()));
+        running.setDefaultTenant(tenants.parallelStream().filter(f -> f.isDefualtTennant()).map(f -> (Tenant)f.getLeftside()).findFirst().orElse(null));
+        running.setRoles(roles);
         running.setLoggedin(true);
 
         return running;
+    }
+
+    public static <T> Predicate<T> distinctByKey(Function<? super T, ?> keyExtractor) {
+        Set<Object> seen = ConcurrentHashMap.newKeySet();
+        return t -> seen.add(keyExtractor.apply(t));
     }
 
 
@@ -613,7 +626,7 @@ public class UserService implements com.flexicore.service.UserService {
 
     @Override
     public void validateUserUpdate(UserUpdate userUpdate, SecurityContext securityContext) {
-        baseclassService.validate(userUpdate, securityContext);
+        securityUserService.validate(userUpdate, securityContext);
         User user = userrepository.getByIdOrNull(userUpdate.getId(), User.class, null, securityContext);
         if (user == null) {
             throw new BadRequestException("No User With id " + userUpdate.getId());
@@ -629,8 +642,8 @@ public class UserService implements com.flexicore.service.UserService {
 
     @Override
     public void validateUser(UserCreate userCreate, SecurityContext securityContext) {
-        baseclassService.validate(userCreate, securityContext);
-        Tenant tenant = userCreate.getTenant();
+        securityUserService.validate(userCreate, securityContext);
+        SecurityTenant tenant = userCreate.getTenant();
         if (tenant == null) {
             tenant = securityContext.getTenantToCreateIn() != null ? securityContext.getTenantToCreateIn() : (securityContext.getTenants().isEmpty() ? null : securityContext.getTenants().get(0));
         }

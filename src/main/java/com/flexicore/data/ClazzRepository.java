@@ -21,7 +21,7 @@ import java.util.Set;
 
 
 @Primary
-@Component
+@Component("ClazzRepositoryBase")
 @Extension
 public class ClazzRepository extends BaseclassRepository {
 

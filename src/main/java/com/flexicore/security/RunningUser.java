@@ -6,12 +6,14 @@
  ******************************************************************************/
 package com.flexicore.security;
 
+import com.flexicore.model.Role;
 import com.flexicore.model.Tenant;
 import com.flexicore.model.User;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.time.OffsetDateTime;
 import java.util.List;
+import java.util.Map;
 
 @Schema(description = "used to hold logged-in user data")
 public class RunningUser {
@@ -21,6 +23,7 @@ public class RunningUser {
 	private AuthenticationKey authenticationkey;
 	private Boolean loggedin = false;
 	private List<Tenant> tenants;
+	private Map<String,List<Role>> roles;
 	private OffsetDateTime expiresDate;
 	private Tenant defaultTenant;
 	private boolean impersonated;
@@ -123,6 +126,15 @@ public class RunningUser {
 
 	public <T extends RunningUser> T setTotpVerified(boolean totpVerified) {
 		this.totpVerified = totpVerified;
+		return (T) this;
+	}
+
+	public Map<String, List<Role>> getRoles() {
+		return roles;
+	}
+
+	public <T extends RunningUser> T setRoles(Map<String, List<Role>> roles) {
+		this.roles = roles;
 		return (T) this;
 	}
 }

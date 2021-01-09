@@ -192,7 +192,7 @@ public class UserRepository extends BaseclassRepository {
         if (userFiltering.getUserTenants() != null && !userFiltering.getUserTenants().isEmpty()) {
             Set<String> ids = userFiltering.getUserTenants().parallelStream().map(Baseclass::getId).collect(Collectors.toSet());
             Join<T, TenantToUser> join = r.join(User_.tenantToUsers);
-            Join<TenantToUser, Tenant> tenantJoin = join.join(TenantToUser_.tenant);
+            Join<TenantToUser, SecurityTenant> tenantJoin = join.join(TenantToUser_.tenant);
             preds.add(tenantJoin.get(Tenant_.id).in(ids));
         }
 
@@ -212,7 +212,7 @@ public class UserRepository extends BaseclassRepository {
     private void addTenantToUserPredicate(TenantToUserFilter tenantToUserFilter, CriteriaBuilder cb, Root<TenantToUser> r, List<Predicate> preds) {
         if (tenantToUserFilter.getTenants() != null && !tenantToUserFilter.getTenants().isEmpty()) {
             Set<String> ids = tenantToUserFilter.getTenants().parallelStream().map(Baseclass::getId).collect(Collectors.toSet());
-            Join<TenantToUser, Tenant> join = r.join(TenantToUser_.tenant);
+            Join<TenantToUser, SecurityTenant> join = r.join(TenantToUser_.tenant);
             preds.add(join.get(Tenant_.id).in(ids));
         }
 

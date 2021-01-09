@@ -34,7 +34,7 @@ public class BaseclassCreate {
         this.name = other.getName();
         this.description = other.getDescription();
         this.tenantId = other.getTenant()!=null?other.getTenant().getId():null;
-        this.tenant = other.getTenant();
+        this.tenant = (Tenant) other.getTenant();
         this.softDelete=other.isSoftDelete();
     }
 

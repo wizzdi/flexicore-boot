@@ -15,6 +15,7 @@ import com.flexicore.request.GetDisconnected;
 import com.flexicore.security.SecurityContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.*;
@@ -26,6 +27,7 @@ import java.util.stream.Collectors;
 
 
 @InheritedComponent
+@Component("BaselinkRepositoryBase")
 public class BaselinkRepository extends BaseclassRepository {
 
 

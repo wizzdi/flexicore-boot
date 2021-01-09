@@ -26,7 +26,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Primary
-@Component
+@Component("RoleServiceBase")
 @Extension
 public class RoleService implements com.flexicore.service.RoleService {
 	private static final Logger log = LoggerFactory.getLogger(RoleService.class);

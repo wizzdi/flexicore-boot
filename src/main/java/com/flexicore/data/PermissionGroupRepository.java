@@ -21,7 +21,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 
-@Component
+@Component("PermissionGroupRepositoryBase")
 @Extension
 public class PermissionGroupRepository extends BaseclassRepository {
 

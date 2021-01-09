@@ -2,12 +2,13 @@ package com.flexicore.request;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.flexicore.model.User;
+import com.wizzdi.flexicore.security.request.SecurityUserCreate;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.time.OffsetDateTime;
 
 @Schema(description = "used to create a user")
-public class UserCreate extends BaseclassCreate {
+public class UserCreate extends SecurityUserCreate {
     private String email;
     private String lastName;
     private String password;

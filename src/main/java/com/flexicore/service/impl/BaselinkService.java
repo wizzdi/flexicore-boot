@@ -16,6 +16,7 @@ import com.flexicore.request.BaselinkFilter;
 import com.flexicore.request.BaselinkMassCreate;
 import com.flexicore.request.BaselinkUpdate;
 import com.flexicore.security.SecurityContext;
+import com.flexicore.security.SecurityContextBase;
 import org.pf4j.Extension;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,7 +31,7 @@ import java.util.stream.Collectors;
 
 
 @Primary
-@Component
+@Component("BaselinkServiceBase")
 @Extension
 public class BaselinkService implements com.flexicore.service.BaselinkService {
    private Logger logger = LoggerFactory.getLogger(getClass().getCanonicalName());
@@ -348,7 +349,7 @@ public class BaselinkService implements com.flexicore.service.BaselinkService {
     public <T extends Baselink> T createBaselinkNoMerge(BaselinkCreate baselinkCreate, SecurityContext securityContext) {
         try {
             Class<T> c = (Class<T>) baselinkCreate.getLinkClass();
-            Constructor<T> constructor = c.getConstructor(String.class, SecurityContext.class);
+            Constructor<T> constructor = c.getConstructor(String.class, SecurityContextBase.class);
             T link = constructor.newInstance(baselinkCreate.getName(), securityContext);
             updateBaselinkNoMerge(link,baselinkCreate);
             return link;

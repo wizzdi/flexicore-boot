@@ -28,7 +28,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Primary
-@Component
+@Component("RoleToUserServiceBase")
 @Extension
 public class RoleToUserService implements com.flexicore.service.RoleToUserService {
 

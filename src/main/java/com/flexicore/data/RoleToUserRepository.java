@@ -22,7 +22,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 
-@Component
+@Component("RoleToUserRepositoryBase")
 @Primary
 @Extension
 public class RoleToUserRepository extends BaseclassRepository {

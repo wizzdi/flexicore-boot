@@ -21,7 +21,7 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 
 @Primary
-@Component
+@Component("SecurityLinkServiceBase")
 @Extension
 public class SecurityLinkService implements com.flexicore.service.SecurityLinkService {
 
