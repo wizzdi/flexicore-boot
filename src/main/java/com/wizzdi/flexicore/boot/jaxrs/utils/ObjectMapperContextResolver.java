@@ -12,7 +12,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.wizzdi.flexicore.boot.jaxrs.annotations.Views;
+import com.wizzdi.flexicore.boot.rest.views.Views;
 
 
 import javax.ws.rs.ext.ContextResolver;
