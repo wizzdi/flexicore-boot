@@ -7,6 +7,7 @@
 package com.flexicore.model;
 
 import com.flexicore.annotations.AnnotatedClazz;
+import com.flexicore.annotations.IOperation;
 import com.flexicore.security.SecurityContextBase;
 
 import javax.persistence.Entity;
@@ -21,10 +22,22 @@ import javax.persistence.Entity;
 
 public class SecurityOperation extends Baseclass {
 
+	private IOperation.Access defaultaccess;
+
+
 	public SecurityOperation() {
 	}
 
 	public SecurityOperation(String name, SecurityContextBase securityContext) {
 		super(name, securityContext);
+	}
+
+	public IOperation.Access getDefaultaccess() {
+		return defaultaccess;
+	}
+
+	public <T extends SecurityOperation> T setDefaultaccess(IOperation.Access defaultaccess) {
+		this.defaultaccess = defaultaccess;
+		return (T) this;
 	}
 }
