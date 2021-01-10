@@ -16,8 +16,10 @@ import com.flexicore.request.OperationCreate;
 import com.flexicore.request.OperationFiltering;
 import com.flexicore.request.OperationUpdate;
 import com.flexicore.security.SecurityContext;
+import com.flexicore.service.BaseclassNewService;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
+import com.wizzdi.flexicore.security.service.SecurityOperationService;
 import org.pf4j.Extension;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,8 +46,10 @@ public class OperationService implements com.flexicore.service.OperationService 
 	private BaselinkService baselinkService;
 
 	@Autowired
-	private BaseclassNewService baseclassNewService;
+	private SecurityOperationService securityOperationService;
 
+	@Autowired
+	private BaseclassNewService baseclassNewService;
 
 	private static Cache<String,Boolean> accessControlCache=CacheBuilder.newBuilder().maximumSize(100).expireAfterWrite(15, TimeUnit.MINUTES).build();
 
@@ -316,7 +320,7 @@ public class OperationService implements com.flexicore.service.OperationService 
 
 	@Override
 	public boolean updateOperationNoMerge(OperationCreate operationCreate, Operation operation) {
-		boolean update = baseclassNewService.updateBaseclassNoMerge(operationCreate, operation);
+		boolean update = securityOperationService.updateOperationNoMerge(operationCreate, operation);
 		if (operationCreate.getAuditable() != null && operationCreate.getAuditable() != operation.isAuditable()) {
 			operation.setAuditable(operationCreate.getAuditable());
 			update = true;
@@ -333,7 +337,7 @@ public class OperationService implements com.flexicore.service.OperationService 
 	}
 
 	public void validate(OperationCreate operationCreate, SecurityContext securityContext) {
-		baseclassNewService.validateCreate(operationCreate,securityContext);
+		securityOperationService.validate(operationCreate,securityContext);
 		String dynamicInvokerId=operationCreate.getDynamicInvokerId();
 		DynamicInvoker dynamicInvoker=dynamicInvokerId!=null?getByIdOrNull(dynamicInvokerId,DynamicInvoker.class,null,securityContext):null;
 		if (dynamicInvoker == null && dynamicInvokerId != null) {

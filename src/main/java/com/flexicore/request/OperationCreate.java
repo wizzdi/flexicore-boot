@@ -5,14 +5,13 @@ import com.flexicore.annotations.IOperation;
 import com.flexicore.interfaces.dynamic.FieldInfo;
 import com.flexicore.interfaces.dynamic.IdRefFieldInfo;
 import com.flexicore.model.dynamic.DynamicInvoker;
+import com.wizzdi.flexicore.security.request.SecurityOperationCreate;
 
 
-public class OperationCreate extends BaseclassCreate {
+public class OperationCreate extends SecurityOperationCreate {
 
     @FieldInfo
     private Boolean auditable;
-    @FieldInfo
-    private IOperation.Access defaultaccess;
     @IdRefFieldInfo(refType = DynamicInvoker.class,list = false)
     private String dynamicInvokerId;
     @JsonIgnore
@@ -27,14 +26,6 @@ public class OperationCreate extends BaseclassCreate {
         return (T) this;
     }
 
-    public IOperation.Access getDefaultaccess() {
-        return defaultaccess;
-    }
-
-    public <T extends OperationCreate> T setDefaultaccess(IOperation.Access defaultaccess) {
-        this.defaultaccess = defaultaccess;
-        return (T) this;
-    }
 
     public String getDynamicInvokerId() {
         return dynamicInvokerId;
