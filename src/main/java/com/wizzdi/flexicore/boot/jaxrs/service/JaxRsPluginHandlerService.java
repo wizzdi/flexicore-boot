@@ -16,7 +16,10 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.stream.Collectors;
 
 @Component
@@ -25,6 +28,7 @@ public class JaxRsPluginHandlerService implements InitializingBean {
 
 	private static final Logger logger = LoggerFactory.getLogger(JaxRsPluginHandlerService.class);
 
+	private static final Set<Class<?>> jaxRSClasses=new HashSet<>();
 
 	@Autowired
 	@Lazy
@@ -64,6 +68,7 @@ public class JaxRsPluginHandlerService implements InitializingBean {
 
 
 					JaxRsActivator.addSingletones(proxy);
+					jaxRSClasses.add(restClass);
 
 				} catch (Exception e) {
 					logger.error("Failed registering REST service " + restClass, e);
@@ -78,6 +83,9 @@ public class JaxRsPluginHandlerService implements InitializingBean {
 
 	}
 
+	public static Set<Class<?>> getJaxRSClasses() {
+		return jaxRSClasses;
+	}
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
