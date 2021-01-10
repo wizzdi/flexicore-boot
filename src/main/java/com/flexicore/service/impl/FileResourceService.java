@@ -95,7 +95,8 @@ public class FileResourceService implements com.flexicore.service.FileResourceSe
                     .setFullPath(uploadPath+ actualFilename)
                     .setMd5(md5)
                     .setOffset(0L)
-                    .setOriginalFilename(filename);
+                    .setOriginalFilename(filename)
+                    .setName(filename);
             fileResource=createNoMerge(fileResourceCreate, securityContext);
 
         }
@@ -348,7 +349,8 @@ public class FileResourceService implements com.flexicore.service.FileResourceSe
                 .setMd5(md5)
                 .setOffset(0L)
                 .setActualFilename(UUID.randomUUID().toString() + "." + ext)
-                .setOriginalFilename(filename);
+                .setOriginalFilename(filename)
+                .setName(filename);
         return createNoMerge(fileResourceCreate, securityContext);
     }
 

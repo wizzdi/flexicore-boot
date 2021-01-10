@@ -24,6 +24,7 @@ import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.wizzdi.flexicore.boot.base.init.FlexiCorePluginManager;
 import com.wizzdi.flexicore.boot.jaxrs.service.JaxRsActivator;
+import com.wizzdi.flexicore.boot.jaxrs.service.JaxRsPluginHandlerService;
 import io.swagger.v3.core.converter.ModelConverters;
 import io.swagger.v3.core.filter.OpenAPISpecFilter;
 import io.swagger.v3.core.filter.SpecFilter;
@@ -158,7 +159,7 @@ public class SwaggerAPIRESTService extends BaseOpenApiResource implements RESTSe
 		}
 		FlexiCoreOpenApiReader reader = new FlexiCoreOpenApiReader(oas);
 		reader.setConfiguration(ctx.getOpenApiConfiguration());
-		reader.read(JaxRsActivator.getAll());
+		reader.read(JaxRsPluginHandlerService.getJaxRSClasses());
 
 		oas = reader.getOpenAPI();
 		mergeOas(oas, springOpenApi);
