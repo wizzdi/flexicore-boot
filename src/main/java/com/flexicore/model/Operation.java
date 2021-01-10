@@ -47,16 +47,6 @@ public class Operation extends SecurityOperation  {
 	}
 
 
-
-	public Access getDefaultaccess() {
-		return defaultaccess;
-	}
-
-	public void setDefaultaccess(Access defaultaccess) {
-		this.defaultaccess = defaultaccess;
-	}
-
-
 	public boolean isAuditable() {
 		return auditable;
 	}
