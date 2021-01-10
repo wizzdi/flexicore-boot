@@ -83,4 +83,12 @@ public class SecurityTenantService implements Plugin {
 	public List<SecurityTenant> listAllTenants(SecurityTenantFilter tenantFilter, SecurityContextBase securityContext) {
 		return tenantRepository.listAllTenants(tenantFilter, securityContext);
 	}
+
+	public <T extends Baseclass> List<T> findByIds(Class<T> c, Set<String> requested) {
+		return tenantRepository.findByIds(c, requested);
+	}
+
+	public <T> T findByIdOrNull(Class<T> type, String id) {
+		return tenantRepository.findByIdOrNull(type, id);
+	}
 }

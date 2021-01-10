@@ -1,10 +1,10 @@
 package com.wizzdi.flexicore.security.data;
 
 import com.flexicore.model.Baseclass;
-import com.flexicore.model.SecurityTenant;
-import com.wizzdi.flexicore.boot.base.interfaces.Plugin;
+import com.flexicore.model.Clazz;
 import com.flexicore.security.SecurityContextBase;
-import com.wizzdi.flexicore.security.request.SecurityTenantFilter;
+import com.wizzdi.flexicore.boot.base.interfaces.Plugin;
+import com.wizzdi.flexicore.security.request.ClazzFilter;
 import org.pf4j.Extension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -20,7 +20,7 @@ import java.util.Set;
 
 @Component
 @Extension
-public class SecurityTenantRepository implements Plugin {
+public class ClazzRepository implements Plugin {
 	@PersistenceContext
 	private EntityManager em;
 	@Autowired
@@ -28,32 +28,34 @@ public class SecurityTenantRepository implements Plugin {
 	@Autowired
 	private SecurityEntityRepository securityEntityRepository;
 
-	public List<SecurityTenant> listAllTenants(SecurityTenantFilter tenantFilter, SecurityContextBase securityContext){
+
+
+	public List<Clazz> listAllClazzs(ClazzFilter ClazzFilter, SecurityContextBase securityContext){
 		CriteriaBuilder cb=em.getCriteriaBuilder();
-		CriteriaQuery<SecurityTenant> q=cb.createQuery(SecurityTenant.class);
-		Root<SecurityTenant> r=q.from(SecurityTenant.class);
+		CriteriaQuery<Clazz> q=cb.createQuery(Clazz.class);
+		Root<Clazz> r=q.from(Clazz.class);
 		List<Predicate> predicates=new ArrayList<>();
-		addTenantPredicates(tenantFilter,cb,q,r,predicates,securityContext);
+		addClazzPredicates(ClazzFilter,cb,q,r,predicates,securityContext);
 		q.select(r).where(predicates.toArray(Predicate[]::new));
-		TypedQuery<SecurityTenant> query = em.createQuery(q);
-		BaseclassRepository.addPagination(tenantFilter,query);
+		TypedQuery<Clazz> query = em.createQuery(q);
+		BaseclassRepository.addPagination(ClazzFilter,query);
 		return query.getResultList();
 
 	}
 
-	public <T extends SecurityTenant> void addTenantPredicates(SecurityTenantFilter tenantFilter, CriteriaBuilder cb, CommonAbstractCriteria q, Path<T> r, List<Predicate> predicates, SecurityContextBase securityContext) {
-		securityEntityRepository.addSecurityEntityPredicates(tenantFilter,cb,q,r,predicates,securityContext);
+	public <T extends Clazz> void addClazzPredicates(ClazzFilter ClazzFilter, CriteriaBuilder cb, CommonAbstractCriteria q, Path<T> r, List<Predicate> predicates, SecurityContextBase securityContext) {
+		securityEntityRepository.addSecurityEntityPredicates(ClazzFilter,cb,q,r,predicates,securityContext);
 	}
 
-	public long countAllTenants(SecurityTenantFilter tenantFilter, SecurityContextBase securityContext){
+	public long countAllClazzs(ClazzFilter ClazzFilter, SecurityContextBase securityContext){
 		CriteriaBuilder cb=em.getCriteriaBuilder();
 		CriteriaQuery<Long> q=cb.createQuery(Long.class);
-		Root<SecurityTenant> r=q.from(SecurityTenant.class);
+		Root<Clazz> r=q.from(Clazz.class);
 		List<Predicate> predicates=new ArrayList<>();
-		addTenantPredicates(tenantFilter,cb,q,r,predicates,securityContext);
+		addClazzPredicates(ClazzFilter,cb,q,r,predicates,securityContext);
 		q.select(cb.count(r)).where(predicates.toArray(Predicate[]::new));
 		TypedQuery<Long> query = em.createQuery(q);
-		BaseclassRepository.addPagination(tenantFilter,query);
+		BaseclassRepository.addPagination(ClazzFilter,query);
 		return query.getFirstResult();
 
 	}
@@ -80,9 +82,5 @@ public class SecurityTenantRepository implements Plugin {
 
 	public <T extends Baseclass> List<T> findByIds(Class<T> c, Set<String> requested) {
 		return baseclassRepository.findByIds(c, requested);
-	}
-
-	public <T> T findByIdOrNull(Class<T> type, String id) {
-		return baseclassRepository.findByIdOrNull(type, id);
 	}
 }

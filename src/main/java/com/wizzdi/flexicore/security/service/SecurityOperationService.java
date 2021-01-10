@@ -82,4 +82,8 @@ public class SecurityOperationService implements Plugin {
 	public List<SecurityOperation> listAllOperations(SecurityOperationFilter operationFilter, SecurityContextBase securityContext) {
 		return operationRepository.listAllOperations(operationFilter, securityContext);
 	}
+
+	public <T extends Baseclass> List<T> findByIds(Class<T> c, Set<String> requested) {
+		return operationRepository.findByIds(c, requested);
+	}
 }

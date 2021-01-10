@@ -84,4 +84,12 @@ public class RoleService implements Plugin {
 	public List<Role> listAllRoles(RoleFilter roleFilter, SecurityContextBase securityContext) {
 		return roleRepository.listAllRoles(roleFilter, securityContext);
 	}
+
+	public <T extends Baseclass> List<T> findByIds(Class<T> c, Set<String> requested) {
+		return roleRepository.findByIds(c, requested);
+	}
+
+	public <T> T findByIdOrNull(Class<T> type, String id) {
+		return roleRepository.findByIdOrNull(type, id);
+	}
 }

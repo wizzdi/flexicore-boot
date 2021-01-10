@@ -82,4 +82,12 @@ public class TenantToUserService implements Plugin {
 	public List<TenantToUser> listAllTenantToUsers(TenantToUserFilter tenantToUserFilter, SecurityContextBase securityContext) {
 		return tenantToUserRepository.listAllTenantToUsers(tenantToUserFilter, securityContext);
 	}
+
+	public <T extends Baseclass> List<T> findByIds(Class<T> c, Set<String> requested) {
+		return tenantToUserRepository.findByIds(c, requested);
+	}
+
+	public <T> T findByIdOrNull(Class<T> type, String id) {
+		return tenantToUserRepository.findByIdOrNull(type, id);
+	}
 }

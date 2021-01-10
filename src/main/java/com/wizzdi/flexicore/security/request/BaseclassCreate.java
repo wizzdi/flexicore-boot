@@ -17,6 +17,8 @@ public class BaseclassCreate {
 	private SecurityTenant tenant;
 	private String tenantId;
 	private Boolean softDelete;
+	private String idForCreate;
+	private Boolean systemObject;
 
 
 	@JsonIgnore
@@ -72,6 +74,24 @@ public class BaseclassCreate {
 
 	public <T extends BaseclassCreate> T setSoftDelete(Boolean softDelete) {
 		this.softDelete = softDelete;
+		return (T) this;
+	}
+
+	public String getIdForCreate() {
+		return idForCreate;
+	}
+
+	public <T extends BaseclassCreate> T setIdForCreate(String idForCreate) {
+		this.idForCreate = idForCreate;
+		return (T) this;
+	}
+
+	public Boolean getSystemObject() {
+		return systemObject;
+	}
+
+	public <T extends BaseclassCreate> T setSystemObject(Boolean systemObject) {
+		this.systemObject = systemObject;
 		return (T) this;
 	}
 }

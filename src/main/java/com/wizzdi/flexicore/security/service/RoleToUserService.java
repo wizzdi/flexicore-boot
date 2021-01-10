@@ -83,4 +83,12 @@ public class RoleToUserService implements Plugin {
 	public List<RoleToUser> listAllRoleToUsers(RoleToUserFilter roleToUserFilter, SecurityContextBase securityContext) {
 		return roleToUserRepository.listAllRoleToUsers(roleToUserFilter, securityContext);
 	}
+
+	public <T extends Baseclass> List<T> findByIds(Class<T> c, Set<String> requested) {
+		return roleToUserRepository.findByIds(c, requested);
+	}
+
+	public <T> T findByIdOrNull(Class<T> type, String id) {
+		return roleToUserRepository.findByIdOrNull(type, id);
+	}
 }

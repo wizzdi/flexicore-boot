@@ -32,6 +32,10 @@ public class BaseclassService implements Plugin {
 			baseclass.setDescription(baseclassCreate.getDescription());
 			update = true;
 		}
+		if (baseclassCreate.getSystemObject() != null && (!baseclassCreate.getSystemObject().equals(baseclass.isSystemObject()))) {
+			baseclass.setSystemObject(baseclassCreate.getSystemObject());
+			update = true;
+		}
 
 		return update;
 	}

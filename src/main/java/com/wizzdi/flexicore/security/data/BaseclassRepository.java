@@ -11,6 +11,7 @@ import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Component;
 
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.*;
@@ -38,6 +39,10 @@ public class BaseclassRepository implements Plugin {
 	}
 
 	public <T extends Baseclass> void addBaseclassPredicates(CriteriaBuilder cb, CommonAbstractCriteria q, Path<T> r, List<Predicate> predicates, SecurityContextBase securityContext) {
+		if(securityContext==null){
+			return;
+		}
+
 		List<? extends SecurityTenant> tenants = securityContext.getTenants();
 		SecurityUser securityUser=securityContext.getUser();
 		SecurityOperation op=securityContext.getOperation();
@@ -146,7 +151,7 @@ public class BaseclassRepository implements Plugin {
 	 * @param op operation
 	 * @return a list of denied baseclasses  for securityUser using SecurityOperation
 	 */
-	public Pair<List<Baseclass>, List<Baseclass>> getDenied(SecurityUser securityUser, SecurityOperation op) {
+	private Pair<List<Baseclass>, List<Baseclass>> getDenied(SecurityUser securityUser, SecurityOperation op) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<UserToBaseClass> q = cb.createQuery(UserToBaseClass.class);
 		Root<UserToBaseClass> r = q.from(UserToBaseClass.class);
@@ -408,6 +413,14 @@ public class BaseclassRepository implements Plugin {
 
 	}
 
+	public <T extends Baseclass> List<T> findByIds(Class<T> c, Set<String> requested) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<T> q = cb.createQuery(c);
+		Root<T> r = q.from(c);
+		q.select(r).where(r.get(Baseclass_.id).in(requested));
+		TypedQuery<T> query = em.createQuery(q);
+		return query.getResultList();
+	}
 
 	public <T extends Baseclass> List<T> listByIds(Class<T> c,Set<String> ids, SecurityContextBase securityContext) {
 		CriteriaBuilder cb=em.getCriteriaBuilder();
@@ -432,6 +445,14 @@ public class BaseclassRepository implements Plugin {
 		TypedQuery<T> query = em.createQuery(q);
 		List<T> resultList = query.getResultList();
 		return resultList.isEmpty()?null:resultList.get(0);
+	}
+	public <T> T findByIdOrNull(Class<T> type, String id) {
+		try {
+			return em.find(type, id);
+
+		} catch (NoResultException e) {
+			return null;
+		}
 	}
 
 }

@@ -79,4 +79,12 @@ public class RoleRepository implements Plugin {
 	public <T extends Baseclass> T getByIdOrNull(String id, Class<T> c, SecurityContextBase securityContext) {
 		return baseclassRepository.getByIdOrNull(id, c, securityContext);
 	}
+
+	public <T extends Baseclass> List<T> findByIds(Class<T> c, Set<String> requested) {
+		return baseclassRepository.findByIds(c, requested);
+	}
+
+	public <T> T findByIdOrNull(Class<T> type, String id) {
+		return baseclassRepository.findByIdOrNull(type, id);
+	}
 }

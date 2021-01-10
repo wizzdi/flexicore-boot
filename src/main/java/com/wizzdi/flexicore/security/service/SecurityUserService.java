@@ -82,4 +82,12 @@ public class SecurityUserService implements Plugin {
 	public List<SecurityUser> listAllSecurityUsers(SecurityUserFilter securityUserFilter, SecurityContextBase securityContext) {
 		return securityUserRepository.listAllSecurityUsers(securityUserFilter, securityContext);
 	}
+
+	public <T extends Baseclass> List<T> findByIds(Class<T> c, Set<String> requested) {
+		return securityUserRepository.findByIds(c, requested);
+	}
+
+	public <T> T findByIdOrNull(Class<T> type, String id) {
+		return securityUserRepository.findByIdOrNull(type, id);
+	}
 }

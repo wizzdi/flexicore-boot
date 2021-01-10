@@ -1,5 +1,6 @@
 package com.wizzdi.flexicore.security.data;
 
+import com.flexicore.model.Baseclass_;
 import com.flexicore.model.SecurityOperation;
 import com.flexicore.model.Baseclass;
 import com.wizzdi.flexicore.boot.base.interfaces.Plugin;
@@ -70,7 +71,12 @@ public class SecurityOperationRepository implements Plugin {
 		}
 	}
 
-	public <T extends Baseclass> List<T> listByIds(Class<T> c,Set<String> ids,  SecurityContextBase securityContext) {
+
+	public <T extends Baseclass> List<T> findByIds(Class<T> c, Set<String> requested) {
+		return baseclassRepository.findByIds(c, requested);
+	}
+
+	public <T extends Baseclass> List<T> listByIds(Class<T> c, Set<String> ids, SecurityContextBase securityContext) {
 		return baseclassRepository.listByIds(c, ids, securityContext);
 	}
 
