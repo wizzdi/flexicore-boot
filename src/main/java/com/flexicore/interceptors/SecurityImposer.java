@@ -12,6 +12,9 @@ import com.flexicore.interfaces.AspectPlugin;
 import com.flexicore.model.Operation;
 import com.flexicore.model.Tenant;
 import com.flexicore.model.User;
+import com.flexicore.model.security.SecurityPolicy;
+import com.flexicore.model.security.TotpSecurityPolicy;
+import com.flexicore.request.FinishTotpSetupRequest;
 import com.flexicore.request.RecoverTotpRequest;
 import com.flexicore.request.TotpAuthenticationRequest;
 import com.flexicore.rest.TotpRESTService;
@@ -33,6 +36,9 @@ import javax.websocket.CloseReason;
 import javax.websocket.Session;
 import javax.ws.rs.NotAuthorizedException;
 import java.lang.reflect.Method;
+import java.time.OffsetDateTime;
+import java.time.temporal.ChronoUnit;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -58,6 +64,10 @@ public class SecurityImposer implements AspectPlugin {
     @Autowired
     private SecurityService securityService;
     private static final Logger logger = LoggerFactory.getLogger(SecurityImposer.class);
+    private static Method setupTotpMethod;
+
+    private static Method finishSetupTotpMethod;
+
     private static Method totpAuthenticationMethod;
     private static Method totpRecoveryMethod;
 
@@ -106,8 +116,23 @@ public class SecurityImposer implements AspectPlugin {
                     logger.error("could not determine operation for method " + methodName);
                     return deny(websocketSession);
                 }
-                if (!isTotpAuthentication(method)&&user.isTotpEnabled() && !securityContext.isTotpVerified()) {
+                if (user.isTotpEnabled() &&!isTotpAuthentication(method)&& !securityContext.isTotpVerified()) {
+                    logger.error("user has totp enabled but did not validate it yet and the calling method is not totp authentication");
                     return deny(websocketSession);
+                }
+                TotpSecurityPolicy totpSecurityPolicy = securityContext.getSecurityPolicies()==null?null:securityContext.getSecurityPolicies().stream().filter(f -> f instanceof TotpSecurityPolicy && ((TotpSecurityPolicy) f).isForceTotp()).map(f -> (TotpSecurityPolicy) f).min(Comparator.comparing(SecurityPolicy::getStartTime)).orElse(null);
+                if(totpSecurityPolicy!=null&&!user.isTotpEnabled()){
+                    OffsetDateTime policyStartedForUser=securityContext.getUser().getCreationDate().isAfter(totpSecurityPolicy.getStartTime())?securityContext.getUser().getCreationDate():totpSecurityPolicy.getStartTime();
+                    if(OffsetDateTime.now().isAfter(policyStartedForUser.plus(totpSecurityPolicy.getAllowedConfigureOffsetMs(), ChronoUnit.MILLIS))){
+                        logger.error("totp policy is enforced , and the user did not configured totp before the grace period of "+totpSecurityPolicy.getAllowedConfigureOffsetMs()+" ms");
+                        return deny(websocketSession);
+                    }
+                    if( !isTotpConfigureMethods(method)){
+                        logger.error("totp policy is enforced , the user does not have totp enabled and the calling method is not configure totp");
+                        return deny(websocketSession);
+                    }
+
+
                 }
 
                 if (securityService.checkIfAllowed(user, tenants, operation, operationInfo.getiOperation().access())) {
@@ -129,11 +154,41 @@ public class SecurityImposer implements AspectPlugin {
 
     }
 
+    private boolean isTotpConfigureMethods(Method method) {
+        Method setupTotpMethod=getSetupTotpMethod();
+        Method finishSetupTotpMethod=getFinishSetupTotpMethod();
+        return method.equals(setupTotpMethod)||method.equals(finishSetupTotpMethod);
+    }
+
     private boolean isTotpAuthentication(Method method) {
         Method totpAuthenticationMethod= getTotpAuthenticationMethod();
         Method totpRecoveryMethod= getTotpRecoveryMethod();
 
         return method.equals(totpAuthenticationMethod)||method.equals(totpRecoveryMethod);
+    }
+
+    private Method getSetupTotpMethod() {
+        if(setupTotpMethod==null){
+            try {
+                setupTotpMethod = TotpRESTService.class.getMethod("setupTotp", String.class, SecurityContext.class);
+            }
+            catch (Exception e){
+                logger.error("could not find totp setupTotp method");
+            }
+        }
+        return setupTotpMethod;
+    }
+
+    private Method getFinishSetupTotpMethod() {
+        if(finishSetupTotpMethod==null){
+            try {
+                finishSetupTotpMethod = TotpRESTService.class.getMethod("finishSetupTotp", String.class, FinishTotpSetupRequest.class, SecurityContext.class);
+            }
+            catch (Exception e){
+                logger.error("could not find totp finishSetupTotp method");
+            }
+        }
+        return finishSetupTotpMethod;
     }
 
     private Method getTotpAuthenticationMethod() {
@@ -142,7 +197,7 @@ public class SecurityImposer implements AspectPlugin {
                 totpAuthenticationMethod = TotpRESTService.class.getMethod("authenticateTotp", String.class, TotpAuthenticationRequest.class, SecurityContext.class);
             }
             catch (Exception e){
-                logger.error("could not find totp authenticationMethod");
+                logger.error("could not find totp authentication Method");
             }
         }
         return totpAuthenticationMethod;
@@ -153,7 +208,7 @@ public class SecurityImposer implements AspectPlugin {
                 totpRecoveryMethod = TotpRESTService.class.getMethod("recoverTotp", String.class, RecoverTotpRequest.class, SecurityContext.class);
             }
             catch (Exception e){
-                logger.error("could not find totp authenticationMethod");
+                logger.error("could not find totp recover method");
             }
         }
         return totpRecoveryMethod;

@@ -9,6 +9,7 @@ package com.flexicore.security;
 import com.flexicore.model.Role;
 import com.flexicore.model.Tenant;
 import com.flexicore.model.User;
+import com.flexicore.model.security.SecurityPolicy;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.time.OffsetDateTime;
@@ -26,6 +27,7 @@ public class RunningUser {
 	private Map<String,List<Role>> roles;
 	private OffsetDateTime expiresDate;
 	private Tenant defaultTenant;
+	private List<SecurityPolicy> securityPolicies;
 	private boolean impersonated;
 	private boolean totpVerified;
 
@@ -135,6 +137,15 @@ public class RunningUser {
 
 	public <T extends RunningUser> T setRoles(Map<String, List<Role>> roles) {
 		this.roles = roles;
+		return (T) this;
+	}
+
+	public List<SecurityPolicy> getSecurityPolicies() {
+		return securityPolicies;
+	}
+
+	public <T extends RunningUser> T setSecurityPolicies(List<SecurityPolicy> securityPolicies) {
+		this.securityPolicies = securityPolicies;
 		return (T) this;
 	}
 }

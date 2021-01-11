@@ -34,15 +34,19 @@ import com.flexicore.exceptions.BadRequestCustomException;
 import com.flexicore.exceptions.CheckYourCredentialsException;
 import com.flexicore.exceptions.UserNotFoundException;
 import com.flexicore.model.*;
+import com.flexicore.model.security.PasswordSecurityPolicy;
+import com.flexicore.model.security.SecurityPolicy;
 import com.flexicore.request.*;
 import com.flexicore.response.*;
 import com.flexicore.security.AuthenticationRequestHolder;
 import com.flexicore.security.RunningUser;
 import com.flexicore.security.SecurityContext;
+import com.flexicore.service.PasswordSecurityPolicyService;
 import com.flexicore.service.TokenService;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.lambdaworks.crypto.SCryptUtil;
+import com.wizzdi.flexicore.security.service.SecurityPolicyService;
 import com.wizzdi.flexicore.security.service.SecurityUserService;
 import io.joshworks.restclient.http.MediaType;
 import io.joshworks.restclient.http.RestClient;
@@ -63,6 +67,7 @@ import org.springframework.stereotype.Component;
 
 import javax.ws.rs.BadRequestException;
 import javax.ws.rs.NotAuthorizedException;
+import javax.ws.rs.core.Response;
 import java.io.IOException;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
@@ -130,6 +135,11 @@ public class UserService implements com.flexicore.service.UserService {
     private int scryptR;
     @Value("${flexicore.security.password.scryptP:1}")
     private int scryptP;
+
+    @Autowired
+    private PasswordSecurityPolicyService passwordSecurityPolicyService;
+    @Autowired
+    private SecurityPolicyService securityPolicyService;
 
 
     @Override
@@ -200,9 +210,10 @@ public class UserService implements com.flexicore.service.UserService {
     @Override
     public User createUser(UserCreate userCreate, SecurityContext securityContext) {
         List<Object> toMerge = new ArrayList<>();
+        Tenant tenant = (Tenant) userCreate.getTenant();
         User user = createUserNoMerge(userCreate, securityContext);
         toMerge.add(user);
-        TenantToUserCreate tenantToUserCreate = new TenantToUserCreate().setDefaultTenant(true).setUser(user).setTenant((Tenant) userCreate.getTenant());
+        TenantToUserCreate tenantToUserCreate = new TenantToUserCreate().setDefaultTenant(true).setUser(user).setTenant(tenant);
         TenantToUser tenantToUser = createTenantToUserNoMerge(tenantToUserCreate, securityContext);
         toMerge.add(tenantToUser);
         userrepository.massMerge(toMerge);
@@ -485,12 +496,17 @@ public class UserService implements com.flexicore.service.UserService {
 
     private RunningUser createRunningUser(User user, String jwtKey) {
         RunningUser running = new RunningUser(user, jwtKey);
-        List<TenantToUser> tenants = tenantRepository.getAllTenants(user);
-        Map<String,List<Role>> roles=listAllRoleToUsers(new RoleToUserFilter().setUsers(Collections.singletonList(user)),null).stream().map(f->f.getLeftside()).filter(distinctByKey(Role::getId)).collect(Collectors.groupingBy(f->f.getTenant().getId()));
-        running.setTenants(tenants.parallelStream().map(f -> (Tenant)f.getLeftside()).collect(Collectors.toList()));
-        running.setDefaultTenant(tenants.parallelStream().filter(f -> f.isDefualtTennant()).map(f -> (Tenant)f.getLeftside()).findFirst().orElse(null));
+        List<TenantToUser> tenantToUsers = tenantRepository.getAllTenants(user);
+        List<RoleToUser> roleToUsers = listAllRoleToUsers(new RoleToUserFilter().setUsers(Collections.singletonList(user)), null);
+        List<Role> allRoles = roleToUsers.stream().map(f -> f.getLeftside()).filter(distinctByKey(Role::getId)).collect(Collectors.toList());
+        Map<String,List<Role>> roles= allRoles.stream().collect(Collectors.groupingBy(f->f.getTenant().getId()));
+        List<Tenant> tenants = tenantToUsers.parallelStream().map(f -> (Tenant) f.getLeftside()).collect(Collectors.toList());
+        running.setTenants(tenants);
+        running.setDefaultTenant(tenantToUsers.parallelStream().filter(f -> f.isDefualtTennant()).map(f -> (Tenant)f.getLeftside()).findFirst().orElse(null));
         running.setRoles(roles);
         running.setLoggedin(true);
+        List<SecurityPolicy> securityPolicies = securityPolicyService.listAllSecurityPolicies(new PasswordSecurityPolicyFilter().setStartTime(OffsetDateTime.now()).setEnabled(true).setSecurityTenants(tenants.stream().map(f -> (SecurityTenant) f).collect(Collectors.toList())).setRoles(allRoles).setIncludeNoRole(true), null);
+        running.setSecurityPolicies(securityPolicies);
 
         return running;
     }
@@ -637,6 +653,14 @@ public class UserService implements com.flexicore.service.UserService {
             String cause = userUpdate.getEmail() != null ? "Email" : "PhoneNumber";
             throw new BadRequestException("Cannot Update User " + cause + " is not unique");
         }
+        if(userUpdate.getPassword()!=null){
+            List<SecurityTenant> userTenants=getAllTenantToUsers(new TenantToUserFilter().setUsers(Collections.singletonList(user)),null).stream().map(f->f.getLeftside()).collect(Collectors.toList());
+            List<Role> userRoles=listAllRoleToUsers(new RoleToUserFilter().setUsers(Collections.singletonList(user)),null).stream().map(f->f.getLeftside()).collect(Collectors.toList());
+            List<PasswordSecurityPolicy> passwordSecurityPolicies = passwordSecurityPolicyService.listAllSecurityPolicies(new PasswordSecurityPolicyFilter().setSecurityTenants(userTenants).setRoles(userRoles), securityContext);
+            validatePasswordPolicies(userUpdate, passwordSecurityPolicies);
+
+        }
+
 
     }
 
@@ -655,7 +679,27 @@ public class UserService implements com.flexicore.service.UserService {
             throw new BadRequestException("Phone Number or Email Must Be Provided");
         }
 
+        if(userCreate.getPassword()!=null){
+            List<PasswordSecurityPolicy> passwordSecurityPolicies = passwordSecurityPolicyService.listAllSecurityPolicies(new PasswordSecurityPolicyFilter().setEnabled(true).setStartTime(OffsetDateTime.now()).setIncludeNoRole(true).setSecurityTenants(Collections.singletonList(tenant)), securityContext);
+            validatePasswordPolicies(userCreate, passwordSecurityPolicies);
+        }
 
+
+
+    }
+
+    private void validatePasswordPolicies(UserCreate userCreate, List<PasswordSecurityPolicy> passwordSecurityPolicies) {
+        for (PasswordSecurityPolicy passwordSecurityPolicy : passwordSecurityPolicies) {
+            List<PasswordPolicyError> policyErrors=passwordSecurityPolicyService.enforcePolicy(passwordSecurityPolicy, userCreate.getPassword());
+            if(!policyErrors.isEmpty()){
+                PasswordSecurityPolicyErrorBody entity1 = new PasswordSecurityPolicyErrorBody(400, 0, "user password does not meet the security policy " + passwordSecurityPolicy.getName() + " errors: " + policyErrors);
+                entity1.setErrorSet(policyErrors.stream().collect(Collectors.toSet()));
+                entity1.setPasswordRequiredLength(passwordSecurityPolicy.getMinLength());
+                Response.ResponseBuilder entity = Response.status(Response.Status.BAD_REQUEST).
+                        entity(entity1);
+                throw new BadRequestException(entity.build());
+            }
+        }
     }
 
     @Override
