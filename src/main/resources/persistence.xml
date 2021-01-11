@@ -29,6 +29,7 @@
 		<class>com.flexicore.model.TenantToBaseClassPremission</class>
 		<class>com.flexicore.model.TenantToUser</class>
 		<class>com.flexicore.model.UserToBaseClass</class>
+        <class>com.flexicore.model.security.SecurityPolicy</class>
 
 
 

@@ -11,6 +11,7 @@ import com.flexicore.model.SecurityOperation;
 import com.flexicore.model.Role;
 import com.flexicore.model.SecurityTenant;
 import com.flexicore.model.SecurityUser;
+import com.flexicore.model.security.SecurityPolicy;
 
 import java.time.OffsetDateTime;
 import java.util.List;
@@ -27,6 +28,7 @@ public class SecurityContextBase<ST extends SecurityTenant,U extends SecurityUse
 	private boolean impersonated;
 	private OffsetDateTime expiresDate;
 	private ST tenantToCreateIn;
+	private List<SecurityPolicy> securityPolicies;
 
 	public SecurityContextBase() {
 	}
@@ -91,6 +93,15 @@ public class SecurityContextBase<ST extends SecurityTenant,U extends SecurityUse
 
 	public <T extends SecurityContextBase<ST, U, O, R>> T setTenantToCreateIn(ST tenantToCreateIn) {
 		this.tenantToCreateIn = tenantToCreateIn;
+		return (T) this;
+	}
+
+	public List<SecurityPolicy> getSecurityPolicies() {
+		return securityPolicies;
+	}
+
+	public <T extends SecurityContextBase<ST, U, O, R>> T setSecurityPolicies(List<SecurityPolicy> securityPolicies) {
+		this.securityPolicies = securityPolicies;
 		return (T) this;
 	}
 }
