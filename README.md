@@ -11,7 +11,7 @@ FlexiCore Boot Starter Web is a FlexiCore Module that enables Spring's RestContr
 ## How to use?
 Add the flexicore-boot-starter-web dependency using the latest version available from maven central:
 
-			<dependency>
+		<dependency>
                 <groupId>com.wizzdi</groupId>
                 <artifactId>flexicore-boot-starter-web</artifactId>
                 <version>LATEST</version>
