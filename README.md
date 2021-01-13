@@ -1,107 +1,51 @@
 
+# ![](https://support.wizzdi.com/wp-content/uploads/2020/05/flexicore-icon-extra-small.png) FlexiCore Boot[![Build Status](https://jenkins.wizzdi.com/buildStatus/icon?job=wizzdi+organization%2Fflexicore-boot%2Fmaster)](https://jenkins.wizzdi.com/job/wizzdi%20organization/job/flexicore-boot/job/master/)[![Maven Central](https://img.shields.io/maven-central/v/com.wizzdi/flexicore-boot.svg?label=Maven%20Central)](https://search.maven.org/search?q=g:%22com.wizzdi%22%20AND%20a:%22flexicore-boot%22)
 
 
+For comprehensive information about FlexiCore Boot please visit our [site](http://wizzdi.com/).
 
-# ![](https://support.wizzdi.com/wp-content/uploads/2020/05/flexicore-icon-extra-small.png) FlexiCore [![Build Status](https://jenkins.wizzdi.com/buildStatus/icon?job=FlexiCore)](https://jenkins.wizzdi.com/job/FlexiCore/)[![Maven Central](https://img.shields.io/maven-central/v/com.wizzdi/flexicore-api.svg?label=Maven%20Central)](https://search.maven.org/search?q=g:%22com.wizzdi%22%20AND%20a:%22flexicore-api%22)[![Maven Central](https://img.shields.io/docker/cloud/automated/wizzdi/flexicore)](https://hub.docker.com/r/wizzdi/flexicore)
+## What it does?
+FlexiCore Boot enables plugin loading support for your spring boot app it is built on [pf4j](https://pf4j.org/) and depends only on it.
+## How to use?
+simply annotate your application class or your configuration class with
 
+    @EnableFlexiCorePlugins
+FlexiCore will automatically load jars and create beans for them , there are more flexicore boot modules that automatically register you plugins in spring specifically provided services such as controllers and JAX-RS.
+## Creating Plugins
+creating plugins is as simple as creating regular spring beans the only difference is that the bean should be annotated with `@Extension` and implement the empty interface `Plugin` .
+the jar containing the class should be packaged using pf4j plugin instructions so it contains a MANIFEST.MF describing it, more on that [here.](https://pf4j.org/doc/packaging.html)
+## Example
+your application class:
 
-For comprehensive information about FlexiCore please visit our [site](http://wizzdi.com/).
-
-FlexiCore boosts [Spring Boot](https://github.com/spring-projects/spring-boot) applications with a very flexible and powerful plugins support, robust access control and an optional set of services many applications require.
-
-## Use Case
-
-**PersonService** in person-service jar
-
-    @PluginInfo(version = 1)  
-    @Extension  
-    @Component
-    public class PersonService implements ServicePlugin {  
-    
-      private static final Logger logger=LoggerHandler.getLogger(PersonService.class);  
-      
-     @Autowired  
-     @PluginInfo(version = 1)  
-      private PersonRepository repository;  
+    @EnableFlexiCorePlugins  
+    @SpringBootApplication  
+    public class App {  
       
       
-     public Person createPerson(PersonCreate personCreate, SecurityContext securityContext) {  
-            Person person = createPersonNoMerge(personCreate, securityContext);  
-      repository.merge(person);  
-      return person;  
-       }  
+      
+      
+       public static void main(String[] args) {  
+      
+      
+          SpringApplication app = new SpringApplication(App.class);  
+      app.addListeners(new ApplicationPidFileWriter());  
+      ConfigurableApplicationContext context=app.run(args);  
+      
+      }
+    }
+a bean inside a plugin:
 
-
-  
-    public Person createPersonNoMerge(PersonCreate personCreate, SecurityContext securityContext) {  
-        Person person = new Person(personCreate.getFirstName(),securityContext);  
-        updatePersonNoMerge(person, personCreate); 
-         return person;  
-         }
-  
-
-  
-
-**AuthorService** in library-service jar
-
-    @PluginInfo(version = 1)  
     @Extension  
     @Component  
-    public class AuthorService implements ServicePlugin {  
+    public class PluginAService implements Plugin, InitializingBean {  
       
-      @PluginInfo(version = 1)  
-      @Autowired  
-      private AuthorRepository repository;  
-      @Autowired  
-      private Logger logger;  
+       private static final Logger logger= LoggerFactory.getLogger(PluginAService.class);  
       
-      @PluginInfo(version = 1)  
-       @Autowired  
-      private PersonService personService;  
-      
-     public Author createAuthor(AuthorCreate authorCreate,  
-      SecurityContext securityContext) {  
-          Author author = createAuthorNoMerge(authorCreate, securityContext);  
-      repository.merge(author);  
-     return author;  
+      @Override  
+      public void afterPropertiesSet() throws Exception {  
+          logger.info("PluginAService Started!");  
       }  
-      
-       public Author createAuthorNoMerge(AuthorCreate authorCreate,  
-      SecurityContext securityContext) {  
-          Author author = new Author(authorCreate.getFirstName(),  
-      securityContext);  
-      updateAuthorNoMerge(author, authorCreate);  
-     return author;  
-      }
-The first code snippet shows a **PersonService** plugin managing a person CRUD (only create is shown) . the second code sinppet shows an **AuthorService** plugin managing authors which is dependent on **PersonService** . both plugins are compiled separately. use by placing both of them in the FlexiCore plugin directory 
-
-## Debugging Plugins
-add the relevant debuggin line to your java properties
-for java 11: 
--agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:8787
-
-for java 8:
--agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=8787
-
-now from your IDE connect to the port specified in the above command (8787)
-
-
-## Documentation
-FlexiCore maintains a reference [documentation](https://support.wizzdi.com)
-
-## Docker
-if your machine is running docker ( if not installation instructions are available in [docker documentation site](https://docs.docker.com/get-docker/) ) simply run:
-
-    docker run -p 8080:8080 wizzdi/flexicore
-    
-once initialization is complete a swagger will be avilable at http://<your-server-ip>:8080/FlexiCore
-the default username is admin@flexicore.com the password is randomlly generated and can be found in the docker container at /home/flexicore/firstRun.txt
-docker image is available at [Docker Hub](https://hub.docker.com/r/wizzdi/flexicore)
-
-
-## Stay in Touch
-Contact us at our [site](http://wizzdi.com/)
-
+    }
 
 ### Main 3rd Party Dependencies
 
