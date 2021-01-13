@@ -18,7 +18,7 @@ Add the flexicore-security-service dependency to your main app using the latest 
                 <version>LATEST</version>
             </dependency>
             
-## How to use as an Entity Plugin?
+## How to use as a Plugin?
 Add the flexicore-security-service dependency to your main app using the latest version available from maven central:
 
             <dependency>
@@ -28,7 +28,12 @@ Add the flexicore-security-service dependency to your main app using the latest 
                 <scope>provided</scope>
             </dependency>
 add the flexicore-security-service.jar to your [plugins folder.](https://github.com/wizzdi/flexicore-boot)
+
+
 ## Executing a Data Access Control Query
+adding security predicates is easily done by calling `BaseclassRepository` `addBaseclassPredicates` method.
+
+full example:
 
     @Component  
     @Extension  
