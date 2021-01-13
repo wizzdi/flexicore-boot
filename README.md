@@ -1,110 +1,85 @@
 
+# ![](https://support.wizzdi.com/wp-content/uploads/2020/05/flexicore-icon-extra-small.png) FlexiCore Boot Starter Data JPA [![Build Status](https://jenkins.wizzdi.com/buildStatus/icon?job=wizzdi+organization%2Fflexicore-boot-starter-data-jpa%2Fmaster)](https://jenkins.wizzdi.com/job/wizzdi%20organization/job/flexicore-boot-starter-data-jpa/job/master/)[![Maven Central](https://img.shields.io/maven-central/v/com.wizzdi/flexicore-boot-starter-data-jpa.svg?label=Maven%20Central)](https://search.maven.org/search?q=g:%22com.wizzdi%22%20AND%20a:%22flexicore-boot-starter-data-jpa%22)
 
 
+For comprehensive information about FlexiCore Boot Starter Data JPA please visit our [site](http://wizzdi.com/).
 
-# ![](https://support.wizzdi.com/wp-content/uploads/2020/05/flexicore-icon-extra-small.png) FlexiCore [![Build Status](https://jenkins.wizzdi.com/buildStatus/icon?job=FlexiCore)](https://jenkins.wizzdi.com/job/FlexiCore/)[![Maven Central](https://img.shields.io/maven-central/v/com.wizzdi/flexicore-api.svg?label=Maven%20Central)](https://search.maven.org/search?q=g:%22com.wizzdi%22%20AND%20a:%22flexicore-api%22)[![Maven Central](https://img.shields.io/docker/cloud/automated/wizzdi/flexicore)](https://hub.docker.com/r/wizzdi/flexicore)
+## What it does?
 
+FlexiCore Boot Starter Data JPA is a FlexiCore Module that provides an opinionated Eclipselink JPA registration for spring boot.
 
-For comprehensive information about FlexiCore please visit our [site](http://wizzdi.com/).
+## How to use?
+Add the flexicore-boot-starter-data-jpa dependency using the latest version available from maven central:
 
-FlexiCore boosts [Spring Boot](https://github.com/spring-projects/spring-boot) applications with a very flexible and powerful plugins support, robust access control and an optional set of services many applications require.
+            <dependency>
+                <groupId>com.wizzdi</groupId>
+                <artifactId>flexicore-boot-starter-data-jpa</artifactId>
+                <version>LATEST</version>
+            </dependency>
+annotate your application class or your configuration class with
 
-## Use Case
+    @EnableFlexiCoreJPAPlugins
+you have have to use Spring's [PropertiesLauncher](https://docs.spring.io/spring-boot/docs/current/api/org/springframework/boot/loader/PropertiesLauncher.html) to load your application with entities plugins , here is an example for the command line:
 
-**PersonService** in person-service jar
+    java -Dloader.main=com.your.company.YourApplicationClass -Dloader.path=file:/path/to/entities/folder -jar your-application-exec.jar 
 
-    @PluginInfo(version = 1)  
-    @Extension  
-    @Component
-    public class PersonService implements ServicePlugin {  
-    
-      private static final Logger logger=LoggerHandler.getLogger(PersonService.class);  
+## Example
+your application class:
+
+    @EnableFlexiCorePlugins  
+    @EnableFlexiCoreJPAPlugins
+    @SpringBootApplication  
+    public class App {  
       
-     @Autowired  
-     @PluginInfo(version = 1)  
-      private PersonRepository repository;  
+       public static void main(String[] args) {  
       
+          SpringApplication app = new SpringApplication(App.class);  
+      app.addListeners(new ApplicationPidFileWriter());  
+      ConfigurableApplicationContext context=app.run(args);  
       
-     public Person createPerson(PersonCreate personCreate, SecurityContext securityContext) {  
-            Person person = createPersonNoMerge(personCreate, securityContext);  
-      repository.merge(person);  
-      return person;  
-       }  
+      }
+    }
+an entity inside an entity plugin:
 
-
-  
-    public Person createPersonNoMerge(PersonCreate personCreate, SecurityContext securityContext) {  
-        Person person = new Person(personCreate.getFirstName(),securityContext);  
-        updatePersonNoMerge(person, personCreate); 
-         return person;  
-         }
-  
-
-  
-
-**AuthorService** in library-service jar
-
-    @PluginInfo(version = 1)  
-    @Extension  
-    @Component  
-    public class AuthorService implements ServicePlugin {  
+    @Entity  
+    public class TestEntity {  
       
-      @PluginInfo(version = 1)  
-      @Autowired  
-      private AuthorRepository repository;  
-      @Autowired  
-      private Logger logger;  
+       @Id  
+      private String id;  
       
-      @PluginInfo(version = 1)  
-       @Autowired  
-      private PersonService personService;  
+     private String name;  
       
-     public Author createAuthor(AuthorCreate authorCreate,  
-      SecurityContext securityContext) {  
-          Author author = createAuthorNoMerge(authorCreate, securityContext);  
-      repository.merge(author);  
-     return author;  
+      @Id  
+      public String getId() {  
+          return id;  
       }  
       
-       public Author createAuthorNoMerge(AuthorCreate authorCreate,  
-      SecurityContext securityContext) {  
-          Author author = new Author(authorCreate.getFirstName(),  
-      securityContext);  
-      updateAuthorNoMerge(author, authorCreate);  
-     return author;  
-      }
-The first code snippet shows a **PersonService** plugin managing a person CRUD (only create is shown) . the second code sinppet shows an **AuthorService** plugin managing authors which is dependent on **PersonService** . both plugins are compiled separately. use by placing both of them in the FlexiCore plugin directory 
+       public <T extends TestEntity> T setId(String id) {  
+          this.id = id;  
+     return (T) this;  
+      }  
+      
+       public String getName() {  
+          return name;  
+      }  
+      
+       public <T extends TestEntity> T setName(String name) {  
+          this.name = name;  
+     return (T) this;  
+      }  
+    }
 
-## Debugging Plugins
-add the relevant debuggin line to your java properties
-for java 11: 
--agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:8787
-
-for java 8:
--agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=8787
-
-now from your IDE connect to the port specified in the above command (8787)
-
-
-## Documentation
-FlexiCore maintains a reference [documentation](https://support.wizzdi.com)
-
-## Docker
-if your machine is running docker ( if not installation instructions are available in [docker documentation site](https://docs.docker.com/get-docker/) ) simply run:
-
-    docker run -p 8080:8080 wizzdi/flexicore
-    
-once initialization is complete a swagger will be avilable at http://<your-server-ip>:8080/FlexiCore
-the default username is admin@flexicore.com the password is randomlly generated and can be found in the docker container at /home/flexicore/firstRun.txt
-docker image is available at [Docker Hub](https://hub.docker.com/r/wizzdi/flexicore)
+## Configuration
+FlexiCore Boot Starter Data JPA exposes the following configuration options:
+|name|default value  |description|
+|--|--|--|
+| flexicore.entities| /home/flexicore/entities/|location of entities plugins should be the same as the one provided for Dloader.path in the command running the application
 
 
-## Stay in Touch
-Contact us at our [site](http://wizzdi.com/)
+## Main Dependencies
 
+[FlexiCore Boot](https://github.com/wizzdi/flexicore-boot)
 
-### Main 3rd Party Dependencies
+[Eclipselink](https://github.com/eclipse-ee4j/eclipselink)
 
-[Spring Boot](https://github.com/spring-projects/spring-boot)
-
-[Pf4J](https://github.com/pf4j/pf4j)
+[Spring Boot Starter Data JPA](https://search.maven.org/artifact/org.springframework.boot/spring-boot-starter-data-jpa)
