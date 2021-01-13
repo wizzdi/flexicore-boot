@@ -1,5 +1,7 @@
 package com.wizzdi.flexicore.security.rest;
 
+import com.flexicore.annotations.IOperation;
+import com.flexicore.annotations.OperationsInside;
 import com.flexicore.model.SecurityTenant;
 import com.wizzdi.flexicore.boot.base.interfaces.Plugin;
 import com.flexicore.security.SecurityContextBase;
@@ -15,25 +17,29 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 @RestController
-@RequestMapping("/tenant")
+@OperationsInside
+@RequestMapping("/securityTenant")
 @Extension
 public class SecurityTenantController implements Plugin {
 
 	@Autowired
 	private SecurityTenantService tenantService;
 
+	@IOperation(Name = "creates security tenant",Description = "creates security tenant")
 	@PostMapping("/create")
 	public SecurityTenant create(@RequestBody SecurityTenantCreate tenantCreate, @RequestAttribute SecurityContextBase securityContext){
 		tenantService.validate(tenantCreate,securityContext);
 		return tenantService.createTenant(tenantCreate,securityContext);
 	}
 
+	@IOperation(Name = "returns security tenant",Description = "returns security tenant")
 	@PostMapping("/getAll")
 	public PaginationResponse<SecurityTenant> getAll(@RequestBody SecurityTenantFilter tenantFilter, @RequestAttribute SecurityContextBase securityContext){
 		tenantService.validate(tenantFilter,securityContext);
 		return tenantService.getAllTenants(tenantFilter,securityContext);
 	}
 
+	@IOperation(Name = "updates security tenant",Description = "updates security tenant")
 	@PutMapping("/update")
 	public SecurityTenant update(@RequestBody SecurityTenantUpdate tenantUpdate, @RequestAttribute SecurityContextBase securityContext){
 		String id=tenantUpdate.getId();
@@ -41,6 +47,7 @@ public class SecurityTenantController implements Plugin {
 		if(tenant==null){
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"no security user with id "+id);
 		}
+		tenantUpdate.setTenantToUpdate(tenant);
 		tenantService.validate(tenantUpdate,securityContext);
 		return tenantService.updateTenant(tenantUpdate,securityContext);
 	}

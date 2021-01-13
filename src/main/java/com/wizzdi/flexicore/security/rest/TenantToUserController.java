@@ -1,5 +1,7 @@
 package com.wizzdi.flexicore.security.rest;
 
+import com.flexicore.annotations.IOperation;
+import com.flexicore.annotations.OperationsInside;
 import com.flexicore.model.TenantToUser;
 import com.flexicore.security.SecurityContextBase;
 import com.wizzdi.flexicore.boot.base.interfaces.Plugin;
@@ -15,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 @RestController
+@OperationsInside
 @RequestMapping("/tenantToUser")
 @Extension
 public class TenantToUserController implements Plugin {
@@ -22,18 +25,21 @@ public class TenantToUserController implements Plugin {
 	@Autowired
 	private TenantToUserService tenantToUserService;
 
+	@IOperation(Name = "create tenant to user",Description = "creates tenant to user")
 	@PostMapping("/create")
 	public TenantToUser create(@RequestBody TenantToUserCreate tenantToUserCreate, @RequestAttribute SecurityContextBase securityContext){
 		tenantToUserService.validate(tenantToUserCreate,securityContext);
 		return tenantToUserService.createTenantToUser(tenantToUserCreate,securityContext);
 	}
 
+	@IOperation(Name = "get all tenant to user",Description = "get all tenant to user")
 	@PostMapping("/getAll")
 	public PaginationResponse<TenantToUser> getAll(@RequestBody TenantToUserFilter tenantToUserFilter, @RequestAttribute SecurityContextBase securityContext){
 		tenantToUserService.validate(tenantToUserFilter,securityContext);
 		return tenantToUserService.getAllTenantToUsers(tenantToUserFilter,securityContext);
 	}
 
+	@IOperation(Name = "updates tenant to user",Description = "updates tenant to user")
 	@PutMapping("/update")
 	public TenantToUser update(@RequestBody TenantToUserUpdate tenantToUserUpdate, @RequestAttribute SecurityContextBase securityContext){
 		String id=tenantToUserUpdate.getId();
@@ -41,6 +47,7 @@ public class TenantToUserController implements Plugin {
 		if(tenantToUser==null){
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"no security user with id "+id);
 		}
+		tenantToUserUpdate.setTenantToUser(tenantToUser);
 		tenantToUserService.validate(tenantToUserUpdate,securityContext);
 		return tenantToUserService.updateTenantToUser(tenantToUserUpdate,securityContext);
 	}

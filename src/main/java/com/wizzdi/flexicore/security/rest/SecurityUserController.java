@@ -1,5 +1,7 @@
 package com.wizzdi.flexicore.security.rest;
 
+import com.flexicore.annotations.IOperation;
+import com.flexicore.annotations.OperationsInside;
 import com.flexicore.model.SecurityUser;
 import com.wizzdi.flexicore.boot.base.interfaces.Plugin;
 import com.flexicore.security.SecurityContextBase;
@@ -16,24 +18,28 @@ import org.springframework.web.server.ResponseStatusException;
 
 @RestController
 @RequestMapping("/securityUser")
+@OperationsInside
 @Extension
 public class SecurityUserController implements Plugin {
 
 	@Autowired
 	private SecurityUserService securityUserService;
 
+	@IOperation(Name = "creates security user",Description = "creates security user")
 	@PostMapping("/create")
 	public SecurityUser create(@RequestBody SecurityUserCreate securityUserCreate, @RequestAttribute SecurityContextBase securityContext){
 		securityUserService.validate(securityUserCreate,securityContext);
 		return securityUserService.createSecurityUser(securityUserCreate,securityContext);
 	}
 
+	@IOperation(Name = "returns security user",Description = "returns security user")
 	@PostMapping("/getAll")
 	public PaginationResponse<SecurityUser> getAll(@RequestBody SecurityUserFilter securityUserFilter, @RequestAttribute SecurityContextBase securityContext){
 		securityUserService.validate(securityUserFilter,securityContext);
 		return securityUserService.getAllSecurityUsers(securityUserFilter,securityContext);
 	}
 
+	@IOperation(Name = "updates security user",Description = "updates security user")
 	@PutMapping("/update")
 	public SecurityUser update(@RequestBody SecurityUserUpdate securityUserUpdate, @RequestAttribute SecurityContextBase securityContext){
 		String id=securityUserUpdate.getId();
@@ -41,6 +47,7 @@ public class SecurityUserController implements Plugin {
 		if(securityUser==null){
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"no security user with id "+id);
 		}
+		securityUserUpdate.setSecurityUser(securityUser);
 		securityUserService.validate(securityUserUpdate,securityContext);
 		return securityUserService.updateSecurityUser(securityUserUpdate,securityContext);
 	}

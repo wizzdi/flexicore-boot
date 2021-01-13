@@ -1,5 +1,7 @@
 package com.wizzdi.flexicore.security.rest;
 
+import com.flexicore.annotations.IOperation;
+import com.flexicore.annotations.OperationsInside;
 import com.flexicore.model.security.SecurityPolicy;
 import com.flexicore.security.SecurityContextBase;
 import com.wizzdi.flexicore.boot.base.interfaces.Plugin;
@@ -15,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 @RestController
+@OperationsInside
 @RequestMapping("/securityPolicy")
 @Extension
 public class SecurityPolicyController implements Plugin {
@@ -22,18 +25,21 @@ public class SecurityPolicyController implements Plugin {
 	@Autowired
 	private SecurityPolicyService securityPolicyService;
 
+	@IOperation(Name = "creates security policy",Description = "creates security policy")
 	@PostMapping("/create")
 	public SecurityPolicy create(@RequestBody SecurityPolicyCreate securityPolicyCreate, @RequestAttribute SecurityContextBase securityContext){
 		securityPolicyService.validate(securityPolicyCreate,securityContext);
 		return securityPolicyService.createSecurityPolicy(securityPolicyCreate,securityContext);
 	}
 
+	@IOperation(Name = "returns security policy",Description = "returns security policy")
 	@PostMapping("/getAll")
 	public PaginationResponse<SecurityPolicy> getAll(@RequestBody SecurityPolicyFilter securityPolicyFilter, @RequestAttribute SecurityContextBase securityContext){
 		securityPolicyService.validate(securityPolicyFilter,securityContext);
 		return securityPolicyService.getAllSecurityPolicies(securityPolicyFilter,securityContext);
 	}
 
+	@IOperation(Name = "updates security policy",Description = "updates security policy")
 	@PutMapping("/update")
 	public SecurityPolicy update(@RequestBody SecurityPolicyUpdate securityPolicyUpdate, @RequestAttribute SecurityContextBase securityContext){
 		String id=securityPolicyUpdate.getId();

@@ -1,5 +1,7 @@
 package com.wizzdi.flexicore.security.rest;
 
+import com.flexicore.annotations.IOperation;
+import com.flexicore.annotations.OperationsInside;
 import com.flexicore.model.OperationToClazz;
 import com.flexicore.security.SecurityContextBase;
 import com.wizzdi.flexicore.boot.base.interfaces.Plugin;
@@ -15,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 @RestController
+@OperationsInside
 @RequestMapping("/operationToClazz")
 @Extension
 public class OperationToClazzController implements Plugin {
@@ -22,18 +25,21 @@ public class OperationToClazzController implements Plugin {
 	@Autowired
 	private OperationToClazzService operationToClazzService;
 
+	@IOperation(Name = "creates OperationToClazz",Description = "creates OperationToClazz")
 	@PostMapping("/create")
 	public OperationToClazz create(@RequestBody OperationToClazzCreate operationToClazzCreate, @RequestAttribute SecurityContextBase securityContext){
 		operationToClazzService.validate(operationToClazzCreate,securityContext);
 		return operationToClazzService.createOperationToClazz(operationToClazzCreate,securityContext);
 	}
 
+	@IOperation(Name = "returns OperationToClazz",Description = "returns OperationToClazz")
 	@PostMapping("/getAll")
 	public PaginationResponse<OperationToClazz> getAll(@RequestBody OperationToClazzFilter operationToClazzFilter, @RequestAttribute SecurityContextBase securityContext){
 		operationToClazzService.validate(operationToClazzFilter,securityContext);
 		return operationToClazzService.getAllOperationToClazz(operationToClazzFilter,securityContext);
 	}
 
+	@IOperation(Name = "updates OperationToClazz",Description = "updates OperationToClazz")
 	@PutMapping("/update")
 	public OperationToClazz update(@RequestBody OperationToClazzUpdate operationToClazzUpdate, @RequestAttribute SecurityContextBase securityContext){
 		String id=operationToClazzUpdate.getId();
@@ -41,6 +47,7 @@ public class OperationToClazzController implements Plugin {
 		if(operationToClazz==null){
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"no security user with id "+id);
 		}
+		operationToClazzUpdate.setOperationToClazz(operationToClazz);
 		operationToClazzService.validate(operationToClazzUpdate,securityContext);
 		return operationToClazzService.updateOperationToClazz(operationToClazzUpdate,securityContext);
 	}

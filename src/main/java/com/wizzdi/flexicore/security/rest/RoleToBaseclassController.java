@@ -1,5 +1,7 @@
 package com.wizzdi.flexicore.security.rest;
 
+import com.flexicore.annotations.IOperation;
+import com.flexicore.annotations.OperationsInside;
 import com.flexicore.model.RoleToBaseclass;
 import com.wizzdi.flexicore.boot.base.interfaces.Plugin;
 import com.flexicore.security.SecurityContextBase;
@@ -15,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 @RestController
+@OperationsInside
 @RequestMapping("/roleToBaseclass")
 @Extension
 public class RoleToBaseclassController implements Plugin {
@@ -22,18 +25,21 @@ public class RoleToBaseclassController implements Plugin {
 	@Autowired
 	private RoleToBaseclassService roleToBaseclassService;
 
+	@IOperation(Name = "creates RoleToBaseclass",Description = "creates RoleToBaseclass")
 	@PostMapping("/create")
 	public RoleToBaseclass create(@RequestBody RoleToBaseclassCreate roleToBaseclassCreate, @RequestAttribute SecurityContextBase securityContext){
 		roleToBaseclassService.validate(roleToBaseclassCreate,securityContext);
 		return roleToBaseclassService.createRoleToBaseclass(roleToBaseclassCreate,securityContext);
 	}
 
+	@IOperation(Name = "returns RoleToBaseclass",Description = "returns RoleToBaseclass")
 	@PostMapping("/getAll")
 	public PaginationResponse<RoleToBaseclass> getAll(@RequestBody RoleToBaseclassFilter roleToBaseclassFilter, @RequestAttribute SecurityContextBase securityContext){
 		roleToBaseclassService.validate(roleToBaseclassFilter,securityContext);
 		return roleToBaseclassService.getAllRoleToBaseclass(roleToBaseclassFilter,securityContext);
 	}
 
+	@IOperation(Name = "updates RoleToBaseclass",Description = "updates RoleToBaseclass")
 	@PutMapping("/update")
 	public RoleToBaseclass update(@RequestBody RoleToBaseclassUpdate roleToBaseclassUpdate, @RequestAttribute SecurityContextBase securityContext){
 		String id=roleToBaseclassUpdate.getId();
@@ -41,6 +47,7 @@ public class RoleToBaseclassController implements Plugin {
 		if(roleToBaseclass==null){
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"no security user with id "+id);
 		}
+		roleToBaseclassUpdate.setRoleToBaseclass(roleToBaseclass);
 		roleToBaseclassService.validate(roleToBaseclassUpdate,securityContext);
 		return roleToBaseclassService.updateRoleToBaseclass(roleToBaseclassUpdate,securityContext);
 	}

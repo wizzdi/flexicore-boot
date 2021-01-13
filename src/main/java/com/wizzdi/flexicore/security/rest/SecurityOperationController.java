@@ -1,5 +1,7 @@
 package com.wizzdi.flexicore.security.rest;
 
+import com.flexicore.annotations.IOperation;
+import com.flexicore.annotations.OperationsInside;
 import com.flexicore.model.SecurityOperation;
 import com.wizzdi.flexicore.boot.base.interfaces.Plugin;
 import com.wizzdi.flexicore.security.request.SecurityOperationCreate;
@@ -15,25 +17,29 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 @RestController
-@RequestMapping("/operation")
+@OperationsInside
+@RequestMapping("/securityOperation")
 @Extension
 public class SecurityOperationController implements Plugin {
 
 	@Autowired
 	private SecurityOperationService operationService;
 
+	@IOperation(Name = "creates security operation",Description = "creates security operation")
 	@PostMapping("/create")
 	public SecurityOperation create(@RequestBody SecurityOperationCreate operationCreate, @RequestAttribute SecurityContextBase securityContext){
 		operationService.validate(operationCreate,securityContext);
 		return operationService.createOperation(operationCreate,securityContext);
 	}
 
+	@IOperation(Name = "returns security operation",Description = "returns security operation")
 	@PostMapping("/getAll")
 	public PaginationResponse<SecurityOperation> getAll(@RequestBody SecurityOperationFilter operationFilter, @RequestAttribute SecurityContextBase securityContext){
 		operationService.validate(operationFilter,securityContext);
 		return operationService.getAllOperations(operationFilter,securityContext);
 	}
 
+	@IOperation(Name = "updates security operation",Description = "updates security operation")
 	@PutMapping("/update")
 	public SecurityOperation update(@RequestBody SecurityOperationUpdate operationUpdate, @RequestAttribute SecurityContextBase securityContext){
 		String id=operationUpdate.getId();
@@ -41,6 +47,7 @@ public class SecurityOperationController implements Plugin {
 		if(operation==null){
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"no security user with id "+id);
 		}
+		operationUpdate.setOperation(operation);
 		operationService.validate(operationUpdate,securityContext);
 		return operationService.updateOperation(operationUpdate,securityContext);
 	}

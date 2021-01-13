@@ -1,5 +1,7 @@
 package com.wizzdi.flexicore.security.rest;
 
+import com.flexicore.annotations.IOperation;
+import com.flexicore.annotations.OperationsInside;
 import com.flexicore.model.TenantToBaseClassPremission;
 import com.wizzdi.flexicore.boot.base.interfaces.Plugin;
 import com.flexicore.security.SecurityContextBase;
@@ -15,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 @RestController
+@OperationsInside
 @RequestMapping("/tenantToBaseclassPermission")
 @Extension
 public class TenantToBaseclassPermissionController implements Plugin {
@@ -22,18 +25,21 @@ public class TenantToBaseclassPermissionController implements Plugin {
 	@Autowired
 	private TenantToBaseclassPermissionService tenantToBaseclassPermissionService;
 
+	@IOperation(Name = "creates tenant to baseclass",Description = "creates tenant to baseclass")
 	@PostMapping("/create")
 	public TenantToBaseClassPremission create(@RequestBody TenantToBaseclassPermissionCreate tenantToBaseclassPermissionCreate, @RequestAttribute SecurityContextBase securityContext){
 		tenantToBaseclassPermissionService.validate(tenantToBaseclassPermissionCreate,securityContext);
 		return tenantToBaseclassPermissionService.createTenantToBaseclassPermission(tenantToBaseclassPermissionCreate,securityContext);
 	}
 
+	@IOperation(Name = "returns tenant to baseclass",Description = "returns tenant to baseclass")
 	@PostMapping("/getAll")
 	public PaginationResponse<TenantToBaseClassPremission> getAll(@RequestBody TenantToBaseclassPermissionFilter tenantToBaseclassPermissionFilter, @RequestAttribute SecurityContextBase securityContext){
 		tenantToBaseclassPermissionService.validate(tenantToBaseclassPermissionFilter,securityContext);
 		return tenantToBaseclassPermissionService.getAllTenantToBaseclassPermissions(tenantToBaseclassPermissionFilter,securityContext);
 	}
 
+	@IOperation(Name = "update tenant to baseclass",Description = "update tenant to baseclass")
 	@PutMapping("/update")
 	public TenantToBaseClassPremission update(@RequestBody TenantToBaseclassPermissionUpdate tenantToBaseclassPermissionUpdate, @RequestAttribute SecurityContextBase securityContext){
 		String id=tenantToBaseclassPermissionUpdate.getId();
@@ -41,6 +47,7 @@ public class TenantToBaseclassPermissionController implements Plugin {
 		if(tenantToBaseclassPermission==null){
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"no security user with id "+id);
 		}
+		tenantToBaseclassPermissionUpdate.setTenantToBaseclassPermission(tenantToBaseclassPermission);
 		tenantToBaseclassPermissionService.validate(tenantToBaseclassPermissionUpdate,securityContext);
 		return tenantToBaseclassPermissionService.updateTenantToBaseclassPermission(tenantToBaseclassPermissionUpdate,securityContext);
 	}

@@ -94,6 +94,8 @@ public class ClassScannerService implements Plugin {
 	private String systemAdminId;
 
 
+
+
 	/**
 	 * runs once per server start. synchronizes annotated methods with
 	 * (IOperation) in the database so roles can be built with proper access
@@ -577,6 +579,7 @@ public class ClassScannerService implements Plugin {
 		if (superAdminRole == null) {
 			logger.debug("Creating Super Admin role");
 			superAdminRole = roleService.createRoleNoMerge(roleCreate, null);
+			superAdminRole.setTenant(defaultTenant);
 			superAdminRole.setCreator(admin);
 			superAdminRole.setId(SUPER_ADMIN_ROLE_ID);
 			toMerge.add(superAdminRole);

@@ -55,7 +55,7 @@ public class SecurityTenantService implements Plugin {
 	}
 
 	public SecurityTenant updateTenant(SecurityTenantUpdate tenantUpdate, SecurityContextBase securityContext){
-		SecurityTenant tenant=tenantUpdate.getTenant();
+		SecurityTenant tenant=tenantUpdate.getTenantToUpdate();
 		if(updateTenantNoMerge(tenantUpdate,tenant)){
 			tenantRepository.merge(tenant);
 		}

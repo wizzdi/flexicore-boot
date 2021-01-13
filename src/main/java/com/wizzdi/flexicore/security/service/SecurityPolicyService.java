@@ -29,9 +29,11 @@ public class SecurityPolicyService implements Plugin {
 
 
 	public SecurityPolicy createSecurityPolicy(SecurityPolicyCreate securityPolicyCreate, SecurityContextBase securityContext) {
-		SecurityPolicy SecurityPolicy = createSecurityPolicyNoMerge(securityPolicyCreate, securityContext);
-		SecurityPolicyRepository.merge(SecurityPolicy);
-		return SecurityPolicy;
+		SecurityPolicy securityPolicy = createSecurityPolicyNoMerge(securityPolicyCreate, securityContext);
+		Baseclass security = new Baseclass(securityPolicyCreate.getName(), securityContext);
+		securityPolicy.setSecurity(security);
+		SecurityPolicyRepository.massMerge(Arrays.asList(securityPolicy,security));
+		return securityPolicy;
 	}
 
 	public void merge(Object o) {

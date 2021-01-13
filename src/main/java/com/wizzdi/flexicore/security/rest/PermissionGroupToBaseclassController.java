@@ -1,5 +1,7 @@
 package com.wizzdi.flexicore.security.rest;
 
+import com.flexicore.annotations.IOperation;
+import com.flexicore.annotations.OperationsInside;
 import com.flexicore.model.PermissionGroupToBaseclass;
 import com.wizzdi.flexicore.boot.base.interfaces.Plugin;
 import com.flexicore.security.SecurityContextBase;
@@ -15,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 @RestController
+@OperationsInside
 @RequestMapping("/permissionGroupToBaseclass")
 @Extension
 public class PermissionGroupToBaseclassController implements Plugin {
@@ -22,18 +25,21 @@ public class PermissionGroupToBaseclassController implements Plugin {
 	@Autowired
 	private PermissionGroupToBaseclassService permissionGroupToBaseclassService;
 
+	@IOperation(Name = "creates PermissionGroupToBaseclass",Description = "creates PermissionGroupToBaseclass")
 	@PostMapping("/create")
 	public PermissionGroupToBaseclass create(@RequestBody PermissionGroupToBaseclassCreate permissionGroupToBaseclassCreate, @RequestAttribute SecurityContextBase securityContext){
 		permissionGroupToBaseclassService.validate(permissionGroupToBaseclassCreate,securityContext);
 		return permissionGroupToBaseclassService.createPermissionGroupToBaseclass(permissionGroupToBaseclassCreate,securityContext);
 	}
 
+	@IOperation(Name = "returns PermissionGroupToBaseclass",Description = "returns PermissionGroupToBaseclass")
 	@PostMapping("/getAll")
 	public PaginationResponse<PermissionGroupToBaseclass> getAll(@RequestBody PermissionGroupToBaseclassFilter permissionGroupToBaseclassFilter, @RequestAttribute SecurityContextBase securityContext){
 		permissionGroupToBaseclassService.validate(permissionGroupToBaseclassFilter,securityContext);
 		return permissionGroupToBaseclassService.getAllPermissionGroupToBaseclass(permissionGroupToBaseclassFilter,securityContext);
 	}
 
+	@IOperation(Name = "updates PermissionGroupToBaseclass",Description = "updates PermissionGroupToBaseclass")
 	@PutMapping("/update")
 	public PermissionGroupToBaseclass update(@RequestBody PermissionGroupToBaseclassUpdate permissionGroupToBaseclassUpdate, @RequestAttribute SecurityContextBase securityContext){
 		String id=permissionGroupToBaseclassUpdate.getId();
@@ -41,6 +47,7 @@ public class PermissionGroupToBaseclassController implements Plugin {
 		if(permissionGroupToBaseclass==null){
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"no security user with id "+id);
 		}
+		permissionGroupToBaseclassUpdate.setPermissionGroupToBaseclass(permissionGroupToBaseclass);
 		permissionGroupToBaseclassService.validate(permissionGroupToBaseclassUpdate,securityContext);
 		return permissionGroupToBaseclassService.updatePermissionGroupToBaseclass(permissionGroupToBaseclassUpdate,securityContext);
 	}
