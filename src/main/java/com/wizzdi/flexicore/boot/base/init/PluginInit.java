@@ -13,6 +13,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Scope;
 
 import java.util.Comparator;
@@ -29,6 +30,7 @@ public class PluginInit implements InitializingBean {
     public static final Comparator<PluginWrapper> PLUGIN_COMPARATOR = Comparator.comparing(f -> f.getDescriptor().getVersion());
 
     @Autowired
+    @Lazy
     private PluginManager pluginManager;
     @Autowired
     private ApplicationContext applicationContext;

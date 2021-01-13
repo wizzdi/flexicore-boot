@@ -7,15 +7,18 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory;
 import org.springframework.context.ApplicationContext;
 
+import java.lang.invoke.VarHandle;
 import java.nio.file.Path;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
 public class FlexiCorePluginManager extends SpringPluginManager {
 
 	private static final Logger logger = LoggerFactory.getLogger(FlexiCorePluginManager.class);
+	private static final AtomicBoolean init=new AtomicBoolean(false);
 
 	public FlexiCorePluginManager() {
 	}
@@ -63,19 +66,22 @@ public class FlexiCorePluginManager extends SpringPluginManager {
 
 	@Override
 	public void init() {
-		long start = System.currentTimeMillis();
-		try {
-			this.loadPlugins();
-		} catch (DependencyResolver.DependenciesWrongVersionException e) {
-			List<DependencyResolver.WrongDependencyVersion> dependencies = e.getDependencies();
-			logger.error("loading plugins failed , wrong versions: " + dependencies.stream().map(f -> getWrongDependencyString(f)).collect(Collectors.joining(System.lineSeparator())), e);
-			throw e;
+		if(init.compareAndSet(false,true)){
+			long start = System.currentTimeMillis();
+			try {
+				this.loadPlugins();
+			} catch (DependencyResolver.DependenciesWrongVersionException e) {
+				List<DependencyResolver.WrongDependencyVersion> dependencies = e.getDependencies();
+				logger.error("loading plugins failed , wrong versions: " + dependencies.stream().map(f -> getWrongDependencyString(f)).collect(Collectors.joining(System.lineSeparator())), e);
+				throw e;
+			}
+			this.startPlugins();
+			AbstractAutowireCapableBeanFactory beanFactory = (AbstractAutowireCapableBeanFactory) getApplicationContext().getAutowireCapableBeanFactory();
+			FlexiCoreExtensionsInjector extensionsInjector = new FlexiCoreExtensionsInjector(this, beanFactory);
+			extensionsInjector.injectExtensions();
+			logger.debug("loading and starting plugins took " + (System.currentTimeMillis() - start) + "ms");
+
 		}
-		this.startPlugins();
-		AbstractAutowireCapableBeanFactory beanFactory = (AbstractAutowireCapableBeanFactory) getApplicationContext().getAutowireCapableBeanFactory();
-		FlexiCoreExtensionsInjector extensionsInjector = new FlexiCoreExtensionsInjector(this, beanFactory);
-		extensionsInjector.injectExtensions();
-		logger.debug("loading and starting plugins took " + (System.currentTimeMillis() - start) + "ms");
 
 	}
 

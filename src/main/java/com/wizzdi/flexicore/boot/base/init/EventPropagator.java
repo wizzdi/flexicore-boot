@@ -8,6 +8,7 @@ import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.PayloadApplicationEvent;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.event.EventListener;
@@ -28,6 +29,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class EventPropagator {
 
     @Autowired
+    @Lazy
     private FlexiCorePluginManager flexiCorePluginManager;
     private static final Set<Object> eventsInProcess = new ConcurrentSkipListSet<>(Comparator.comparing(System::identityHashCode));
     private static final Logger logger = LoggerFactory.getLogger(EventPropagator.class);
