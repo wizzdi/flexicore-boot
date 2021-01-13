@@ -12,7 +12,7 @@ FlexiCore allows full multi-layer dependency between Spring enabled plugins.
 ## How to use?
 Add the flexicore-boot dependency using the latest version available from maven central:
 
-	        <dependency>
+	          <dependency>
                 <groupId>com.wizzdi</groupId>
                 <artifactId>flexicore-boot</artifactId>
                 <version>LATEST</version>
@@ -20,7 +20,8 @@ Add the flexicore-boot dependency using the latest version available from maven 
 Simply annotate your application class or your configuration class with
 
     @EnableFlexiCorePlugins
-FlexiCore will automatically load jars and create beans for them , there are more flexicore boot modules that automatically register you plugins in spring specifically provided services such as controllers and JAX-RS.
+FlexiCore will automatically load jars and create beans for them.
+FlexiCore Boot Plugins allow composing a full spring boot application from plugins by using additional FlexiCore Boot modules such as [flexicore-boot-starter-web](https://github.com/wizzdi/flexicore-boot-starter-web)[,flexicore-boot-starter-actuator](https://github.com/wizzdi/flexicore-boot-starter-actuator),[resteasy-flexicore-boot-starter](https://github.com/wizzdi/resteasy-flexicore-boot-starter) and more.
 ## Creating Plugins
 creating plugins is as simple as creating regular spring beans the only difference is that the bean should be annotated with `@Extension` and implement the empty interface `Plugin` .
 the jar containing the class should be packaged using pf4j plugin instructions so it contains a MANIFEST.MF describing it, more on that [here.](https://pf4j.org/doc/packaging.html)
@@ -31,11 +32,7 @@ your application class:
     @SpringBootApplication  
     public class App {  
       
-      
-      
-      
        public static void main(String[] args) {  
-      
       
           SpringApplication app = new SpringApplication(App.class);  
       app.addListeners(new ApplicationPidFileWriter());  
