@@ -70,14 +70,6 @@
         </dependencies>
     </dependencyManagement>
     <dependencies>
-        <dependency>
-            <groupId>com.wizzdi</groupId>
-            <artifactId>flexicore-boot-dynamic-invokers-model</artifactId>
-            <version>1.0.0</version>
-            <scope>provided</scope>
-
-        </dependency>
-
         <!-- https://mvnrepository.com/artifact/commons-io/commons-io -->
         <dependency>
             <groupId>commons-io</groupId>
