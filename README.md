@@ -5,9 +5,19 @@
 For comprehensive information about FlexiCore Boot please visit our [site](http://wizzdi.com/).
 
 ## What it does?
+
 FlexiCore Boot enables plugin loading support for your spring boot app it is built on [pf4j](https://pf4j.org/) and depends only on it.
+
+FlexiCore allows full multi-layer dependency between Spring enabled plugins.
 ## How to use?
-simply annotate your application class or your configuration class with
+Add the flexicore-boot dependency using the latest version available from maven central:
+
+	        <dependency>
+                <groupId>com.wizzdi</groupId>
+                <artifactId>flexicore-boot</artifactId>
+                <version>LATEST</version>
+            </dependency>
+Simply annotate your application class or your configuration class with
 
     @EnableFlexiCorePlugins
 FlexiCore will automatically load jars and create beans for them , there are more flexicore boot modules that automatically register you plugins in spring specifically provided services such as controllers and JAX-RS.
@@ -46,6 +56,12 @@ a bean inside a plugin:
           logger.info("PluginAService Started!");  
       }  
     }
+## Configuration
+FlexiCore Boot exposes the following configuration options:
+|name|default value  |description|
+|--|--|--|
+| flexicore.plugins| /home/flexicore/plugins|folder to load plugins from
+
 
 ### Main 3rd Party Dependencies
 
