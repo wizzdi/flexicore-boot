@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.wizzdi</groupId>
-    <artifactId>flexicore-security-service</artifactId>
+    <artifactId>flexicore-security-service-SNAPSHOT</artifactId>
     <version>1.0.0</version>
 
     <name>FlexiCore security service</name>
@@ -87,7 +87,7 @@
         <dependency>
             <groupId>com.wizzdi</groupId>
             <artifactId>flexicore-boot</artifactId>
-            <version>1.0.2-SNAPSHOT</version>
+            <version>1.0.2</version>
             <scope>provided</scope>
         </dependency>
 
