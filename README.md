@@ -1,110 +1,86 @@
 
+# ![](https://support.wizzdi.com/wp-content/uploads/2020/05/flexicore-icon-extra-small.png) FlexiCore Security Model [![Build Status](https://jenkins.wizzdi.com/buildStatus/icon?job=wizzdi+organization%2Fflexicore-security-model%2Fmaster)](https://jenkins.wizzdi.com/job/wizzdi%20organization/job/flexicore-security-model/job/master/)[![Maven Central](https://img.shields.io/maven-central/v/com.wizzdi/flexicore-security-model.svg?label=Maven%20Central)](https://search.maven.org/search?q=g:%22com.wizzdi%22%20AND%20a:%22flexicore-security-model%22)
 
 
+For comprehensive information about FlexiCore Security Model please visit our [site](http://wizzdi.com/).
 
-# ![](https://support.wizzdi.com/wp-content/uploads/2020/05/flexicore-icon-extra-small.png) FlexiCore [![Build Status](https://jenkins.wizzdi.com/buildStatus/icon?job=FlexiCore)](https://jenkins.wizzdi.com/job/FlexiCore/)[![Maven Central](https://img.shields.io/maven-central/v/com.wizzdi/flexicore-api.svg?label=Maven%20Central)](https://search.maven.org/search?q=g:%22com.wizzdi%22%20AND%20a:%22flexicore-api%22)[![Maven Central](https://img.shields.io/docker/cloud/automated/wizzdi/flexicore)](https://hub.docker.com/r/wizzdi/flexicore)
+## What it does?
 
+FlexiCore Security Model is a FlexiCore Module and a FlexiCore Entity Plugin.
+FlexiCore Security Model defines the entities required by [FlexiCore Security Service](https://github.com/wizzdi/flexicore-security-service) for its multi-tenancy access control support.
 
-For comprehensive information about FlexiCore please visit our [site](http://wizzdi.com/).
+## How to use as a Module?
+Add the flexicore-security-model dependency to your main app using the latest version available from maven central:
 
-FlexiCore boosts [Spring Boot](https://github.com/spring-projects/spring-boot) applications with a very flexible and powerful plugins support, robust access control and an optional set of services many applications require.
+            <dependency>
+                <groupId>com.wizzdi</groupId>
+                <artifactId>flexicore-security-model</artifactId>
+                <version>LATEST</version>
+            </dependency>
+            
+## How to use as an Entity Plugin?
+Add the flexicore-security-model dependency to your main app using the latest version available from maven central:
 
-## Use Case
+            <dependency>
+                <groupId>com.wizzdi</groupId>
+                <artifactId>flexicore-security-model</artifactId>
+                <version>LATEST</version>
+                <scope>provided</scope>
+            </dependency>
+add the flexicore-security-model.jar to your [entities folder.](https://github.com/wizzdi/flexicore-boot-starter-data-jpa)
+## Creating Entities With Data Access Control
+you can add a field of type `Baseclass` to your entity:
 
-**PersonService** in person-service jar
-
-    @PluginInfo(version = 1)  
-    @Extension  
-    @Component
-    public class PersonService implements ServicePlugin {  
-    
-      private static final Logger logger=LoggerHandler.getLogger(PersonService.class);  
+    @Entity  
+    public class TestEntity{  
       
-     @Autowired  
-     @PluginInfo(version = 1)  
-      private PersonRepository repository;  
+       @Id  
+      private String id;  
+      @ManyToOne(targetEntity = Baseclass.class)  
+       private Baseclass security;  
       
-      
-     public Person createPerson(PersonCreate personCreate, SecurityContext securityContext) {  
-            Person person = createPersonNoMerge(personCreate, securityContext);  
-      repository.merge(person);  
-      return person;  
-       }  
-
-
-  
-    public Person createPersonNoMerge(PersonCreate personCreate, SecurityContext securityContext) {  
-        Person person = new Person(personCreate.getFirstName(),securityContext);  
-        updatePersonNoMerge(person, personCreate); 
-         return person;  
-         }
-  
-
-  
-
-**AuthorService** in library-service jar
-
-    @PluginInfo(version = 1)  
-    @Extension  
-    @Component  
-    public class AuthorService implements ServicePlugin {  
-      
-      @PluginInfo(version = 1)  
-      @Autowired  
-      private AuthorRepository repository;  
-      @Autowired  
-      private Logger logger;  
-      
-      @PluginInfo(version = 1)  
-       @Autowired  
-      private PersonService personService;  
-      
-     public Author createAuthor(AuthorCreate authorCreate,  
-      SecurityContext securityContext) {  
-          Author author = createAuthorNoMerge(authorCreate, securityContext);  
-      repository.merge(author);  
-     return author;  
+      @Id  
+      public String getId() {  
+          return id;  
       }  
       
-       public Author createAuthorNoMerge(AuthorCreate authorCreate,  
-      SecurityContext securityContext) {  
-          Author author = new Author(authorCreate.getFirstName(),  
-      securityContext);  
-      updateAuthorNoMerge(author, authorCreate);  
-     return author;  
-      }
-The first code snippet shows a **PersonService** plugin managing a person CRUD (only create is shown) . the second code sinppet shows an **AuthorService** plugin managing authors which is dependent on **PersonService** . both plugins are compiled separately. use by placing both of them in the FlexiCore plugin directory 
+       public <T extends TestEntity> T setId(String id) {  
+          this.id = id;  
+     return (T) this;  
+      }  
+      
+     
+      
+       @ManyToOne(targetEntity = Baseclass.class)  
+       public Baseclass getSecurity() {  
+          return security;  
+      }  
+      
+       public <T extends TestEntity> T setSecurity(Baseclass security) {  
+          this.security = security;  
+     return (T) this;  
+      }  
+    }
+or you can directly inherit from `Baseclass`
 
-## Debugging Plugins
-add the relevant debuggin line to your java properties
-for java 11: 
--agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:8787
+    @Entity  
+    public class TestEntity extends Baseclass{  
+      
+      @ManyToOne(targetEntity = Baseclass.class)  
+       private Baseclass security;  
+      
+       @ManyToOne(targetEntity = Baseclass.class)  
+       public Baseclass getSecurity() {  
+          return security;  
+      }  
+      
+       public <T extends TestEntity> T setSecurity(Baseclass security) {  
+          this.security = security;  
+     return (T) this;  
+      }  
+    }
+## Main Dependencies
 
-for java 8:
--agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=8787
+[FlexiCore Boot](https://github.com/wizzdi/flexicore-boot)
 
-now from your IDE connect to the port specified in the above command (8787)
-
-
-## Documentation
-FlexiCore maintains a reference [documentation](https://support.wizzdi.com)
-
-## Docker
-if your machine is running docker ( if not installation instructions are available in [docker documentation site](https://docs.docker.com/get-docker/) ) simply run:
-
-    docker run -p 8080:8080 wizzdi/flexicore
-    
-once initialization is complete a swagger will be avilable at http://<your-server-ip>:8080/FlexiCore
-the default username is admin@flexicore.com the password is randomlly generated and can be found in the docker container at /home/flexicore/firstRun.txt
-docker image is available at [Docker Hub](https://hub.docker.com/r/wizzdi/flexicore)
-
-
-## Stay in Touch
-Contact us at our [site](http://wizzdi.com/)
-
-
-### Main 3rd Party Dependencies
-
-[Spring Boot](https://github.com/spring-projects/spring-boot)
-
-[Pf4J](https://github.com/pf4j/pf4j)
+[FlexiCore Boot Starter Data JPA](https://github.com/wizzdi/flexicore-boot-starter-data-jpa)
