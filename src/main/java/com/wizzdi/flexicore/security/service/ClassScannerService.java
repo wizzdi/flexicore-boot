@@ -85,10 +85,6 @@ public class ClassScannerService implements Plugin {
 	private FlexiCorePluginManager pluginManager;
 
 	private Reflections reflections;
-	@Value("${flexicore.users.firstRunPath:/home/flexicore/firstRun.txt}")
-	private String firstRunFilePath;
-	@Value("${flexicore.users.adminEmail:admin@flexicore.com}")
-	private String adminEmail;
 	@Autowired
 	@Qualifier("systemAdminId")
 	private String systemAdminId;
