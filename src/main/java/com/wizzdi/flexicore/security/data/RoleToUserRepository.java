@@ -1,8 +1,6 @@
 package com.wizzdi.flexicore.security.data;
 
-import com.flexicore.model.Baseclass;
-import com.flexicore.model.Baseclass_;
-import com.flexicore.model.RoleToUser;
+import com.flexicore.model.*;
 import com.flexicore.security.SecurityContextBase;
 import com.wizzdi.flexicore.boot.base.interfaces.Plugin;
 import com.wizzdi.flexicore.security.request.RoleToUserFilter;
@@ -18,6 +16,7 @@ import javax.persistence.criteria.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Component
 @Extension
@@ -42,8 +41,19 @@ public class RoleToUserRepository implements Plugin {
 
 	}
 
-	public <T extends RoleToUser> void addRoleToUserPredicates(RoleToUserFilter roleToUserFilter, CriteriaBuilder cb, CommonAbstractCriteria q, Path<T> r, List<Predicate> predicates, SecurityContextBase securityContext) {
+	public <T extends RoleToUser> void addRoleToUserPredicates(RoleToUserFilter roleToUserFilter, CriteriaBuilder cb, CommonAbstractCriteria q, From<?,T> r, List<Predicate> predicates, SecurityContextBase securityContext) {
 		baselinkRepository.addBaselinkPredicates(roleToUserFilter,cb,q,r,predicates,securityContext);
+		if(roleToUserFilter.getRoles()!=null&&!roleToUserFilter.getRoles().isEmpty()){
+			Set<String> ids=roleToUserFilter.getRoles().stream().map(f->f.getId()).collect(Collectors.toSet());
+			Join<T, Role> join=cb.treat(r.join(Baselink_.leftside),Role.class);
+			predicates.add(join.get(Role_.id).in(ids));
+		}
+
+		if(roleToUserFilter.getSecurityUsers()!=null&&!roleToUserFilter.getSecurityUsers().isEmpty()){
+			Set<String> ids=roleToUserFilter.getSecurityUsers().stream().map(f->f.getId()).collect(Collectors.toSet());
+			Join<T, SecurityUser> join=cb.treat(r.join(Baselink_.rightside),SecurityUser.class);
+			predicates.add(join.get(SecurityUser_.id).in(ids));
+		}
 	}
 
 	public long countAllRoleToUsers(RoleToUserFilter roleToUserFilter, SecurityContextBase securityContext){

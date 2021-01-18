@@ -1,7 +1,9 @@
 package com.wizzdi.flexicore.security.service;
 
 import com.flexicore.model.Baseclass;
+import com.flexicore.model.Role;
 import com.flexicore.model.RoleToUser;
+import com.flexicore.model.SecurityUser;
 import com.flexicore.security.SecurityContextBase;
 import com.wizzdi.flexicore.boot.base.interfaces.Plugin;
 import com.wizzdi.flexicore.security.data.RoleToUserRepository;
@@ -11,10 +13,12 @@ import com.wizzdi.flexicore.security.request.RoleToUserUpdate;
 import com.wizzdi.flexicore.security.response.PaginationResponse;
 import org.pf4j.Extension;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.HttpClientErrorException;
 
-import java.util.List;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Extension
 @Component
@@ -51,7 +55,16 @@ public class RoleToUserService implements Plugin {
 	}
 
 	public boolean updateRoleToUserNoMerge(RoleToUserCreate roleToUserCreate, RoleToUser roleToUser) {
-		return baselinkService.updateBaselinkNoMerge(roleToUserCreate,roleToUser);
+		boolean update = baselinkService.updateBaselinkNoMerge(roleToUserCreate, roleToUser);
+		if(roleToUserCreate.getSecurityUser()!=null&&(roleToUser.getRightside()==null||!roleToUserCreate.getSecurityUser().getId().equals(roleToUser.getRightside().getId()))){
+			roleToUser.setRightside(roleToUserCreate.getSecurityUser());
+			update=true;
+		}
+		if(roleToUserCreate.getRole()!=null&&(roleToUser.getLeftside()==null||!roleToUserCreate.getRole().getId().equals(roleToUser.getLeftside().getId()))){
+			roleToUser.setRole(roleToUserCreate.getRole());
+			update=true;
+		}
+		return update;
 	}
 
 	public RoleToUser updateRoleToUser(RoleToUserUpdate roleToUserUpdate, SecurityContextBase securityContext){
@@ -68,6 +81,21 @@ public class RoleToUserService implements Plugin {
 
 	public void validate(RoleToUserFilter roleToUserFilter, SecurityContextBase securityContext) {
 		baselinkService.validate(roleToUserFilter,securityContext);
+		Set<String> roleIds=roleToUserFilter.getRolesIds();
+		Map<String, Role> roleMap=roleIds.isEmpty()?new HashMap<>():listByIds(Role.class,roleIds,securityContext).stream().collect(Collectors.toMap(f->f.getId(),f->f));
+		roleIds.removeAll(roleMap.keySet());
+		if(!roleIds.isEmpty()){
+			throw new HttpClientErrorException(HttpStatus.BAD_REQUEST,"no roles with ids "+roleIds);
+		}
+		roleToUserFilter.setRoles(new ArrayList<>(roleMap.values()));
+
+		Set<String> usersIds=roleToUserFilter.getUsersIds();
+		Map<String, SecurityUser> userMap=usersIds.isEmpty()?new HashMap<>():listByIds(SecurityUser.class,usersIds,securityContext).stream().collect(Collectors.toMap(f->f.getId(), f->f));
+		usersIds.removeAll(userMap.keySet());
+		if(!usersIds.isEmpty()){
+			throw new HttpClientErrorException(HttpStatus.BAD_REQUEST,"no security users with ids "+usersIds);
+		}
+		roleToUserFilter.setSecurityUsers(new ArrayList<>(userMap.values()));
 	}
 
 	public <T extends Baseclass> T getByIdOrNull(String id,Class<T> c, SecurityContextBase securityContext) {

@@ -1,8 +1,6 @@
 package com.wizzdi.flexicore.security.data;
 
-import com.flexicore.model.Baseclass;
-import com.flexicore.model.Baseclass_;
-import com.flexicore.model.TenantToUser;
+import com.flexicore.model.*;
 import com.flexicore.security.SecurityContextBase;
 import com.wizzdi.flexicore.boot.base.interfaces.Plugin;
 import com.wizzdi.flexicore.security.request.TenantToUserFilter;
@@ -18,6 +16,7 @@ import javax.persistence.criteria.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Component
 @Extension
@@ -42,8 +41,19 @@ public class TenantToUserRepository implements Plugin {
 
 	}
 
-	public <T extends TenantToUser> void addTenantToUserPredicates(TenantToUserFilter tenantToUserFilter, CriteriaBuilder cb, CommonAbstractCriteria q, Path<T> r, List<Predicate> predicates, SecurityContextBase securityContext) {
+	public <T extends TenantToUser> void addTenantToUserPredicates(TenantToUserFilter tenantToUserFilter, CriteriaBuilder cb, CommonAbstractCriteria q, From<?,T> r, List<Predicate> predicates, SecurityContextBase securityContext) {
 		baselinkRepository.addBaselinkPredicates(tenantToUserFilter,cb,q,r,predicates,securityContext);
+		if(tenantToUserFilter.getSecurityTenants()!=null&&!tenantToUserFilter.getSecurityTenants().isEmpty()){
+			Set<String> ids=tenantToUserFilter.getSecurityTenants().stream().map(f->f.getId()).collect(Collectors.toSet());
+			Join<T, SecurityTenant> join=cb.treat(r.join(Baselink_.leftside),SecurityTenant.class);
+			predicates.add(join.get(SecurityTenant_.id).in(ids));
+		}
+
+		if(tenantToUserFilter.getSecurityUsers()!=null&&!tenantToUserFilter.getSecurityUsers().isEmpty()){
+			Set<String> ids=tenantToUserFilter.getSecurityUsers().stream().map(f->f.getId()).collect(Collectors.toSet());
+			Join<T, SecurityUser> join=cb.treat(r.join(Baselink_.rightside),SecurityUser.class);
+			predicates.add(join.get(SecurityUser_.id).in(ids));
+		}
 	}
 
 	public long countAllTenantToUsers(TenantToUserFilter tenantToUserFilter, SecurityContextBase securityContext){

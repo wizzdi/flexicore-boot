@@ -204,7 +204,7 @@ public class ClassScannerService implements Plugin {
 	@Bean
 	@Scope(value = ConfigurableBeanFactory.SCOPE_SINGLETON)
 	@ConditionalOnMissingBean
-	public StandardOperationScanner standardAccessScan() {
+	public StandardOperationScanner standardOperationScanner() {
 		return ()->Arrays.asList(Delete.class, Read.class, Update.class, Write.class, All.class).stream().map(this::standardAccess).collect(Collectors.toList());
 	}
 
