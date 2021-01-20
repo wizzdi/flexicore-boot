@@ -65,6 +65,11 @@ public class EclipseLinkJpaConfiguration extends JpaBaseConfiguration {
     }
 
     @Bean
+    public PlatformTransactionManager transactionManager(PlatformTransactionManager platformTransactionManager){
+        return platformTransactionManager;
+    }
+
+    @Bean
     @Primary
     public LocalContainerEntityManagerFactoryBean entityManagerFactory(final EntityManagerFactoryBuilder builder, @Autowired DataSource dataSource, @Autowired List<EntitiesHolder> entitiesHolder) throws ClassNotFoundException, MalformedURLException {
 
