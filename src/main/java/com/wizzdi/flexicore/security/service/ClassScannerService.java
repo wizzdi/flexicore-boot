@@ -38,7 +38,9 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ClassUtils;
 
+import javax.persistence.EntityManager;
 import javax.persistence.ManyToOne;
+import javax.persistence.PersistenceContext;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.*;
@@ -77,9 +79,9 @@ public class ClassScannerService implements Plugin {
 
 	@Autowired
 	private SecurityUserService userService;
-	@Autowired
-	private EntitiesHolder entitiesHolder;
 
+	@PersistenceContext
+	private EntityManager entityManager;
 	@Autowired
 	@Lazy
 	private FlexiCorePluginManager pluginManager;
@@ -382,7 +384,7 @@ public class ClassScannerService implements Plugin {
 		logger.info("Initializing classes");
 
 
-		Set<Class<?>> entities = entitiesHolder.getEntities();
+		Set<Class<?>> entities =entityManager.getMetamodel().getEntities().stream().map(f->f.getJavaType()).collect(Collectors.toSet());
 		logger.debug("detected classes:  " + entities.parallelStream().map(e -> e.getCanonicalName()).collect(Collectors.joining(System.lineSeparator())));
 
 		Set<String> ids = entities.parallelStream().map(f -> Baseclass.generateUUIDFromString(f.getCanonicalName())).collect(Collectors.toSet());
@@ -419,19 +421,18 @@ public class ClassScannerService implements Plugin {
 
 
 	private void registerClazzes(Class<?> claz, Map<String, Clazz> existing, List<Object> toMerge) {
-		String classname = claz.getCanonicalName();
-		AnnotatedClazz annotatedclazz = claz.getAnnotation(AnnotatedClazz.class);
+		try {
+			String classname = claz.getCanonicalName();
+			AnnotatedClazz annotatedclazz = claz.getAnnotation(AnnotatedClazz.class);
 
-		if (annotatedclazz == null) {
-			annotatedclazz = generateAnnotatedClazz(claz);
-		}
-		String ID = Baseclass.generateUUIDFromString(classname);
+			if (annotatedclazz == null) {
+				annotatedclazz = generateAnnotatedClazz(claz);
+			}
+			String ID = Baseclass.generateUUIDFromString(classname);
 
 
-		Clazz clazz = existing.get(ID);
-		if (clazz == null) {
-			try {
-
+			Clazz clazz = existing.get(ID);
+			if (clazz == null) {
 				clazz = Baselink.class.isAssignableFrom(claz) ? createClazzLink(claz, existing, toMerge) : new Clazz(classname, null);
 				clazz.setId(ID);
 				clazz.setDescription(annotatedclazz.Description());
@@ -439,21 +440,18 @@ public class ClassScannerService implements Plugin {
 				toMerge.add(clazz);
 				existing.put(clazz.getId(), clazz);
 				logger.debug("Have created a new class " + clazz.toString());
-			} catch (Exception e) {
-				logger.error("[register classes] Error while creating operation: ", e);
-			}
 
-		} else {
-			logger.debug("Clazz  allready exists: " + clazz);
+
+			} else {
+				logger.debug("Clazz  allready exists: " + clazz);
+
+			}
+			Baseclass.addClazz(clazz);
 
 		}
-		//TODO:decide if to keep clazz caching
-	/*	if (clazz != null) {
-			clazzService.addtocache(clazz);
-		} else {
-			logger.error("clazz for " + claz.getCanonicalName() + " was not registered");
-		}*/
-
+		catch (Exception e){
+			logger.error("failed registering clazz",e);
+		}
 
 	}
 
