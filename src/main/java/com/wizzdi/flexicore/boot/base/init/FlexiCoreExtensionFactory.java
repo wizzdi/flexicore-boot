@@ -31,15 +31,22 @@ public class FlexiCoreExtensionFactory extends SpringExtensionFactory {
     @Override
     public <T> T create(Class<T> extensionClass) {
         try {
-            T extension = this.createWithoutSpring(extensionClass);
-            if (extension != null) {
-                PluginWrapper pluginWrapper = this.pluginManager.whichPlugin(extensionClass);
-                ApplicationContext pluginContext = getApplicationContext(pluginWrapper);
-                pluginContext.getAutowireCapableBeanFactory().autowireBean(extension);
+            if(!extensionClass.isInterface()){
+                T extension = this.createWithoutSpring(extensionClass);
+                if (extension != null) {
+                    PluginWrapper pluginWrapper = this.pluginManager.whichPlugin(extensionClass);
+                    ApplicationContext pluginContext = getApplicationContext(pluginWrapper);
+                    pluginContext.getAutowireCapableBeanFactory().autowireBean(extension);
 
 
+                }
+                return extension;
             }
-            return extension;
+            else{
+                return null;
+            }
+
+
         }
         catch (Exception e){
             logger.error("failed creating extension class",e);

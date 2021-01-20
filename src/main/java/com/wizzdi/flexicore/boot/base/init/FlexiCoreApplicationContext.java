@@ -1,7 +1,10 @@
 package com.wizzdi.flexicore.boot.base.init;
 
+import org.springframework.beans.factory.config.ConstructorArgumentValues;
+import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.PayloadApplicationEvent;
+import org.springframework.context.annotation.AnnotationBeanNameGenerator;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.core.ResolvableType;
 
@@ -21,6 +24,7 @@ public class FlexiCoreApplicationContext extends AnnotationConfigApplicationCont
     @Override
     public FlexiCoreBeanFactory getAutowireCapableBeanFactory() throws IllegalStateException {
         return flexiCoreBeanFactory;
+
     }
 
     @Override
