@@ -4,7 +4,7 @@
 
     <groupId>com.wizzdi</groupId>
     <artifactId>flexicore-boot-starter-data-jpa</artifactId>
-    <version>1.0.2</version>
+    <version>1.0.3-SNAPSHOT</version>
 
     <name>FlexiCore Boot JPA</name>
     <description>flexicore boot jpa</description>
@@ -61,7 +61,7 @@
         <connection>scm:git:git://wizzdi/flexicore-boot-starter-data-jpa.git</connection>
         <developerConnection>scm:git:git@github.com:wizzdi/flexicore-boot-starter-data-jpa.git</developerConnection>
         <url>https://github.com/wizzdi/flexicore-boot-starter-data-jpa</url>
-        <tag>flexicore-boot-starter-data-jpa-1.0.2</tag>
+        <tag>flexicore-boot-starter-data-jpa-${version}</tag>
     </scm>
 
     <dependencyManagement>
