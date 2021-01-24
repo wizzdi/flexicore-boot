@@ -117,7 +117,7 @@ public class ClassScannerService implements Plugin {
 	@Bean
 	@Scope(value = ConfigurableBeanFactory.SCOPE_SINGLETON)
 	@ConditionalOnMissingBean
-	public OperationBuilder operationBuilder() {
+	public OperationBuilder securityOperationBuilder() {
 		return (securityOperationCreate, existing, relatedClazzes, toMerge, clazzes, securityContextBase) -> createOperation(securityOperationCreate, existing,relatedClazzes,toMerge,clazzes, securityContextBase);
 	}
 
