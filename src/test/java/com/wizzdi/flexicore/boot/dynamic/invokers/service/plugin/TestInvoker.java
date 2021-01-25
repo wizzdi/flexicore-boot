@@ -30,6 +30,12 @@ public class TestInvoker implements Invoker {
         return new PaginationResponse<>(Collections.singletonList(new TestEntity().setName("test").setDescription("test")),filter,1);
     }
 
+    @IOperation(Name = "createTestEntity",Description = "createTest")
+    @PostMapping("/createTestEntity")
+    public TestEntity createTest(@RequestBody TestFilter filter, @RequestAttribute("securityContext") SecurityContextBase securityContext) {
+        return new TestEntity().setName("test").setDescription("test");
+    }
+
     @Override
     public Class<?> getHandlingClass() {
         return TestEntity.class;

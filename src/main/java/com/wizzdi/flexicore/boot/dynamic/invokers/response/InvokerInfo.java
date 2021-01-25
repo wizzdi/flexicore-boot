@@ -145,7 +145,7 @@ public class InvokerInfo {
     }
 
     private Class<?> getAutomatically(Object invoker) {
-		Map<Class<?>, List<Class<?>>> collect = Arrays.stream(invoker.getClass().getMethods()).filter(f -> !f.isBridge()).map(f -> getMethodSubject(f)).collect(Collectors.groupingBy(f -> f));
+		Map<Class<?>, List<Class<?>>> collect = Arrays.stream(invoker.getClass().getDeclaredMethods()).filter(f -> !f.isBridge()).map(f -> getMethodSubject(f)).collect(Collectors.groupingBy(f -> f));
 		return collect.entrySet().stream().max(Comparator.comparing(e -> e.getValue().size())).map(f -> f.getKey()).orElse(null);
 	}
 

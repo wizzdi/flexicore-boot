@@ -27,7 +27,9 @@ public class DynamicInvokersProvider implements Plugin {
 	@Bean
 	@Scope(value = ConfigurableBeanFactory.SCOPE_SINGLETON)
 	public List<InvokerInfo> invokerInfos(FlexiCorePluginManager flexiCorePluginManager){
-		return flexiCorePluginManager.getStartedPlugins().stream().map(f -> flexiCorePluginManager.getApplicationContext(f)).map(f -> getInvokers(f)).flatMap(List::stream).map(f->new InvokerInfo(f)).collect(Collectors.toList());
+		List<ApplicationContext> collect = flexiCorePluginManager.getStartedPlugins().stream().map(f -> flexiCorePluginManager.getApplicationContext(f)).collect(Collectors.toList());
+		collect.add(flexiCorePluginManager.getApplicationContext());
+		return collect.stream().map(f -> getInvokers(f)).flatMap(List::stream).map(f->new InvokerInfo(f)).collect(Collectors.toList());
 	}
 
 	private List<Object> getInvokers(ApplicationContext f) {

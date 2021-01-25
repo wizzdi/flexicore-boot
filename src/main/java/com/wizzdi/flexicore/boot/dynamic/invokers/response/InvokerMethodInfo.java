@@ -77,7 +77,7 @@ public class InvokerMethodInfo {
 
     private ParameterInfo detectAutomatically(Field field, List<Field> fields, Field[] declaredFields) {
         String fieldName = field.getName();
-        if(fieldName.endsWith("id")){
+        if(fieldName.toLowerCase().endsWith("id")){
             String refName= fieldName.substring(0,fieldName.length()-2);
             Optional<IdRefFieldInfo> related = fields.stream().filter(f -> f.getName().equals(refName)).findFirst().map(f->getIdRefInfo(field,f.getType(),false)).or(()->fromDeclared(field,declaredFields).map(f->getIdRefInfo(field,f.getType(),true)));
 
