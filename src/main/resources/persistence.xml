@@ -8,32 +8,12 @@
 
     <persistence-unit name="primary" transaction-type="JTA">
 
-
         <class>com.flexicore.model.Baseclass</class>
-        <class>com.flexicore.model.SecurityEntity</class>
-        <class>com.flexicore.model.SecurityUser</class>
-        <class>com.flexicore.model.Role</class>
-        <class>com.flexicore.model.RoleToUser</class>
-        <class>com.flexicore.model.PermissionGroup</class>
-        <class>com.flexicore.model.Baselink</class>
-        <class>com.flexicore.model.Clazz</class>
-        <class>com.flexicore.model.ClazzLink</class>
-        <class>com.flexicore.model.OperationCategory</class>
-        <class>com.flexicore.model.OperationToClazz</class>
-        <class>com.flexicore.model.PermissionGroupToBaseclass</class>
-        <class>com.flexicore.model.RoleToBaseclass</class>
-        <class>com.flexicore.model.SecurityLink</class>
-        <class>com.flexicore.model.SecurityOperation</class>
-        <class>com.flexicore.model.SecurityTenant</class>
-        <class>com.flexicore.model.SecurityWildcard</class>
-		<class>com.flexicore.model.TenantToBaseClassPremission</class>
-		<class>com.flexicore.model.TenantToUser</class>
-		<class>com.flexicore.model.UserToBaseClass</class>
-        <class>com.flexicore.model.security.SecurityPolicy</class>
+        <class>com.wizzdi.flexicore.boot.dynamic.invokers.model.DynamicExecution</class>
+        <class>com.wizzdi.flexicore.boot.dynamic.invokers.model.ServiceCanonicalName</class>
 
 
-
-		<exclude-unlisted-classes>true</exclude-unlisted-classes>
+        <exclude-unlisted-classes>true</exclude-unlisted-classes>
     </persistence-unit>
 
 </persistence>
