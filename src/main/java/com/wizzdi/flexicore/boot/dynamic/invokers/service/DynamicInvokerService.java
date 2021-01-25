@@ -2,7 +2,6 @@ package com.wizzdi.flexicore.boot.dynamic.invokers.service;
 
 import com.flexicore.security.SecurityContextBase;
 import com.wizzdi.flexicore.boot.base.interfaces.Plugin;
-import com.wizzdi.flexicore.boot.dynamic.invokers.annotations.Invoker;
 import com.wizzdi.flexicore.boot.dynamic.invokers.interfaces.ExecutionContext;
 import com.wizzdi.flexicore.boot.dynamic.invokers.request.DynamicInvokerFilter;
 import com.wizzdi.flexicore.boot.dynamic.invokers.request.ExecuteInvokerRequest;
@@ -15,9 +14,6 @@ import org.pf4j.PluginManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.config.ConfigurableBeanFactory;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
 import java.lang.reflect.Method;
@@ -82,7 +78,7 @@ public class DynamicInvokerService implements Plugin {
 	}
 
 	public ExecuteInvokersResponse executeInvoker(ExecuteInvokerRequest executeInvokerRequest, SecurityContextBase securityContext) {
-		List<? extends Invoker> invokers = getInvokers(executeInvokerRequest.getInvokerNames());
+		List<? extends Plugin> invokers = getInvokers(executeInvokerRequest.getInvokerNames());
 
 		List<ExecuteInvokerResponse<?>> responses = new ArrayList<>();
 		Object executionParametersHolder = executeInvokerRequest.getExecutionParametersHolder();
@@ -134,13 +130,13 @@ public class DynamicInvokerService implements Plugin {
 
 	}
 
-	private List<? extends Invoker> getInvokers(Set<String> invokerNames) {
-		Map<String,Invoker> allPlugins=pluginManager.getExtensions(Invoker.class).stream().collect(Collectors.toMap(f->f.getClass().getName(),f->f,(a,b)->a));
+	private List<Plugin> getInvokers(Set<String> invokerNames) {
+		Map<String,Plugin> allPlugins=pluginManager.getExtensions(Plugin.class).stream().collect(Collectors.toMap(f->f.getClass().getName(),f->f,(a,b)->a));
 		return invokerNames.stream().map(f->getInvoker(allPlugins,f)).filter(Objects::nonNull).collect(Collectors.toList());
 	}
 
-	private Invoker getInvoker(Map<String, Invoker> allPlugins, String invokerClassName) {
-		Invoker invoker = allPlugins.get(invokerClassName);
+	private Plugin getInvoker(Map<String, Plugin> allPlugins, String invokerClassName) {
+		Plugin invoker = allPlugins.get(invokerClassName);
 		if(invoker==null){
 			logger.warn("invoker "+invokerClassName +" could not be found");
 		}

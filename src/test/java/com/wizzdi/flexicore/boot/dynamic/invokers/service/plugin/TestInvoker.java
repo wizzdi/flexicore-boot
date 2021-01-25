@@ -1,6 +1,7 @@
 package com.wizzdi.flexicore.boot.dynamic.invokers.service.plugin;
 
 
+import com.flexicore.annotations.IOperation;
 import com.flexicore.security.SecurityContextBase;
 import com.wizzdi.flexicore.boot.dynamic.invokers.annotations.Invoker;
 import com.wizzdi.flexicore.boot.dynamic.invokers.annotations.InvokerInfo;
@@ -13,7 +14,6 @@ import org.springframework.web.client.HttpClientErrorException;
 
 import java.util.Collections;
 
-@InvokerInfo(displayName = "test invoker",description = "test invoker")
 @RestController
 @RequestMapping("/test/")
 @Extension
@@ -21,7 +21,7 @@ public class TestInvoker implements Invoker {
 
 
 
-    @InvokerMethodInfo(displayName = "listTests",description = "lists all Clazzes")
+    @IOperation(Name = "listTests",Description = "lists all Clazzes")
     @PostMapping("/listTests")
     public PaginationResponse<TestEntity> listTests(@RequestBody TestFilter filter, @RequestAttribute("securityContext") SecurityContextBase securityContext) {
         if(filter==null||filter.getPageSize()==null){

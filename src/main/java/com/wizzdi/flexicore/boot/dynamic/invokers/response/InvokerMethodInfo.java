@@ -6,13 +6,11 @@ import com.wizzdi.flexicore.boot.dynamic.invokers.annotations.IdRefFieldInfo;
 import com.wizzdi.flexicore.boot.dynamic.invokers.annotations.ListFieldInfo;
 import com.flexicore.model.Baseclass;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -48,7 +46,8 @@ public class InvokerMethodInfo {
         if(parameters.length>0){
             Parameter parameter=parameters[0];
             parameterHolderType=parameter.getType().getCanonicalName();
-            for (Field field : ParameterInfo.getAllFields(parameter.getType())) {
+            List<Field> allFields = ParameterInfo.getAllFields(parameter.getType());
+            for (Field field : allFields) {
                 IdRefFieldInfo idRefFieldInfo = field.getDeclaredAnnotation(IdRefFieldInfo.class);
                 if(idRefFieldInfo !=null){
                     this.parameters.add(new ParameterInfo(field, idRefFieldInfo));
@@ -63,6 +62,10 @@ public class InvokerMethodInfo {
                         if(listFieldInfo !=null){
                             this.parameters.add(new ParameterInfo(field, listFieldInfo));
                         }
+                        else{
+
+                            this.parameters.add(detectAutomatically(field,allFields,parameter.getType().getDeclaredFields()));
+                        }
 
                     }
                 }
@@ -70,6 +73,127 @@ public class InvokerMethodInfo {
             }
         }
 
+    }
+
+    private ParameterInfo detectAutomatically(Field field, List<Field> fields, Field[] declaredFields) {
+        String fieldName = field.getName();
+        if(fieldName.endsWith("id")){
+            String refName= fieldName.substring(0,fieldName.length()-2);
+            Optional<IdRefFieldInfo> related = fields.stream().filter(f -> f.getName().equals(refName)).findFirst().map(f->getIdRefInfo(field,f.getType(),false)).or(()->fromDeclared(field,declaredFields).map(f->getIdRefInfo(field,f.getType(),true)));
+
+            if(related.isPresent()){
+                IdRefFieldInfo idRefFieldInfo=related.get();
+                return new ParameterInfo(field,idRefFieldInfo);
+            }
+        }
+        FieldInfo fieldInfo=getFieldInfo(field);
+        return new ParameterInfo(field,fieldInfo);
+
+    }
+
+    private FieldInfo getFieldInfo(Field field) {
+        return new FieldInfo(){
+            @Override
+            public String displayName() {
+                return field.getName();
+            }
+
+            @Override
+            public String description() {
+                return field.getName();
+            }
+
+            @Override
+            public boolean mandatory() {
+                return false;
+            }
+
+            @Override
+            public String defaultValue() {
+                return "";
+            }
+
+            @Override
+            public boolean enableRegexValidation() {
+                return false;
+            }
+
+            @Override
+            public String regexValidation() {
+                return "";
+            }
+
+            @Override
+            public boolean rangeEnabled() {
+                return false;
+            }
+
+            @Override
+            public double rangeMin() {
+                return Double.NEGATIVE_INFINITY;
+            }
+
+            @Override
+            public double rangeMax() {
+                return Double.POSITIVE_INFINITY;
+            }
+
+            @Override
+            public double valueSteps() {
+                return Double.MIN_VALUE;
+            }
+
+            @Override
+            public Class<? extends Annotation> annotationType() {
+                return FieldInfo.class;
+            }
+        };
+    }
+
+    private Optional<? extends Field> fromDeclared(Field field,Field[] declaredFields) {
+        if(declaredFields.length==2){
+            return Arrays.stream(declaredFields).filter(f->!f.equals(field)).findFirst();
+        }
+        return Optional.empty();
+    }
+
+    private IdRefFieldInfo getIdRefInfo(Field field,Class<?> type,boolean action) {
+        return new IdRefFieldInfo(){
+            @Override
+            public String displayName() {
+                return field.getName();
+            }
+
+            @Override
+            public String description() {
+                return field.getName();
+            }
+
+            @Override
+            public boolean mandatory() {
+                return false;
+            }
+
+            @Override
+            public Class<?> refType() {
+                return type;
+            }
+
+            @Override
+            public boolean list() {
+                return false;
+            }
+
+            @Override
+            public boolean actionId() {
+                return action;
+            }
+
+            @Override
+            public Class<? extends Annotation> annotationType() {
+                return IdRefFieldInfo.class;
+            }
+        };
     }
 
     public String getName() {
