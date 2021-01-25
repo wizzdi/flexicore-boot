@@ -34,6 +34,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Scope;
+import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ClassUtils;
@@ -239,7 +240,7 @@ public class ClassScannerService implements Plugin {
 	}
 
 	private OperationScanContext scanOperationOnMethod(Method method) {
-		IOperation ioperation = method.getAnnotation(IOperation.class);
+		IOperation ioperation = AnnotatedElementUtils.findMergedAnnotation(method,IOperation.class);
 		if (ioperation != null) {
 			Class<? extends Baseclass>[] relatedClasses = ioperation.relatedClazzes();
 			if (relatedClasses.length == 0 && method.getReturnType() != null && Baseclass.class.isAssignableFrom(method.getReturnType())) {
