@@ -21,10 +21,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -85,24 +82,17 @@ public class DynamicInvokerService implements Plugin {
 	}
 
 	public ExecuteInvokersResponse executeInvoker(ExecuteInvokerRequest executeInvokerRequest, SecurityContextBase securityContext) {
-		Collection<Invoker> plugins = pluginManager.getExtensions(Invoker.class);
-		Map<String, Invoker> invokerMap = plugins.parallelStream().collect(Collectors.toMap(f -> f.getClass().getCanonicalName(), f -> f, (a, b) -> a));
+		List<? extends Invoker> invokers = getInvokers(executeInvokerRequest.getInvokerNames());
 
 		List<ExecuteInvokerResponse<?>> responses = new ArrayList<>();
 		Object executionParametersHolder = executeInvokerRequest.getExecutionParametersHolder();
 		ExecutionContext executionContext = executeInvokerRequest.getExecutionContext();
 
-		for (String invokerName : executeInvokerRequest.getInvokerNames()) {
-
+		for (Object invoker : invokers) {
+			Class<?> clazz = invoker.getClass();
+			String invokerName=clazz.getCanonicalName();
 			try {
-				Invoker invoker = invokerMap.get(invokerName);
-				if (invoker == null) {
-					String msg = "No Handler " + invokerName;
-					logger.error(msg);
-					responses.add(new ExecuteInvokerResponse<>(invokerName, false, msg));
-					continue;
-				}
-				Class<? extends Invoker> clazz = invoker.getClass();
+
 
 				Method[] methods = clazz.getMethods();
 				for (Method method : methods) {
@@ -142,6 +132,19 @@ public class DynamicInvokerService implements Plugin {
 		return new ExecuteInvokersResponse(responses);
 
 
+	}
+
+	private List<? extends Invoker> getInvokers(Set<String> invokerNames) {
+		Map<String,Invoker> allPlugins=pluginManager.getExtensions(Invoker.class).stream().collect(Collectors.toMap(f->f.getClass().getName(),f->f,(a,b)->a));
+		return invokerNames.stream().map(f->getInvoker(allPlugins,f)).filter(Objects::nonNull).collect(Collectors.toList());
+	}
+
+	private Invoker getInvoker(Map<String, Invoker> allPlugins, String invokerClassName) {
+		Invoker invoker = allPlugins.get(invokerClassName);
+		if(invoker==null){
+			logger.warn("invoker "+invokerClassName +" could not be found");
+		}
+		return invoker;
 	}
 
 

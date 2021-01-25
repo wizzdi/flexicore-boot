@@ -8,6 +8,7 @@ import com.wizzdi.flexicore.boot.dynamic.invokers.model.DynamicExecution;
 import com.wizzdi.flexicore.boot.dynamic.invokers.request.*;
 import com.wizzdi.flexicore.boot.dynamic.invokers.response.InvokerInfo;
 import com.wizzdi.flexicore.boot.dynamic.invokers.service.app.App;
+import com.wizzdi.flexicore.boot.dynamic.invokers.service.plugin.TestEntity;
 import com.wizzdi.flexicore.boot.dynamic.invokers.service.plugin.TestFilter;
 import com.wizzdi.flexicore.boot.dynamic.invokers.service.plugin.TestInvoker;
 import com.wizzdi.flexicore.boot.test.helper.PluginJar;
@@ -181,6 +182,19 @@ public class PluginLoadingTest {
 		Assertions.assertNotNull(clazz.getResponses());
 		Assertions.assertFalse(clazz.getResponses().isEmpty());
 		logger.info("received: "+clazz);
+
+	}
+
+	@Test
+	@Order(6)
+	public void invokeListTestsDirect() throws JsonProcessingException {
+		ParameterizedTypeReference<PaginationResponse<TestEntity>> ref= new ParameterizedTypeReference<>() {
+		};
+		ResponseEntity<PaginationResponse<TestEntity>> clazzResponse = this.restTemplate.exchange("/test/listTests", HttpMethod.POST, new HttpEntity<>(dynamicExecution.getBody()), ref);
+		Assertions.assertEquals(200, clazzResponse.getStatusCodeValue());
+		PaginationResponse<TestEntity> clazz = clazzResponse.getBody();
+		Assertions.assertNotNull(clazz);
+		logger.info("received: "+clazz.getList());
 
 	}
 

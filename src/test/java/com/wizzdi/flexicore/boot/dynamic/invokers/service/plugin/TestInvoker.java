@@ -8,18 +8,22 @@ import com.wizzdi.flexicore.boot.dynamic.invokers.annotations.InvokerMethodInfo;
 import com.wizzdi.flexicore.security.response.PaginationResponse;
 import org.pf4j.Extension;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.HttpClientErrorException;
 
 import java.util.Collections;
 
 @InvokerInfo(displayName = "test invoker",description = "test invoker")
+@RestController
+@RequestMapping("/test/")
 @Extension
 public class TestInvoker implements Invoker {
 
 
 
     @InvokerMethodInfo(displayName = "listTests",description = "lists all Clazzes")
-    public PaginationResponse<TestEntity> listTests(TestFilter filter, SecurityContextBase securityContext) {
+    @PostMapping("/listTests")
+    public PaginationResponse<TestEntity> listTests(@RequestBody TestFilter filter, @RequestAttribute("securityContext") SecurityContextBase securityContext) {
         if(filter==null||filter.getPageSize()==null){
             throw new HttpClientErrorException(HttpStatus.BAD_REQUEST,"page size must be provided");
         }
