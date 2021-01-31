@@ -42,7 +42,7 @@ public class TenantToBaseclassPermissionRepository implements Plugin {
 
 	}
 
-	public <T extends TenantToBaseClassPremission> void addTenantToBaseclassPermissionPredicates(TenantToBaseclassPermissionFilter tenantToBaseclassPermissionFilter, CriteriaBuilder cb, CommonAbstractCriteria q, Path<T> r, List<Predicate> predicates, SecurityContextBase securityContext) {
+	public <T extends TenantToBaseClassPremission> void addTenantToBaseclassPermissionPredicates(TenantToBaseclassPermissionFilter tenantToBaseclassPermissionFilter, CriteriaBuilder cb, CommonAbstractCriteria q, From<?,T> r, List<Predicate> predicates, SecurityContextBase securityContext) {
 		securityLinkRepository.addSecurityLinkPredicates(tenantToBaseclassPermissionFilter,cb,q,r,predicates,securityContext);
 	}
 

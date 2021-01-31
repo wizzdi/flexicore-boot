@@ -42,7 +42,7 @@ public class UserToBaseclassRepository implements Plugin {
 
 	}
 
-	public <T extends UserToBaseClass> void addUserToBaseclassPredicates(UserToBaseclassFilter userToBaseclassFilter, CriteriaBuilder cb, CommonAbstractCriteria q, Path<T> r, List<Predicate> predicates, SecurityContextBase securityContext) {
+	public <T extends UserToBaseClass> void addUserToBaseclassPredicates(UserToBaseclassFilter userToBaseclassFilter, CriteriaBuilder cb, CommonAbstractCriteria q, From<?,T> r, List<Predicate> predicates, SecurityContextBase securityContext) {
 		securityLinkRepository.addSecurityLinkPredicates(userToBaseclassFilter,cb,q,r,predicates,securityContext);
 	}
 

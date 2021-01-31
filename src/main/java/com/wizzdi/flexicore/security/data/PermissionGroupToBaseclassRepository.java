@@ -42,7 +42,7 @@ public class PermissionGroupToBaseclassRepository implements Plugin {
 
 	}
 
-	public  <T extends PermissionGroupToBaseclass> void addPermissionGroupToBaseclassPredicates(PermissionGroupToBaseclassFilter permissionGroupToBaseclassFilter, CriteriaBuilder cb, CommonAbstractCriteria q, Path<T> r, List<Predicate> predicates, SecurityContextBase securityContext) {
+	public  <T extends PermissionGroupToBaseclass> void addPermissionGroupToBaseclassPredicates(PermissionGroupToBaseclassFilter permissionGroupToBaseclassFilter, CriteriaBuilder cb, CommonAbstractCriteria q, From<?,T> r, List<Predicate> predicates, SecurityContextBase securityContext) {
 		baselinkRepository.addBaselinkPredicates(permissionGroupToBaseclassFilter,cb,q,r,predicates,securityContext);
 	}
 
@@ -78,4 +78,5 @@ public class PermissionGroupToBaseclassRepository implements Plugin {
 	public <T extends Baseclass> T getByIdOrNull(String id, Class<T> c, SecurityContextBase securityContext) {
 		return baseclassRepository.getByIdOrNull(id, c, securityContext);
 	}
+
 }

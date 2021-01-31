@@ -42,7 +42,7 @@ public class SecurityLinkRepository implements Plugin {
 
 	}
 
-	public <T extends SecurityLink> void addSecurityLinkPredicates(SecurityLinkFilter securityLinkFilter, CriteriaBuilder cb, CommonAbstractCriteria q, Path<T> r, List<Predicate> predicates, SecurityContextBase securityContext) {
+	public <T extends SecurityLink> void addSecurityLinkPredicates(SecurityLinkFilter securityLinkFilter, CriteriaBuilder cb, CommonAbstractCriteria q, From<?,T> r, List<Predicate> predicates, SecurityContextBase securityContext) {
 		baselinkRepository.addBaselinkPredicates(securityLinkFilter,cb,q,r,predicates,securityContext);
 	}
 

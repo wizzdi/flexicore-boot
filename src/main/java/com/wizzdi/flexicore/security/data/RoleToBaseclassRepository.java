@@ -42,7 +42,7 @@ public class RoleToBaseclassRepository implements Plugin {
 
 	}
 
-	public <T extends RoleToBaseclass> void addRoleToBaseclassPredicates(RoleToBaseclassFilter roleToBaseclassFilter, CriteriaBuilder cb, CommonAbstractCriteria q, Path<T> r, List<Predicate> predicates, SecurityContextBase securityContext) {
+	public <T extends RoleToBaseclass> void addRoleToBaseclassPredicates(RoleToBaseclassFilter roleToBaseclassFilter, CriteriaBuilder cb, CommonAbstractCriteria q, From<?,T> r, List<Predicate> predicates, SecurityContextBase securityContext) {
 		securityLinkRepository.addSecurityLinkPredicates(roleToBaseclassFilter,cb,q,r,predicates,securityContext);
 	}
 

@@ -1,7 +1,9 @@
 package com.wizzdi.flexicore.security.data;
 
 import com.flexicore.model.Baseclass;
+import com.flexicore.model.Baseclass_;
 import com.flexicore.model.Baselink;
+import com.flexicore.model.Baselink_;
 import com.flexicore.security.SecurityContextBase;
 import com.wizzdi.flexicore.boot.base.interfaces.Plugin;
 import com.wizzdi.flexicore.security.request.BaselinkFilter;
@@ -17,6 +19,7 @@ import javax.persistence.criteria.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Component
 @Extension
@@ -39,8 +42,26 @@ public class BaselinkRepository implements Plugin {
 
 	}
 
-	public <T extends Baselink> void addBaselinkPredicates(BaselinkFilter baselinkFilter, CriteriaBuilder cb, CommonAbstractCriteria q, Path<T> r, List<Predicate> predicates, SecurityContextBase securityContext) {
+	public <T extends Baselink> void addBaselinkPredicates(BaselinkFilter baselinkFilter, CriteriaBuilder cb, CommonAbstractCriteria q, From<?,T> r, List<Predicate> predicates, SecurityContextBase securityContext) {
 		baseclassRepository.addBaseclassPredicates(cb, q, r, predicates, securityContext);
+		if(baselinkFilter.getLeftside()!=null&&!baselinkFilter.getLeftside().isEmpty()){
+			Set<String> ids=baselinkFilter.getLeftside().stream().map(f->f.getId()).collect(Collectors.toSet());
+			Join<T,Baseclass> join=r.join(Baselink_.leftside);
+			predicates.add(join.get(Baseclass_.id).in(ids));
+		}
+		if(baselinkFilter.getRightside()!=null&&!baselinkFilter.getRightside().isEmpty()){
+			Set<String> ids=baselinkFilter.getRightside().stream().map(f->f.getId()).collect(Collectors.toSet());
+			Join<T,Baseclass> join=r.join(Baselink_.rightside);
+			predicates.add(join.get(Baseclass_.id).in(ids));
+		}
+		if(baselinkFilter.getValues()!=null&&!baselinkFilter.getValues().isEmpty()){
+			Set<String> ids=baselinkFilter.getValues().stream().map(f->f.getId()).collect(Collectors.toSet());
+			Join<T,Baseclass> join=r.join(Baselink_.value);
+			predicates.add(join.get(Baseclass_.id).in(ids));
+		}
+		if(baselinkFilter.getSimpleValues()!=null&&!baselinkFilter.getSimpleValues().isEmpty()){
+			predicates.add(r.get(Baselink_.simplevalue).in(baselinkFilter.getSimpleValues()));
+		}
 	}
 
 	public long countAllBaselinks(BaselinkFilter baselinkFilter, SecurityContextBase securityContext) {
