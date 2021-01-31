@@ -7,7 +7,7 @@ For comprehensive information about FlexiCore Dynamic Invokers Model please visi
 ## What it does?
 
 FlexiCore Dynamic Invokers Model is a FlexiCore Module and a FlexiCore Entity Plugin.
-FlexiCore Dynamic Invokers Model defines the entities required by [FlexiCore Security Service](https://github.com/wizzdi/flexicore-security-service) for its multi-tenancy access control support.
+FlexiCore Dynamic Invokers Model defines the entities required by [FlexiCore Dynamic Invokers Service](https://github.com/wizzdi/flexicore-dynamic-invokers-service) for its multi-tenancy access control support.
 
 ## How to use as a Module?
 Add the flexicore-dynamic-invokers-model dependency to your main app using the latest version available from maven central:
