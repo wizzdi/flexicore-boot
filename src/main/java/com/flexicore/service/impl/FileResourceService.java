@@ -90,9 +90,10 @@ public class FileResourceService implements com.flexicore.service.FileResourceSe
         if (fileResource == null) {
             String ext = filename.endsWith("tar.gz") ? "tar.gz" : FilenameUtils.getExtension(filename);
             String actualFilename = !ext.isEmpty() ? UUID.randomUUID().toString() + "." + ext : UUID.randomUUID().toString();
+            String fullPath = new File(uploadPath,actualFilename).getAbsolutePath();
             FileResourceCreate fileResourceCreate = new FileResourceCreate()
                     .setActualFilename(actualFilename)
-                    .setFullPath(uploadPath+ actualFilename)
+                    .setFullPath(fullPath)
                     .setMd5(md5)
                     .setOffset(0L)
                     .setOriginalFilename(filename)

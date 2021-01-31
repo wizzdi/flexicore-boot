@@ -3,6 +3,7 @@ package com.test.init;
 import com.flexicore.annotations.EnableFlexiCoreBaseServices;
 import com.flexicore.annotations.InheritedComponent;
 import com.wizzdi.flexicore.boot.base.annotations.plugins.EnableFlexiCorePlugins;
+import com.wizzdi.flexicore.boot.dynamic.invokers.annotations.EnableDynamicInvokersPlugins;
 import com.wizzdi.flexicore.boot.health.annotations.EnableFlexiCoreHealthPlugins;
 import com.wizzdi.flexicore.boot.jaxrs.annotations.EnableFlexiCoreJAXRSPlugins;
 import com.wizzdi.flexicore.boot.jpa.annotations.EnableFlexiCoreJPAPlugins;
@@ -35,6 +36,7 @@ import java.util.Arrays;
 @EnableFlexiCoreJPAPlugins
 @EnableFlexiCoreRESTPlugins
 @EnableFlexiCoreSecurity
+@EnableDynamicInvokersPlugins
 public class FlexiCoreApplication {
 
 

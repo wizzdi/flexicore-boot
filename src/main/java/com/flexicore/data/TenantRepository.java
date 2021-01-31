@@ -29,7 +29,7 @@ public class TenantRepository extends BaseclassRepository {
 		Root<Tenant> r = q.from(Tenant.class);
 		Join<Tenant,TenantToUser> join=r.join(Tenant_.tenantToUser);
 		Predicate pred=cb.equal(join.get(TenantToUser_.defualtTennant),true);
-		Predicate pred2=cb.equal(join.get(TenantToUser_.rightside), user);
+		Predicate pred2=cb.equal(join.get(Baselink_.rightside), user);
 		List<Predicate> preds= new ArrayList<>();
 		preds.add(pred);
 		preds.add(pred2);
@@ -45,7 +45,7 @@ public class TenantRepository extends BaseclassRepository {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<TenantToUser> q = cb.createQuery(TenantToUser.class);
 		Root<TenantToUser> r = q.from(TenantToUser.class);
-		Predicate pred2=cb.and(cb.equal(r.get(TenantToUser_.rightside), user),cb.isFalse(r.get(TenantToUser_.softDelete)));
+		Predicate pred2=cb.and(cb.equal(r.get(Baselink_.rightside), user),cb.isFalse(r.get(TenantToUser_.softDelete)));
 		List<Predicate> preds= new ArrayList<>();
 		preds.add(pred2);
 

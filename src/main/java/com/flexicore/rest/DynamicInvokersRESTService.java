@@ -11,14 +11,14 @@ import com.flexicore.annotations.Protected;
 import com.flexicore.data.jsoncontainers.PaginationResponse;
 import com.flexicore.interfaces.RESTService;
 import com.flexicore.model.FileResource;
-import com.flexicore.model.dynamic.DynamicExecution;
 import com.flexicore.model.dynamic.DynamicInvoker;
 import com.flexicore.request.*;
-import com.flexicore.response.ExecuteInvokersResponse;
-import com.flexicore.response.InvokerInfo;
 import com.flexicore.security.SecurityContext;
 import com.flexicore.service.impl.BaseclassService;
 import com.flexicore.service.impl.DynamicInvokersService;
+import com.wizzdi.flexicore.boot.dynamic.invokers.model.DynamicExecution;
+import com.wizzdi.flexicore.boot.dynamic.invokers.request.*;
+import com.wizzdi.flexicore.boot.dynamic.invokers.response.InvokerInfo;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.pf4j.Extension;
@@ -54,10 +54,10 @@ public class DynamicInvokersRESTService implements RESTService {
 	@Path("getAllInvokers")
 	public PaginationResponse<InvokerInfo> getAllInvokers(
 			@HeaderParam("authenticationKey") String authenticationKey,
-			InvokersFilter equipmentInvokersFilter,
+			DynamicInvokerFilter equipmentInvokersFilter,
 			@Context SecurityContext securityContext) {
 
-		return service.getAllInvokersInfo(equipmentInvokersFilter, null);
+		return service.getAllInvokersInfo(equipmentInvokersFilter, securityContext);
 	}
 
 
@@ -69,9 +69,8 @@ public class DynamicInvokersRESTService implements RESTService {
 			@HeaderParam("authenticationKey") String authenticationKey,
 			DynamicExecutionExampleRequest dynamicExecutionExampleRequest,
 			@Context SecurityContext securityContext) {
-		service.validate(dynamicExecutionExampleRequest,securityContext);
 
-		return baseclassService.getExample(new GetClassInfo().setClassName(dynamicExecutionExampleRequest.getClassName()));
+		return baseclassService.getExample(new GetClassInfo().setClassName(dynamicExecutionExampleRequest.getId()));
 	}
 
 
@@ -81,7 +80,7 @@ public class DynamicInvokersRESTService implements RESTService {
 	@Path("getAllInvokersProtected")
 	public PaginationResponse<InvokerInfo> getAllInvokersProtected(
 			@HeaderParam("authenticationKey") String authenticationKey,
-			InvokersFilter equipmentInvokersFilter,
+			DynamicInvokerFilter equipmentInvokersFilter,
 			@Context SecurityContext securityContext) {
 
 		return service.getAllInvokersInfo(equipmentInvokersFilter, securityContext);
@@ -156,7 +155,7 @@ public class DynamicInvokersRESTService implements RESTService {
 			UpdateDynamicExecution updateDynamicExecution,
 			@Context SecurityContext securityContext) {
 		String id=updateDynamicExecution.getId();
-		DynamicExecution dynamicExecution=id!=null?service.getByIdOrNull(id,DynamicExecution.class,null,securityContext):null;
+		DynamicExecution dynamicExecution=id!=null?service.getDynamicExectionByIdOrNull(id,DynamicExecution.class,securityContext):null;
 		if(dynamicExecution==null){
 			throw new BadRequestException("No Dynamic Execution with id "+id);
 		}
@@ -186,8 +185,8 @@ public class DynamicInvokersRESTService implements RESTService {
 			@HeaderParam("authenticationKey") String authenticationKey,
 			ExecuteDynamicExecution executeDynamicExecution,
 			@Context SecurityContext securityContext) {
-		service.validate(executeDynamicExecution,securityContext);
-		return service.executeInvoker(executeDynamicExecution, securityContext);
+	service.validate(executeDynamicExecution,securityContext);
+		return service.executeDynamicExecution(executeDynamicExecution, securityContext);
 	}
 
 }

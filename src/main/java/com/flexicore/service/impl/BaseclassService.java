@@ -21,10 +21,13 @@ import com.flexicore.interfaces.dynamic.ListingInvoker;
 import com.flexicore.model.*;
 import com.flexicore.request.*;
 import com.flexicore.response.BaseclassCount;
-import com.flexicore.response.ParameterInfo;
 import com.flexicore.security.SecurityContext;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
+import com.wizzdi.flexicore.boot.dynamic.invokers.request.DynamicExecutionExampleRequest;
+import com.wizzdi.flexicore.boot.dynamic.invokers.response.ParameterInfo;
+import com.wizzdi.flexicore.boot.dynamic.invokers.service.DynamicExecutionService;
+import com.wizzdi.flexicore.boot.dynamic.invokers.service.DynamicInvokerService;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 import org.apache.commons.io.ByteOrderMark;
@@ -88,6 +91,9 @@ public class BaseclassService implements com.flexicore.service.BaseclassService 
 
     @Autowired
     private BaselinkService baselinkService;
+
+    @Autowired
+    private DynamicExecutionService dynamicInvokersService;
 
     private static Map<String, LinkSide> sideCache = new ConcurrentHashMap<>();
 
@@ -235,127 +241,10 @@ public class BaseclassService implements com.flexicore.service.BaseclassService 
 
     @Override
     public Object getExample(GetClassInfo filteringInformationHolder) {
-        String className = filteringInformationHolder.getClassName();
-        Class<?> c = CrossLoaderResolver.getRegisteredClass(className);
-        if (c == null) {
-            throw new BadRequestException("No Class " + filteringInformationHolder.getClassName());
-        }
+        DynamicExecutionExampleRequest dynamicExecutionExampleRequest = new DynamicExecutionExampleRequest().setId(filteringInformationHolder.getClassName());
+        dynamicInvokersService.validate(dynamicExecutionExampleRequest,null);
+      return dynamicInvokersService.getExample(dynamicExecutionExampleRequest.getClazz());
 
-        Object exampleCached = getExampleCached(c);
-        if (exampleCached == null) {
-            throw new ServiceUnavailableException("Class " + className + " is not suitable for examples");
-        }
-        return exampleCached;
-
-    }
-
-    private Object getExampleCached(Class<?> c) {
-        Object existing = exampleCache.getIfPresent(c.getCanonicalName());
-        if (existing == null) {
-            existing = getExample(c);
-        }
-        return existing;
-    }
-
-    private String getSetterName(String name) {
-        if (name.startsWith("get")) {
-            return name.replaceFirst("get", "set");
-        }
-
-        if (name.startsWith("is")) {
-            return name.replaceFirst("is", "set");
-        }
-        return null;
-    }
-
-
-    private Object getExample(Class<?> c) {
-        if (ClassUtils.isPrimitiveOrWrapper(c) || c.equals(String.class)) {
-            return getPrimitiveValue(c);
-        }
-        if (c.isArray()) {
-            return Array.newInstance(c, 0);
-        }
-        if (isKnownType(c)) {
-            return getKnownTypeValue(c);
-        }
-
-
-        Object example = null;
-        try {
-            example = c.newInstance();
-            exampleCache.put(c.getCanonicalName(), example);
-            BeanInfo beanInfo = Introspector.getBeanInfo(c, Object.class);
-            for (PropertyDescriptor propertyDescriptor : beanInfo.getPropertyDescriptors()) {
-                try {
-                    Method getter = propertyDescriptor.getReadMethod();
-                    if (getter != null) {
-                        if (getter.getAnnotation(JsonIgnore.class) == null) {
-                            String setterName = getSetterName(getter.getName());
-                            if (setterName != null) {
-                                Method setter = c.getMethod(setterName, propertyDescriptor.getPropertyType());
-                                if (setter != null) {
-
-                                    Class<?> toRet = getter.getReturnType();
-                                    if (Collection.class.isAssignableFrom(toRet)) {
-                                        ListFieldInfo listFieldInfo = getter.getAnnotation(ListFieldInfo.class);
-                                        if (listFieldInfo != null) {
-                                            Class<?> collectionType = listFieldInfo.listType();
-                                            Object o = getExampleCached(collectionType);
-                                            Collection collection = (Collection) toRet.newInstance();
-                                            collection.add(o);
-                                            setter.invoke(example, collection);
-
-                                        }
-                                    } else {
-                                        setter.invoke(example, getExampleCached(toRet));
-                                    }
-
-                                }
-                            }
-                        }
-                    }
-                } catch (Exception e) {
-                    logger.info("failed setting example value for " + propertyDescriptor.getName());
-                }
-
-            }
-            return example;
-        } catch (Exception e) {
-            logger.error( "failed getting example value for " + c.getCanonicalName(), e);
-        }
-        return example;
-    }
-
-    private Object getKnownTypeValue(Class<?> c) {
-        if (c.equals(LocalDateTime.class)) return LocalDateTime.now();
-        if (c.equals(OffsetDateTime.class)) return OffsetDateTime.now();
-        if (c.equals(ZonedDateTime.class)) return ZonedDateTime.now();
-        if (c.equals(Date.class)) return Date.from(Instant.now());
-        if (c.equals(List.class)) return new ArrayList<>();
-        if (c.equals(Map.class)) return new HashMap<>();
-
-
-        return null;
-    }
-
-    private boolean isKnownType(Class<?> c) {
-        return knownTypes.contains(c.getCanonicalName());
-    }
-
-    private static Cache<String, Object> exampleCache = CacheBuilder.newBuilder().maximumSize(200).build();
-
-    private Object getPrimitiveValue(Class<?> c) {
-        if (c.equals(String.class)) return "string";
-        if (c.equals(int.class) || c.equals(Integer.class)) return 0;
-        if (c.equals(double.class) || c.equals(Double.class)) return 0.0;
-        if (c.equals(float.class) || c.equals(Float.class)) return 0.0f;
-        if (c.equals(byte.class) || c.equals(Byte.class)) return (byte) 0;
-        if (c.equals(short.class) || c.equals(Short.class)) return (short) 0;
-        if (c.equals(long.class) || c.equals(Long.class)) return 0L;
-        if (c.equals(boolean.class) || c.equals(Boolean.class)) return false;
-
-        return null;
     }
 
     @Override

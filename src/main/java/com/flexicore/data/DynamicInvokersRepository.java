@@ -13,7 +13,6 @@ import com.flexicore.model.Operation;
 import com.flexicore.model.Operation_;
 import com.flexicore.model.QueryInformationHolder;
 import com.flexicore.model.dynamic.*;
-import com.flexicore.request.DynamicExecutionFilter;
 import com.flexicore.request.InvokersFilter;
 import com.flexicore.request.InvokersOperationFilter;
 import com.flexicore.security.SecurityContext;
@@ -88,50 +87,5 @@ public class DynamicInvokersRepository extends BaseclassRepository {
         if (!invokersFilter.getInvokerTypes().isEmpty()) {
             preds.add(r.get(DynamicInvoker_.canonicalName).in(invokersFilter.getInvokerTypes()));
         }
-    }
-
-    public List<DynamicExecution> listAllDynamicExecutions(DynamicExecutionFilter dynamicExecutionFilter, SecurityContext securityContext) {
-        CriteriaBuilder cb = em.getCriteriaBuilder();
-        CriteriaQuery<DynamicExecution> q = cb.createQuery(DynamicExecution.class);
-        Root<DynamicExecution> r = q.from(DynamicExecution.class);
-        List<Predicate> preds = new ArrayList<>();
-        addDynamicExecutionPredicate(dynamicExecutionFilter, r, preds,cb);
-        QueryInformationHolder<DynamicExecution> queryInformationHolder = new QueryInformationHolder<>(dynamicExecutionFilter, DynamicExecution.class, securityContext);
-        return getAllFiltered(queryInformationHolder, preds, cb, q, r);
-    }
-
-    private void addDynamicExecutionPredicate(DynamicExecutionFilter dynamicExecutionFilter, Root<DynamicExecution> r, List<Predicate> preds,CriteriaBuilder cb) {
-        if(dynamicExecutionFilter.getMethodNameLike()!=null && !dynamicExecutionFilter.getMethodNameLike().isEmpty()){
-            preds.add(cb.like(r.get(DynamicExecution_.methodName),dynamicExecutionFilter.getMethodNameLike()));
-        }
-
-        if(dynamicExecutionFilter.getServiceCanonicalNameLike()!=null && !dynamicExecutionFilter.getServiceCanonicalNameLike().isEmpty()){
-            Join<DynamicExecution, ServiceCanonicalName> join=r.join(DynamicExecution_.serviceCanonicalNames);
-            preds.add(cb.like(join.get(ServiceCanonicalName_.serviceCanonicalName),dynamicExecutionFilter.getServiceCanonicalNameLike()));
-        }
-        if(dynamicExecutionFilter.getExecutionParameterHolderType()!=null){
-            Join<DynamicExecution,? extends ExecutionParametersHolder> join=cb.treat(r.join(DynamicExecution_.executionParametersHolder),dynamicExecutionFilter.getExecutionParameterHolderType());
-
-        }
-    }
-
-    public long countAllDynamicExecutions(DynamicExecutionFilter dynamicExecutionFilter, SecurityContext securityContext) {
-        CriteriaBuilder cb = em.getCriteriaBuilder();
-        CriteriaQuery<Long> q = cb.createQuery(Long.class);
-        Root<DynamicExecution> r = q.from(DynamicExecution.class);
-        List<Predicate> preds = new ArrayList<>();
-        addDynamicExecutionPredicate(dynamicExecutionFilter, r, preds,cb);
-        QueryInformationHolder<DynamicExecution> queryInformationHolder = new QueryInformationHolder<>(dynamicExecutionFilter, DynamicExecution.class, securityContext);
-        return countAllFiltered(queryInformationHolder, preds, cb, q, r);
-    }
-
-
-    public List<ServiceCanonicalName> getAllServiceCanonicalNames(DynamicExecution dynamicExecution) {
-
-        CriteriaBuilder cb = em.getCriteriaBuilder();
-        CriteriaQuery<ServiceCanonicalName> q = cb.createQuery(ServiceCanonicalName.class);
-        Root<ServiceCanonicalName> r = q.from(ServiceCanonicalName.class);
-        q.select(r).where(cb.equal(r.get(ServiceCanonicalName_.dynamicExecution),dynamicExecution));
-        return em.createQuery(q).getResultList();
     }
 }

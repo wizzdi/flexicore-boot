@@ -10,9 +10,9 @@ import com.flexicore.model.*;
 import com.flexicore.request.*;
 import com.flexicore.response.BaseclassCount;
 import com.flexicore.response.ClassInfo;
-import com.flexicore.response.ParameterInfo;
 import com.flexicore.security.SecurityContext;
 import com.flexicore.utils.InheritanceUtils;
+import com.wizzdi.flexicore.boot.dynamic.invokers.response.ParameterInfo;
 
 import java.io.IOException;
 import java.util.*;

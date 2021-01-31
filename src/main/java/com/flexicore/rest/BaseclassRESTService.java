@@ -23,11 +23,11 @@ import com.flexicore.model.nosql.BaseclassNoSQL;
 import com.flexicore.request.*;
 import com.flexicore.response.ClassInfo;
 import com.flexicore.response.MassDeleteResponse;
-import com.flexicore.response.ParameterInfo;
 import com.flexicore.security.SecurityContext;
 import com.flexicore.service.impl.BaseclassNoSQLService;
 import com.flexicore.service.impl.BaseclassService;
 import com.flexicore.utils.InheritanceUtils;
+import com.wizzdi.flexicore.boot.dynamic.invokers.response.ParameterInfo;
 import io.swagger.v3.oas.annotations.ExternalDocumentation;
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.Operation;
@@ -221,8 +221,9 @@ public class BaseclassRESTService implements RESTService {
     public ParameterInfo getFilterClassInfo(@HeaderParam("authenticationkey") String authenticationkey,
                                             GetClassInfo getClassInfo,
                                             @Context SecurityContext securityContext) {
-        Set<ClassInfo> filterClass = com.flexicore.service.BaseclassService.getFilterClass(getClassInfo.getClassName());
-        return filterClass != null && !filterClass.isEmpty() ? new ParameterInfo(filterClass.iterator().next()) : null;
+        Set<ClassInfo> infos = com.flexicore.service.BaseclassService.getFilterClass(getClassInfo.getClassName());
+        ClassInfo filterClass = infos!=null?infos.stream().findFirst().orElse(null):null;
+        return filterClass != null  ? new ParameterInfo(filterClass.getClazz(),filterClass.getDisplayName()) : null;
 
     }
 
