@@ -1,5 +1,6 @@
 package com.wizzdi.flexicore.security.test.app;
 
+import com.flexicore.converters.JsonConverter;
 import com.flexicore.model.Baseclass;
 import com.wizzdi.flexicore.boot.jpa.service.EntitiesHolder;
 import org.springframework.context.annotation.Bean;
@@ -13,6 +14,6 @@ public class EntitiesConfig {
 
 	@Bean
 	public EntitiesHolder entitiesHolder(){
-		return new EntitiesHolder(new HashSet<>(Arrays.asList(Baseclass.class)));
+		return new EntitiesHolder(new HashSet<>(Arrays.asList(Baseclass.class, JsonConverter.class)));
 	}
 }
