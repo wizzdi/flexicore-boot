@@ -77,22 +77,6 @@ public class User extends SecurityUser {
     private List<TenantToUser> tenantToUsers = new ArrayList<>();
 
 
-    @JsonIgnore
-
-    @OneToMany(targetEntity = UserToBaseClass.class,mappedBy = "leftside", fetch = FetchType.LAZY)
-    private List<UserToBaseClass> userToBaseClasses = new ArrayList<>();
-
-
-    //	@JsonIgnore
-    @JsonIgnore
-    @OneToMany(targetEntity = RoleToUser.class,mappedBy = "rightside", fetch = FetchType.LAZY) //users are subscribed to very few roles.
-    public List<RoleToUser> getRoles() {
-        return roles;
-    }
-
-    public void setRoles(List<RoleToUser> roleToUser) {
-        this.roles = roleToUser;
-    }
 
     @Column(name = "phone_number")
     private String phoneNumber;
@@ -168,18 +152,6 @@ public class User extends SecurityUser {
 
     public void setTenantToUsers(List<TenantToUser> tenantToUsers) {
         this.tenantToUsers = tenantToUsers;
-    }
-
-
-    @JsonIgnore
-
-    @OneToMany(targetEntity = UserToBaseClass.class,mappedBy = "securityEntity", fetch = FetchType.LAZY)
-    public List<UserToBaseClass> getUserToBaseClasses() {
-        return userToBaseClasses;
-    }
-
-    public void setUserToBaseClasses(List<UserToBaseClass> userToBaseClasses) {
-        this.userToBaseClasses = userToBaseClasses;
     }
     @JsonIgnore
     @FullTextSearchOptions(include = false)
