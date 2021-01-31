@@ -11,17 +11,18 @@ import org.springframework.stereotype.Component;
 
 import javax.persistence.AttributeConverter;
 import javax.persistence.Converter;
+import java.io.IOException;
 
 
 @Component
 @Converter
-public class InvokerBodyConverter implements ApplicationContextAware , AttributeConverter<Object,String>{
+public class InvokerBodyConverter implements ApplicationContextAware , AttributeConverter<Object,byte[]>{
 	private static final Logger logger= LoggerFactory.getLogger(InvokerBodyConverter.class);
 	private static ObjectMapper objectMapper;
 	@Override
-	public String convertToDatabaseColumn(Object invokerBody) {
+	public byte[] convertToDatabaseColumn(Object invokerBody) {
 		try {
-			return invokerBody!=null?objectMapper.writeValueAsString(new InvokerBody().setObject(invokerBody)):null;
+			return invokerBody!=null?objectMapper.writeValueAsBytes(new InvokerBody().setObject(invokerBody)):null;
 		} catch (JsonProcessingException e) {
 			logger.error("failed writing value as string",e);
 		}
@@ -29,10 +30,10 @@ public class InvokerBodyConverter implements ApplicationContextAware , Attribute
 	}
 
 	@Override
-	public Object convertToEntityAttribute(String s) {
+	public Object convertToEntityAttribute(byte[] s) {
 		try {
 			return s!=null?objectMapper.readValue(s, InvokerBody.class).getObject():null;
-		} catch (JsonProcessingException e) {
+		} catch (IOException e) {
 			logger.error("failed reading value from string",e);
 		}
 		return null;

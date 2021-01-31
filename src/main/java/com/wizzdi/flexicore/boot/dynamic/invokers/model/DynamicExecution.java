@@ -33,7 +33,8 @@ public class DynamicExecution {
     @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS,property = "type" )
     @JsonTypeIdResolver(PluginLoaderIdResolver.class)
     @Convert(converter = InvokerBodyConverter.class)
-    private Object body;
+    @Lob
+    private Object executionParametersHolder;
     @Column(columnDefinition = "timestamp with time zone")
     private OffsetDateTime lastExecuted;
 
@@ -100,12 +101,13 @@ public class DynamicExecution {
     @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS,property = "type" )
     @JsonTypeIdResolver(PluginLoaderIdResolver.class)
     @Convert(converter = InvokerBodyConverter.class)
-    public Object getBody() {
-        return body;
+    @Lob
+    public Object getExecutionParametersHolder() {
+        return executionParametersHolder;
     }
 
-    public <T extends DynamicExecution> T setBody(Object body) {
-        this.body = body;
+    public <T extends DynamicExecution> T setExecutionParametersHolder(Object body) {
+        this.executionParametersHolder = body;
         return (T) this;
     }
 
@@ -126,7 +128,7 @@ public class DynamicExecution {
                 ", description='" + description + '\'' +
                 ", serviceCanonicalNames=" + serviceCanonicalNames +
                 ", methodName='" + methodName + '\'' +
-                ", body='" + body + '\'' +
+                ", body='" + executionParametersHolder + '\'' +
                 ", lastExecuted=" + lastExecuted +
                 '}';
     }

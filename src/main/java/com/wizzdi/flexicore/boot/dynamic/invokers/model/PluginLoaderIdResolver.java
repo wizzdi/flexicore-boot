@@ -13,13 +13,15 @@ import org.springframework.stereotype.Component;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
 @Component
 public class PluginLoaderIdResolver extends TypeIdResolverBase implements ApplicationContextAware {
 
 	private JavaType superType;
-	private final List<ClassLoader> classLoaders=new ArrayList<>();
+	private static final AtomicBoolean init=new AtomicBoolean(false);
+	private static final List<ClassLoader> classLoaders=new ArrayList<>();
 
 	@Override
 	public void init(JavaType baseType) {
@@ -60,6 +62,8 @@ public class PluginLoaderIdResolver extends TypeIdResolverBase implements Applic
 
 	@Override
 	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-		this.classLoaders.addAll(applicationContext.getBean(FlexiCorePluginManager.class).getStartedPlugins().stream().map(f->f.getPluginClassLoader()).collect(Collectors.toList()));
+		if(init.compareAndSet(false,true)){
+			classLoaders.addAll(applicationContext.getBean(FlexiCorePluginManager.class).getStartedPlugins().stream().map(f->f.getPluginClassLoader()).collect(Collectors.toList()));
+		}
 	}
 }
