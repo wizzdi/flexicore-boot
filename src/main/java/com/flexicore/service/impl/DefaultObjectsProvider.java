@@ -41,6 +41,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Scope;
+import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ClassUtils;
 
@@ -181,7 +182,7 @@ public class DefaultObjectsProvider implements FlexiCoreService {
 			if (method.isBridge()) {
 				continue;
 			}
-			InvokerMethodInfo invokerMethodInfo = method.getAnnotation(InvokerMethodInfo.class);
+			InvokerMethodInfo invokerMethodInfo = AnnotatedElementUtils.findMergedAnnotation(method,InvokerMethodInfo.class);
 			if (invokerMethodInfo != null) {
 				String operationId = Baseclass.generateUUIDFromString(method.toString());
 
@@ -383,7 +384,7 @@ public class DefaultObjectsProvider implements FlexiCoreService {
 	}
 
 	public void addSwaggerTags(Class<?> annotated, SecurityContext securityContext,List<Tag> tags) {
-		OpenAPIDefinition def = annotated.getAnnotation(OpenAPIDefinition.class);
+		OpenAPIDefinition def = AnnotatedElementUtils.findMergedAnnotation(annotated,OpenAPIDefinition.class);
 		if (def != null) {
 			tags.addAll(Arrays.stream(def.tags()).collect(Collectors.toList()));
 		}

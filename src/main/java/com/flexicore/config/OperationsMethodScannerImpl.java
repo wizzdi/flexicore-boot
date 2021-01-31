@@ -1,6 +1,7 @@
 package com.flexicore.config;
 
 import com.flexicore.annotations.IOperation;
+import com.flexicore.converters.JsonConverter;
 import com.flexicore.model.Baseclass;
 import com.flexicore.request.OperationCreate;
 import com.flexicore.service.impl.OperationService;
@@ -11,6 +12,7 @@ import com.wizzdi.flexicore.security.response.OperationScanContext;
 import org.pf4j.Extension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.AnnotatedElementUtils;
 
 import java.lang.reflect.Method;
 
@@ -23,10 +25,10 @@ public class OperationsMethodScannerImpl implements OperationsMethodScanner, Plu
 
 	@Override
 	public OperationScanContext scanOperationOnMethod(Method method) {
-		IOperation ioperation = method.getAnnotation(IOperation.class);
+		IOperation ioperation = AnnotatedElementUtils.findMergedAnnotation(method,IOperation.class);
 
 		if (ioperation == null) {
-			io.swagger.v3.oas.annotations.Operation apiOperation = method.getAnnotation(io.swagger.v3.oas.annotations.Operation.class);
+			io.swagger.v3.oas.annotations.Operation apiOperation = AnnotatedElementUtils.findMergedAnnotation(method,io.swagger.v3.oas.annotations.Operation.class);
 			if (apiOperation != null) {
 				ioperation = operationService.getIOperationFromApiOperation(apiOperation, method);
 			}

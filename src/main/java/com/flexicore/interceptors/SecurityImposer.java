@@ -29,6 +29,7 @@ import org.pf4j.Extension;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
@@ -97,7 +98,7 @@ public class SecurityImposer implements AspectPlugin {
                 Operation operation = securityContext.getOperation();
 
 
-                OperationsInside operationsInside = method.getDeclaringClass().getAnnotation(OperationsInside.class);
+                OperationsInside operationsInside = AnnotatedElementUtils.findMergedAnnotation(method,OperationsInside.class);
                 if (operationInfo.getiOperation() == null) {
                     logger.error("could not find io operation annotation on method: " + methodName);
                     return deny(websocketSession);

@@ -1,6 +1,5 @@
 package com.test.init;
 
-import com.flexicore.annotations.EnableFlexiCoreBaseServices;
 import com.flexicore.annotations.InheritedComponent;
 import com.wizzdi.flexicore.boot.base.annotations.plugins.EnableFlexiCorePlugins;
 import com.wizzdi.flexicore.boot.dynamic.invokers.annotations.EnableDynamicInvokersPlugins;
@@ -38,6 +37,7 @@ import java.util.Arrays;
 @EnableFlexiCoreSecurity
 @EnableDynamicInvokersPlugins
 public class FlexiCoreApplication {
+
 
 
     public static void main(String[] args) {
