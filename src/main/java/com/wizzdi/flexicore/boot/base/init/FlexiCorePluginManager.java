@@ -7,7 +7,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory;
 import org.springframework.context.ApplicationContext;
 
-import java.lang.invoke.VarHandle;
 import java.nio.file.Path;
 import java.util.Collection;
 import java.util.Collections;
@@ -49,6 +48,7 @@ public class FlexiCorePluginManager extends SpringPluginManager {
         return pluginWrapper == null ? getApplicationContext() : extensionFactory.getApplicationContext(pluginWrapper);
 
     }
+
 
 
 	@Override

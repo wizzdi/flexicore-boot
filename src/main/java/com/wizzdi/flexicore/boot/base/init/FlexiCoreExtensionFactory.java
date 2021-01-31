@@ -6,6 +6,7 @@ import org.pf4j.spring.SpringExtensionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
+import org.springframework.util.ClassUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,15 +33,26 @@ public class FlexiCoreExtensionFactory extends SpringExtensionFactory {
     public <T> T create(Class<T> extensionClass) {
         try {
             if(!extensionClass.isInterface()){
-                T extension = this.createWithoutSpring(extensionClass);
-                if (extension != null) {
-                    PluginWrapper pluginWrapper = this.pluginManager.whichPlugin(extensionClass);
-                    ApplicationContext pluginContext = getApplicationContext(pluginWrapper);
-                    pluginContext.getAutowireCapableBeanFactory().autowireBean(extension);
+                PluginWrapper pluginWrapper = this.pluginManager.whichPlugin(extensionClass);
+                ApplicationContext pluginContext = getApplicationContext(pluginWrapper);
+                T extension=null;
+                try {
+                    extension = pluginContext.getBean(extensionClass);
+                }
+                catch (Throwable ignored){ }
+                if(extension==null||!ClassUtils.getUserClass(extension).equals(extensionClass)){
+                    extension = this.createWithoutSpring(extensionClass);
+                    if (extension != null) {
+
+                        pluginContext.getAutowireCapableBeanFactory().autowireBean(extension);
 
 
+                    }
                 }
                 return extension;
+
+
+
             }
             else{
                 return null;
@@ -59,6 +71,7 @@ public class FlexiCoreExtensionFactory extends SpringExtensionFactory {
 
 
     public ApplicationContext getApplicationContext(PluginWrapper pluginWrapper) {
+
         String pluginId = pluginWrapper!=null?pluginWrapper.getPluginId():"core-extensions";
         FlexiCoreApplicationContext applicationContext = contextCache.get(pluginId);
         if (applicationContext == null) {
