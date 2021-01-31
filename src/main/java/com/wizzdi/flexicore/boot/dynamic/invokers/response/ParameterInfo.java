@@ -3,9 +3,13 @@ package com.wizzdi.flexicore.boot.dynamic.invokers.response;
 import com.wizzdi.flexicore.boot.dynamic.invokers.annotations.FieldInfo;
 import com.wizzdi.flexicore.boot.dynamic.invokers.annotations.IdRefFieldInfo;
 import com.wizzdi.flexicore.boot.dynamic.invokers.annotations.ListFieldInfo;
+import org.springframework.core.annotation.AnnotatedElementUtils;
+import org.springframework.core.annotation.AnnotationUtils;
 
 import java.lang.reflect.Field;
 import java.util.*;
+
+import static com.wizzdi.flexicore.boot.dynamic.invokers.utils.InvokerUtils.getAllFields;
 
 public class ParameterInfo {
 
@@ -89,16 +93,16 @@ public class ParameterInfo {
             subParameters = new ArrayList<>();
             for (Field field : getAllFields(type)) {
 
-                IdRefFieldInfo subFieldInfo = field.getDeclaredAnnotation(IdRefFieldInfo.class);
+                IdRefFieldInfo subFieldInfo = AnnotatedElementUtils.findMergedAnnotation(field,IdRefFieldInfo.class);
                 if (subFieldInfo != null) {
                     this.subParameters.add(new ParameterInfo(field, subFieldInfo));
 
                 } else {
-                    FieldInfo fieldInfo = field.getDeclaredAnnotation(FieldInfo.class);
+                    FieldInfo fieldInfo = AnnotatedElementUtils.findMergedAnnotation(field,FieldInfo.class);
                     if (fieldInfo != null) {
                         this.subParameters.add(new ParameterInfo(field, fieldInfo));
                     } else {
-                        ListFieldInfo listFieldInfo = field.getDeclaredAnnotation(ListFieldInfo.class);
+                        ListFieldInfo listFieldInfo = AnnotatedElementUtils.findMergedAnnotation(field,ListFieldInfo.class);
                         if (listFieldInfo != null) {
                             this.subParameters.add(new ParameterInfo(field, listFieldInfo));
                         }
@@ -109,14 +113,7 @@ public class ParameterInfo {
         }
     }
 
-    public static List<Field> getAllFields(Class<?> type) {
-        List<Field> fields = new ArrayList<>();
-        for (Class<?> current = type; current != null; current = current.getSuperclass()) {
-            fields.addAll(Arrays.asList(current.getDeclaredFields()));
-        }
 
-        return fields;
-    }
 
     public ParameterInfo(Field parameter, IdRefFieldInfo fieldInfo) {
         this.name = parameter.getName();
@@ -131,6 +128,17 @@ public class ParameterInfo {
 
 
 
+    }
+
+    public ParameterInfo(Class<?> c) {
+       this(c,c.getSimpleName());
+    }
+
+    public ParameterInfo(Class<?> c , String displayName) {
+        this.displayName = displayName;
+        this.name = c.getCanonicalName();
+        this.type = c.getCanonicalName();
+        iterateFields(c);
     }
 
     public String getName() {

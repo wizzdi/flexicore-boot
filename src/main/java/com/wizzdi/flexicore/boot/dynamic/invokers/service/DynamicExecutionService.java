@@ -82,8 +82,8 @@ public class DynamicExecutionService implements Plugin {
 			update = true;
 		}
 
-		if (dynamicExecutionCreate.getBody() != null&&!dynamicExecutionCreate.getBody().equals(dynamicExecution.getBody()) ) {
-			dynamicExecution.setBody(dynamicExecutionCreate.getBody());
+		if (dynamicExecutionCreate.getExecutionParametersHolder() != null&&!dynamicExecutionCreate.getExecutionParametersHolder().equals(dynamicExecution.getExecutionParametersHolder()) ) {
+			dynamicExecution.setExecutionParametersHolder(dynamicExecutionCreate.getExecutionParametersHolder());
 			update = true;
 		}
 		if (dynamicExecutionCreate.getServiceCanonicalNames() != null) {
@@ -149,6 +149,9 @@ public class DynamicExecutionService implements Plugin {
 		return dynamicExecutionRepository.getByIdOrNull(id, c, securityContext);
 	}
 
+	public <T extends DynamicExecution> List<T> listByIds(Set<String> ids, Class<T> c, SecurityContextBase securityContext) {
+		return dynamicExecutionRepository.listByIds(ids, c, securityContext);
+	}
 
 	public void validate(DynamicExecutionExampleRequest dynamicExecutionExampleRequest, SecurityContextBase securityContext) {
 		String id = dynamicExecutionExampleRequest.getId();
@@ -222,6 +225,20 @@ public class DynamicExecutionService implements Plugin {
 				.setInvokerNames(invokerNames)
 				.setInvokerMethodName(dynamicExecution.getMethodName())
 				.setExecutionContext(executionContext)
-				.setExecutionParametersHolder( dynamicExecution.getBody());
+				.setExecutionParametersHolder( dynamicExecution.getExecutionParametersHolder());
+	}
+
+	public void validate(ExecuteDynamicExecution executeDynamicExecution, SecurityContextBase securityContext) {
+		String dynamicExecutionId=executeDynamicExecution.getDynamicExecutionId();
+		DynamicExecution dynamicExecution=dynamicExecutionId!=null?getByIdOrNull(dynamicExecutionId,DynamicExecution.class,securityContext):null;
+		if(dynamicExecution==null){
+			throw new HttpClientErrorException(HttpStatus.BAD_REQUEST,"no dynamic execution with id "+dynamicExecutionId);
+		}
+		executeDynamicExecution.setDynamicExecution(dynamicExecution);
+	}
+
+	public ExecuteInvokersResponse executeDynamicExecution(ExecuteDynamicExecution executeDynamicExecution, SecurityContextBase securityContext) {
+		ExecuteInvokerRequest executeInvokerRequest = getExecuteInvokerRequest(executeDynamicExecution.getDynamicExecution(), securityContext);
+		return dynamicInvokerService.executeInvoker(executeInvokerRequest,securityContext);
 	}
 }

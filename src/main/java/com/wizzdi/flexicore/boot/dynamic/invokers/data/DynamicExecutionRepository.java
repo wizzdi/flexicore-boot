@@ -97,6 +97,22 @@ public class DynamicExecutionRepository implements Plugin {
 		}
 	}
 
+	public <T extends DynamicExecution> List<T> listByIds(Set<String> ids, Class<T> c, SecurityContextBase securityContext) {
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<T> q = cb.createQuery(c);
+		Root<T> r = q.from(c);
+		List<Predicate> predicates = new ArrayList<>();
+		predicates.add(r.get(DynamicExecution_.id).in(ids));
+		if (securityContext != null) {
+			Join<T, Baseclass> join = r.join(DynamicExecution_.security);
+			baseclassRepository.addBaseclassPredicates(cb, q, join, predicates, securityContext);
+		}
+		q.select(r).where(predicates.toArray(Predicate[]::new));
+		TypedQuery<T> query = em.createQuery(q);
+		return query.getResultList();
+	}
+
 	public <T extends DynamicExecution> T getByIdOrNull(String id, Class<T> c, SecurityContextBase securityContext) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();

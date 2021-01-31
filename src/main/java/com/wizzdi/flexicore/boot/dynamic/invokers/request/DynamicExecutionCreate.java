@@ -14,7 +14,7 @@ public class DynamicExecutionCreate  {
 	private String methodName;
 	@JsonTypeInfo(use = JsonTypeInfo.Id.CLASS,property = "type" )
 	@JsonTypeIdResolver(PluginLoaderIdResolver.class)
-	private Object body;
+	private Object executionParametersHolder;
 
 	public String getName() {
 		return name;
@@ -54,12 +54,12 @@ public class DynamicExecutionCreate  {
 
 	@JsonTypeInfo(use = JsonTypeInfo.Id.CLASS,property = "type" )
 	@JsonTypeIdResolver(PluginLoaderIdResolver.class)
-	public Object getBody() {
-		return body;
+	public Object getExecutionParametersHolder() {
+		return executionParametersHolder;
 	}
 
-	public <T extends DynamicExecutionCreate> T setBody(Object body) {
-		this.body = body;
+	public <T extends DynamicExecutionCreate> T setExecutionParametersHolder(Object executionParametersHolder) {
+		this.executionParametersHolder = executionParametersHolder;
 		return (T) this;
 	}
 }

@@ -8,6 +8,8 @@ import com.wizzdi.flexicore.boot.dynamic.invokers.annotations.ListFieldInfo;
 import org.pf4j.Extension;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.annotation.AnnotatedElementUtils;
+import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ClassUtils;
@@ -82,7 +84,7 @@ public class ExampleService implements Plugin {
 				try {
 					Method getter = propertyDescriptor.getReadMethod();
 					if (getter != null) {
-						if (getter.getAnnotation(JsonIgnore.class) == null) {
+						if (AnnotatedElementUtils.findMergedAnnotation(getter,JsonIgnore.class) == null) {
 							String setterName = getSetterName(getter.getName());
 							if (setterName != null) {
 								Method setter = c.getMethod(setterName, propertyDescriptor.getPropertyType());
@@ -90,7 +92,7 @@ public class ExampleService implements Plugin {
 
 									Class<?> toRet = getter.getReturnType();
 									if (Collection.class.isAssignableFrom(toRet)) {
-										ListFieldInfo listFieldInfo = getter.getAnnotation(ListFieldInfo.class);
+										ListFieldInfo listFieldInfo = AnnotatedElementUtils.findMergedAnnotation(getter,ListFieldInfo.class);
 										if (listFieldInfo != null) {
 											Class<?> collectionType = listFieldInfo.listType();
 											Object o = getExampleCached(collectionType);

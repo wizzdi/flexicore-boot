@@ -1,7 +1,6 @@
 package com.wizzdi.flexicore.boot.dynamic.invokers.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wizzdi.flexicore.boot.base.init.FlexiCorePluginManager;
 import com.wizzdi.flexicore.boot.dynamic.invokers.model.DynamicExecution;
@@ -34,7 +33,6 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.Collections;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 @ExtendWith(SpringExtension.class)
@@ -126,7 +124,7 @@ public class PluginLoadingTest {
 		DynamicExecutionCreate executeInvokerRequest=new DynamicExecutionCreate()
 				.setMethodName("listTests")
 				.setServiceCanonicalNames(Collections.singleton(TestInvoker.class.getCanonicalName()))
-				.setBody(new TestFilter().setCurrentPage(0).setPageSize(10));
+				.setExecutionParametersHolder(new TestFilter().setCurrentPage(0).setPageSize(10));
 		ResponseEntity<DynamicExecution> clazzResponse = this.restTemplate.postForEntity("/dynamicExecution/create", executeInvokerRequest, DynamicExecution.class);
 		Assertions.assertEquals(200, clazzResponse.getStatusCodeValue());
 		dynamicExecution = clazzResponse.getBody();
@@ -174,7 +172,7 @@ public class PluginLoadingTest {
 		ExecuteInvokerRequest executeInvokerRequest=new ExecuteInvokerRequest()
 				.setInvokerMethodName(dynamicExecution.getMethodName())
 				.setInvokerNames(dynamicExecution.getServiceCanonicalNames().stream().map(f->f.getServiceCanonicalName()).collect(Collectors.toSet()))
-				.setExecutionParametersHolder(dynamicExecution.getBody());
+				.setExecutionParametersHolder(dynamicExecution.getExecutionParametersHolder());
 		ResponseEntity<ExecuteInvokersResponse> clazzResponse = this.restTemplate.postForEntity("/dynamicInvoker/executeInvoker", executeInvokerRequest, ExecuteInvokersResponse.class);
 		Assertions.assertEquals(200, clazzResponse.getStatusCodeValue());
 		ExecuteInvokersResponse clazz = clazzResponse.getBody();
@@ -190,7 +188,7 @@ public class PluginLoadingTest {
 	public void invokeListTestsDirect() throws JsonProcessingException {
 		ParameterizedTypeReference<PaginationResponse<TestEntity>> ref= new ParameterizedTypeReference<>() {
 		};
-		ResponseEntity<PaginationResponse<TestEntity>> clazzResponse = this.restTemplate.exchange("/test/listTests", HttpMethod.POST, new HttpEntity<>(dynamicExecution.getBody()), ref);
+		ResponseEntity<PaginationResponse<TestEntity>> clazzResponse = this.restTemplate.exchange("/test/listTests", HttpMethod.POST, new HttpEntity<>(dynamicExecution.getExecutionParametersHolder()), ref);
 		Assertions.assertEquals(200, clazzResponse.getStatusCodeValue());
 		PaginationResponse<TestEntity> clazz = clazzResponse.getBody();
 		Assertions.assertNotNull(clazz);

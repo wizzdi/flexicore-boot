@@ -5,10 +5,7 @@ import com.flexicore.annotations.OperationsInside;
 import com.flexicore.security.SecurityContextBase;
 import com.wizzdi.flexicore.boot.base.interfaces.Plugin;
 import com.wizzdi.flexicore.boot.dynamic.invokers.model.DynamicExecution;
-import com.wizzdi.flexicore.boot.dynamic.invokers.request.DynamicExecutionCreate;
-import com.wizzdi.flexicore.boot.dynamic.invokers.request.DynamicExecutionExampleRequest;
-import com.wizzdi.flexicore.boot.dynamic.invokers.request.DynamicExecutionFilter;
-import com.wizzdi.flexicore.boot.dynamic.invokers.request.DynamicExecutionUpdate;
+import com.wizzdi.flexicore.boot.dynamic.invokers.request.*;
 import com.wizzdi.flexicore.boot.dynamic.invokers.service.DynamicExecutionService;
 import com.wizzdi.flexicore.security.response.PaginationResponse;
 import org.pf4j.Extension;
@@ -58,5 +55,12 @@ public class DynamicExecutionController implements Plugin {
 		dynamicExecutionUpdate.setDynamicExecution(dynamicExecution);
 		dynamicExecutionService.validate(dynamicExecutionUpdate,securityContext);
 		return dynamicExecutionService.updateDynamicExecution(dynamicExecutionUpdate,securityContext);
+	}
+
+	@IOperation(Name = "executes DynamicExecution",Description = "executes DynamicExecution")
+	@PostMapping("/executeDynamicExecution")
+	public ExecuteInvokersResponse executeDynamicExecution(@RequestBody ExecuteDynamicExecution executeDynamicExecution, @RequestAttribute SecurityContextBase securityContext){
+		dynamicExecutionService.validate(executeDynamicExecution,securityContext);
+		return dynamicExecutionService.executeDynamicExecution(executeDynamicExecution,securityContext);
 	}
 }
