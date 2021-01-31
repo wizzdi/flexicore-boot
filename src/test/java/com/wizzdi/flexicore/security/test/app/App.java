@@ -19,11 +19,7 @@ import java.util.Arrays;
 @SpringBootApplication
 public class App {
 
-
-
-
 	public static void main(String[] args) {
-
 
 		SpringApplication app = new SpringApplication(App.class);
 		app.addListeners(new ApplicationPidFileWriter());
