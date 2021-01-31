@@ -1,14 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.wizzdi</groupId>
-    <artifactId>flexicore-boot-dynamic-invokers-model</artifactId>
-    <version>1.0.0</version>
-    <name>FlexiCore dynamic invokers model</name>
-    <description>flexicore dynamic invokers model</description>
+    <artifactId>flexicore-security-model</artifactId>
+    <version>1.0.1-SNAPSHOT</version>
+    <name>FlexiCore security model</name>
+    <description>flexicore security model</description>
     <url>https://wizzdi.com</url>
 
     <licenses>
@@ -23,7 +21,7 @@
         <maven.compiler.target>11</maven.compiler.target>
         <version.eclipselink>2.7.7</version.eclipselink>
         <jackson.version>2.11.0</jackson.version>
-        <pf4j-spring.version>0.7.0</pf4j-spring.version>
+        <pf4j-spring.version>0.6.0</pf4j-spring.version>
 
 
         <spring-boot.version>2.3.0.RELEASE</spring-boot.version>
@@ -55,10 +53,10 @@
         </developer>
     </developers>
     <scm>
-        <connection>scm:git:git://wizzdi/flexicore-dynamic-invokers-model.git</connection>
-        <developerConnection>scm:git:git@github.com:wizzdi/flexicore-dynamic-invokers-model.git</developerConnection>
+        <connection>scm:git:git://wizzdi/flexicore-security-model.git</connection>
+        <developerConnection>scm:git:git@github.com:wizzdi/flexicore-security-model.git</developerConnection>
         <url>https://github.com/wizzdi/flexicore-security-model</url>
-        <tag>flexicore-dynamic-invokers-model-${version}</tag>
+        <tag>flexicore-security-model-${version}</tag>
     </scm>
     <dependencyManagement>
         <dependencies>
@@ -72,16 +70,42 @@
         </dependencies>
     </dependencyManagement>
     <dependencies>
+        <!-- https://mvnrepository.com/artifact/commons-io/commons-io -->
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>2.8.0</version>
+        </dependency>
 
         <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-web</artifactId>
-            <scope>provided</scope>
+            <groupId>commons-codec</groupId>
+            <artifactId>commons-codec</artifactId>
+            <version>1.15</version>
         </dependency>
         <dependency>
             <groupId>com.wizzdi</groupId>
-            <artifactId>flexicore-security-model</artifactId>
-            <version>1.0.0</version>
+            <artifactId>flexicore-boot-starter-web</artifactId>
+            <version>1.0.2</version>
+            <scope>provided</scope>
+
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.persistence</groupId>
+            <artifactId>org.eclipse.persistence.jpa.modelgen.processor</artifactId>
+            <version>${version.eclipselink}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.pf4j</groupId>
+            <artifactId>pf4j-spring</artifactId>
+            <version>${pf4j-spring.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.wizzdi</groupId>
+            <artifactId>flexicore-boot</artifactId>
+            <version>1.0.1</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -91,12 +115,43 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>com.wizzdi</groupId>
-            <artifactId>flexicore-boot</artifactId>
-            <version>1.0.3</version>
-            <scope>provided</scope>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-undertow</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>junit</groupId>
+                    <artifactId>junit</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-engine</artifactId>
+            <scope>test</scope>
         </dependency>
 
+        <dependency>
+            <groupId>org.junit.platform</groupId>
+            <artifactId>junit-platform-launcher</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.vintage</groupId>
+            <artifactId>junit-vintage-engine</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.wizzdi</groupId>
+            <artifactId>flexicore-boot-test-helper</artifactId>
+            <version>1.0.0</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <build>
@@ -140,6 +195,67 @@
                             <dependencyReducedPomLocation>${java.io.tmpdir}/dependency-reduced-pom.xml
                             </dependencyReducedPomLocation>
                         </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.bsc.maven</groupId>
+                <artifactId>maven-processor-plugin</artifactId>
+                <version>3.3.3</version>
+                <executions>
+                    <execution>
+                        <id>eclipselink-jpa-metamodel</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>process</goal>
+                        </goals>
+                        <configuration>
+                            <compilerArguments>
+                                -Aeclipselink.persistencexml=${project.basedir}/src/main/resources/persistence.xml
+                            </compilerArguments>
+                            <processors>
+                                <processor>org.eclipse.persistence.internal.jpa.modelgen.CanonicalModelProcessor
+                                </processor>
+                            </processors>
+                            <outputDirectory>${project.build.directory}/generated-sources/meta-model</outputDirectory>
+                        </configuration>
+                    </execution>
+                </executions>
+                <dependencies>
+                    <dependency>
+                        <groupId>com.wizzdi</groupId>
+                        <artifactId>flexicore-boot</artifactId>
+                        <version>1.0.0</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>io.swagger.core.v3</groupId>
+                        <artifactId>swagger-jaxrs2</artifactId>
+                        <version>2.1.2</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.springframework.boot</groupId>
+                        <artifactId>spring-boot-starter-data-mongodb</artifactId>
+                        <version>${spring-boot.version}</version>
+                    </dependency>
+
+                    <dependency>
+                        <groupId>org.eclipse.persistence</groupId>
+                        <artifactId>org.eclipse.persistence.jpa.modelgen.processor</artifactId>
+                        <version>${version.eclipselink}</version>
+                    </dependency>
+                </dependencies>
+            </plugin>
+            <plugin>
+                <groupId>com.wizzdi</groupId>
+                <artifactId>metamodel-inheritence-fix-processor</artifactId>
+                <version>1.0.1</version>
+                <executions>
+                    <execution>
+                        <id>flexicore</id>
+                        <phase>process-sources</phase>
+                        <goals>
+                            <goal>process</goal>
+                        </goals>
                     </execution>
                 </executions>
             </plugin>
@@ -202,53 +318,6 @@
                 <version>3.2.0</version>
             </plugin>
 
-            <plugin>
-                <groupId>org.bsc.maven</groupId>
-                <artifactId>maven-processor-plugin</artifactId>
-                <version>3.3.3</version>
-                <executions>
-                    <execution>
-                        <id>eclipselink-jpa-metamodel</id>
-                        <phase>generate-sources</phase>
-                        <goals>
-                            <goal>process</goal>
-                        </goals>
-                        <configuration>
-                            <compilerArguments>
-                                -Aeclipselink.persistencexml=${project.basedir}/src/main/resources/persistence.xml
-                            </compilerArguments>
-                            <processors>
-                                <processor>org.eclipse.persistence.internal.jpa.modelgen.CanonicalModelProcessor
-                                </processor>
-                            </processors>
-                            <outputDirectory>${project.build.directory}/generated-sources/meta-model</outputDirectory>
-                        </configuration>
-                    </execution>
-                </executions>
-                <dependencies>
-                    <dependency>
-                        <groupId>com.wizzdi</groupId>
-                        <artifactId>flexicore-boot</artifactId>
-                        <version>1.0.0</version>
-                    </dependency>
-                    <dependency>
-                        <groupId>io.swagger.core.v3</groupId>
-                        <artifactId>swagger-jaxrs2</artifactId>
-                        <version>2.1.2</version>
-                    </dependency>
-                    <dependency>
-                        <groupId>org.springframework.boot</groupId>
-                        <artifactId>spring-boot-starter-data-mongodb</artifactId>
-                        <version>${spring-boot.version}</version>
-                    </dependency>
-
-                    <dependency>
-                        <groupId>org.eclipse.persistence</groupId>
-                        <artifactId>org.eclipse.persistence.jpa.modelgen.processor</artifactId>
-                        <version>${version.eclipselink}</version>
-                    </dependency>
-                </dependencies>
-            </plugin>
         </plugins>
 
     </build>
@@ -282,4 +351,6 @@
             </build>
         </profile>
     </profiles>
+
+
 </project>
