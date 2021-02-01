@@ -83,7 +83,7 @@ public class InvokerUtils {
 
 			@Override
 			public String[] categories() {
-				return PaginationResponse.class.equals(methodSubject) ? new String[0] : new String[]{method.getName().contains("create") ? "TYPE_ACTION" : "ACTION"};
+				return PaginationResponse.class.isAssignableFrom(methodSubject) ? new String[0] : new String[]{method.getName().contains("create") ? "TYPE_ACTION" : "ACTION"};
 			}
 
 			@Override
