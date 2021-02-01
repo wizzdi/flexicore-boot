@@ -4,7 +4,7 @@
 
     <groupId>com.wizzdi</groupId>
     <artifactId>flexicore-boot-vintage</artifactId>
-    <version>1.0.1-SNAPSHOT</version>
+    <version>1.0.1</version>
     <name>FlexiCore Boot vintage</name>
     <description>flexicore boot vintage provides backwards compatibility with pre-boot FlexiCore versions</description>
     <url>https://wizzdi.com</url>
@@ -60,7 +60,7 @@
         <connection>scm:git:git://wizzdi/flexicore-boot-vintage.git</connection>
         <developerConnection>scm:git:git@github.com:wizzdi/flexicore-boot-vintage.git</developerConnection>
         <url>https://github.com/wizzdi/flexicore-boot-vintage</url>
-        <tag>flexicore-boot-vintage-${version}</tag>
+        <tag>flexicore-boot-vintage-1.0.1</tag>
     </scm>
 
     <dependencyManagement>
