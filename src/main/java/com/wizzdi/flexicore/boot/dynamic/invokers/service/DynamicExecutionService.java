@@ -174,7 +174,7 @@ public class DynamicExecutionService implements Plugin {
 		for (InvokerInfo invokerInfo : list) {
 			for (InvokerMethodInfo method : invokerInfo.getMethods()) {
 				if (methodName.equals(method.getName())) {
-					Class<?> returnType = PaginationResponse.class.equals(method.getReturnTypeClass()) ? invokerInfo.getHandlingType() : method.getReturnTypeClass();
+					Class<?> returnType = method.getReturnTypeClass()!=null&&PaginationResponse.class.isAssignableFrom(method.getReturnTypeClass()) ? invokerInfo.getHandlingType() : method.getReturnTypeClass();
 					returnTypes.add(returnType);
 				}
 			}
