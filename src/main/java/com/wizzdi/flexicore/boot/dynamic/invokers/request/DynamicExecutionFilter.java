@@ -10,6 +10,7 @@ public class DynamicExecutionFilter extends BaseclassFilter {
 	private String nameLike;
 	private Set<String> canonicalNames;
 	private Set<String> methodNames;
+	private Set<String> onlyIds;
 
 
 	public String getNameLike() {
@@ -36,6 +37,15 @@ public class DynamicExecutionFilter extends BaseclassFilter {
 
 	public <T extends DynamicExecutionFilter> T setMethodNames(Set<String> methodNames) {
 		this.methodNames = methodNames;
+		return (T) this;
+	}
+
+	public Set<String> getOnlyIds() {
+		return onlyIds;
+	}
+
+	public <T extends DynamicExecutionFilter> T setOnlyIds(Set<String> onlyIds) {
+		this.onlyIds = onlyIds;
 		return (T) this;
 	}
 }

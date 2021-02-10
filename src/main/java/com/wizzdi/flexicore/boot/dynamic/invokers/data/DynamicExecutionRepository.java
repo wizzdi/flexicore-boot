@@ -50,6 +50,9 @@ public class DynamicExecutionRepository implements Plugin {
 		if(dynamicExecutionFilter.getNameLike()!=null){
 			predicates.add(cb.like(r.get(DynamicExecution_.name),dynamicExecutionFilter.getNameLike()));
 		}
+		if(dynamicExecutionFilter.getOnlyIds()!=null&&!dynamicExecutionFilter.getOnlyIds().isEmpty()){
+			predicates.add(r.get(DynamicExecution_.id).in(dynamicExecutionFilter.getOnlyIds()));
+		}
 		if(dynamicExecutionFilter.getCanonicalNames()!=null&&!dynamicExecutionFilter.getCanonicalNames().isEmpty()){
 			Join<T, ServiceCanonicalName> join=r.join(DynamicExecution_.serviceCanonicalNames);
 			predicates.add(join.get(ServiceCanonicalName_.serviceCanonicalName).in(dynamicExecutionFilter.getCanonicalNames()));
