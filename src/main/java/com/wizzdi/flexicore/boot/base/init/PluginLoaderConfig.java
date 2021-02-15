@@ -1,5 +1,7 @@
 package com.wizzdi.flexicore.boot.base.init;
 
+import com.wizzdi.flexicore.boot.base.interfaces.ContextCustomizer;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Bean;
@@ -16,8 +18,8 @@ public class PluginLoaderConfig {
 
     @Bean
     @Scope(value = ConfigurableBeanFactory.SCOPE_SINGLETON)
-    public FlexiCorePluginManager pluginManager() {
-        return new FlexiCorePluginManager(new File(pluginsDir).toPath());
+    public FlexiCorePluginManager pluginManager(ObjectProvider<ContextCustomizer> contextCustomizers) {
+        return new FlexiCorePluginManager(new File(pluginsDir).toPath(),contextCustomizers);
     }
 
 

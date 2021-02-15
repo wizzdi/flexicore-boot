@@ -1,9 +1,11 @@
 package com.wizzdi.flexicore.boot.base.init;
 
+import com.wizzdi.flexicore.boot.base.interfaces.ContextCustomizer;
 import org.pf4j.*;
 import org.pf4j.spring.SpringPluginManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory;
 import org.springframework.context.ApplicationContext;
 
@@ -18,12 +20,15 @@ public class FlexiCorePluginManager extends SpringPluginManager {
 
 	private static final Logger logger = LoggerFactory.getLogger(FlexiCorePluginManager.class);
 	private static final AtomicBoolean init=new AtomicBoolean(false);
+	private ObjectProvider<ContextCustomizer> applicationCustomizers;
+
 
 	public FlexiCorePluginManager() {
 	}
 
-	public FlexiCorePluginManager(Path pluginsRoot) {
+	public FlexiCorePluginManager(Path pluginsRoot, ObjectProvider<ContextCustomizer> applicationCustomizers) {
 		super(pluginsRoot);
+		this.applicationCustomizers=applicationCustomizers;
 	}
 
 	@Override
@@ -31,6 +36,9 @@ public class FlexiCorePluginManager extends SpringPluginManager {
 		return new FlexiCoreExtensionFactory(this);
 	}
 
+	public ObjectProvider<ContextCustomizer> getApplicationCustomizers() {
+		return applicationCustomizers;
+	}
 
 	public Collection<ApplicationContext> getPluginApplicationContexts() {
 		FlexiCoreExtensionFactory extensionFactory = (FlexiCoreExtensionFactory) getExtensionFactory();
