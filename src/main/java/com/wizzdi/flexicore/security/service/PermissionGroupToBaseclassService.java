@@ -50,7 +50,16 @@ public class PermissionGroupToBaseclassService implements Plugin {
 	}
 
 	public boolean updatePermissionGroupToBaseclassNoMerge(PermissionGroupToBaseclassCreate permissionGroupToBaseclassCreate, PermissionGroupToBaseclass permissionGroupToBaseclass) {
-		return baselinkService.updateBaselinkNoMerge(permissionGroupToBaseclassCreate,permissionGroupToBaseclass);
+		boolean update = baselinkService.updateBaselinkNoMerge(permissionGroupToBaseclassCreate, permissionGroupToBaseclass);
+		if(permissionGroupToBaseclassCreate.getBaseclass()!=null&&(permissionGroupToBaseclass.getRightside()==null||!permissionGroupToBaseclassCreate.getBaseclass().getId().equals(permissionGroupToBaseclass.getRightside().getId()))){
+			permissionGroupToBaseclass.setRightside(permissionGroupToBaseclassCreate.getBaseclass());
+			update=true;
+		}
+		if(permissionGroupToBaseclassCreate.getPermissionGroup()!=null&&(permissionGroupToBaseclass.getLeftside()==null||!permissionGroupToBaseclassCreate.getPermissionGroup().getId().equals(permissionGroupToBaseclass.getLeftside().getId()))){
+			permissionGroupToBaseclass.setLeftside(permissionGroupToBaseclassCreate.getPermissionGroup());
+			update=true;
+		}
+		return update;
 	}
 
 	public PermissionGroupToBaseclass updatePermissionGroupToBaseclass(PermissionGroupToBaseclassUpdate permissionGroupToBaseclassUpdate, SecurityContextBase securityContext){

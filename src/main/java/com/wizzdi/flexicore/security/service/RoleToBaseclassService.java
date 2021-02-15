@@ -51,7 +51,16 @@ public class RoleToBaseclassService implements Plugin {
 	}
 
 	public boolean updateRoleToBaseclassNoMerge(RoleToBaseclassCreate roleToBaseclassCreate, RoleToBaseclass roleToBaseclass) {
-		return securityLinkService.updateSecurityLinkNoMerge(roleToBaseclassCreate,roleToBaseclass);
+		boolean update = securityLinkService.updateSecurityLinkNoMerge(roleToBaseclassCreate, roleToBaseclass);
+		if(roleToBaseclassCreate.getBaseclass()!=null&&(roleToBaseclass.getRightside()==null||!roleToBaseclassCreate.getBaseclass().getId().equals(roleToBaseclass.getRightside().getId()))){
+			roleToBaseclass.setRightside(roleToBaseclassCreate.getBaseclass());
+			update=true;
+		}
+		if(roleToBaseclassCreate.getRole()!=null&&(roleToBaseclass.getLeftside()==null||!roleToBaseclassCreate.getRole().getId().equals(roleToBaseclass.getLeftside().getId()))){
+			roleToBaseclass.setLeftside(roleToBaseclassCreate.getRole());
+			update=true;
+		}
+		return update;
 	}
 
 	public RoleToBaseclass updateRoleToBaseclass(RoleToBaseclassUpdate roleToBaseclassUpdate, SecurityContextBase securityContext){

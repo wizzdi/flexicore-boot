@@ -49,8 +49,17 @@ public class TenantToBaseclassPermissionService implements Plugin {
 		return tenantToBaseclassPermission;
 	}
 
-	public boolean updateTenantToBaseclassPermissionNoMerge(TenantToBaseclassPermissionCreate tenantToBaseclassPermissionCreate, TenantToBaseClassPremission tenantToBaseclassPermission) {
-		return securityLinkService.updateSecurityLinkNoMerge(tenantToBaseclassPermissionCreate,tenantToBaseclassPermission);
+	public boolean updateTenantToBaseclassPermissionNoMerge(TenantToBaseclassPermissionCreate tenantToBaseclassPermissionCreate, TenantToBaseClassPremission tenantToBaseClassPremission) {
+		boolean update = securityLinkService.updateSecurityLinkNoMerge(tenantToBaseclassPermissionCreate, tenantToBaseClassPremission);
+		if(tenantToBaseclassPermissionCreate.getBaseclass()!=null&&(tenantToBaseClassPremission.getRightside()==null||!tenantToBaseclassPermissionCreate.getBaseclass().getId().equals(tenantToBaseClassPremission.getRightside().getId()))){
+			tenantToBaseClassPremission.setRightside(tenantToBaseclassPermissionCreate.getBaseclass());
+			update=true;
+		}
+		if(tenantToBaseclassPermissionCreate.getTenant()!=null&&(tenantToBaseClassPremission.getLeftside()==null||!tenantToBaseclassPermissionCreate.getTenant().getId().equals(tenantToBaseClassPremission.getLeftside().getId()))){
+			tenantToBaseClassPremission.setLeftside(tenantToBaseclassPermissionCreate.getTenant());
+			update=true;
+		}
+		return update;
 	}
 
 	public TenantToBaseClassPremission updateTenantToBaseclassPermission(TenantToBaseclassPermissionUpdate tenantToBaseclassPermissionUpdate, SecurityContextBase securityContext){
