@@ -99,7 +99,9 @@ public class FlexiCoreExtensionFactory extends SpringExtensionFactory {
         applicationContext.setParent(pluginManager.getApplicationContext());
         applicationContext.setClassLoader(pluginClassLoader);
         for (Class<? extends Plugin> beanClass : beanClasses) {
-            applicationContext.register(beanClass);
+            if(!beanClass.isInterface()){
+                applicationContext.register(beanClass);
+            }
         }
 
         return applicationContext;
