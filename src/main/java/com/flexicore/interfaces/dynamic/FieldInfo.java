@@ -28,7 +28,8 @@ public @interface FieldInfo {
     double rangeMax() default Double.POSITIVE_INFINITY;
     @AliasFor(annotation = com.wizzdi.flexicore.boot.dynamic.invokers.annotations.FieldInfo.class,attribute = "valueSteps")
     double valueSteps() default Double.MIN_VALUE;
-
+    @AliasFor(annotation = com.wizzdi.flexicore.boot.dynamic.invokers.annotations.FieldInfo.class,attribute = "actionIdHolder")
+    boolean actionIdHolder() default false;
 
 
 }

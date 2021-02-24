@@ -73,7 +73,7 @@ public class FilteringInformationHolder extends ExecutionParametersHolder  {
     private List<BaseclassNotIdFiltering> excludingIds = new ArrayList<>();
 
     @OneToMany(targetEntity = BaseclassOnlyIdFiltering.class, mappedBy = "filteringInformationHolder")
-    @FieldInfo(displayName = "onlyIds", description = "specific ids")
+    @FieldInfo(displayName = "onlyIds", description = "specific ids",actionIdHolder = true)
     private List<BaseclassOnlyIdFiltering> onlyIds = new ArrayList<>();
 
     @OneToMany(targetEntity = TenantIdFiltering.class, mappedBy = "filteringInformationHolder")
