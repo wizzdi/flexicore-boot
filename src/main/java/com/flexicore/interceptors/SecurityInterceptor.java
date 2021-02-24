@@ -12,15 +12,13 @@ import com.flexicore.request.RecoverTotpRequest;
 import com.flexicore.request.TotpAuthenticationRequest;
 import com.flexicore.rest.TotpRESTService;
 import com.flexicore.security.SecurityContext;
-import com.flexicore.security.SecurityContextBase;
 import com.flexicore.service.impl.SecurityService;
-import io.jsonwebtoken.JwtException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.RequestAttribute;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
 
@@ -30,6 +28,7 @@ import javax.websocket.Session;
 import java.lang.reflect.Method;
 import java.time.OffsetDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Stream;
@@ -71,7 +70,7 @@ public class SecurityInterceptor implements HandlerInterceptor {
 
 				SecurityContext securityContext = securityService.getSecurityContext(authenticationkey, operationInfo.getOperationId());
 				if (securityContext == null) {
-					return deny(websocketSession);
+					return deny(websocketSession, method, response);
 				}
 				User user = securityContext.getUser();
 				List<Tenant> tenants = securityContext.getTenants();
@@ -81,36 +80,36 @@ public class SecurityInterceptor implements HandlerInterceptor {
 				OperationsInside operationsInside = AnnotatedElementUtils.findMergedAnnotation(method,OperationsInside.class);
 				if (operationInfo.getiOperation() == null) {
 					logger.error("could not find io operation annotation on method: " + methodName);
-					return deny(websocketSession);
+					return deny(websocketSession,method,response);
 				}
 				if (user == null) {
 					logger.error("could not determine user");
-					return deny(websocketSession);
+					return deny(websocketSession, method, response);
 
 				}
 				if (tenants == null) {
 					logger.error("could not determine tenants");
-					return deny(websocketSession);
+					return deny(websocketSession, method, response);
 				}
 
 				if (operation == null) {
 					logger.error("could not determine operation for method " + methodName);
-					return deny(websocketSession);
+					return deny(websocketSession, method, response);
 				}
 				if (user.isTotpEnabled() && !isTotpAuthentication(method) && !securityContext.isTotpVerified()) {
 					logger.error("user has totp enabled but did not validate it yet and the calling method is not totp authentication");
-					return deny(websocketSession);
+					return deny(websocketSession, method, response);
 				}
 				TotpSecurityPolicy totpSecurityPolicy = securityContext.getSecurityPolicies() == null ? null : securityContext.getSecurityPolicies().stream().filter(f -> f instanceof TotpSecurityPolicy && ((TotpSecurityPolicy) f).isForceTotp()).map(f -> (TotpSecurityPolicy) f).min(Comparator.comparing(SecurityPolicy::getStartTime)).orElse(null);
 				if (totpSecurityPolicy != null && !user.isTotpEnabled()) {
 					OffsetDateTime policyStartedForUser = securityContext.getUser().getCreationDate().isAfter(totpSecurityPolicy.getStartTime()) ? securityContext.getUser().getCreationDate() : totpSecurityPolicy.getStartTime();
 					if (OffsetDateTime.now().isAfter(policyStartedForUser.plus(totpSecurityPolicy.getAllowedConfigureOffsetMs(), ChronoUnit.MILLIS))) {
 						logger.error("totp policy is enforced , and the user did not configured totp before the grace period of " + totpSecurityPolicy.getAllowedConfigureOffsetMs() + " ms");
-						return deny(websocketSession);
+						return deny(websocketSession, method, response);
 					}
 					if (!isTotpConfigureMethods(method)) {
 						logger.error("totp policy is enforced , the user does not have totp enabled and the calling method is not configure totp");
-						return deny(websocketSession);
+						return deny(websocketSession, method, response);
 					}
 
 
@@ -120,11 +119,11 @@ public class SecurityInterceptor implements HandlerInterceptor {
 					request.setAttribute(SECURITY_CONTEXT_NAME,securityContext);
 					return true;
 				} else {
-					return deny(websocketSession);
+					return deny(websocketSession, method, response);
 				}
 
 			} else {
-				return deny(websocketSession);
+				return deny(websocketSession, method, response);
 
 
 			}
@@ -133,8 +132,12 @@ public class SecurityInterceptor implements HandlerInterceptor {
 
 	}
 
-	private boolean deny(Session websocketSession) {
-		return false;
+	private boolean deny(Session websocketSession, Method method, HttpServletResponse response) {
+		boolean stopProcessing = Arrays.stream(method.getParameterAnnotations()).flatMap(Arrays::stream).filter(f -> f.annotationType().equals(RequestAttribute.class)).map(f -> (RequestAttribute) f).anyMatch(f -> f.name().equals(SECURITY_CONTEXT_NAME) && f.required());
+		if(stopProcessing){
+			response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+		}
+		return !stopProcessing;
 	}
 
 	private boolean isTotpConfigureMethods(Method method) {

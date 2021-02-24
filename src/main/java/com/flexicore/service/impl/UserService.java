@@ -812,7 +812,11 @@ public class UserService implements com.flexicore.service.UserService {
         if(!user.isTotpEnabled()){
             applicationEventPublisher.publishEvent(new LoginEvent(user));
         }
-        return new AuthenticationResponse().setAuthenticationKey(jwtToken).setTokenExpirationDate(expirationDate).setUserId(user.getId());
+        return new AuthenticationResponse()
+                .setAuthenticationKey(jwtToken)
+                .setTokenExpirationDate(expirationDate)
+                .setUserId(user.getId())
+                .setTotp(user.isTotpEnabled());
 
     }
 
