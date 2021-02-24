@@ -27,6 +27,9 @@ public class SecurityPolicyService implements Plugin {
 	@Autowired
 	private SecurityPolicyRepository SecurityPolicyRepository;
 
+	@Autowired
+	private BasicService basicService;
+
 
 	public SecurityPolicy createSecurityPolicy(SecurityPolicyCreate securityPolicyCreate, SecurityContextBase securityContext) {
 		SecurityPolicy securityPolicy = createSecurityPolicyNoMerge(securityPolicyCreate, securityContext);
@@ -57,16 +60,7 @@ public class SecurityPolicyService implements Plugin {
 	}
 
 	public boolean updateSecurityPolicyNoMerge(SecurityPolicyCreate securityPolicyCreate, SecurityPolicy securityPolicy) {
-		boolean update = false;
-		if (securityPolicyCreate.getName() != null && !securityPolicyCreate.getName().equals(securityPolicy.getName())) {
-			securityPolicy.setName(securityPolicyCreate.getName());
-			update = true;
-		}
-
-		if (securityPolicyCreate.getDescription() != null && !securityPolicyCreate.getDescription().equals(securityPolicy.getDescription())) {
-			securityPolicy.setDescription(securityPolicyCreate.getDescription());
-			update = true;
-		}
+		boolean update = basicService.updateBasicNoMerge(securityPolicyCreate,securityPolicy);
 
 		if (securityPolicyCreate.getStartTime() != null && !securityPolicyCreate.getStartTime().equals(securityPolicy.getStartTime())) {
 			securityPolicy.setStartTime(securityPolicyCreate.getStartTime());

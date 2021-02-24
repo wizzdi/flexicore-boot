@@ -30,12 +30,8 @@ public class BaseclassRepository implements Plugin {
 	private SecurityOperation allOp;
 
 
-	public static <T> boolean addPagination(BaseclassFilter securityEntityFilter, TypedQuery<T> q){
-		if(securityEntityFilter.getPageSize()!=null&&securityEntityFilter.getCurrentPage()!=null&&securityEntityFilter.getCurrentPage()>=0&&securityEntityFilter.getPageSize()>0){
-			q.setFirstResult(securityEntityFilter.getCurrentPage()*securityEntityFilter.getPageSize());
-			q.setMaxResults(securityEntityFilter.getPageSize());
-		}
-		return false;
+	public static <T> boolean addPagination(BaseclassFilter baseclassFilter, TypedQuery<T> q){
+		return BasicPredicatesHelper.addPagination(baseclassFilter,q);
 	}
 
 	public <T extends Baseclass> void addBaseclassPredicates(CriteriaBuilder cb, CommonAbstractCriteria q, Path<T> r, List<Predicate> predicates, SecurityContextBase securityContext) {

@@ -7,11 +7,9 @@ import com.flexicore.model.SecurityTenant;
 
 import java.time.OffsetDateTime;
 
-public class SecurityPolicyCreate  {
+public class SecurityPolicyCreate  extends BasicCreate{
 
 
-	private String name;
-	private String description;
 	private OffsetDateTime startTime;
 	private Boolean enabled;
 	private String policyRoleId;
@@ -100,21 +98,4 @@ public class SecurityPolicyCreate  {
 		return (T) this;
 	}
 
-	public String getName() {
-		return name;
-	}
-
-	public <T extends SecurityPolicyCreate> T setName(String name) {
-		this.name = name;
-		return (T) this;
-	}
-
-	public String getDescription() {
-		return description;
-	}
-
-	public <T extends SecurityPolicyCreate> T setDescription(String description) {
-		this.description = description;
-		return (T) this;
-	}
 }

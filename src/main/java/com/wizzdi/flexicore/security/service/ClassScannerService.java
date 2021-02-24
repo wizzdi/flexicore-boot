@@ -10,7 +10,6 @@ import com.google.common.collect.Lists;
 import com.wizzdi.flexicore.boot.base.init.FlexiCorePluginManager;
 import com.wizzdi.flexicore.boot.base.init.PluginInit;
 import com.wizzdi.flexicore.boot.base.interfaces.Plugin;
-import com.wizzdi.flexicore.boot.jpa.service.EntitiesHolder;
 import com.wizzdi.flexicore.security.interfaces.OperationBuilder;
 import com.wizzdi.flexicore.security.interfaces.OperationsClassScanner;
 import com.wizzdi.flexicore.security.interfaces.OperationsMethodScanner;
@@ -215,10 +214,11 @@ public class ClassScannerService implements Plugin {
 		IOperation ioperation=standardAccess.getDeclaredAnnotation(IOperation.class);
 		return new OperationScanContext(new SecurityOperationCreate()
 				.setDefaultaccess(ioperation.access())
+				.setSystemObject(true)
 				.setDescription(ioperation.Description())
 				.setName(ioperation.Name())
 				.setIdForCreate(Baseclass.generateUUIDFromString(standardAccess.getCanonicalName()))
-				.setSystemObject(true),null);
+				,null);
 	}
 
 
@@ -249,10 +249,11 @@ public class ClassScannerService implements Plugin {
 			String id = Baseclass.generateUUIDFromString(method.toString());
 			return new OperationScanContext(new SecurityOperationCreate()
 					.setDefaultaccess(ioperation.access())
+					.setSystemObject(true)
 					.setDescription(ioperation.Description())
 					.setName(ioperation.Name())
 					.setIdForCreate(id)
-					.setSystemObject(true), relatedClasses);
+					, relatedClasses);
 		}
 		return null;
 	}
@@ -567,9 +568,9 @@ public class ClassScannerService implements Plugin {
 			}
 		}
 		RoleCreate roleCreate = new RoleCreate()
+				.setTenant(defaultTenant)
 				.setName("Super Administrators")
-				.setDescription("Role for Super Administrators of the system")
-				.setTenant(defaultTenant);
+				.setDescription("Role for Super Administrators of the system");
 		Role superAdminRole = roleService.findByIdOrNull(Role.class, SUPER_ADMIN_ROLE_ID);
 		if (superAdminRole == null) {
 			logger.debug("Creating Super Admin role");
