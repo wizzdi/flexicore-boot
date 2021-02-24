@@ -1,6 +1,7 @@
 package com.wizzdi.flexicore.security.response;
 
 import com.wizzdi.flexicore.security.request.BaseclassFilter;
+import com.wizzdi.flexicore.security.request.PaginationFilter;
 
 import java.util.List;
 
@@ -20,7 +21,7 @@ public class PaginationResponse<T> {
 		this.endPage = totalPages;
 	}
 
-	public PaginationResponse(List<T> list, BaseclassFilter baseclassFilter, long totalRecords) {
+	public PaginationResponse(List<T> list, PaginationFilter baseclassFilter, long totalRecords) {
 		this(list, baseclassFilter != null ? baseclassFilter.getPageSize() : null, totalRecords);
 	}
 

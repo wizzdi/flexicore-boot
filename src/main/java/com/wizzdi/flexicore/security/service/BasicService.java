@@ -4,6 +4,8 @@ import com.flexicore.model.Basic;
 import com.flexicore.security.SecurityContextBase;
 import com.wizzdi.flexicore.boot.base.interfaces.Plugin;
 import com.wizzdi.flexicore.security.request.BasicCreate;
+import com.wizzdi.flexicore.security.request.BasicPropertiesFilter;
+import com.wizzdi.flexicore.security.request.PaginationFilter;
 import org.pf4j.Extension;
 import org.springframework.stereotype.Component;
 
@@ -39,6 +41,14 @@ public class BasicService implements Plugin {
 	}
 
 	public void validate(BasicCreate basicCreate, SecurityContextBase securityContext) {
+
+	}
+
+	public void validate(PaginationFilter paginationFilter, SecurityContextBase securityContext) {
+
+	}
+
+	public void validate(BasicPropertiesFilter basicPropertiesFilter, SecurityContextBase securityContext) {
 
 	}
 

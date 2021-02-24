@@ -115,18 +115,11 @@ public class SecurityPolicyRepository implements Plugin {
 
 	public <T extends SecurityPolicy> T getSecurityPolicyByIdOrNull(String id, Class<T> c, SecurityContextBase securityContext) {
 
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<T> q = cb.createQuery(c);
-		Root<T> r = q.from(c);
-		List<Predicate> predicates = new ArrayList<>();
-		predicates.add(cb.equal(r.get(SecurityPolicy_.id), id));
-		if (securityContext != null) {
-			Join<T, Baseclass> join = r.join(SecurityPolicy_.security);
-			baseclassRepository.addBaseclassPredicates(cb, q, join, predicates, securityContext);
-		}
-		q.select(r).where(predicates.toArray(Predicate[]::new));
-		TypedQuery<T> query = em.createQuery(q);
-		List<T> resultList = query.getResultList();
-		return resultList.isEmpty() ? null : resultList.get(0);
+		return baseclassRepository.getByIdOrNull(id,c,SecurityPolicy_.security,securityContext);
+	}
+
+	public <T extends SecurityPolicy> List<T> listSecurityPolicyByIds( Class<T> c,Set<String> ids, SecurityContextBase securityContext) {
+
+		return baseclassRepository.listByIds(c,ids,SecurityPolicy_.security,securityContext);
 	}
 }

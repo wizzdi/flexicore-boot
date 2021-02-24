@@ -7,14 +7,19 @@ import com.flexicore.security.SecurityContextBase;
 import com.wizzdi.flexicore.boot.base.interfaces.Plugin;
 import com.wizzdi.flexicore.security.request.BaseclassFilter;
 import org.pf4j.Extension;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.*;
+import javax.persistence.metamodel.SingularAttribute;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -25,24 +30,28 @@ import java.util.stream.Collectors;
 @Extension
 public class BaseclassRepository implements Plugin {
 
+	private static final Logger logger= LoggerFactory.getLogger(BaseclassRepository.class);
 	@PersistenceContext
 	private EntityManager em;
 	private SecurityOperation allOp;
 
+	@Autowired
+	private BasicRepository basicRepository;
 
-	public static <T> boolean addPagination(BaseclassFilter baseclassFilter, TypedQuery<T> q){
-		return BasicPredicatesHelper.addPagination(baseclassFilter,q);
+
+	public static <T> boolean addPagination(BaseclassFilter baseclassFilter, TypedQuery<T> q) {
+		return BasicRepository.addPagination(baseclassFilter, q);
 	}
 
 	public <T extends Baseclass> void addBaseclassPredicates(CriteriaBuilder cb, CommonAbstractCriteria q, Path<T> r, List<Predicate> predicates, SecurityContextBase securityContext) {
-		if(securityContext==null){
+		if (securityContext == null) {
 			return;
 		}
 
 		List<? extends SecurityTenant> tenants = securityContext.getTenants();
-		SecurityUser securityUser=securityContext.getUser();
-		SecurityOperation op=securityContext.getOperation();
-		boolean impersonated= securityContext.isImpersonated();
+		SecurityUser securityUser = securityContext.getUser();
+		SecurityOperation op = securityContext.getOperation();
+		boolean impersonated = securityContext.isImpersonated();
 		Set<String> tenantIds = tenants.parallelStream().map(f -> f.getId()).collect(Collectors.toSet());
 
 		Map<String, List<Role>> rolesInTenants = securityContext.getRoleMap();
@@ -144,7 +153,7 @@ public class BaseclassRepository implements Plugin {
 
 	/**
 	 * @param securityUser securityUser
-	 * @param op operation
+	 * @param op           operation
 	 * @return a list of denied baseclasses  for securityUser using SecurityOperation
 	 */
 	private Pair<List<Baseclass>, List<Baseclass>> getDenied(SecurityUser securityUser, SecurityOperation op) {
@@ -280,7 +289,7 @@ public class BaseclassRepository implements Plugin {
 
 	private SecurityOperation getAllOperation() {
 		if (allOp == null) {
-			allOp = em.find(SecurityOperation.class,Baseclass.generateUUIDFromString(All.class.getCanonicalName()));
+			allOp = em.find(SecurityOperation.class, Baseclass.generateUUIDFromString(All.class.getCanonicalName()));
 		}
 		return allOp;
 	}
@@ -409,46 +418,87 @@ public class BaseclassRepository implements Plugin {
 
 	}
 
-	public <T extends Baseclass> List<T> findByIds(Class<T> c, Set<String> requested) {
+
+	public <T extends Baseclass> List<T> listByIds(Class<T> c, Set<String> ids, SecurityContextBase securityContext) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<T> q = cb.createQuery(c);
 		Root<T> r = q.from(c);
-		q.select(r).where(r.get(Baseclass_.id).in(requested));
-		TypedQuery<T> query = em.createQuery(q);
-		return query.getResultList();
-	}
-
-	public <T extends Baseclass> List<T> listByIds(Class<T> c,Set<String> ids, SecurityContextBase securityContext) {
-		CriteriaBuilder cb=em.getCriteriaBuilder();
-		CriteriaQuery<T> q=cb.createQuery(c);
-		Root<T> r=q.from(c);
-		List<Predicate> predicates=new ArrayList<>();
+		List<Predicate> predicates = new ArrayList<>();
 		predicates.add(r.get(Baseclass_.id).in(ids));
-		addBaseclassPredicates(cb,q,r,predicates,securityContext);
+		addBaseclassPredicates(cb, q, r, predicates, securityContext);
 		q.select(r).where(predicates.toArray(Predicate[]::new));
 		TypedQuery<T> query = em.createQuery(q);
 		return query.getResultList();
 	}
 
-	public <T extends Baseclass> T getByIdOrNull(String id,Class<T> c, SecurityContextBase securityContext) {
-		CriteriaBuilder cb=em.getCriteriaBuilder();
-		CriteriaQuery<T> q=cb.createQuery(c);
-		Root<T> r=q.from(c);
-		List<Predicate> predicates=new ArrayList<>();
-		predicates.add(cb.equal(r.get(Baseclass_.id),id));
-		addBaseclassPredicates(cb,q,r,predicates,securityContext);
+	public <T extends Baseclass> T getByIdOrNull(String id, Class<T> c, SecurityContextBase securityContext) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<T> q = cb.createQuery(c);
+		Root<T> r = q.from(c);
+		List<Predicate> predicates = new ArrayList<>();
+		predicates.add(cb.equal(r.get(Baseclass_.id), id));
+		addBaseclassPredicates(cb, q, r, predicates, securityContext);
 		q.select(r).where(predicates.toArray(Predicate[]::new));
 		TypedQuery<T> query = em.createQuery(q);
 		List<T> resultList = query.getResultList();
-		return resultList.isEmpty()?null:resultList.get(0);
+		return resultList.isEmpty() ? null : resultList.get(0);
 	}
+
+	public <D extends Basic, E extends Baseclass, T extends D> T getByIdOrNull(String id, Class<T> c, SingularAttribute<D, E> baseclassAttribute, SecurityContextBase securityContext) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<T> q = cb.createQuery(c);
+		Root<T> r = q.from(c);
+		List<Predicate> predicates = new ArrayList<>();
+		predicates.add(cb.equal(r.get(Basic_.id), id));
+		addBaseclassPredicates(cb, q, r.get(baseclassAttribute), predicates, securityContext);
+		q.select(r).where(predicates.toArray(Predicate[]::new));
+		TypedQuery<T> query = em.createQuery(q);
+		List<T> resultList = query.getResultList();
+		return resultList.isEmpty() ? null : resultList.get(0);
+	}
+
+	public <D extends Basic, E extends Baseclass, T extends D> List<T> listByIds(Class<T> c, Set<String> ids, SingularAttribute<D, E> baseclassAttribute, SecurityContextBase securityContext) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<T> q = cb.createQuery(c);
+		Root<T> r = q.from(c);
+		List<Predicate> predicates = new ArrayList<>();
+		predicates.add(r.get(Basic_.id).in(ids));
+		addBaseclassPredicates(cb, q, r.get(baseclassAttribute), predicates, securityContext);
+		q.select(r).where(predicates.toArray(Predicate[]::new));
+		TypedQuery<T> query = em.createQuery(q);
+		return query.getResultList();
+	}
+
+
+	public <D extends Basic, T extends D> List<T> findByIds(Class<T> c, Set<String> ids, SingularAttribute<D, String> idAttribute) {
+		return basicRepository.findByIds(c, ids, idAttribute);
+	}
+
+	public <T extends Basic> List<T> findByIds(Class<T> c, Set<String> requested) {
+		return basicRepository.findByIds(c, requested);
+	}
+
 	public <T> T findByIdOrNull(Class<T> type, String id) {
-		try {
-			return em.find(type, id);
-
-		} catch (NoResultException e) {
-			return null;
-		}
+		return basicRepository.findByIdOrNull(type, id);
 	}
 
+	@Transactional
+	public void merge(Object base) {
+		basicRepository.merge(base);
+	}
+
+	@Transactional
+	public void merge(Object base, boolean updateDate) {
+		basicRepository.merge(base, updateDate);
+	}
+
+	@Transactional
+	public void massMerge(List<?> toMerge) {
+		basicRepository.massMerge(toMerge);
+	}
+
+	@Transactional
+	public void massMerge(List<?> toMerge, boolean updatedate) {
+		basicRepository.massMerge(toMerge, updatedate);
+	}
 }
