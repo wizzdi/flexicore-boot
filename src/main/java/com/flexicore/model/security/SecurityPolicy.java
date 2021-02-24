@@ -1,22 +1,18 @@
 package com.flexicore.model.security;
 
 import com.flexicore.model.Baseclass;
+import com.flexicore.model.Basic;
 import com.flexicore.model.Role;
 import com.flexicore.model.SecurityTenant;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import java.time.OffsetDateTime;
 
 @Entity
-public class SecurityPolicy {
+public class SecurityPolicy extends Basic {
 
-	@Id
-	private String id;
-	private String name;
-	private String description;
 
 	@Column(columnDefinition = "timestamp with time zone")
 	private OffsetDateTime startTime;
@@ -28,15 +24,6 @@ public class SecurityPolicy {
 	@ManyToOne(targetEntity = Baseclass.class)
 	private Baseclass security;
 
-	@Id
-	public String getId() {
-		return id;
-	}
-
-	public <T extends SecurityPolicy> T setId(String id) {
-		this.id = id;
-		return (T) this;
-	}
 
 	@Column(columnDefinition = "timestamp with time zone")
 	public OffsetDateTime getStartTime() {
@@ -87,21 +74,4 @@ public class SecurityPolicy {
 		return (T) this;
 	}
 
-	public String getName() {
-		return name;
-	}
-
-	public <T extends SecurityPolicy> T setName(String name) {
-		this.name = name;
-		return (T) this;
-	}
-
-	public String getDescription() {
-		return description;
-	}
-
-	public <T extends SecurityPolicy> T setDescription(String description) {
-		this.description = description;
-		return (T) this;
-	}
 }

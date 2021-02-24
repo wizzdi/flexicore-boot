@@ -22,7 +22,6 @@ import javax.persistence.*;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -40,7 +39,7 @@ import java.util.concurrent.ConcurrentHashMap;
 		@Index(name = "sort_idx", columnList = "name,id"),
 		@Index(name = "search_idx", columnList = "searchKey,dtype")
 })
-public class Baseclass implements Syncable {
+public class Baseclass extends Basic implements Syncable {
 
 	private static ConcurrentHashMap<String, Clazz> allclazzes = new ConcurrentHashMap<>();
 
@@ -48,16 +47,12 @@ public class Baseclass implements Syncable {
 	@Lob
 	@JsonIgnore
 	private String searchKey;
-	private boolean softDelete;
+
 
 
 	@Column(name = "dtype", insertable = false, updatable = false)
 	private String dtype;
 
-	@Id
-	protected String id;
-	protected String name;
-	protected String description;
 
 	@ManyToOne(targetEntity = SecurityUser.class)
 	@JsonView(Views.ForSwaggerOnly.class)
@@ -85,33 +80,14 @@ public class Baseclass implements Syncable {
 	// this field is added to to trigger metadatamodel generation , sometimes _.clazz field isn't created.
 
 
-	@Column(columnDefinition = "timestamp with time zone")
-	private OffsetDateTime creationDate;
-	@Column(columnDefinition = "timestamp with time zone")
-	private OffsetDateTime updateDate;
+
 
 	@JsonIgnore
 	@OneToMany(targetEntity = PermissionGroupToBaseclass.class, mappedBy = "rightside")
 	private List<PermissionGroupToBaseclass> permissionGroupToBaseclasses = new ArrayList<>();
 
 
-	public boolean isSoftDelete() {
-		return softDelete;
-	}
 
-	public void setSoftDelete(boolean softDelete) {
-		this.softDelete = softDelete;
-	}
-
-
-	public OffsetDateTime getCreationDate() {
-		return creationDate;
-	}
-
-
-	public void setCreationDate(OffsetDateTime timestampField) {
-		this.creationDate = timestampField;
-	}
 
 
 	public void init() {
@@ -119,8 +95,8 @@ public class Baseclass implements Syncable {
 			id = getBase64ID();
 		}
 
-		if (creationDate == null) {
-			creationDate = OffsetDateTime.now();
+		if (getCreationDate() == null) {
+			setCreationDate(OffsetDateTime.now());
 		}
 
 
@@ -153,33 +129,6 @@ public class Baseclass implements Syncable {
 	}
 
 
-	@Id
-	public String getId() {
-
-		return id;
-	}
-
-	public void setId(String id) {
-		this.id = id;
-	}
-
-
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
-
-	public String getDescription() {
-		return description;
-	}
-
-	public void setDescription(String description) {
-		this.description = description;
-	}
 
 	@JsonView(Full.class)
 	@ManyToOne(targetEntity = Clazz.class)
@@ -234,14 +183,6 @@ public class Baseclass implements Syncable {
 	}
 
 
-	public OffsetDateTime getUpdateDate() {
-		return updateDate;
-	}
-
-
-	public void setUpdateDate(OffsetDateTime updateDate) {
-		this.updateDate = updateDate;
-	}
 
 
 	public static List<Clazz> getAllClazz() {
