@@ -3,6 +3,7 @@ package com.flexicore.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.flexicore.interfaces.dynamic.FieldInfo;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
@@ -16,7 +17,7 @@ public class BaseclassLongFiltering {
     @FieldInfo(displayName = "number",description = "number filter",mandatory = true)
 
     private long someNumber;
-    @ManyToOne(targetEntity = FilteringInformationHolder.class)
+    @ManyToOne(targetEntity = FilteringInformationHolder.class,cascade = CascadeType.MERGE)
     @JsonIgnore
     private FilteringInformationHolder filteringInformationHolder;
 
@@ -48,7 +49,7 @@ public class BaseclassLongFiltering {
         return this;
     }
 
-    @ManyToOne(targetEntity = FilteringInformationHolder.class)
+    @ManyToOne(targetEntity = FilteringInformationHolder.class,cascade = CascadeType.MERGE)
     @JsonIgnore
     public FilteringInformationHolder getFilteringInformationHolder() {
         return filteringInformationHolder;

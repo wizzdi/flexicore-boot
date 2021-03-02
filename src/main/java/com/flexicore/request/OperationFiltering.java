@@ -10,7 +10,6 @@ import com.flexicore.model.FilteringInformationHolder;
 import com.flexicore.model.dynamic.DynamicInvoker;
 
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
 import javax.persistence.Transient;
 import java.util.HashSet;
@@ -23,10 +22,10 @@ public class OperationFiltering extends FilteringInformationHolder {
     @FieldInfo
     private Boolean auditable;
     @ListFieldInfo(listType = AccessRef.class)
-    @OneToMany(targetEntity = AccessRef.class,mappedBy = "filteringInformationHolder",fetch = FetchType.EAGER)
+    @OneToMany(targetEntity = AccessRef.class,mappedBy = "filteringInformationHolder")
     private Set<AccessRef> defaultaccess=new HashSet<>();
 
-    @OneToMany(targetEntity = DynamicInvokerRef.class,mappedBy = "filteringInformationHolder",fetch = FetchType.EAGER)
+    @OneToMany(targetEntity = DynamicInvokerRef.class,mappedBy = "filteringInformationHolder")
     @IdRefFieldInfo(refType = DynamicInvoker.class)
     private Set<DynamicInvokerRef> dynamicInvokerIds=new HashSet<>();
     @JsonIgnore
@@ -42,7 +41,7 @@ public class OperationFiltering extends FilteringInformationHolder {
         return (T) this;
     }
 
-    @OneToMany(targetEntity = AccessRef.class,mappedBy = "filteringInformationHolder",fetch = FetchType.EAGER)
+    @OneToMany(targetEntity = AccessRef.class,mappedBy = "filteringInformationHolder")
     public Set<AccessRef> getDefaultaccess() {
         return defaultaccess;
     }
@@ -52,7 +51,7 @@ public class OperationFiltering extends FilteringInformationHolder {
         return (T) this;
     }
 
-    @OneToMany(targetEntity = DynamicInvokerRef.class,mappedBy = "filteringInformationHolder",fetch = FetchType.EAGER)
+    @OneToMany(targetEntity = DynamicInvokerRef.class,mappedBy = "filteringInformationHolder")
     public Set<DynamicInvokerRef> getDynamicInvokerIds() {
         return dynamicInvokerIds;
     }

@@ -38,7 +38,7 @@ public class User extends SecurityUser {
     private boolean disabled;
     @Column(columnDefinition = "timestamp with time zone")
     private OffsetDateTime dateApproved;
-    @ManyToOne(targetEntity = User.class)
+    @ManyToOne(targetEntity = User.class,cascade = CascadeType.MERGE)
     private User approvingUser;
 
     @Lob
@@ -67,7 +67,7 @@ public class User extends SecurityUser {
 
     @JsonIgnore
 
-    @OneToMany(targetEntity = RoleToUser.class,mappedBy = "rightside", fetch = FetchType.LAZY) //users are subscribed to very few roles.
+    @OneToMany(targetEntity = RoleToUser.class,mappedBy = "rightside") //users are subscribed to very few roles.
     private List<RoleToUser> roles = new ArrayList<>();
 
 
@@ -83,6 +83,7 @@ public class User extends SecurityUser {
     @JsonView(Views.Full.class)
     private String password;
 
+    @Column(name = "phone_number")
     public String getPhoneNumber() {
         return phoneNumber;
     }
@@ -144,7 +145,7 @@ public class User extends SecurityUser {
 
 
 
-    @OneToMany(targetEntity = TenantToUser.class,mappedBy = "rightside", fetch = FetchType.EAGER)
+    @OneToMany(targetEntity = TenantToUser.class,mappedBy = "rightside")
     @JsonIgnore
     public List<TenantToUser> getTenantToUsers() {
         return tenantToUsers;
@@ -234,7 +235,7 @@ public class User extends SecurityUser {
     }
 
     @JsonIgnore
-    @ManyToOne(targetEntity = User.class)
+    @ManyToOne(targetEntity = User.class,cascade = CascadeType.MERGE)
     public User getApprovingUser() {
         return approvingUser;
     }

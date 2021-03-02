@@ -29,6 +29,7 @@ public class FileResource extends Baseclass {
     private String actualFilename;
     private String originalFilename;
     private boolean done;
+    @Column(name = "path")
     private String path;
 
     @Column(columnDefinition = "timestamp with time zone")
@@ -52,6 +53,7 @@ public class FileResource extends Baseclass {
         this.md5 = md5;
     }
 
+    @Column(name = "fileoffset")
     public long getOffset() {
         return offset;
     }
@@ -94,6 +96,7 @@ public class FileResource extends Baseclass {
         super(name, securityContext);
     }
 
+    @Column(name = "path")
     @JsonView(Views.Elaborative.class)
     public String getFullPath() {
         return path;
@@ -112,7 +115,7 @@ public class FileResource extends Baseclass {
         this.nonDownloadable = nonDownloadable;
     }
 
-    @Temporal(TemporalType.TIMESTAMP)
+    @Column(columnDefinition = "timestamp with time zone")
     public OffsetDateTime getDateTaken() {
         return dateTaken;
     }
@@ -121,7 +124,7 @@ public class FileResource extends Baseclass {
         this.dateTaken = dateTaken;
     }
 
-    @Temporal(TemporalType.DATE)
+    @Column(columnDefinition = "timestamp with time zone")
     public OffsetDateTime getKeepUntil() {
         return keepUntil;
     }

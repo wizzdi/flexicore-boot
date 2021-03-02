@@ -2,6 +2,7 @@ package com.flexicore.model;
 
 import com.flexicore.security.SecurityContext;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
 
@@ -17,13 +18,13 @@ public class ZipFileToFileResource extends Baseclass {
         super(name, securityContext);
     }
 
-    @ManyToOne(targetEntity = ZipFile.class)
+    @ManyToOne(targetEntity = ZipFile.class,cascade = CascadeType.MERGE)
     private ZipFile zipFile;
 
-    @ManyToOne(targetEntity = FileResource.class)
+    @ManyToOne(targetEntity = FileResource.class,cascade = CascadeType.MERGE)
     private FileResource zippedFile;
 
-    @ManyToOne(targetEntity = ZipFile.class)
+    @ManyToOne(targetEntity = ZipFile.class,cascade = CascadeType.MERGE)
     public ZipFile getZipFile() {
         return zipFile;
     }
@@ -33,7 +34,7 @@ public class ZipFileToFileResource extends Baseclass {
         return (T) this;
     }
 
-    @ManyToOne(targetEntity = FileResource.class)
+    @ManyToOne(targetEntity = FileResource.class,cascade = CascadeType.MERGE)
     public FileResource getZippedFile() {
         return zippedFile;
     }

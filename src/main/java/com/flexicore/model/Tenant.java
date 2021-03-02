@@ -12,8 +12,8 @@ import com.flexicore.annotations.FullTextSearch;
 import com.flexicore.annotations.sync.SyncOption;
 import com.flexicore.security.SecurityContext;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import java.util.ArrayList;
@@ -30,20 +30,20 @@ import java.util.List;
 public class Tenant extends SecurityTenant  {
 
 	private String externalId;
-	@ManyToOne(targetEntity = FileResource.class)
+	@ManyToOne(targetEntity = FileResource.class,cascade = CascadeType.MERGE)
 	private FileResource icon;
 
 	@JsonIgnore
-	@OneToMany(targetEntity = TenantToBaseClassPremission.class,mappedBy="leftside", fetch=FetchType.LAZY)
+	@OneToMany(targetEntity = TenantToBaseClassPremission.class,mappedBy="leftside")
 
 	private List<TenantToBaseClassPremission> tenantToBaseClassPremissions =new ArrayList<>();
 
-	@OneToMany(targetEntity = TenantToUser.class,mappedBy="leftside", fetch=FetchType.LAZY)
+	@OneToMany(targetEntity = TenantToUser.class,mappedBy="leftside")
 	@JsonIgnore
 	private List<TenantToUser> tenantToUser=new ArrayList<>();
 
 	@JsonIgnore
-	@OneToMany(targetEntity = TenantToUser.class,mappedBy="leftside", fetch=FetchType.LAZY)
+	@OneToMany(targetEntity = TenantToUser.class,mappedBy="leftside")
 	@SyncOption(sync = false)
 	public List<TenantToUser> getTenantToUser() {
 		return tenantToUser;
@@ -69,7 +69,7 @@ public class Tenant extends SecurityTenant  {
 		this.externalId = externalId;
 	}
 
-	@ManyToOne(targetEntity = FileResource.class)
+	@ManyToOne(targetEntity = FileResource.class,cascade = CascadeType.MERGE)
 	public FileResource getIcon() {
 		return icon;
 	}
