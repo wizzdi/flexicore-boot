@@ -20,6 +20,8 @@ public class UserCreate extends SecurityUserCreate {
     private OffsetDateTime dateApproved;
     @JsonIgnore
     private User approvingUser;
+    @JsonIgnore
+    private String homeDir;
 
 
     public String getEmail() {
@@ -94,6 +96,16 @@ public class UserCreate extends SecurityUserCreate {
 
     public <T extends UserCreate> T setApprovingUser(User approvingUser) {
         this.approvingUser = approvingUser;
+        return (T) this;
+    }
+
+    @JsonIgnore
+    public String getHomeDir() {
+        return homeDir;
+    }
+
+    public <T extends UserCreate> T setHomeDir(String homeDir) {
+        this.homeDir = homeDir;
         return (T) this;
     }
 }

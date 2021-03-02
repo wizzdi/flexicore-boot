@@ -42,9 +42,10 @@ public class OperationsMethodScannerImpl implements OperationsMethodScanner, Plu
 			String id = Baseclass.generateUUIDFromString(method.toString());
 			return new OperationScanContext(new OperationCreate()
 					.setDefaultaccess(ioperation.access())
+					.setSystemObject(true)
 					.setDescription(ioperation.Description())
 					.setName(ioperation.Name())
-					.setIdForCreate(id).setSystemObject(true),relatedClasses);
+					.setIdForCreate(id),relatedClasses);
 		}
 		return null;
 	}

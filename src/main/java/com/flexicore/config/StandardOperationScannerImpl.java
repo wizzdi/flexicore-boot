@@ -23,10 +23,11 @@ public class StandardOperationScannerImpl implements StandardOperationScanner {
 		IOperation ioperation=standardAccess.getDeclaredAnnotation(IOperation.class);
 		return new OperationScanContext(new OperationCreate()
 				.setDefaultaccess(ioperation.access())
+				.setSystemObject(true)
 				.setDescription(ioperation.Description())
 				.setName(ioperation.Name())
 				.setIdForCreate(Baseclass.generateUUIDFromString(standardAccess.getCanonicalName()))
-				.setSystemObject(true),null);
+				,null);
 	}
 
 	@Override

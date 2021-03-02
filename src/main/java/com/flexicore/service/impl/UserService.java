@@ -68,6 +68,7 @@ import org.springframework.stereotype.Component;
 import javax.ws.rs.BadRequestException;
 import javax.ws.rs.NotAuthorizedException;
 import javax.ws.rs.core.Response;
+import java.io.File;
 import java.io.IOException;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
@@ -251,17 +252,27 @@ public class UserService implements com.flexicore.service.UserService {
     @Override
     public User createUserNoMerge(UserCreate createUser, SecurityContext securityContext) {
         User user = new User(createUser.getName(), securityContext);
-        user.setHomeDir(usersRootHomeDir+user.getName()+user.getId());
         updateUserNoMerge(user, createUser);
         return user;
+    }
+
+    public String generateUserHomeDir(User user) {
+        return new File(usersRootHomeDir, user.getName() + user.getId()).getAbsolutePath();
     }
 
     @Override
     public boolean updateUserNoMerge(User user, UserCreate createUser) {
         boolean update = securityUserService.updateSecurityUserNoMerge(createUser, user);
+        if(user.getHomeDir()==null && createUser.getHomeDir()==null){
+            createUser.setHomeDir(generateUserHomeDir(user));
+        }
 
         if (createUser.getEmail() != null && !createUser.getEmail().equals(user.getEmail())) {
             user.setEmail(createUser.getEmail());
+            update = true;
+        }
+        if (createUser.getHomeDir() != null && !createUser.getHomeDir().equals(user.getHomeDir())) {
+            user.setHomeDir(createUser.getHomeDir());
             update = true;
         }
 

@@ -49,6 +49,7 @@ import java.util.stream.Stream;
 @Baseclassroot
 @Component("BaseclassRepositoryBase")
 @Extension
+@Transactional
 public class BaseclassRepository implements com.flexicore.data.BaseclassRepository {
 
     /**
