@@ -439,6 +439,7 @@ public class ClassScannerService implements Plugin {
 				clazz.setId(ID);
 				clazz.setDescription(annotatedclazz.Description());
 				clazz.setSystemObject(true);
+				clazz.setClazz(null);
 				toMerge.add(clazz);
 				existing.put(clazz.getId(), clazz);
 				logger.debug("Have created a new class " + clazz.toString());
