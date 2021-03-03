@@ -191,6 +191,11 @@ public class InvokerUtils {
 			}
 
 			@Override
+			public boolean actionIdHolder() {
+				return false;
+			}
+
+			@Override
 			public Class<? extends Annotation> annotationType() {
 				return FieldInfo.class;
 			}

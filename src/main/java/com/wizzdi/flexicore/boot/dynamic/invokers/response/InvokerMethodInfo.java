@@ -1,16 +1,13 @@
 package com.wizzdi.flexicore.boot.dynamic.invokers.response;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.wizzdi.flexicore.boot.dynamic.invokers.annotations.FieldInfo;
-import com.wizzdi.flexicore.boot.dynamic.invokers.annotations.IdRefFieldInfo;
-import com.wizzdi.flexicore.boot.dynamic.invokers.annotations.ListFieldInfo;
 import com.flexicore.model.Baseclass;
 
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.lang.reflect.Parameter;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 

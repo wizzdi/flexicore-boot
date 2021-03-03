@@ -27,6 +27,7 @@ public class ParameterInfo {
     private boolean list;
     private boolean mandatory;
     private boolean actionId;
+    private boolean actionIdHolder;
     private Class<?> idRefType;
     private List<ParameterInfo> subParameters;
     private static Set<Class<?>> wrappers = new HashSet<>();
@@ -56,6 +57,7 @@ public class ParameterInfo {
             this.mandatory = fieldInfo.mandatory();
             this.defaultValue = fieldInfo.defaultValue();
             this.regexValidation = fieldInfo.regexValidation();
+            this.actionIdHolder=fieldInfo.actionIdHolder();
             if (fieldInfo.rangeEnabled()) {
                 this.rangeMin = fieldInfo.rangeMin();
                 this.rangeMax = fieldInfo.rangeMax();
@@ -284,6 +286,15 @@ public class ParameterInfo {
         return (T) this;
     }
 
+    public boolean isActionIdHolder() {
+        return actionIdHolder;
+    }
+
+    public <T extends ParameterInfo> T setActionIdHolder(boolean actionIdHolder) {
+        this.actionIdHolder = actionIdHolder;
+        return (T) this;
+    }
+
     @Override
     public String toString() {
         return "ParameterInfo{" +
@@ -300,6 +311,8 @@ public class ParameterInfo {
                 ", list=" + list +
                 ", mandatory=" + mandatory +
                 ", actionId=" + actionId +
+                ", actionIdHolder=" + actionIdHolder +
+
                 ", idRefType=" + idRefType +
                 ", subParameters=" + subParameters +
                 '}';
