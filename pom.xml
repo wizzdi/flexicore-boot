@@ -73,12 +73,12 @@
         <dependency>
             <groupId>com.wizzdi</groupId>
             <artifactId>flexicore-boot-dynamic-invokers-model</artifactId>
-            <version>1.0.1-SNAPSHOT</version>
+            <version>1.0.1</version>
         </dependency>
         <dependency>
             <groupId>com.wizzdi</groupId>
             <artifactId>flexicore-security-model</artifactId>
-            <version>1.0.3-SNAPSHOT</version>
+            <version>1.0.3</version>
         </dependency>
         <dependency>
             <groupId>com.wizzdi</groupId>
