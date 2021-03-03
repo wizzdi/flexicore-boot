@@ -4,7 +4,7 @@
 
     <groupId>com.wizzdi</groupId>
     <artifactId>flexicore-security-service</artifactId>
-    <version>1.0.4-SNAPSHOT</version>
+    <version>1.0.4-HIBERNATE</version>
 
     <name>FlexiCore security service</name>
     <description>flexicore base service</description>
@@ -77,7 +77,7 @@
         <dependency>
             <groupId>com.wizzdi</groupId>
             <artifactId>flexicore-security-model</artifactId>
-            <version>1.0.3</version>
+            <version>1.0.4-HIBERNATE</version>
             <scope>provided</scope>
         </dependency>
 
@@ -96,11 +96,11 @@
             <scope>provided</scope>
         </dependency>
 
+
         <dependency>
             <groupId>com.wizzdi</groupId>
             <artifactId>flexicore-boot-starter-data-jpa</artifactId>
-            <version>1.0.2</version>
-            <scope>provided</scope>
+            <version>1.0.3-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.pf4j</groupId>
@@ -116,6 +116,12 @@
                     <groupId>org.slf4j</groupId>
                 </exclusion>
             </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>com.wizzdi</groupId>
+            <artifactId>flexicore-boot-starter-data-jpa-hibernate</artifactId>
+            <version>1.0.0-SNAPSHOT</version>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>

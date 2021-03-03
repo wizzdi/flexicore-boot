@@ -32,8 +32,8 @@ public class SecurityOperationService implements Plugin {
 		return operation;
 	}
 
-	public void merge(Object o){
-		operationRepository.merge(o);
+	public<T> T merge(T o){
+		return operationRepository.merge(o);
 	}
 	public void massMerge(List<Object> list){
 		operationRepository.massMerge(list);
@@ -46,7 +46,6 @@ public class SecurityOperationService implements Plugin {
 	public SecurityOperation createOperationNoMerge(SecurityOperationCreate operationCreate, SecurityContextBase securityContext){
 		SecurityOperation operation=new SecurityOperation(operationCreate.getName(),securityContext);
 		updateOperationNoMerge(operationCreate,operation);
-		operationRepository.merge(operation);
 		return operation;
 	}
 

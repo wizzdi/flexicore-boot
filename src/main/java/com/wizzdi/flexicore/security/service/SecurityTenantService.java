@@ -32,8 +32,8 @@ public class SecurityTenantService implements Plugin {
 		return tenant;
 	}
 
-	public void merge(Object o){
-		tenantRepository.merge(o);
+	public <T> T merge(T o){
+		return tenantRepository.merge(o);
 	}
 	public void massMerge(List<Object> list){
 		tenantRepository.massMerge(list);

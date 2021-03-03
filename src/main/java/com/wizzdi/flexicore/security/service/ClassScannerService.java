@@ -15,7 +15,10 @@ import com.wizzdi.flexicore.security.interfaces.OperationsClassScanner;
 import com.wizzdi.flexicore.security.interfaces.OperationsMethodScanner;
 import com.wizzdi.flexicore.security.interfaces.StandardOperationScanner;
 import com.wizzdi.flexicore.security.request.*;
-import com.wizzdi.flexicore.security.response.*;
+import com.wizzdi.flexicore.security.response.Clazzes;
+import com.wizzdi.flexicore.security.response.DefaultSecurityEntities;
+import com.wizzdi.flexicore.security.response.OperationScanContext;
+import com.wizzdi.flexicore.security.response.Operations;
 import org.pf4j.Extension;
 import org.pf4j.PluginWrapper;
 import org.reflections.Reflections;
@@ -25,7 +28,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.ApplicationContext;
@@ -92,8 +94,6 @@ public class ClassScannerService implements Plugin {
 	private String systemAdminId;
 
 
-
-
 	/**
 	 * runs once per server start. synchronizes annotated methods with
 	 * (IOperation) in the database so roles can be built with proper access
@@ -111,43 +111,45 @@ public class ClassScannerService implements Plugin {
 	@Scope(value = ConfigurableBeanFactory.SCOPE_SINGLETON)
 	@ConditionalOnMissingBean
 	public OperationsClassScanner operationsClassScanner(OperationsMethodScanner operationsMethodScanner) {
-		return c -> scanOperationsInClass(c,operationsMethodScanner);
+		return c -> scanOperationsInClass(c, operationsMethodScanner);
 	}
 
 	@Bean
 	@Scope(value = ConfigurableBeanFactory.SCOPE_SINGLETON)
 	@ConditionalOnMissingBean
 	public OperationBuilder securityOperationBuilder() {
-		return (securityOperationCreate, existing, relatedClazzes, toMerge, clazzes, securityContextBase) -> createOperation(securityOperationCreate, existing,relatedClazzes,toMerge,clazzes, securityContextBase);
+		return (securityOperationCreate, existing, relatedClazzes, toMerge, clazzes, securityContextBase) -> createOperation(securityOperationCreate, existing, relatedClazzes, toMerge, clazzes, securityContextBase);
 	}
 
 	private SecurityOperation createOperation(OperationScanContext operationScanContext, Map<String, SecurityOperation> existing, Map<String, Map<String, OperationToClazz>> relatedClazzes, List<Object> toMerge, Map<String, Clazz> clazzes, SecurityContextBase<?, ?, ?, ?> securityContextBase) {
 		SecurityOperationCreate securityOperationCreate = operationScanContext.getSecurityOperationCreate();
-		SecurityOperation securityOperation=existing.get(securityOperationCreate.getIdForCreate());
-		if(securityOperation==null){
-			securityOperation=operationService.createOperationNoMerge(securityOperationCreate,securityContextBase);
+		SecurityOperation securityOperation = existing.get(securityOperationCreate.getIdForCreate());
+		if (securityOperation == null) {
+			securityOperation = operationService.createOperationNoMerge(securityOperationCreate, securityContextBase);
 			securityOperation.setId(securityOperationCreate.getIdForCreate());
-			existing.put(securityOperation.getId(),securityOperation);
-			toMerge.add(securityOperation);
-		}
-		else{
-			if(operationService.updateOperationNoMerge(securityOperationCreate,securityOperation)){
-				toMerge.add(securityOperation);
+			securityOperation = operationService.merge(securityOperation);
+			existing.put(securityOperation.getId(), securityOperation);
+			//toMerge.add(securityOperation);
+		} else {
+			if (operationService.updateOperationNoMerge(securityOperationCreate, securityOperation)) {
+				securityOperation = operationService.merge(securityOperation);
+
+				//toMerge.add(securityOperation);
 			}
 		}
 		Class<?>[] relatedClasses = operationScanContext.getRelatedClasses();
-		if(relatedClasses !=null){
+		if (relatedClasses != null) {
 			for (Class<?> relatedClass : relatedClasses) {
 				String clazzId = Baseclass.generateUUIDFromString(relatedClass.getCanonicalName());
-				Clazz clazz=clazzes.get(clazzId);
-				Map<String,OperationToClazz> operationClazzes=relatedClazzes.computeIfAbsent(securityOperation.getId(),f->new HashMap<>());
-				OperationToClazz existingOperationToClazz=operationClazzes.get(clazzId);
-				if(existingOperationToClazz==null){
-					OperationToClazzCreate operationToClazzCreate=new OperationToClazzCreate()
+				Clazz clazz = clazzes.get(clazzId);
+				Map<String, OperationToClazz> operationClazzes = relatedClazzes.computeIfAbsent(securityOperation.getId(), f -> new HashMap<>());
+				OperationToClazz existingOperationToClazz = operationClazzes.get(clazzId);
+				if (existingOperationToClazz == null) {
+					OperationToClazzCreate operationToClazzCreate = new OperationToClazzCreate()
 							.setClazz(clazz)
 							.setSecurityOperation(securityOperation);
-					existingOperationToClazz = operationToClazzService.createOperationToClazzNoMerge(operationToClazzCreate, securityContextBase);
-					toMerge.add(existingOperationToClazz);
+					existingOperationToClazz = operationToClazzService.createOperationToClazz(operationToClazzCreate, securityContextBase);
+					//toMerge.add(existingOperationToClazz);
 					operationClazzes.put(clazzId, existingOperationToClazz);
 				}
 			}
@@ -159,7 +161,7 @@ public class ClassScannerService implements Plugin {
 	@Qualifier("adminSecurityContext")
 	@Scope(value = ConfigurableBeanFactory.SCOPE_SINGLETON)
 	@ConditionalOnMissingBean
-	public SecurityContextBase<?,?,?,?> adminSecurityContext(DefaultSecurityEntities defaultSecurityEntities){
+	public SecurityContextBase<?, ?, ?, ?> adminSecurityContext(DefaultSecurityEntities defaultSecurityEntities) {
 		return new SecurityContextBase<>()
 				.setTenants(Collections.singletonList(defaultSecurityEntities.getSecurityTenant()))
 				.setTenantToCreateIn(defaultSecurityEntities.getSecurityTenant())
@@ -171,7 +173,7 @@ public class ClassScannerService implements Plugin {
 	@Bean
 	@Scope(value = ConfigurableBeanFactory.SCOPE_SINGLETON)
 	@ConditionalOnMissingBean
-	public Operations initializeOperations(@Qualifier("adminSecurityContext") SecurityContextBase<?,?,?,?> securityContextBase,Clazzes clazzes, OperationsClassScanner operationsClassScanner, OperationBuilder operationBuilder,StandardOperationScanner standardOperationScanner) {
+	public Operations initializeOperations(@Qualifier("adminSecurityContext") SecurityContextBase<?, ?, ?, ?> securityContextBase, Clazzes clazzes, OperationsClassScanner operationsClassScanner, OperationBuilder operationBuilder, StandardOperationScanner standardOperationScanner) {
 
 		Map<String, Clazz> clazzMap = clazzes.getClazzes().stream().collect(Collectors.toMap(f -> f.getId(), f -> f));
 
@@ -189,16 +191,17 @@ public class ClassScannerService implements Plugin {
 			scannedOperations.addAll(scan);
 		}
 		scannedOperations.addAll(standardOperationScanner.getStandardOperations());
-		Map<String,OperationScanContext> operationCreateMap=scannedOperations.stream().collect(Collectors.toMap(f->f.getSecurityOperationCreate().getIdForCreate(),f->f,(a,b)->a));
-		Map<String,SecurityOperation> existing=operationCreateMap.isEmpty()?new HashMap<>():operationService.findByIds(SecurityOperation.class,operationCreateMap.keySet()).stream().collect(Collectors.toMap(f->f.getId(),f->f,(a,b)->a));
-		Map<String,Map<String,OperationToClazz>> relatedClazzes=existing.isEmpty()?new HashMap<>():operationToClazzService.listAllOperationToClazz(new OperationToClazzFilter().setSecurityOperations(new ArrayList<>(existing.values())),null).stream().filter(f->f.getLeftside()!=null&&f.getRightside()!=null).collect(Collectors.groupingBy(f->f.getLeftside().getId(),Collectors.toMap(f->f.getRightside().getId(),f->f,(a,b)->a)));
+		Map<String, OperationScanContext> operationCreateMap = scannedOperations.stream().collect(Collectors.toMap(f -> f.getSecurityOperationCreate().getIdForCreate(), f -> f, (a, b) -> a));
+		Map<String, SecurityOperation> existing = operationCreateMap.isEmpty() ? new HashMap<>() : operationService.findByIds(SecurityOperation.class, operationCreateMap.keySet()).stream().collect(Collectors.toMap(f -> f.getId(), f -> f, (a, b) -> a));
+		Map<String, Map<String, OperationToClazz>> relatedClazzes = existing.isEmpty() ? new HashMap<>() : operationToClazzService.listAllOperationToClazz(new OperationToClazzFilter().setSecurityOperations(new ArrayList<>(existing.values())), null).stream().filter(f -> f.getLeftside() != null && f.getRightside() != null).collect(Collectors.groupingBy(f -> f.getLeftside().getId(), Collectors.toMap(f -> f.getRightside().getId(), f -> f, (a, b) -> a)));
 		List<Object> toMerge = new ArrayList<>();
 
 		for (OperationScanContext securityOperationCreate : operationCreateMap.values()) {
-			toMerge.add(operationBuilder.upsertOperationNoMerge(securityOperationCreate,existing,relatedClazzes,toMerge, clazzMap, securityContextBase));
+			SecurityOperation securityOperation = operationBuilder.upsertOperationNoMerge(securityOperationCreate, existing, relatedClazzes, toMerge, clazzMap, securityContextBase);
+			securityOperation = operationService.merge(securityOperation);
 		}
 
-		operationService.massMerge(toMerge);
+		//operationService.massMerge(toMerge);
 
 		return new Operations(new ArrayList<>(existing.values()));
 	}
@@ -207,18 +210,18 @@ public class ClassScannerService implements Plugin {
 	@Scope(value = ConfigurableBeanFactory.SCOPE_SINGLETON)
 	@ConditionalOnMissingBean
 	public StandardOperationScanner standardOperationScanner() {
-		return ()->Arrays.asList(Delete.class, Read.class, Update.class, Write.class, All.class).stream().map(this::standardAccess).collect(Collectors.toList());
+		return () -> Arrays.asList(Delete.class, Read.class, Update.class, Write.class, All.class).stream().map(this::standardAccess).collect(Collectors.toList());
 	}
 
 	private OperationScanContext standardAccess(Class<?> standardAccess) {
-		IOperation ioperation=standardAccess.getDeclaredAnnotation(IOperation.class);
+		IOperation ioperation = standardAccess.getDeclaredAnnotation(IOperation.class);
 		return new OperationScanContext(new SecurityOperationCreate()
 				.setDefaultaccess(ioperation.access())
 				.setSystemObject(true)
 				.setDescription(ioperation.Description())
 				.setName(ioperation.Name())
 				.setIdForCreate(Baseclass.generateUUIDFromString(standardAccess.getCanonicalName()))
-				,null);
+				, null);
 	}
 
 
@@ -229,7 +232,7 @@ public class ClassScannerService implements Plugin {
 				continue;
 			}
 			OperationScanContext securityScanContext = operationsMethodScanner.scanOperationOnMethod(method);
-			if(securityScanContext!=null){
+			if (securityScanContext != null) {
 				ops.add(securityScanContext);
 			}
 
@@ -240,11 +243,11 @@ public class ClassScannerService implements Plugin {
 	}
 
 	private OperationScanContext scanOperationOnMethod(Method method) {
-		IOperation ioperation = AnnotatedElementUtils.findMergedAnnotation(method,IOperation.class);
+		IOperation ioperation = AnnotatedElementUtils.findMergedAnnotation(method, IOperation.class);
 		if (ioperation != null) {
 			Class<? extends Baseclass>[] relatedClasses = ioperation.relatedClazzes();
 			if (relatedClasses.length == 0 && method.getReturnType() != null && Baseclass.class.isAssignableFrom(method.getReturnType())) {
-				relatedClasses =  (Class<? extends Baseclass>[]) new Class<?>[]{method.getReturnType()};
+				relatedClasses = (Class<? extends Baseclass>[]) new Class<?>[]{method.getReturnType()};
 			}
 			String id = Baseclass.generateUUIDFromString(method.toString());
 			return new OperationScanContext(new SecurityOperationCreate()
@@ -307,7 +310,7 @@ public class ClassScannerService implements Plugin {
 					.setName(ioperation.Name());
 			operation = operationService.createOperationNoMerge(createOperationRequest, securityContextBase);
 			operation.setId(id);
-			toMerge.add(operation);
+			operation = operationService.merge(operation);
 
 			logger.debug("Have created a new operation" + operation.toString());
 
@@ -315,7 +318,7 @@ public class ClassScannerService implements Plugin {
 		} else {
 			if (!operation.isSystemObject()) {
 				operation.setSystemObject(true);
-				toMerge.add(operation);
+				operation = operationService.merge(operation);
 			}
 			logger.debug("operation already exists: " + operation);
 
@@ -337,7 +340,7 @@ public class ClassScannerService implements Plugin {
 					operationToClazz.setClazz(Baseclass.getClazzByName(relatedClazz.getCanonicalName()));
 					operationToClazz.setId(linkId);
 					operationToClazz.setSystemObject(true);
-					toMerge.add(operationToClazz);
+					operationToClazz = operationToClazzService.merge(operationToClazz);
 				} catch (Exception e) {
 					logger.info("[registerClazzRelatedOperationsInclass] Error while creating operation: " + e.getMessage());
 
@@ -346,7 +349,7 @@ public class ClassScannerService implements Plugin {
 			} else {
 				if (!operationToClazz.isSystemObject()) {
 					operationToClazz.setSystemObject(true);
-					toMerge.add(operationToClazz);
+					operationToClazz = operationToClazzService.merge(operationToClazz);
 				}
 			}
 
@@ -386,7 +389,7 @@ public class ClassScannerService implements Plugin {
 		logger.info("Initializing classes");
 
 
-		Set<Class<?>> entities =entityManager.getMetamodel().getEntities().stream().map(f->f.getJavaType()).collect(Collectors.toSet());
+		Set<Class<?>> entities = entityManager.getMetamodel().getEntities().stream().map(f -> f.getJavaType()).collect(Collectors.toSet());
 		logger.debug("detected classes:  " + entities.parallelStream().map(e -> e.getCanonicalName()).collect(Collectors.joining(System.lineSeparator())));
 
 		Set<String> ids = entities.parallelStream().map(f -> Baseclass.generateUUIDFromString(f.getCanonicalName())).collect(Collectors.toSet());
@@ -408,7 +411,7 @@ public class ClassScannerService implements Plugin {
 				handleEntityClass(annotated, existing, toMerge);
 			}
 		}
-		clazzService.massMerge(toMerge);
+		//clazzService.massMerge(toMerge);
 		entities.add(Clazz.class);
 		entities.add(ClazzLink.class);
 		//createIndexes(entities);
@@ -439,8 +442,7 @@ public class ClassScannerService implements Plugin {
 				clazz.setId(ID);
 				clazz.setDescription(annotatedclazz.Description());
 				clazz.setSystemObject(true);
-				clazz.setClazz(null);
-				toMerge.add(clazz);
+				clazz = clazzService.merge(clazz);
 				existing.put(clazz.getId(), clazz);
 				logger.debug("Have created a new class " + clazz.toString());
 
@@ -451,9 +453,8 @@ public class ClassScannerService implements Plugin {
 			}
 			Baseclass.addClazz(clazz);
 
-		}
-		catch (Exception e){
-			logger.error("failed registering clazz",e);
+		} catch (Exception e) {
+			logger.error("failed registering clazz", e);
 		}
 
 	}
@@ -561,10 +562,10 @@ public class ClassScannerService implements Plugin {
 			tenantToUser = tenantToUserService.createTenantToUserNoMerge(tenantToUserCreate, null);
 			tenantToUser.setCreator(admin);
 			tenantToUser.setId(TENANT_TO_USER_ID);
-			toMerge.add(tenantToUser);
+			tenantToUser = tenantToUserService.merge(tenantToUser);
 		} else {
 			if (tenantToUserService.updateTenantToUserNoMerge(tenantToUserCreate, tenantToUser)) {
-				toMerge.add(tenantToUser);
+				tenantToUser = tenantToUserService.merge(tenantToUser);
 				logger.debug("Updated SecurityTenant To SecurityUser");
 			}
 		}
@@ -579,7 +580,7 @@ public class ClassScannerService implements Plugin {
 			superAdminRole.setTenant(defaultTenant);
 			superAdminRole.setCreator(admin);
 			superAdminRole.setId(SUPER_ADMIN_ROLE_ID);
-			toMerge.add(superAdminRole);
+			superAdminRole = roleToUserService.merge(superAdminRole);
 		}
 		RoleToUserCreate roleToUserCreate = new RoleToUserCreate().setRole(superAdminRole).setSecurityUser(admin).setTenant(defaultTenant);
 		RoleToUser roleToUser = roleToUserService.findByIdOrNull(RoleToUser.class, SUPER_ADMIN_TO_ADMIN_ID);
@@ -588,14 +589,14 @@ public class ClassScannerService implements Plugin {
 			roleToUser = roleToUserService.createRoleToUserNoMerge(roleToUserCreate, null);
 			roleToUser.setCreator(admin);
 			roleToUser.setId(SUPER_ADMIN_TO_ADMIN_ID);
-			toMerge.add(roleToUser);
+			roleToUser = roleToUserService.merge(roleToUser);
 		} else {
 			if (roleToUserService.updateRoleToUserNoMerge(roleToUserCreate, roleToUser)) {
-				toMerge.add(roleToUser);
+				roleToUser = roleToUserService.merge(roleToUser);
 				logger.debug("Updated Role To SecurityUser Link");
 			}
 		}
-		roleToUserService.massMerge(toMerge);
+		//roleToUserService.massMerge(toMerge);
 		return new DefaultSecurityEntities(tenantAndUserInit.getAdmin(), tenantAndUserInit.getDefaultTenant(), superAdminRole, tenantToUser, roleToUser);
 
 	}
@@ -611,14 +612,13 @@ public class ClassScannerService implements Plugin {
 			logger.debug("Creating Default SecurityTenant");
 			defaultTenant = tenantService.createTenantNoMerge(tenantCreate, null);
 			defaultTenant.setId(DEFAULT_TENANT_ID);
-			defaultTenant.setTenant(defaultTenant);
-			toMerge.add(defaultTenant);
-		} else {
-			if (defaultTenant.getTenant() == null) {
-				defaultTenant.setTenant(defaultTenant);
-				tenantUpdated = true;
-			}
+			defaultTenant = tenantService.merge(defaultTenant);
 		}
+		if (defaultTenant.getTenant() == null) {
+			defaultTenant.setTenant(defaultTenant);
+			defaultTenant = tenantService.merge(defaultTenant);
+		}
+
 		SecurityUserCreate userCreate = new SecurityUserCreate()
 				.setTenant(defaultTenant)
 				.setName("Admin");
@@ -626,23 +626,21 @@ public class ClassScannerService implements Plugin {
 		if (admin == null) {
 			logger.debug("Creating Admin SecurityUser");
 			admin = userService.createSecurityUserNoMerge(userCreate, null);
-			admin.setCreator(admin);
 			admin.setId(systemAdminId);
-			toMerge.add(admin);
-		} else {
-			if (admin.getCreator() == null) {
-				admin.setCreator(admin);
-				toMerge.add(admin);
-			}
+			admin = userService.merge(admin);
 		}
+
+		if (admin.getCreator() == null) {
+			admin.setCreator(admin);
+			admin = userService.merge(admin);
+		}
+
 
 		if (defaultTenant.getCreator() == null) {
 			defaultTenant.setCreator(admin);
-			tenantUpdated = true;
+			defaultTenant = tenantService.merge(defaultTenant);
 		}
-		if (tenantUpdated) {
-			toMerge.add(defaultTenant);
-		}
+
 		return new TenantAndUserInit(admin, defaultTenant);
 	}
 

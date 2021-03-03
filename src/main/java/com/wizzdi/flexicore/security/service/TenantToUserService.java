@@ -33,8 +33,8 @@ public class TenantToUserService implements Plugin {
 		return tenantToUser;
 	}
 
-	public void merge(Object o){
-		tenantToUserRepository.merge(o);
+	public <T> T merge(T o){
+		return tenantToUserRepository.merge(o);
 	}
 	public void massMerge(List<Object> list){
 		tenantToUserRepository.massMerge(list);

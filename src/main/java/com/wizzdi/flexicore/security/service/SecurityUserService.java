@@ -31,8 +31,8 @@ public class SecurityUserService implements Plugin {
 		securityUserRepository.merge(securityUser);
 		return securityUser;
 	}
-	public void merge(Object o){
-		securityUserRepository.merge(o);
+	public <T> T merge(T o){
+		return securityUserRepository.merge(o);
 	}
 	public void massMerge(List<Object> list){
 		securityUserRepository.massMerge(list);

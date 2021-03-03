@@ -3,6 +3,7 @@ package com.wizzdi.flexicore.security.test.app;
 import com.flexicore.security.SecurityContextBase;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 
@@ -20,6 +21,7 @@ public class SecurityInterceptor implements HandlerInterceptor {
 
 	@Autowired
 	@Qualifier("adminSecurityContext")
+	@Lazy
 	private SecurityContextBase<?,?,?,?> securityContextBase;
 
 

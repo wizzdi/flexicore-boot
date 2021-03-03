@@ -32,8 +32,8 @@ public class ClazzService implements Plugin {
 		return Clazz;
 	}
 
-	public void merge(Object o){
-		ClazzRepository.merge(o);
+	public <T> T merge(T o){
+		return ClazzRepository.merge(o);
 	}
 	public void massMerge(List<Object> list){
 		ClazzRepository.massMerge(list);

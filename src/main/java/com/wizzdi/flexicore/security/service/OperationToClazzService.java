@@ -31,8 +31,8 @@ public class OperationToClazzService implements Plugin {
 		operationToClazzRepository.merge(operationToClazz);
 		return operationToClazz;
 	}
-	public void merge(Object o){
-		operationToClazzRepository.merge(o);
+	public <T> T merge(T o){
+		return operationToClazzRepository.merge(o);
 	}
 	public void massMerge(List<Object> list){
 		operationToClazzRepository.massMerge(list);

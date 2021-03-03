@@ -35,8 +35,8 @@ public class RoleToUserService implements Plugin {
 		roleToUserRepository.merge(roleToUser);
 		return roleToUser;
 	}
-	public void merge(Object o){
-		roleToUserRepository.merge(o);
+	public <T> T merge(T o){
+		return roleToUserRepository.merge(o);
 	}
 	public void massMerge(List<Object> list){
 		roleToUserRepository.massMerge(list);

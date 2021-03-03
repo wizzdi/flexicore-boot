@@ -60,8 +60,8 @@ public class SecurityOperationRepository implements Plugin {
 	}
 
 	@Transactional
-	public void merge(Object o){
-		em.merge(o);
+	public <T> T merge(T o){
+		return em.merge(o);
 	}
 
 	@Transactional
