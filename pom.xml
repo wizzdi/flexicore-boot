@@ -232,7 +232,7 @@
         <dependency>
             <groupId>com.wizzdi</groupId>
             <artifactId>flexicore-boot-dynamic-invokers-model</artifactId>
-            <version>1.0.1-SNAPSHOT</version>
+            <version>1.0.1</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
