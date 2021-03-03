@@ -25,7 +25,7 @@ public class DynamicExecution {
     public DynamicExecution() {
     }
 
-    @OneToMany(targetEntity = ServiceCanonicalName.class,mappedBy = "dynamicExecution",fetch = FetchType.EAGER)
+    @OneToMany(targetEntity = ServiceCanonicalName.class,mappedBy = "dynamicExecution")
 
     private List<ServiceCanonicalName> serviceCanonicalNames=new ArrayList<>();
     private String methodName;
@@ -39,7 +39,7 @@ public class DynamicExecution {
     private OffsetDateTime lastExecuted;
 
 
-    @OneToMany(targetEntity = ServiceCanonicalName.class,mappedBy = "dynamicExecution",fetch = FetchType.EAGER)
+    @OneToMany(targetEntity = ServiceCanonicalName.class,mappedBy = "dynamicExecution")
     public List<ServiceCanonicalName> getServiceCanonicalNames() {
         return serviceCanonicalNames;
     }

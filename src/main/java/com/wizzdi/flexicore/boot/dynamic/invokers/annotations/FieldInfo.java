@@ -15,6 +15,7 @@ public @interface FieldInfo {
     double rangeMin() default Double.NEGATIVE_INFINITY;
     double rangeMax() default Double.POSITIVE_INFINITY;
     double valueSteps() default Double.MIN_VALUE;
+    boolean actionIdHolder() default false;
 
 
 
