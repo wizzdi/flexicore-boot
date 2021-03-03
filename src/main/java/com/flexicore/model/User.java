@@ -38,7 +38,7 @@ public class User extends SecurityUser {
     private boolean disabled;
     @Column(columnDefinition = "timestamp with time zone")
     private OffsetDateTime dateApproved;
-    @ManyToOne(targetEntity = User.class,cascade = CascadeType.MERGE)
+    @ManyToOne(targetEntity = User.class)
     private User approvingUser;
 
     @Lob
@@ -235,7 +235,7 @@ public class User extends SecurityUser {
     }
 
     @JsonIgnore
-    @ManyToOne(targetEntity = User.class,cascade = CascadeType.MERGE)
+    @ManyToOne(targetEntity = User.class)
     public User getApprovingUser() {
         return approvingUser;
     }

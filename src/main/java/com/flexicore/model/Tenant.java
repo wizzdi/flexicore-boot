@@ -12,7 +12,7 @@ import com.flexicore.annotations.FullTextSearch;
 import com.flexicore.annotations.sync.SyncOption;
 import com.flexicore.security.SecurityContext;
 
-import javax.persistence.CascadeType;
+
 import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
@@ -30,7 +30,7 @@ import java.util.List;
 public class Tenant extends SecurityTenant  {
 
 	private String externalId;
-	@ManyToOne(targetEntity = FileResource.class,cascade = CascadeType.MERGE)
+	@ManyToOne(targetEntity = FileResource.class)
 	private FileResource icon;
 
 	@JsonIgnore
@@ -69,7 +69,7 @@ public class Tenant extends SecurityTenant  {
 		this.externalId = externalId;
 	}
 
-	@ManyToOne(targetEntity = FileResource.class,cascade = CascadeType.MERGE)
+	@ManyToOne(targetEntity = FileResource.class)
 	public FileResource getIcon() {
 		return icon;
 	}

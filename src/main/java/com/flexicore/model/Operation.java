@@ -12,7 +12,7 @@ import com.flexicore.annotations.IOperation.Access;
 import com.flexicore.model.dynamic.DynamicInvoker;
 import com.flexicore.security.SecurityContext;
 
-import javax.persistence.CascadeType;
+
 import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
 
@@ -27,7 +27,7 @@ import javax.persistence.ManyToOne;
 public class Operation extends SecurityOperation  {
 	private boolean auditable;
 	private Access defaultaccess;
-	@ManyToOne(targetEntity = DynamicInvoker.class,cascade = CascadeType.MERGE)
+	@ManyToOne(targetEntity = DynamicInvoker.class)
 	private DynamicInvoker dynamicInvoker;
 
 	public Operation() {
@@ -57,7 +57,7 @@ public class Operation extends SecurityOperation  {
 		return this;
 	}
 
-	@ManyToOne(targetEntity = DynamicInvoker.class,cascade = CascadeType.MERGE)
+	@ManyToOne(targetEntity = DynamicInvoker.class)
 	public DynamicInvoker getDynamicInvoker() {
 		return dynamicInvoker;
 	}

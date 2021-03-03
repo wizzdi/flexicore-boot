@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.flexicore.annotations.IOperation;
 import com.flexicore.interfaces.dynamic.FieldInfo;
 
-import javax.persistence.CascadeType;
+
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
@@ -20,7 +20,7 @@ public class AccessRef {
 
     @FieldInfo(displayName = "access",description = "string filter",mandatory = true)
     private IOperation.Access id;
-    @ManyToOne(targetEntity = FilteringInformationHolder.class,cascade = CascadeType.MERGE)
+    @ManyToOne(targetEntity = FilteringInformationHolder.class)
     @JsonIgnore
     private FilteringInformationHolder filteringInformationHolder;
 
@@ -52,7 +52,7 @@ public class AccessRef {
         return this;
     }
 
-    @ManyToOne(targetEntity = FilteringInformationHolder.class,cascade = CascadeType.MERGE)
+    @ManyToOne(targetEntity = FilteringInformationHolder.class)
     @JsonIgnore
     public FilteringInformationHolder getFilteringInformationHolder() {
         return filteringInformationHolder;

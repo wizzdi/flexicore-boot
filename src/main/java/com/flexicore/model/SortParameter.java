@@ -5,7 +5,7 @@ import com.flexicore.data.jsoncontainers.SortingOrder;
 import com.flexicore.interfaces.dynamic.FieldInfo;
 import io.swagger.v3.oas.annotations.media.Schema;
 
-import javax.persistence.CascadeType;
+
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
@@ -17,7 +17,7 @@ public class SortParameter {
 	@Id
 	private String filteringId;
 
-	@ManyToOne(targetEntity = FilteringInformationHolder.class,cascade = CascadeType.MERGE)
+	@ManyToOne(targetEntity = FilteringInformationHolder.class)
 	@JsonIgnore
 	private FilteringInformationHolder filteringInformationHolder;
 
@@ -64,7 +64,7 @@ public class SortParameter {
 		return this;
 	}
 
-	@ManyToOne(targetEntity = FilteringInformationHolder.class,cascade = CascadeType.MERGE)
+	@ManyToOne(targetEntity = FilteringInformationHolder.class)
 	@JsonIgnore
 
 	public FilteringInformationHolder getFilteringInformationHolder() {
