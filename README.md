@@ -9,13 +9,7 @@ For comprehensive information about FlexiCore Boot Starter Data JPA please visit
 FlexiCore Boot Starter Data JPA is a FlexiCore Module that provides an opinionated Eclipselink JPA registration for spring boot.
 
 ## How to use?
-Add the flexicore-boot-starter-data-jpa dependency using the latest version available from maven central:
 
-            <dependency>
-                <groupId>com.wizzdi</groupId>
-                <artifactId>flexicore-boot-starter-data-jpa</artifactId>
-                <version>LATEST</version>
-            </dependency>
 Add the flexicore-boot-starter-data-jpa-eclipselink dependency using the latest version available from maven central:
 
             <dependency>
