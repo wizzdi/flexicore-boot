@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.wizzdi</groupId>
     <artifactId>flexicore-boot-starter-data-jpa-hibernate</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
+    <version>1.0.0</version>
 
     <name>FlexiCore Boot JPA hibernate</name>
     <description>flexicore boot jpa hibernate</description>
@@ -62,7 +61,7 @@
         <developerConnection>scm:git:git@github.com:wizzdi/flexicore-boot-starter-data-jpa-hibernate.git
         </developerConnection>
         <url>https://github.com/wizzdi/flexicore-boot-starter-data-jpa-hibernate</url>
-        <tag>flexicore-boot-starter-data-jpa-hibernate-${version}</tag>
+        <tag>flexicore-boot-starter-data-jpa-hibernate-1.0.0</tag>
     </scm>
 
     <dependencyManagement>
