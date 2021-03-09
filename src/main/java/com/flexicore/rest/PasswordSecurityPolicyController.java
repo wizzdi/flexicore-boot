@@ -34,7 +34,7 @@ public class PasswordSecurityPolicyController implements Plugin {
 
 	@PostMapping("/create")
 	@Operation(description = "creates Security Policy",summary = "creates Security Policy")
-	public SecurityPolicy create(@RequestHeader(value = "authenticationKey",required = false)String key, @RequestBody PasswordSecurityPolicyCreate securityPolicyCreate, @Parameter(hidden = true) SecurityContextBase securityContext){
+	public PasswordSecurityPolicy create(@RequestHeader(value = "authenticationKey",required = false)String key, @RequestBody PasswordSecurityPolicyCreate securityPolicyCreate, @Parameter(hidden = true) SecurityContextBase securityContext){
 		passwordSecurityPolicyService.validate(securityPolicyCreate,securityContext);
 		return passwordSecurityPolicyService.createSecurityPolicy(securityPolicyCreate,securityContext);
 	}
