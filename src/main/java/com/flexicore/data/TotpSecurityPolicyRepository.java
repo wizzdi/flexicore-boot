@@ -58,8 +58,7 @@ public class TotpSecurityPolicyRepository implements Plugin {
 		addSecurityPolicyPredicates(TotpSecurityPolicyFilter, cb, q, r, predicates, securityContext);
 		q.select(cb.count(r)).where(predicates.toArray(Predicate[]::new));
 		TypedQuery<Long> query = em.createQuery(q);
-		BaseclassRepository.addPagination(TotpSecurityPolicyFilter, query);
-		return query.getFirstResult();
+		return query.getSingleResult();
 
 	}
 
