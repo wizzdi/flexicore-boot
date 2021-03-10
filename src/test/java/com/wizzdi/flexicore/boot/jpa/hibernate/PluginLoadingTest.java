@@ -3,6 +3,7 @@ package com.wizzdi.flexicore.boot.jpa.hibernate;
 import com.wizzdi.flexicore.boot.base.init.FlexiCorePluginManager;
 import com.wizzdi.flexicore.boot.jpa.hibernate.app.App;
 import com.wizzdi.flexicore.boot.jpa.hibernate.app.TestEntity;
+import com.wizzdi.flexicore.boot.jpa.hibernate.pluginA.TestEntityCreate;
 import com.wizzdi.flexicore.boot.test.helper.PluginJar;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -23,6 +24,8 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.util.Random;
+import java.util.UUID;
 
 @ExtendWith(SpringExtension.class)
 
@@ -91,10 +94,18 @@ public class PluginLoadingTest {
 
 	}
 
-
+private static final Random random=new Random();
 	@Test
 	public void testJpaPlugin() {
-		ResponseEntity<TestEntity> createdTestEntityRequest = restTemplate.postForEntity("/createTestEntity",null, TestEntity.class);
+		String name = UUID.randomUUID().toString();
+		int leftLimit = 97; // letter 'a'
+		int rightLimit = 122; // letter 'z'
+		int targetStringLength = 2000;
+		String longText= random.ints(leftLimit, rightLimit + 1)
+				.limit(targetStringLength)
+				.collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
+				.toString();
+		ResponseEntity<TestEntity> createdTestEntityRequest = restTemplate.postForEntity("/createTestEntity",new TestEntityCreate().setName(name).setLongText(longText), TestEntity.class);
 		Assertions.assertEquals(200,createdTestEntityRequest.getStatusCodeValue());
 		TestEntity createdTestEntity = createdTestEntityRequest.getBody();
 		Assertions.assertNotNull(createdTestEntity);
@@ -104,6 +115,9 @@ public class PluginLoadingTest {
 		TestEntity fetchedTestEntity = fetchedTestEntityRequest.getBody();
 
 		Assertions.assertNotNull(fetchedTestEntity);
+		Assertions.assertNotNull(name,fetchedTestEntity.getName());
+		Assertions.assertNotNull(longText,fetchedTestEntity.getLongText());
+
 		logger.info("received "+fetchedTestEntity+" from plugin controller");
 
 

@@ -15,10 +15,11 @@ public class PluginAService implements Plugin {
 	@Autowired
 	private PluginARepository pluginARepository;
 
-	public TestEntity createTestEntity(String name){
+	public TestEntity createTestEntity(TestEntityCreate testEntityCreate){
 		TestEntity testEntity=new TestEntity()
 				.setId(UUID.randomUUID().toString())
-				.setName(name);
+				.setLongText(testEntityCreate.getLongText())
+				.setName(testEntityCreate.getName());
 		pluginARepository.merge(testEntity);
 		return testEntity;
 	}
