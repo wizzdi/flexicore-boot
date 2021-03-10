@@ -12,16 +12,12 @@ public class StandardEncryptionConfiguration extends EncryptionConfiguration{
 
 
 	public StandardEncryptionConfiguration(String encryptionKey, String columnName, Method getter) {
-		this(null,encryptionKey,columnName,getter);
-	}
-
-	public StandardEncryptionConfiguration(Class<?> clazz,String encryptionKey, String columnName, Method getter) {
-		this(clazz,encryptionKey,false,columnName,getter);
+		this(encryptionKey,false,columnName,getter);
 	}
 
 
-	public StandardEncryptionConfiguration(Class<?> clazz,String encryptionKey,boolean bytea, String columnName, Method getter) {
-		super( clazz,columnName, getter);
+	public StandardEncryptionConfiguration(String encryptionKey,boolean bytea, String columnName, Method getter) {
+		super( columnName, getter);
 		this.encryptionKey=encryptionKey;
 		this.bytea=bytea;
 		this.read= isBytea()?getReadBytea():getReadVarChar();

@@ -105,10 +105,10 @@ public class HibernateLinkJpaConfiguration extends JpaBaseConfiguration {
     @Bean
     @Primary
     public LocalContainerEntityManagerFactoryBean entityManagerFactory(final EntityManagerFactoryBuilder builder, @Autowired DataSource dataSource, @Autowired List<EntitiesHolder> entitiesHolder,@Autowired ObjectProvider<EncryptionConfigurations> encryptionConfigurations) {
-        Map<String, List<EncryptionConfiguration>> encryptionConfig = encryptionConfigurations.stream().map(f->f.getEncryptionConfigurations()).flatMap(List::stream).collect(Collectors.groupingBy(f -> f.getClazz().getCanonicalName()));
+        encryptionConfigurations.stream().map(f->f.getEncryptionConfigurations()).flatMap(List::stream).forEach(this::applyEncryption);
         Map<String, Object> vendorProperties = getVendorProperties();
         customizeVendorProperties(vendorProperties);
-        Set<Class<?>> entities = entitiesHolder.stream().map(f->f.getEntities()).flatMap(Set::stream).map(f->encryptFields(f,encryptionConfig)).collect(Collectors.toSet());
+        Set<Class<?>> entities = entitiesHolder.stream().map(f->f.getEntities()).flatMap(Set::stream).collect(Collectors.toSet());
         logger.debug("Discovered Entities: " + entities.stream().map(f -> f.getCanonicalName()).collect(Collectors.joining(System.lineSeparator())));
         Class<?>[] entitiesArr = new Class<?>[entities.size()];
         entities.toArray(entitiesArr);

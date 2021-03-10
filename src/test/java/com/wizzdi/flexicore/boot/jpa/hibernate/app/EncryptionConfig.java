@@ -19,8 +19,8 @@ public class EncryptionConfig {
 	public EncryptionConfigurations encryptionConfigurations() throws NoSuchMethodException {
 		return new EncryptionConfigurations(Arrays.asList(
 				new StandardEncryptionConfiguration(key, "name", TestEntity.class.getDeclaredMethod("getName")),
-				new StandardEncryptionConfiguration(null,key,true, "long_text", TestEntity.class.getDeclaredMethod("getLongText")),
-				new StandardEncryptionConfiguration(TestEntity.class,key,false, "inherited_string", TestEntity.class.getMethod("getInheritedString"))
+				new StandardEncryptionConfiguration(key,true, "long_text", TestEntity.class.getDeclaredMethod("getLongText")),
+				new StandardEncryptionConfiguration(key,false, "inherited_string", TestEntity.class.getMethod("getInheritedString"))
 
 
 		));

@@ -9,15 +9,12 @@ public abstract class EncryptionConfiguration {
 	private final String columnName;
 	private final Method getter;
 
-	public EncryptionConfiguration( String columnName, Method getter){
-		this(null,columnName,getter);
-	}
 
-	public EncryptionConfiguration(Class<?> clazz, String columnName, Method getter) {
+	public EncryptionConfiguration( String columnName, Method getter) {
 		this.columnName = columnName;
 		Method rootGetter= ReflectUtil.getRootMethod(getter);
 		this.getter=rootGetter!=null?rootGetter: getter;
-		this.clazz=clazz!=null?clazz:this.getter.getDeclaringClass();
+		this.clazz=this.getter.getDeclaringClass();
 
 	}
 
