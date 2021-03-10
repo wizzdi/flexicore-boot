@@ -6,24 +6,14 @@ import javax.persistence.Id;
 import javax.persistence.Lob;
 
 @Entity
-public class TestEntity {
+public class TestEntity extends BaseEntity{
 
-	@Id
-	private String id;
+
 
 	private String name;
 	@Column(columnDefinition = "bytea")
 	private String longText;
 
-	@Id
-	public String getId() {
-		return id;
-	}
-
-	public <T extends TestEntity> T setId(String id) {
-		this.id = id;
-		return (T) this;
-	}
 
 	public String getName() {
 		return name;

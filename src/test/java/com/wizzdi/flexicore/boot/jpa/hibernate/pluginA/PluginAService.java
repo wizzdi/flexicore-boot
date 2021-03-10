@@ -17,9 +17,11 @@ public class PluginAService implements Plugin {
 
 	public TestEntity createTestEntity(TestEntityCreate testEntityCreate){
 		TestEntity testEntity=new TestEntity()
-				.setId(UUID.randomUUID().toString())
 				.setLongText(testEntityCreate.getLongText())
-				.setName(testEntityCreate.getName());
+				.setName(testEntityCreate.getName())
+				.setId(UUID.randomUUID().toString())
+				.setInheritedString(testEntityCreate.getInheritedString());
+
 		pluginARepository.merge(testEntity);
 		return testEntity;
 	}

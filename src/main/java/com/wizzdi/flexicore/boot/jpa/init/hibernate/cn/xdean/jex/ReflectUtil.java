@@ -1,4 +1,4 @@
-package com.wizzdi.flexicore.boot.jpa.init.hibernate;
+package com.wizzdi.flexicore.boot.jpa.init.hibernate.cn.xdean.jex;
 
 import java.lang.reflect.*;
 import java.util.*;
@@ -9,8 +9,6 @@ public class ReflectUtil {
 
   private static final UnaryOperator<Executable> EXECUTABLE_GET_ROOT;
   private static final Function<Class<?>, Method[]> CLASS_GET_ROOT_METHODS;
-  private static final UnaryOperator<Field> FIELD_GET_ROOT;
-  private static final Function<Class<?>, Field[]> CLASS_GET_ROOT_FIELDS;
   static {
     try {
       Method getRootMethod = Method.class.getDeclaredMethod("getRoot");
@@ -20,13 +18,7 @@ public class ReflectUtil {
       getRootMethods.setAccessible(true);
       CLASS_GET_ROOT_METHODS = c -> ExceptionUtil.uncheck(() -> (Method[]) getRootMethods.invoke(c));
 
-      Field getRootField = Field.class.getDeclaredField("root");
-      getRootField.setAccessible(true);
-      FIELD_GET_ROOT = f -> ExceptionUtil.uncheck(() -> (Field) getRootField.get(f));
-      Method getRootFields = Class.class.getDeclaredMethod("privateGetPublicFields");
-      getRootFields.setAccessible(true);
-      CLASS_GET_ROOT_FIELDS = c -> ExceptionUtil.uncheck(() -> (Field[]) getRootFields.invoke(c));
-    } catch (NoSuchMethodException | SecurityException | NoSuchFieldException e) {
+    } catch (NoSuchMethodException | SecurityException  e) {
       throw new IllegalStateException("ReflectUtil init fail, check your java version.", e);
     }
   }
@@ -60,19 +52,7 @@ public class ReflectUtil {
     return CLASS_GET_ROOT_METHODS.apply(clz);
   }
 
-  /**
-   * Get root of the field.
-   */
-  public static Field getRootField(Field f) {
-    return FIELD_GET_ROOT.apply(f);
-  }
 
-  /**
-   * Get root public fields of the class.
-   */
-  public static Field[] getRootFields(Class<?> clz) {
-    return CLASS_GET_ROOT_FIELDS.apply(clz);
-  }
 
   /**
    * Get field value by name

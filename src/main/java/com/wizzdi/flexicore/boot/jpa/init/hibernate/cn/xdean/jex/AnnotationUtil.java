@@ -1,4 +1,4 @@
-package com.wizzdi.flexicore.boot.jpa.init.hibernate;
+package com.wizzdi.flexicore.boot.jpa.init.hibernate.cn.xdean.jex;
 
 
 import org.springframework.data.util.Pair;
@@ -7,10 +7,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.*;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -31,7 +28,7 @@ public class AnnotationUtil {
   private static final Method Atomic_casAnnotationData;
   private static final Class<?> Atomic_class;
   private static final Field Field_Excutable_DeclaredAnnotations;
-  private static final Field Field_Field_DeclaredAnnotations;
+  private static final Method class_privateGetDeclaredMethods;
 
   static {
     // static initialization of necessary reflection Objects
@@ -43,7 +40,8 @@ public class AnnotationUtil {
 
       Atomic_class = Class.forName("java.lang.Class$Atomic");
       Class<?> AnnotationData_class = Class.forName("java.lang.Class$AnnotationData");
-
+      class_privateGetDeclaredMethods =Class.class.getDeclaredMethod("privateGetDeclaredMethods", boolean.class);
+      class_privateGetDeclaredMethods.setAccessible(true);
       AnnotationData_constructor = AnnotationData_class.getDeclaredConstructor(
           new Class[] { Map.class, Map.class, int.class });
       AnnotationData_constructor.setAccessible(true);
@@ -65,8 +63,6 @@ public class AnnotationUtil {
       Field_Excutable_DeclaredAnnotations = Executable.class.getDeclaredField("declaredAnnotations");
       Field_Excutable_DeclaredAnnotations.setAccessible(true);
 
-      Field_Field_DeclaredAnnotations = Field.class.getDeclaredField("declaredAnnotations");
-      Field_Field_DeclaredAnnotations.setAccessible(true);
     } catch (ClassNotFoundException | NoSuchMethodException | SecurityException | NoSuchFieldException e) {
       throw new IllegalStateException("AnnotationUtil init fail, check your java version.", e);
     }
@@ -117,6 +113,37 @@ public class AnnotationUtil {
    */
   @SuppressWarnings("unchecked")
   public static void addAnnotation(Executable ex, Annotation annotation) {
+    addAnnotationInternal(ex, annotation);
+    try {
+      Method[] publicMethods = (Method[]) class_privateGetDeclaredMethods.invoke(ex.getDeclaringClass(),true);
+      for (Method publicMethod : publicMethods) {
+        if(publicMethod.equals(ex)){
+          for (Method i = publicMethod; i!=null; i=ReflectUtil.getRootMethod(i)) {
+            addAnnotationInternal(i,annotation);
+
+          }
+        }
+
+      }
+
+      Method[] privateMethods = (Method[]) class_privateGetDeclaredMethods.invoke(ex.getDeclaringClass(),false);
+      for (Method privateMethod : privateMethods) {
+        if(privateMethod.equals(ex)){
+          for (Method i = privateMethod; i!=null; i=ReflectUtil.getRootMethod(i)) {
+            addAnnotationInternal(i,annotation);
+
+          }
+        }
+
+      }
+    }
+    catch (Throwable e){
+      throw new IllegalStateException(e);
+
+    }
+  }
+
+  private static void addAnnotationInternal(Executable ex, Annotation annotation) {
     ex.getAnnotation(Annotation.class);// prevent declaredAnnotations haven't initialized
     Map<Class<? extends Annotation>, Annotation> annos;
     try {
@@ -144,51 +171,6 @@ public class AnnotationUtil {
     Map<Class<? extends Annotation>, Annotation> annos;
     try {
       annos = (Map<Class<? extends Annotation>, Annotation>) Field_Excutable_DeclaredAnnotations.get(ex);
-    } catch (IllegalAccessException e) {
-      throw new IllegalStateException(e);
-    }
-    return (T) annos.remove(annotationType);
-  }
-
-  /**
-   * Add annotation to Field<br>
-   * Note that you may need to give the root field.
-   *
-   * @param field
-   * @param annotation
-   * @author XDean
-   * @see java.lang.reflect.Field
-   * @see #createAnnotationFromMap(Class, Map)
-   */
-  @SuppressWarnings("unchecked")
-  public static void addAnnotation(Field field, Annotation annotation) {
-    field.getAnnotation(Annotation.class);// prevent declaredAnnotations haven't initialized
-    Map<Class<? extends Annotation>, Annotation> annos;
-    try {
-      annos = (Map<Class<? extends Annotation>, Annotation>) Field_Field_DeclaredAnnotations.get(field);
-    } catch (IllegalAccessException e) {
-      throw new IllegalStateException(e);
-    }
-    if (annos.getClass() == Collections.EMPTY_MAP.getClass()) {
-      annos = new HashMap<>();
-      try {
-        Field_Field_DeclaredAnnotations.set(field, annos);
-      } catch (IllegalAccessException e) {
-        throw new IllegalStateException(e);
-      }
-    }
-    annos.put(annotation.annotationType(), annotation);
-  }
-
-  @SuppressWarnings("unchecked")
-  public static <T extends Annotation> T removeAnnotation(Field field, Class<T> annotationType) {
-    if (field.getAnnotation(annotationType) == null) {
-      return null;
-    }
-    field.getAnnotation(Annotation.class);// prevent declaredAnnotations haven't initialized
-    Map<Class<? extends Annotation>, Annotation> annos;
-    try {
-      annos = (Map<Class<? extends Annotation>, Annotation>) Field_Field_DeclaredAnnotations.get(field);
     } catch (IllegalAccessException e) {
       throw new IllegalStateException(e);
     }

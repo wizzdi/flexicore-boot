@@ -1,6 +1,7 @@
 package com.wizzdi.flexicore.boot.jpa.hibernate.pluginA;
 
 import com.wizzdi.flexicore.boot.base.interfaces.Plugin;
+import com.wizzdi.flexicore.boot.jpa.hibernate.app.BaseEntity;
 import com.wizzdi.flexicore.boot.jpa.hibernate.app.TestEntity;
 import com.wizzdi.flexicore.boot.jpa.init.hibernate.EncryptionConfiguration;
 import com.wizzdi.flexicore.boot.jpa.init.hibernate.EncryptionConfigurations;
@@ -19,15 +20,5 @@ import java.util.Collections;
 @EnableTransactionManagement(proxyTargetClass = true)
 public class Config implements Plugin {
 
-	@Value("${flexicore.database.encryptionKey.test:this is a test}")
-	private String key;
-
-	@Bean
-	public EncryptionConfigurations encryptionConfigurations() throws NoSuchMethodException {
-		return new EncryptionConfigurations(Arrays.asList(
-				new StandardEncryptionConfiguration(key, "name", TestEntity.class.getDeclaredMethod("getName")),
-				new StandardEncryptionConfiguration(key,true, "long_text", TestEntity.class.getDeclaredMethod("getLongText"))
-				));
-	}
 
 }

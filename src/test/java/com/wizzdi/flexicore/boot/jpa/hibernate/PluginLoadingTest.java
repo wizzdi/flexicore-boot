@@ -98,6 +98,8 @@ private static final Random random=new Random();
 	@Test
 	public void testJpaPlugin() {
 		String name = UUID.randomUUID().toString();
+		String inheritedString = UUID.randomUUID().toString();
+
 		int leftLimit = 97; // letter 'a'
 		int rightLimit = 122; // letter 'z'
 		int targetStringLength = 2000;
@@ -105,7 +107,7 @@ private static final Random random=new Random();
 				.limit(targetStringLength)
 				.collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
 				.toString();
-		ResponseEntity<TestEntity> createdTestEntityRequest = restTemplate.postForEntity("/createTestEntity",new TestEntityCreate().setName(name).setLongText(longText), TestEntity.class);
+		ResponseEntity<TestEntity> createdTestEntityRequest = restTemplate.postForEntity("/createTestEntity",new TestEntityCreate().setName(name).setLongText(longText).setInheritedString(inheritedString), TestEntity.class);
 		Assertions.assertEquals(200,createdTestEntityRequest.getStatusCodeValue());
 		TestEntity createdTestEntity = createdTestEntityRequest.getBody();
 		Assertions.assertNotNull(createdTestEntity);
@@ -117,6 +119,7 @@ private static final Random random=new Random();
 		Assertions.assertNotNull(fetchedTestEntity);
 		Assertions.assertNotNull(name,fetchedTestEntity.getName());
 		Assertions.assertNotNull(longText,fetchedTestEntity.getLongText());
+		Assertions.assertNotNull(inheritedString,fetchedTestEntity.getInheritedString());
 
 		logger.info("received "+fetchedTestEntity+" from plugin controller");
 

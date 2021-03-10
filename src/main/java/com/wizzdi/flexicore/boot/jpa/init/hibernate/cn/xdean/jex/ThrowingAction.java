@@ -1,4 +1,4 @@
-package com.wizzdi.flexicore.boot.jpa.init.hibernate;
+package com.wizzdi.flexicore.boot.jpa.init.hibernate.cn.xdean.jex;
 
 public interface ThrowingAction<T> {
 
