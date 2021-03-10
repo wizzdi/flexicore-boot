@@ -4,7 +4,7 @@
 
     <groupId>com.wizzdi</groupId>
     <artifactId>flexicore-boot-starter-data-jpa-hibernate</artifactId>
-    <version>1.0.1</version>
+    <version>1.0.2-SNAPSHOT</version>
 
     <name>FlexiCore Boot JPA hibernate</name>
     <description>flexicore boot jpa hibernate</description>
@@ -61,7 +61,7 @@
         <developerConnection>scm:git:git@github.com:wizzdi/flexicore-boot-starter-data-jpa-hibernate.git
         </developerConnection>
         <url>https://github.com/wizzdi/flexicore-boot-starter-data-jpa-hibernate</url>
-        <tag>flexicore-boot-starter-data-jpa-hibernate-1.0.1</tag>
+        <tag>flexicore-boot-starter-data-jpa-hibernate-${version}</tag>
     </scm>
 
     <dependencyManagement>
