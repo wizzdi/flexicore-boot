@@ -3,6 +3,7 @@ package com.wizzdi.flexicore.boot.jpa.init.hibernate;
 import com.wizzdi.flexicore.boot.jpa.service.EntitiesHolder;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.hibernate.annotations.ColumnTransformer;
 import org.hibernate.boot.model.naming.ImplicitNamingStrategy;
 import org.hibernate.boot.model.naming.PhysicalNamingStrategy;
 import org.hibernate.cfg.AvailableSettings;
@@ -39,6 +40,8 @@ import org.springframework.transaction.jta.JtaTransactionManager;
 import org.springframework.util.ClassUtils;
 
 import javax.sql.DataSource;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.util.*;
 import java.util.function.Supplier;
@@ -105,19 +108,14 @@ public class HibernateLinkJpaConfiguration extends JpaBaseConfiguration {
         return transactionManager;
     }
 
-  /*  @Bean
-    @Primary
-    public PlatformTransactionManager transactionManager(PlatformTransactionManager platformTransactionManager){
-        return platformTransactionManager;
-    }*/
 
     @Bean
     @Primary
-    public LocalContainerEntityManagerFactoryBean entityManagerFactory(final EntityManagerFactoryBuilder builder, @Autowired DataSource dataSource, @Autowired List<EntitiesHolder> entitiesHolder) throws ClassNotFoundException, MalformedURLException {
-
+    public LocalContainerEntityManagerFactoryBean entityManagerFactory(final EntityManagerFactoryBuilder builder, @Autowired DataSource dataSource, @Autowired List<EntitiesHolder> entitiesHolder,@Autowired ObjectProvider<EncryptionConfigurations> encryptionConfigurations) {
+        Map<String, List<EncryptionConfiguration>> encryptionConfig = encryptionConfigurations.stream().map(f->f.getEncryptionConfigurations()).flatMap(List::stream).collect(Collectors.groupingBy(f -> f.getClazz().getCanonicalName()));
         Map<String, Object> vendorProperties = getVendorProperties();
         customizeVendorProperties(vendorProperties);
-        Set<Class<?>> entities = entitiesHolder.stream().map(f->f.getEntities()).flatMap(Set::stream).collect(Collectors.toSet());
+        Set<Class<?>> entities = entitiesHolder.stream().map(f->f.getEntities()).flatMap(Set::stream).map(f->encryptFields(f,encryptionConfig)).collect(Collectors.toSet());
         logger.debug("Discovered Entities: " + entities.stream().map(f -> f.getCanonicalName()).collect(Collectors.joining(System.lineSeparator())));
         Class<?>[] entitiesArr = new Class<?>[entities.size()];
         entities.toArray(entitiesArr);
@@ -131,6 +129,47 @@ public class HibernateLinkJpaConfiguration extends JpaBaseConfiguration {
         return ret;
     }
 
+    private Class<?> encryptFields(Class<?> clazz, Map<String, List<EncryptionConfiguration>> encryptionConfig) {
+        List<EncryptionConfiguration> encryptionConfigurations = encryptionConfig.get(clazz.getCanonicalName());
+        if(encryptionConfigurations!=null){
+            for (EncryptionConfiguration encryptionConfiguration : encryptionConfigurations) {
+                applyEncryption(encryptionConfiguration);
+            }
+        }
+        return clazz;
+    }
+
+    private void applyEncryption(EncryptionConfiguration encryptionConfiguration) {
+        Method getter = encryptionConfiguration.getGetter();
+        ColumnTransformer columnTransformer=getColumnTransformer(encryptionConfiguration);
+        AnnotationUtil.addAnnotation(getter, columnTransformer);
+        logger.info("changed method "+getter.getName()+"("+System.identityHashCode(getter) +")"+" on class "+encryptionConfiguration.getClazz().getName() +"("+System.identityHashCode(encryptionConfiguration.getClazz())+")");
+
+    }
+
+    private ColumnTransformer getColumnTransformer(EncryptionConfiguration encryptionConfiguration) {
+        return new ColumnTransformer(){
+            @Override
+            public String forColumn() {
+                return encryptionConfiguration.getForColumn();
+            }
+
+            @Override
+            public String read() {
+                return encryptionConfiguration.getRead();
+            }
+
+            @Override
+            public String write() {
+                return encryptionConfiguration.getWrite();
+            }
+
+            @Override
+            public Class<? extends Annotation> annotationType() {
+                return ColumnTransformer.class;
+            }
+        };
+    }
 
 
     @Override
@@ -141,20 +180,7 @@ public class HibernateLinkJpaConfiguration extends JpaBaseConfiguration {
                         .ddlAuto(defaultDdlMode).hibernatePropertiesCustomizers(this.hibernatePropertiesCustomizers)));
     }
 
-   /* @Override
-    protected Map<String, Object> getVendorProperties() {
-        Map<String, Object> props = new HashMap<>();
-        props.put("javax.persistence.schema-generation.create-database-schemas", "true");
-        //add all properties starting with eclipselink to vendor properties
-        MutablePropertySources propSrcs = ((AbstractEnvironment) env).getPropertySources();
-        StreamSupport.stream(propSrcs.spliterator(), false)
-                .filter(ps -> ps instanceof EnumerablePropertySource)
-                .map(ps -> ((EnumerablePropertySource) ps).getPropertyNames())
-                .flatMap(Arrays::stream)
-                .filter(f -> f.startsWith("hibernate"))
-                .forEach(propName -> props.put(propName, env.getProperty(propName)));
-        return props;
-    }*/
+
     private List<HibernatePropertiesCustomizer> determineHibernatePropertiesCustomizers(
             PhysicalNamingStrategy physicalNamingStrategy, ImplicitNamingStrategy implicitNamingStrategy,
             ConfigurableListableBeanFactory beanFactory,
