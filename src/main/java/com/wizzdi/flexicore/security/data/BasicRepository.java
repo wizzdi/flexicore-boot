@@ -1,6 +1,5 @@
 package com.wizzdi.flexicore.security.data;
 
-import com.flexicore.model.Baseclass;
 import com.flexicore.model.Baseclass_;
 import com.flexicore.model.Basic;
 import com.flexicore.model.Basic_;
@@ -8,6 +7,7 @@ import com.wizzdi.flexicore.boot.base.interfaces.Plugin;
 import com.wizzdi.flexicore.security.events.BasicCreated;
 import com.wizzdi.flexicore.security.events.BasicUpdated;
 import com.wizzdi.flexicore.security.request.BasicPropertiesFilter;
+import com.wizzdi.flexicore.security.request.DateFilter;
 import com.wizzdi.flexicore.security.request.PaginationFilter;
 import org.pf4j.Extension;
 import org.slf4j.Logger;
@@ -32,28 +32,50 @@ import java.util.Set;
 @Extension
 @Component
 public class BasicRepository implements Plugin {
-	private static final Logger logger=LoggerFactory.getLogger(BasicRepository.class);
+	private static final Logger logger = LoggerFactory.getLogger(BasicRepository.class);
 	@PersistenceContext
 	private EntityManager em;
 	@Autowired
 	private ApplicationEventPublisher eventPublisher;
 
-	public static <T> boolean addPagination(PaginationFilter basicFilter, TypedQuery<T> q){
-		if(basicFilter.getPageSize()!=null&&basicFilter.getCurrentPage()!=null&&basicFilter.getCurrentPage()>=0&&basicFilter.getPageSize()>0){
-			q.setFirstResult(basicFilter.getCurrentPage()*basicFilter.getPageSize());
+	public static <T> boolean addPagination(PaginationFilter basicFilter, TypedQuery<T> q) {
+		if (basicFilter.getPageSize() != null && basicFilter.getCurrentPage() != null && basicFilter.getCurrentPage() >= 0 && basicFilter.getPageSize() > 0) {
+			q.setFirstResult(basicFilter.getCurrentPage() * basicFilter.getPageSize());
 			q.setMaxResults(basicFilter.getPageSize());
 		}
 		return false;
 	}
 
-	public static <T extends Basic> void addBasicPropertiesFilter(BasicPropertiesFilter basicPropertiesFilter, CriteriaBuilder cb, CommonAbstractCriteria q, From<?,T> r, List<Predicate> predicates) {
-		if(basicPropertiesFilter.getNames()!=null&&!basicPropertiesFilter.getNames().isEmpty()){
+	public static <T extends Basic> void addBasicPropertiesFilter(BasicPropertiesFilter basicPropertiesFilter, CriteriaBuilder cb, CommonAbstractCriteria q, From<?, T> r, List<Predicate> predicates) {
+		if (basicPropertiesFilter.getNames() != null && !basicPropertiesFilter.getNames().isEmpty()) {
 			predicates.add(r.get(Basic_.name).in(basicPropertiesFilter.getNames()));
 		}
-		if(basicPropertiesFilter.getNameLike()!=null&&!basicPropertiesFilter.getNameLike().isEmpty()){
-			predicates.add(cb.like(r.get(Basic_.name),basicPropertiesFilter.getNameLike()));
+		if (basicPropertiesFilter.getNameLike() != null && !basicPropertiesFilter.getNameLike().isEmpty()) {
+			predicates.add(cb.like(r.get(Basic_.name), basicPropertiesFilter.getNameLike()));
+		}
+		if (basicPropertiesFilter.getSoftDelete() != null) {
+			predicates.add(cb.equal(r.get(Basic_.softDelete), basicPropertiesFilter.getSoftDelete()));
+		}
+		if (basicPropertiesFilter.getCreationDateFilter() != null) {
+			addDateFilter(basicPropertiesFilter.getCreationDateFilter(), cb, q, r.get(Basic_.creationDate), predicates);
+		}
+		if (basicPropertiesFilter.getUpdateDateFilter() != null) {
+			addDateFilter(basicPropertiesFilter.getCreationDateFilter(), cb, q, r.get(Basic_.updateDate), predicates);
 		}
 	}
+
+	public static void addDateFilter(DateFilter dateFilter, CriteriaBuilder cb, CommonAbstractCriteria q, Path<OffsetDateTime> r, List<Predicate> predicates) {
+		if(dateFilter==null){
+			return;
+		}
+		if(dateFilter.getStart()!=null){
+			predicates.add(cb.greaterThanOrEqualTo(r,dateFilter.getStart()));
+		}
+		if(dateFilter.getEnd()!=null){
+			predicates.add(cb.lessThanOrEqualTo(r,dateFilter.getEnd()));
+		}
+	}
+
 
 	public <D extends Basic, T extends D> List<T> findByIds(Class<T> c, Set<String> ids, SingularAttribute<D, String> idAttribute) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -87,33 +109,32 @@ public class BasicRepository implements Plugin {
 
 	@Transactional
 	public void merge(Object base) {
-		merge(base,true);
+		merge(base, true);
 	}
 
 	@Transactional
-	public void merge(Object base,boolean updateDate) {
-		Basic base1=null;
-		boolean created=false;
-		if(base instanceof Basic){
+	public void merge(Object base, boolean updateDate) {
+		Basic base1 = null;
+		boolean created = false;
+		if (base instanceof Basic) {
 			OffsetDateTime now = OffsetDateTime.now();
 			base1 = (Basic) base;
-			created=base1.getUpdateDate()==null;
-			if(updateDate){
+			created = base1.getUpdateDate() == null;
+			if (updateDate) {
 				base1.setUpdateDate(now);
 			}
-			if(logger.isDebugEnabled()){
-				logger.debug("merging "+ base1.getId()+ " updateDate flag is "+updateDate +" update date "+base1.getUpdateDate());
+			if (logger.isDebugEnabled()) {
+				logger.debug("merging " + base1.getId() + " updateDate flag is " + updateDate + " update date " + base1.getUpdateDate());
 			}
 
 
 		}
 
 		em.merge(base);
-		if(base1!=null){
-			if(created){
+		if (base1 != null) {
+			if (created) {
 				eventPublisher.publishEvent(new BasicCreated<>(base1));
-			}
-			else{
+			} else {
 				eventPublisher.publishEvent(new BasicUpdated<>(base1));
 
 			}
@@ -123,29 +144,28 @@ public class BasicRepository implements Plugin {
 
 	@Transactional
 	public void massMerge(List<?> toMerge) {
-		massMerge(toMerge,true);
+		massMerge(toMerge, true);
 	}
 
 	@Transactional
-	public void massMerge(List<?> toMerge,boolean updatedate) {
-		List<Object> events=new ArrayList<>();
+	public void massMerge(List<?> toMerge, boolean updatedate) {
+		List<Object> events = new ArrayList<>();
 		OffsetDateTime now = OffsetDateTime.now();
 		for (Object o : toMerge) {
-			if(o instanceof Basic){
+			if (o instanceof Basic) {
 				Basic baseclass = (Basic) o;
-				boolean created=baseclass.getUpdateDate()==null;
-				if(updatedate){
+				boolean created = baseclass.getUpdateDate() == null;
+				if (updatedate) {
 					baseclass.setUpdateDate(now);
 				}
-				if(logger.isDebugEnabled()){
-					logger.debug("merging "+ baseclass.getId() +" updateDate flag is "+updatedate +" update date is "+baseclass.getUpdateDate());
+				if (logger.isDebugEnabled()) {
+					logger.debug("merging " + baseclass.getId() + " updateDate flag is " + updatedate + " update date is " + baseclass.getUpdateDate());
 				}
-				if(created){
-					BasicCreated<?> baseclassCreated=new BasicCreated<>(baseclass);
+				if (created) {
+					BasicCreated<?> baseclassCreated = new BasicCreated<>(baseclass);
 					events.add(baseclassCreated);
-				}
-				else{
-					BasicUpdated<?> baseclassUpdated=new BasicUpdated<>(baseclass);
+				} else {
+					BasicUpdated<?> baseclassUpdated = new BasicUpdated<>(baseclass);
 					events.add(baseclassUpdated);
 				}
 
@@ -157,5 +177,5 @@ public class BasicRepository implements Plugin {
 			eventPublisher.publishEvent(event);
 		}
 	}
-	
+
 }
