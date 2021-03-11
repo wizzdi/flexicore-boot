@@ -35,6 +35,7 @@ public class SecurityRepository implements Plugin {
 		Join<RoleToUser, Role> roles = cb.treat(roleToUser.join(RoleToUser_.leftside, JoinType.LEFT),Role.class);
 		Join<Role, RoleToBaseclass> roleToBaseClass = roles.join(Role_.roleToBaseclass);
 		Predicate rolesPredicate = cb.and(
+				cb.isFalse(roleToBaseClass.get(RoleToBaseclass_.softDelete)),
 				cb.equal(users.get(SecurityUser_.id), securityUser.getId()),
 				cb.equal(roleToBaseClass.get(RoleToBaseclass_.rightside), securityOperation),
 				cb.equal(roleToBaseClass.get(RoleToBaseclass_.simplevalue), access.name())
@@ -56,7 +57,9 @@ public class SecurityRepository implements Plugin {
 		// check if this securityUser has direct connection with the securityOperation and the
 		// value is Deny.
 		Join<SecurityUser, UserToBaseClass> direct = users.join(SecurityUser_.userToBaseClasses, JoinType.LEFT);
-		Predicate directPredicate = cb.and(cb.equal(users.get(SecurityUser_.id), securityUser.getId()),
+		Predicate directPredicate = cb.and(
+				cb.isFalse(direct.get(RoleToBaseclass_.softDelete)),
+				cb.equal(users.get(SecurityUser_.id), securityUser.getId()),
 				cb.equal(direct.get(UserToBaseClass_.rightside), securityOperation),
 				cb.equal(direct.get(UserToBaseClass_.simplevalue), access.name()));
 
