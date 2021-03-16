@@ -75,7 +75,7 @@
         <dependency>
             <groupId>com.wizzdi</groupId>
             <artifactId>flexicore-security-service</artifactId>
-            <version>1.0.3</version>
+            <version>1.0.4-SNAPSHOT</version>
         </dependency>
         <!-- https://mvnrepository.com/artifact/org.springdoc/springdoc-openapi-webmvc-core -->
         <dependency>
