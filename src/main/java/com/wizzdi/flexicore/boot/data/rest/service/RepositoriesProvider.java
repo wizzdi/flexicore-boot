@@ -24,6 +24,7 @@ public class RepositoriesProvider {
 	@Autowired
 	private ApplicationContext applicationContext;
 
+	@Lazy
 	@Bean
 	@Primary
 	public Repositories repositories(){
