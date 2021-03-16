@@ -14,7 +14,7 @@ import org.springframework.context.annotation.Scope;
 public class AdminConfiguration implements Plugin {
 	@Bean
 	@Scope(value = ConfigurableBeanFactory.SCOPE_SINGLETON)
-	@ConditionalOnMissingBean
+	@ConditionalOnMissingBean(name = "systemAdminId")
 	@Qualifier("systemAdminId")
 	public String systemAdminId(){
 		return "UEKbB6XlQhKOtjziJoUQ8w";
