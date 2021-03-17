@@ -1,0 +1,300 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.wizzdi</groupId>
+    <artifactId>flexicore-boot-swagger</artifactId>
+    <version>1.0.0-SNAPSHOT</version>
+    <name>FlexiCore Boot REST</name>
+    <description>flexicore boot swagger</description>
+    <url>https://wizzdi.com</url>
+
+    <licenses>
+        <license>
+            <name>Apache License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+    <properties>
+
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <version.eclipselink>2.7.7</version.eclipselink>
+
+        <!-- maven-compiler-plugin -->
+        <maven.compiler.target>11</maven.compiler.target>
+        <maven.compiler.source>11</maven.compiler.source>
+        <pf4j-spring.version>0.7.0</pf4j-spring.version>
+
+        <spring-boot.version>2.3.0.RELEASE</spring-boot.version>
+        <junit-jupiter.version>5.6.2</junit-jupiter.version>
+        <swagger.version>2.1.2</swagger.version>
+
+    </properties>
+
+    <distributionManagement>
+        <snapshotRepository>
+            <id>ossrh</id>
+            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+        </snapshotRepository>
+        <repository>
+            <id>ossrh</id>
+            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/
+            </url>
+        </repository>
+    </distributionManagement>
+    <developers>
+        <developer>
+            <id>asafbennatan</id>
+            <name>Asaf Ben Natan</name>
+            <email>asaf@wizzdi.com</email>
+            <url>https://www.wizzdi.com</url>
+            <organization>Wizzdi</organization>
+            <organizationUrl>https://www.wizzdi.com</organizationUrl>
+            <roles>
+                <role>architect</role>
+                <role>developer</role>
+            </roles>
+            <timezone>Israel</timezone>
+        </developer>
+    </developers>
+    <scm>
+        <connection>scm:git:git://wizzdi/flexicore-boot-swagger.git</connection>
+        <developerConnection>scm:git:git@github.com:wizzdi/flexicore-boot-swagger.git</developerConnection>
+        <url>https://github.com/wizzdi/flexicore-boot-swagger</url>
+        <tag>flexicore-boot-swagger-${version}</tag>
+    </scm>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <!-- Import dependency management from Spring Boot -->
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-dependencies</artifactId>
+                <version>2.3.0.RELEASE</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <dependency>
+                <!-- Import dependency management from Spring Boot -->
+                <groupId>com.wizzdi</groupId>
+                <artifactId>flexicore-boot-dependencies</artifactId>
+                <version>1.0.2</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+
+    </dependencyManagement>
+    <dependencies>
+        <dependency>
+            <groupId>com.wizzdi</groupId>
+            <artifactId>flexicore-boot</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.wizzdi</groupId>
+            <artifactId>flexicore-boot-starter-web</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.swagger.core.v3</groupId>
+            <artifactId>swagger-jaxrs2</artifactId>
+            <version>${swagger.version}</version>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/org.springdoc/springdoc-openapi-webmvc-core -->
+        <dependency>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-webmvc-core</artifactId>
+            <version>1.5.1</version>
+        </dependency>
+
+
+        <dependency>
+            <groupId>io.swagger.core.v3</groupId>
+            <artifactId>swagger-jaxrs2-servlet-initializer</artifactId>
+            <version>${swagger.version}</version>
+        </dependency>
+
+
+        <dependency>
+            <groupId>org.pf4j</groupId>
+            <artifactId>pf4j-spring</artifactId>
+            <version>${pf4j-spring.version}</version>
+            <exclusions>
+                <exclusion>
+                    <artifactId>log4j</artifactId>
+                    <groupId>log4j</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>slf4j-log4j12</artifactId>
+                    <groupId>org.slf4j</groupId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>junit</groupId>
+                    <artifactId>junit</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-engine</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.junit.platform</groupId>
+            <artifactId>junit-platform-launcher</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.vintage</groupId>
+            <artifactId>junit-vintage-engine</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.wizzdi</groupId>
+            <artifactId>flexicore-boot-test-helper</artifactId>
+            <version>1.0.0</version>
+            <scope>test</scope>
+        </dependency>
+
+    </dependencies>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.8.1</version>
+                <configuration>
+                    <forceJavacCompilerUse>true</forceJavacCompilerUse>
+
+                    <source>${maven.compiler.source}</source>
+                    <target>${maven.compiler.target}</target>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>2.22.2</version>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-release-plugin</artifactId>
+                <version>2.5.3</version>
+                <configuration>
+                    <localCheckout>true</localCheckout>
+                    <pushChanges>false</pushChanges>
+                    <mavenExecutorId>forked-path</mavenExecutorId>
+                    <arguments>-Dgpg.passphrase=${gpg.passphrase}</arguments>
+                </configuration>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.apache.maven.scm</groupId>
+                        <artifactId>maven-scm-provider-gitexe</artifactId>
+                        <version>1.9.5</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-javadoc-plugin</artifactId>
+                        <version>3.2.0</version>
+                    </dependency>
+                </dependencies>
+            </plugin>
+            <plugin>
+                <groupId>org.sonatype.plugins</groupId>
+                <artifactId>nexus-staging-maven-plugin</artifactId>
+                <version>1.6.7</version>
+                <extensions>true</extensions>
+                <configuration>
+                    <serverId>ossrh</serverId>
+                    <nexusUrl>https://oss.sonatype.org/</nexusUrl>
+                    <autoReleaseAfterClose>true</autoReleaseAfterClose>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <version>3.2.1</version>
+                <executions>
+                    <execution>
+                        <id>attach-sources</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>3.2.0</version>
+            </plugin>
+
+
+        </plugins>
+        <resources>
+
+            <resource>
+                <directory>src/main/filtered</directory>
+                <filtering>true</filtering>
+
+            </resource>
+
+            <resource>
+                <directory>.</directory>
+                <includes>
+                    <include>pom.xml</include>
+                </includes>
+
+            </resource>
+
+            <resource>
+                <directory>src/main/resources</directory>
+
+            </resource>
+
+        </resources>
+    </build>
+    <profiles>
+        <!-- GPG Signature on release -->
+        <profile>
+            <id>release-sign-artifacts</id>
+            <activation>
+                <property>
+                    <name>performRelease</name>
+                    <value>true</value>
+                </property>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-gpg-plugin</artifactId>
+                        <version>1.6</version>
+                        <executions>
+                            <execution>
+                                <id>sign-artifacts</id>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>sign</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+
+
+</project>
