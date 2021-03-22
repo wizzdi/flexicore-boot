@@ -53,10 +53,10 @@
         </developer>
     </developers>
     <scm>
-        <connection>scm:git:git://wizzdi/flexicore-base-model.git</connection>
-        <developerConnection>scm:git:git@github.com:wizzdi/flexicore-base-model.git</developerConnection>
-        <url>https://github.com/wizzdi/flexicore-base-model</url>
-        <tag>flexicore-base-model-${version}</tag>
+        <connection>scm:git:git://wizzdi/flexicore-file-model.git</connection>
+        <developerConnection>scm:git:git@github.com:wizzdi/flexicore-file-model.git</developerConnection>
+        <url>https://github.com/wizzdi/flexicore-file-model</url>
+        <tag>flexicore-file-model-${version}</tag>
     </scm>
     <dependencyManagement>
         <dependencies>
