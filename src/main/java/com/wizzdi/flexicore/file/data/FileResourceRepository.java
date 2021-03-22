@@ -54,6 +54,10 @@ public class FileResourceRepository implements Plugin {
 
 		}
 
+		if(fileResourceFilter.getMd5s()!=null&&!fileResourceFilter.getMd5s().isEmpty()){
+			predicates.add(r.get(FileResource_.md5).in(fileResourceFilter.getMd5s()));
+		}
+
 		if(securityContextBase!=null){
 			Join<T,Baseclass> join=r.join(FileResource_.security);
 			baseclassRepository.addBaseclassPredicates(cb,q,join,predicates,securityContextBase);

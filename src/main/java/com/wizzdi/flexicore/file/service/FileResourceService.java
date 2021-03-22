@@ -29,7 +29,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.util.MimeType;
-import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.server.ResponseStatusException;
 
 import javax.activation.MimetypesFileTypeMap;
 import javax.persistence.metamodel.SingularAttribute;
@@ -197,16 +197,16 @@ public class FileResourceService implements Plugin {
 	public ResponseEntity<Resource> download(long offset, long size, String id, String remoteIp, SecurityContextBase securityContext) {
 		FileResource fileResource = getFileResource(id, securityContext);
 		if (fileResource == null) {
-			throw new HttpClientErrorException(HttpStatus.BAD_REQUEST,"No File resource with id " + id);
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"No File resource with id " + id);
 		}
 		if (fileResource.isNonDownloadable()) {
-			throw new HttpClientErrorException(HttpStatus.BAD_REQUEST,"file resource with id: " + id +
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"file resource with id: " + id +
 					"is not available for download");
 		}
 		if (fileResource.getOnlyFrom() != null) {
 			Set<String> allowedIps = Stream.of(fileResource.getOnlyFrom().split(",")).collect(Collectors.toSet());
 			if (!allowedIps.contains(remoteIp)) {
-				throw new HttpClientErrorException(HttpStatus.BAD_REQUEST,"File is not allowed to be downloaded from " + remoteIp);
+				throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"File is not allowed to be downloaded from " + remoteIp);
 			}
 
 
@@ -228,7 +228,7 @@ public class FileResourceService implements Plugin {
 			if (file.exists()) {
 				long fileLength = file.length();
 				if (offset >= fileLength) {
-					throw new HttpClientErrorException(HttpStatus.BAD_REQUEST,"received offset(" + offset + ") >= length(" + fileLength);
+					throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"received offset(" + offset + ") >= length(" + fileLength);
 				}
 
 				try {
@@ -252,7 +252,7 @@ public class FileResourceService implements Plugin {
 
 			}
 		}
-		throw new HttpClientErrorException(HttpStatus.BAD_REQUEST);
+		throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
 	}
 
 
@@ -311,7 +311,7 @@ public class FileResourceService implements Plugin {
 			if (chunkMd5 != null) {
 				String calculatedChunkMd5 = md5Service.generateMD5(new ByteArrayInputStream(data));
 				if (!chunkMd5.equals(calculatedChunkMd5)) {
-					throw new HttpClientErrorException(HttpStatus.PRECONDITION_FAILED,"Chunk MD5 was " + calculatedChunkMd5 + " expected " + chunkMd5);
+					throw new ResponseStatusException(HttpStatus.PRECONDITION_FAILED,"Chunk MD5 was " + calculatedChunkMd5 + " expected " + chunkMd5);
 				}
 			}
 
@@ -336,7 +336,7 @@ public class FileResourceService implements Plugin {
 					.setOffset(0L)
 					.setOriginalFilename(filename)
 					.setName(filename);
-			fileResource=createFileResourceNoMerge(fileResourceCreate, securityContext);
+			fileResource=createFileResource(fileResourceCreate, securityContext);
 
 		}
 		if (!fileResource.isDone()) {
@@ -352,7 +352,7 @@ public class FileResourceService implements Plugin {
 						logger.warn("Could not delete bad md5 file " + file);
 
 					}
-					throw new HttpClientErrorException(HttpStatus.EXPECTATION_FAILED,"File Total MD5 is " + calculatedFileMd5 + " expected " + md5);
+					throw new ResponseStatusException(HttpStatus.EXPECTATION_FAILED,"File Total MD5 is " + calculatedFileMd5 + " expected " + md5);
 				}
 				fileResource.setDone(true);
 				fileResourceRepository.merge(fileResource);

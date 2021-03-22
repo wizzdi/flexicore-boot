@@ -18,7 +18,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
-import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.server.ResponseStatusException;
 import org.zeroturnaround.zip.ZipUtil;
 
 import javax.persistence.metamodel.SingularAttribute;
@@ -45,7 +45,9 @@ public class ZipFileService implements Plugin {
 
 	public ZipFile createZipFile(ZipFileCreate zipFileCreate, SecurityContextBase securityContextBase) {
 		ZipFile zipFile = createZipFileNoMerge(zipFileCreate, securityContextBase);
-		zipFileRepository.merge(zipFile);
+		Baseclass security=new Baseclass(zipFile.getName(),securityContextBase);
+		zipFile.setSecurity(security);
+		massMerge(Arrays.asList(zipFile,security));
 		return zipFile;
 	}
 
@@ -88,7 +90,7 @@ public class ZipFileService implements Plugin {
 		if (!fileResourceIds.isEmpty()) {
 			String message = "No FileResources With ids " + fileResourceIds;
 			if (zipAndDownloadRequest.isFailOnMissing() || fileResourceMap.isEmpty()) {
-				throw new HttpClientErrorException(HttpStatus.BAD_REQUEST,message);
+				throw new ResponseStatusException(HttpStatus.BAD_REQUEST,message);
 			} else {
 				logger.warn(message);
 			}

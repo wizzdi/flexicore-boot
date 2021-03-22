@@ -15,7 +15,17 @@ import java.security.NoSuchAlgorithmException;
 @Component
 public class MD5Service implements Plugin {
 
-	private static final Logger logger= LoggerFactory.getLogger(MD5Service.class);
+	private static final Logger logger = LoggerFactory.getLogger(MD5Service.class);
+
+	public String generateMD5(byte[] inputBytes) {
+		try (ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(inputBytes)) {
+			return generateMD5(byteArrayInputStream);
+		} catch (IOException e) {
+			logger.error("could not open stream", e);
+		}
+		return null;
+
+	}
 
 	public String generateMD5(String filePath) {
 		if (filePath != null) {

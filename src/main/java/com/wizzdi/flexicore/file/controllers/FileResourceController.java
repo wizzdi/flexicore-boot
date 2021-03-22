@@ -24,29 +24,32 @@ import org.springframework.web.bind.annotation.*;
 import java.io.InputStream;
 
 @RestController
-@RequestMapping("/upload")
+@RequestMapping("/fileResource")
 @Extension
-@Tag(name = "Upload")
+@Tag(name = "FileResource")
 @OperationsInside
-public class FileUploadController implements Plugin {
+public class FileResourceController implements Plugin {
 
-    private static final Logger logger = LoggerFactory.getLogger(FileUploadController.class);
+    private static final Logger logger = LoggerFactory.getLogger(FileResourceController.class);
 
     @Autowired
     private FileResourceService fileResourceService;
 
 
+    /**
+     * retreives file resource by md5
+     *
+     * @param authenticationkey authentication key
+     * @param md5               md5 of requested file
+     * @param securityContextBase security context
+     * @return FileResource requested file
+     */
+    @GetMapping("{md5}")
+    @IOperation(access = Access.allow, Name = "gets file resource", Description = "gets a fileResource by MD5")
 
-
-
-    @PostMapping(consumes = MediaType.APPLICATION_OCTET_STREAM_VALUE,produces = MediaType.APPLICATION_JSON_VALUE)
-    @IOperation(access = Access.allow, Name = "uploadOctet", Description = "uploads a file octat way")
-    public FileResource uploadFile(@RequestHeader("authenticationkey") String authenticationkey,
-                                   @RequestHeader("md5") String md5, @RequestHeader(value = "name",required = false) String name,
-                                   @RequestHeader(value = "chunkMd5",required = false) String chunkMd5,
-                                   @RequestHeader(value = "lastChunk",required = false) boolean lastChunk,
-                                   InputStream stream, @RequestAttribute SecurityContextBase securityContextBase) {
-        return fileResourceService.uploadFileResource(name, securityContextBase, md5,chunkMd5,lastChunk, stream);
+    public FileResource getFileResource(@RequestHeader("authenticationkey") String authenticationkey,
+                                        @PathVariable("md5") String md5, @RequestAttribute SecurityContextBase securityContextBase) {
+        return fileResourceService.getFileResource(md5, securityContextBase);
 
     }
 

@@ -33,35 +33,49 @@ import javax.servlet.http.HttpServletRequest;
 @Extension
 @Tag(name = "Download")
 @OperationsInside
-public class DownloadController implements Plugin {
+public class ZipFileController implements Plugin {
 
-    private static final Logger logger = LoggerFactory.getLogger(DownloadController.class);
+    private static final Logger logger = LoggerFactory.getLogger(ZipFileController.class);
 
     @Autowired
     private FileResourceService fileResourceService;
 
+    @Autowired
+    private ZipFileService zipFileService;
+
+
 
     /**
-     * download a file by its fileResource ID
+     * zips list of fileResources and sends it
      *
      * @param authenticationkey authentication key
-     * @param id id
+     * @param zipAndDownload zip and download request
      * @param securityContextBase security context
-     * @param offset offset to start reading from
-     * @param req request context
-     * @param size length to read
-     * @return binary file data
+     * @return binary zip data
      */
-    @GetMapping("{authenticationkey}/{id}")
-    @IOperation(access = Access.allow, Name = "downloadFile", Description = "downloads file by its fileResource ID")
-    public ResponseEntity<Resource> download(@PathVariable(value = "authenticationkey",required = false) String authenticationkey,
-                                             @Parameter(description = "id of the FileResource Object to Download")
-                             @RequestHeader(value = "offset",required = false) long offset,
-                                             @RequestHeader(value = "size",required = false) long size,
-                                             @PathVariable("id") String id, HttpServletRequest req, @RequestAttribute SecurityContextBase securityContextBase) {
-        return fileResourceService.download(offset, size, id, req.getRemoteAddr(), securityContextBase);
+    @PostMapping("zipAndDownload")
+    @Operation(summary = "zipAndDownload", description = "Mass Download")
+    public ResponseEntity<Resource> zipAndDownload(@RequestHeader("authenticationKey") String authenticationkey,
+                                   ZipAndDownloadRequest zipAndDownload, @RequestAttribute SecurityContextBase securityContextBase) {
+        zipFileService.validate(zipAndDownload, securityContextBase);
+        ZipFile zipFile = zipFileService.zipAndDownload(zipAndDownload, securityContextBase);
+
+        return fileResourceService.prepareFileResourceForDownload(zipFile, zipAndDownload.getOffset(), 0);
+
 
     }
+
+    @PostMapping("getOrCreateZipFile")
+    @Operation(summary = "getOrCreateZipFile", description = "getOrCreateZipFile")
+    public ZipFile getOrCreateZipFile(@RequestHeader("authenticationKey") String authenticationkey,
+                                      ZipAndDownloadRequest zipAndDownload, @RequestAttribute SecurityContextBase securityContextBase) {
+        zipFileService.validate(zipAndDownload, securityContextBase);
+        return zipFileService.zipAndDownload(zipAndDownload, securityContextBase);
+    }
+
+
+
+
 
 
 }

@@ -26,9 +26,9 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
 
 @RestController
-@RequestMapping("/fileResource")
+@RequestMapping("/downloadUnsecure")
 @Extension
-@Tag(name = "fileResource")
+@Tag(name = "Download")
 @OperationsInside
 public class DownloadUnsecureController implements Plugin {
 
