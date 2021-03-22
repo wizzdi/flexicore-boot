@@ -6,11 +6,11 @@ For comprehensive information about FlexiCore File Model please visit our [site]
 
 ## What it does?
 
-FlexiCore File Model is a FlexiCore Plugin.
+FlexiCore File Model is a FlexiCore Entity Plugin.
 
 FlexiCore File Model defines the services required to manage  files.
 
-## How to use as a Plugin?
+## How to use as an Entity Plugin?
 Add the flexicore-file-model dependency to your main app using the latest version available from maven central:
 
             <dependency>
@@ -19,7 +19,7 @@ Add the flexicore-file-model dependency to your main app using the latest versio
                 <version>LATEST</version>
                 <scope>provided</scope>
             </dependency>
-add the flexicore-file-model.jar to your [plugins folder.](https://github.com/wizzdi/flexicore-boot)
+add the flexicore-file-model.jar to your [entities folder.](https://github.com/wizzdi/flexicore-boot)
 
 
 ## Main Dependencies
