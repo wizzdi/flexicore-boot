@@ -1,7 +1,6 @@
 package com.wizzdi.flexicore.file.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.flexicore.security.SecurityContextBase;
 
 import javax.persistence.Entity;
 import javax.persistence.OneToMany;

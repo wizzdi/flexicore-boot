@@ -13,6 +13,7 @@
 		<class>com.wizzdi.flexicore.file.model.FileResource</class>
 		<class>com.wizzdi.flexicore.file.model.ZipFile</class>
 		<class>com.wizzdi.flexicore.file.model.ZipFileToFileResource</class>
+		<class>com.flexicore.model.Baseclass</class>
 
 		<exclude-unlisted-classes>true</exclude-unlisted-classes>
 	</persistence-unit>

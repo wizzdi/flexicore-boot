@@ -9,7 +9,9 @@ package com.wizzdi.flexicore.file.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.flexicore.annotations.AnnotatedClazz;
+import com.flexicore.model.Baseclass;
 import com.flexicore.model.Basic;
+import com.flexicore.model.SecuredBasic;
 import com.wizzdi.flexicore.boot.rest.views.Views;
 
 import javax.persistence.*;
@@ -22,7 +24,7 @@ import java.util.List;
 @Entity
 
 @Table(indexes = {@Index(name = "fileResource_md5_ix", columnList = "md5")})
-public class FileResource extends Basic {
+public class FileResource extends SecuredBasic {
     private String md5;
     @Column(name = "fileoffset")
     private long offset;
@@ -31,12 +33,9 @@ public class FileResource extends Basic {
     private boolean done;
     @Column(name = "path")
     private String path;
-
     @Column(columnDefinition = "timestamp with time zone")
     private OffsetDateTime dateTaken;
     private boolean nonDownloadable;
-
-
     @OneToMany(targetEntity = ZipFileToFileResource.class, mappedBy = "zippedFile")
     @JsonIgnore
     private List<ZipFileToFileResource> zipFileToFileResources = new ArrayList<>();
@@ -147,6 +146,7 @@ public class FileResource extends Basic {
         this.onlyFrom = onlyFrom;
         return (T) this;
     }
+
 
     @Override
     public String toString() {
