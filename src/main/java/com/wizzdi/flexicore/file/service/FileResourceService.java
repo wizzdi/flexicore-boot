@@ -12,6 +12,7 @@ import com.wizzdi.flexicore.file.request.FileResourceCreate;
 import com.wizzdi.flexicore.file.request.FileResourceFilter;
 import com.wizzdi.flexicore.file.request.FileResourceUpdate;
 import com.wizzdi.flexicore.security.response.PaginationResponse;
+import com.wizzdi.flexicore.security.service.BaseclassService;
 import com.wizzdi.flexicore.security.service.BasicService;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
@@ -61,8 +62,7 @@ public class FileResourceService implements Plugin {
 
 	public FileResource createFileResource(FileResourceCreate fileResourceCreate, SecurityContextBase securityContextBase) {
 		FileResource fileResource = createFileResourceNoMerge(fileResourceCreate, securityContextBase);
-		Baseclass security=new Baseclass(fileResource.getName(),securityContextBase);
-		fileResource.setSecurity(security);
+		Baseclass security= BaseclassService.createSecurityObjectNoMerge(fileResource,securityContextBase);
 		fileResourceRepository.massMerge(Arrays.asList(fileResource,security));
 		return fileResource;
 	}

@@ -11,6 +11,7 @@ import com.wizzdi.flexicore.file.model.ZipFile;
 import com.wizzdi.flexicore.file.model.ZipFileToFileResource;
 import com.wizzdi.flexicore.file.request.*;
 import com.wizzdi.flexicore.security.response.PaginationResponse;
+import com.wizzdi.flexicore.security.service.BaseclassService;
 import com.wizzdi.flexicore.security.service.BasicService;
 import org.pf4j.Extension;
 import org.slf4j.Logger;
@@ -45,8 +46,7 @@ public class ZipFileService implements Plugin {
 
 	public ZipFile createZipFile(ZipFileCreate zipFileCreate, SecurityContextBase securityContextBase) {
 		ZipFile zipFile = createZipFileNoMerge(zipFileCreate, securityContextBase);
-		Baseclass security=new Baseclass(zipFile.getName(),securityContextBase);
-		zipFile.setSecurity(security);
+		Baseclass security= BaseclassService.createSecurityObjectNoMerge(zipFile,securityContextBase);
 		massMerge(Arrays.asList(zipFile,security));
 		return zipFile;
 	}
