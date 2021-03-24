@@ -20,8 +20,7 @@
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
         <version.eclipselink>2.7.7</version.eclipselink>
-        <jackson.version>2.11.0</jackson.version>
-        <pf4j-spring.version>0.6.0</pf4j-spring.version>
+        <pf4j-spring.version>0.7.0</pf4j-spring.version>
 
 
         <spring-boot.version>2.3.0.RELEASE</spring-boot.version>
@@ -104,7 +103,6 @@
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
-            <version>42.2.6</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -150,7 +148,6 @@
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
-            <version>${jackson.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
