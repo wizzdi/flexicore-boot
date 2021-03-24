@@ -11,7 +11,7 @@ import com.flexicore.annotations.IOperation.Access;
 import com.flexicore.annotations.OperationsInside;
 import com.flexicore.annotations.Protected;
 import com.flexicore.interfaces.RESTService;
-import com.flexicore.model.FileResource;
+import com.wizzdi.flexicore.file.model.FileResource;
 import com.flexicore.model.Job;
 import com.flexicore.model.Tenant;
 import com.flexicore.model.User;

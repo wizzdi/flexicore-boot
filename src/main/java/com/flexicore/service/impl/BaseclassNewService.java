@@ -6,7 +6,11 @@ import com.flexicore.model.Baseclass;
 import com.flexicore.model.FilteringInformationHolder;
 import com.flexicore.model.Tenant;
 import com.flexicore.request.BaseclassCreate;
+import com.flexicore.request.ZipFileFilter;
 import com.flexicore.security.SecurityContext;
+import com.wizzdi.flexicore.security.request.BasicPropertiesFilter;
+import com.wizzdi.flexicore.security.request.DateFilter;
+import com.wizzdi.flexicore.security.request.PaginationFilter;
 import org.pf4j.Extension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
@@ -26,12 +30,23 @@ public class BaseclassNewService implements com.flexicore.service.BaseclassNewSe
     @Baseclassroot
     private BaseclassRepository baseclassRepository;
 
+    public static BasicPropertiesFilter getCompatible(FilteringInformationHolder zipFileFilter) {
+        return new BasicPropertiesFilter()
+                .setNameLike(zipFileFilter.getNameLike())
+                .setSoftDelete(zipFileFilter.isFetchSoftDelete())
+                .setCreationDateFilter(new DateFilter().setStart(zipFileFilter.getFromDate()).setEnd(zipFileFilter.getToDate()));
+    }
+
     @Override
     public void populate(BaseclassCreate baseclassCreate, SecurityContext securityContext) {
         String tenantId = baseclassCreate.getTenantId();
         Tenant tenant = tenantId != null ? baseclassRepository.getByIdOrNull(tenantId, Tenant.class, null, securityContext) : null;
         baseclassCreate.setTenant(tenant);
 
+    }
+
+    public static PaginationFilter getCompatiblePagination(FilteringInformationHolder filteringInformationHolder){
+        return new PaginationFilter().setCurrentPage(filteringInformationHolder.getCurrentPage()).setPageSize(filteringInformationHolder.getPageSize());
     }
 
     @Override

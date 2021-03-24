@@ -1,6 +1,6 @@
 package com.flexicore.response;
 
-import com.flexicore.model.FileResource;
+import com.wizzdi.flexicore.file.model.FileResource;
 
 public class FinalizeFileResourceResponse {
 

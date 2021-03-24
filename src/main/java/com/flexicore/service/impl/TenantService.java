@@ -13,6 +13,9 @@ import com.flexicore.events.TenantCreatedEvent;
 import com.flexicore.model.*;
 import com.flexicore.request.*;
 import com.flexicore.security.SecurityContext;
+import com.wizzdi.flexicore.file.model.FileResource;
+import com.wizzdi.flexicore.file.model.FileResource_;
+import com.wizzdi.flexicore.file.service.FileResourceService;
 import org.pf4j.Extension;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,6 +35,9 @@ import java.util.List;
 public class TenantService implements com.flexicore.service.TenantService {
     @Autowired
     private TenantRepository tenantRepository;
+
+    @Autowired
+    private FileResourceService fileResourceService;
     @Autowired
     private UserService userService;
     @Autowired
@@ -101,7 +107,7 @@ public class TenantService implements com.flexicore.service.TenantService {
     @Override
     public void validate(TenantCreate tenantCreate, SecurityContext securityContext) {
         baseclassService.validate(tenantCreate,securityContext);
-        FileResource icon=tenantCreate.getIconId()!=null?tenantRepository.getByIdOrNull(tenantCreate.getIconId(),FileResource.class,null,securityContext):null;
+        FileResource icon=tenantCreate.getIconId()!=null?fileResourceService.getByIdOrNull(tenantCreate.getIconId(),FileResource.class, FileResource_.security,securityContext):null;
         if(icon==null && tenantCreate.getIconId()!=null){
             throw new BadRequestException("No Icon with id "+tenantCreate.getIconId());
         }
@@ -116,7 +122,7 @@ public class TenantService implements com.flexicore.service.TenantService {
         }
         tenantUpdate.setTenantToUpdate(tenant);
         String iconId = tenantUpdate.getIconId();
-        FileResource icon= iconId !=null?tenantRepository.getByIdOrNull(iconId,FileResource.class,null,securityContext):null;
+        FileResource icon= iconId !=null?fileResourceService.getByIdOrNull(iconId,FileResource.class,FileResource_.security,securityContext):null;
         if(icon==null && iconId !=null){
             throw new BadRequestException("No Icon with id "+ iconId);
         }

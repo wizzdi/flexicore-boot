@@ -13,6 +13,7 @@ import com.flexicore.response.ClassInfo;
 import com.flexicore.security.SecurityContext;
 import com.flexicore.utils.InheritanceUtils;
 import com.wizzdi.flexicore.boot.dynamic.invokers.response.ParameterInfo;
+import com.wizzdi.flexicore.file.model.FileResource;
 
 import java.io.IOException;
 import java.util.*;

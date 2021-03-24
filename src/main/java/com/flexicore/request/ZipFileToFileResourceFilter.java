@@ -1,8 +1,8 @@
 package com.flexicore.request;
 
-import com.flexicore.model.FileResource;
 import com.flexicore.model.FilteringInformationHolder;
-import com.flexicore.model.ZipFile;
+import com.wizzdi.flexicore.file.model.FileResource;
+import com.wizzdi.flexicore.file.model.ZipFile;
 
 import java.util.List;
 

@@ -28,6 +28,7 @@ import com.flexicore.service.impl.BaseclassNoSQLService;
 import com.flexicore.service.impl.BaseclassService;
 import com.flexicore.utils.InheritanceUtils;
 import com.wizzdi.flexicore.boot.dynamic.invokers.response.ParameterInfo;
+import com.wizzdi.flexicore.file.model.FileResource;
 import io.swagger.v3.oas.annotations.ExternalDocumentation;
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.Operation;
@@ -131,8 +132,8 @@ public class BaseclassRESTService implements RESTService {
             description = "exports all baseclass generically")
 
     public <T extends Baseclass, E extends FilteringInformationHolder> FileResource exportBaseclassGeneric(@HeaderParam("authenticationkey") String authenticationkey,
-                                                                                                                     ExportBaseclassGeneric<E> baseclassGeneric,
-                                                                                                                     @Context SecurityContext securityContext) {
+                                                                                                           ExportBaseclassGeneric<E> baseclassGeneric,
+                                                                                                           @Context SecurityContext securityContext) {
         if(baseclassGeneric.getFilter()==null){
             throw new BadRequestException("Filter must be non null");
         }

@@ -1,7 +1,7 @@
 package com.flexicore.request;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.flexicore.model.FileResource;
+import com.wizzdi.flexicore.file.model.FileResource;
 
 import java.util.List;
 import java.util.Set;

@@ -12,7 +12,7 @@ import com.flexicore.interfaces.ServicePlugin;
 import com.flexicore.interfaces.Syncable;
 import com.flexicore.interfaces.dynamic.Invoker;
 import com.flexicore.model.Baseclass;
-import com.flexicore.model.FileResource;
+import com.wizzdi.flexicore.file.model.FileResource;
 import com.flexicore.model.Operation;
 import com.flexicore.model.dynamic.*;
 import com.flexicore.request.*;

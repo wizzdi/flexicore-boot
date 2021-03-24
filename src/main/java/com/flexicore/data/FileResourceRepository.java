@@ -7,31 +7,46 @@
 package com.flexicore.data;
 
 import com.flexicore.annotations.InheritedComponent;
-import com.flexicore.data.impl.BaseclassRepository;
 import com.flexicore.model.*;
 import com.flexicore.request.FileResourceFilter;
 import com.flexicore.request.ZipFileFilter;
 import com.flexicore.request.ZipFileToFileResourceFilter;
 import com.flexicore.security.SecurityContext;
+import com.flexicore.security.SecurityContextBase;
+import com.wizzdi.flexicore.file.model.*;
+import com.wizzdi.flexicore.security.data.BaseclassRepository;
+import com.wizzdi.flexicore.security.data.BasicRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Primary;
+import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.*;
+import javax.persistence.metamodel.SingularAttribute;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static com.flexicore.service.impl.BaseclassNewService.getCompatiblePagination;
 
-@Primary
+
 @InheritedComponent
-
+@Component("fileResourceRepositoryOld")
 @Transactional
-public class FileResourceRepository extends BaseclassRepository {
+public class FileResourceRepository  {
+
+    @PersistenceContext
+    private EntityManager em;
+    @Autowired
+    private BaseclassRepository baseclassRepository;
 
 
    private static final Logger logger = LoggerFactory.getLogger(FileResourceRepository.class);
@@ -60,8 +75,14 @@ public class FileResourceRepository extends BaseclassRepository {
         Root<FileResource> r = q.from(FileResource.class);
         List<Predicate> preds = new ArrayList<>();
         addFileResourcePredicates(fileResourceFilter, r, q, cb, preds);
-        QueryInformationHolder<FileResource> queryInformationHolder = new QueryInformationHolder<>(fileResourceFilter, FileResource.class, securityContext);
-        return getAllFiltered(queryInformationHolder, preds, cb, q, r);
+        if(securityContext!=null){
+            Join<FileResource,Baseclass> security=r.join(FileResource_.security);
+            baseclassRepository.addBaseclassPredicates(cb,q,security,preds,securityContext);
+        }
+        q.select(r).where(preds.toArray(Predicate[]::new));
+        TypedQuery<FileResource> query=em.createQuery(q);
+        BasicRepository.addPagination(getCompatiblePagination(fileResourceFilter),query);
+        return query.getResultList();
     }
 
     private void addFileResourcePredicates(FileResourceFilter fileResourceFilter, Root<FileResource> r, CriteriaQuery<?> q, CriteriaBuilder cb, List<Predicate> preds) {
@@ -76,8 +97,9 @@ public class FileResourceRepository extends BaseclassRepository {
         Root<ZipFileToFileResource> r = q.from(ZipFileToFileResource.class);
         List<Predicate> preds = new ArrayList<>();
         addZipFileToFileResourcePredicates(zipFileToFileResourceFilter, r, q, cb, preds);
-        QueryInformationHolder<ZipFileToFileResource> queryInformationHolder = new QueryInformationHolder<>(zipFileToFileResourceFilter, ZipFileToFileResource.class, securityContext);
-        return getAllFiltered(queryInformationHolder, preds, cb, q, r);
+        TypedQuery<ZipFileToFileResource> query=em.createQuery(q);
+        BasicRepository.addPagination(getCompatiblePagination(zipFileToFileResourceFilter),query);
+        return query.getResultList();
     }
 
     private void addZipFileToFileResourcePredicates(ZipFileToFileResourceFilter zipFileToFileResourceFilter, Root<ZipFileToFileResource> r, CriteriaQuery<ZipFileToFileResource> q, CriteriaBuilder cb, List<Predicate> preds) {
@@ -103,8 +125,14 @@ public class FileResourceRepository extends BaseclassRepository {
         Root<ZipFile> r = q.from(ZipFile.class);
         List<Predicate> preds = new ArrayList<>();
         addZipFilePredicates(zipFileFilter, r, q, cb, preds);
-        QueryInformationHolder<ZipFile> queryInformationHolder = new QueryInformationHolder<>(zipFileFilter, ZipFile.class, securityContext);
-        return getAllFiltered(queryInformationHolder, preds, cb, q, r);
+        if(securityContext!=null){
+            Join<ZipFile,Baseclass> security=r.join(ZipFile_.security);
+            baseclassRepository.addBaseclassPredicates(cb,q,security,preds,securityContext);
+        }
+        q.select(r).where(preds.toArray(Predicate[]::new));
+        TypedQuery<ZipFile> query=em.createQuery(q);
+        BasicRepository.addPagination(getCompatiblePagination(zipFileFilter),query);
+        return query.getResultList();
     }
 
     private void addZipFilePredicates(ZipFileFilter zipFileFilter, Root<ZipFile> r, CriteriaQuery<ZipFile> q, CriteriaBuilder cb, List<Predicate> preds) {
@@ -124,7 +152,62 @@ public class FileResourceRepository extends BaseclassRepository {
         Root<FileResource> r = q.from(FileResource.class);
         List<Predicate> preds = new ArrayList<>();
         addFileResourcePredicates(fileResourceFilter, r, q, cb, preds);
-        QueryInformationHolder<FileResource> queryInformationHolder = new QueryInformationHolder<>(fileResourceFilter, FileResource.class, securityContext);
-        return countAllFiltered(queryInformationHolder, preds, cb, q, r);
+        if(securityContext!=null){
+            Join<FileResource,Baseclass> security=r.join(FileResource_.security);
+            baseclassRepository.addBaseclassPredicates(cb,q,security,preds,securityContext);
+        }
+        q.select(cb.count(r)).where(preds.toArray(Predicate[]::new));
+        TypedQuery<Long> query=em.createQuery(q);
+        BasicRepository.addPagination(getCompatiblePagination(fileResourceFilter),query);
+        return query.getSingleResult();
+    }
+
+
+    public <T extends Baseclass> List<T> listByIds(Class<T> c, Set<String> ids, SecurityContextBase securityContext) {
+        return baseclassRepository.listByIds(c, ids, securityContext);
+    }
+
+    public <T extends Baseclass> T getByIdOrNull(String id, Class<T> c, SecurityContextBase securityContext) {
+        return baseclassRepository.getByIdOrNull(id, c, securityContext);
+    }
+
+    public <D extends Basic, E extends Baseclass, T extends D> T getByIdOrNull(String id, Class<T> c, SingularAttribute<D, E> baseclassAttribute, SecurityContextBase securityContext) {
+        return baseclassRepository.getByIdOrNull(id, c, baseclassAttribute, securityContext);
+    }
+
+    public <D extends Basic, E extends Baseclass, T extends D> List<T> listByIds(Class<T> c, Set<String> ids, SingularAttribute<D, E> baseclassAttribute, SecurityContextBase securityContext) {
+        return baseclassRepository.listByIds(c, ids, baseclassAttribute, securityContext);
+    }
+
+    public <D extends Basic, T extends D> List<T> findByIds(Class<T> c, Set<String> ids, SingularAttribute<D, String> idAttribute) {
+        return baseclassRepository.findByIds(c, ids, idAttribute);
+    }
+
+    public <T extends Basic> List<T> findByIds(Class<T> c, Set<String> requested) {
+        return baseclassRepository.findByIds(c, requested);
+    }
+
+    public <T> T findByIdOrNull(Class<T> type, String id) {
+        return baseclassRepository.findByIdOrNull(type, id);
+    }
+
+    @Transactional
+    public void merge(Object base) {
+        baseclassRepository.merge(base);
+    }
+
+    @Transactional
+    public void merge(Object base, boolean updateDate) {
+        baseclassRepository.merge(base, updateDate);
+    }
+
+    @Transactional
+    public void massMerge(List<?> toMerge) {
+        baseclassRepository.massMerge(toMerge);
+    }
+
+    @Transactional
+    public void massMerge(List<?> toMerge, boolean updatedate) {
+        baseclassRepository.massMerge(toMerge, updatedate);
     }
 }

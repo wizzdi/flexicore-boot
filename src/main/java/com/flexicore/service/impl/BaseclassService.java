@@ -28,6 +28,7 @@ import com.wizzdi.flexicore.boot.dynamic.invokers.request.DynamicExecutionExampl
 import com.wizzdi.flexicore.boot.dynamic.invokers.response.ParameterInfo;
 import com.wizzdi.flexicore.boot.dynamic.invokers.service.DynamicExecutionService;
 import com.wizzdi.flexicore.boot.dynamic.invokers.service.DynamicInvokerService;
+import com.wizzdi.flexicore.file.model.FileResource;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 import org.apache.commons.io.ByteOrderMark;

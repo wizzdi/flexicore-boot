@@ -3,6 +3,7 @@ package com.test.init;
 import com.flexicore.converters.JsonConverter;
 import com.flexicore.model.Baseclass;
 import com.wizzdi.flexicore.boot.jpa.service.EntitiesHolder;
+import com.wizzdi.flexicore.file.model.FileResource;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -18,6 +19,6 @@ public class EntitiesSeedProvider {
     @Scope(value = ConfigurableBeanFactory.SCOPE_SINGLETON)
 
     public EntitiesHolder manualEntityHolder(){
-        return new EntitiesHolder(new HashSet<>(Arrays.asList(Baseclass.class, JsonConverter.class)));
+        return new EntitiesHolder(new HashSet<>(Arrays.asList(Baseclass.class, JsonConverter.class, FileResource.class)));
     }
 }

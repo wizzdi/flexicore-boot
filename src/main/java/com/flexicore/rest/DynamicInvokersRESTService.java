@@ -10,7 +10,7 @@ import com.flexicore.annotations.OperationsInside;
 import com.flexicore.annotations.Protected;
 import com.flexicore.data.jsoncontainers.PaginationResponse;
 import com.flexicore.interfaces.RESTService;
-import com.flexicore.model.FileResource;
+import com.wizzdi.flexicore.file.model.FileResource;
 import com.flexicore.model.dynamic.DynamicInvoker;
 import com.flexicore.request.*;
 import com.flexicore.security.SecurityContext;

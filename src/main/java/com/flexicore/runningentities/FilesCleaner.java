@@ -2,7 +2,7 @@ package com.flexicore.runningentities;
 
 
 import com.flexicore.interfaces.FlexiCoreService;
-import com.flexicore.model.FileResource;
+import com.wizzdi.flexicore.file.model.FileResource;
 import com.flexicore.service.impl.FileResourceService;
 import org.pf4j.Extension;
 import org.slf4j.Logger;

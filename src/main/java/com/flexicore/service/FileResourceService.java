@@ -3,11 +3,11 @@ package com.flexicore.service;
 import com.flexicore.data.jsoncontainers.PaginationResponse;
 import com.flexicore.interfaces.FlexiCoreService;
 import com.flexicore.model.Baseclass;
-import com.flexicore.model.FileResource;
+import com.wizzdi.flexicore.file.model.FileResource;
 import com.flexicore.model.User;
-import com.flexicore.model.ZipFile;
 import com.flexicore.request.*;
 import com.flexicore.security.SecurityContext;
+import com.wizzdi.flexicore.file.model.ZipFile;
 
 import java.io.File;
 import java.io.FileNotFoundException;

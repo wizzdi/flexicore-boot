@@ -1,11 +1,11 @@
 package com.test.rest;
-import com.test.init.FlexiCoreApplication;
-import com.flexicore.model.FileResource;
+
 import com.flexicore.model.Role;
 import com.flexicore.request.AuthenticationRequest;
 import com.flexicore.response.AuthenticationResponse;
 import com.flexicore.security.MD5Calculator;
-import org.apache.commons.codec.binary.Hex;
+import com.test.init.FlexiCoreApplication;
+import com.wizzdi.flexicore.file.model.FileResource;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
