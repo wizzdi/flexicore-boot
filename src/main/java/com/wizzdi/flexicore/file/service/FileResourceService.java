@@ -62,8 +62,7 @@ public class FileResourceService implements Plugin {
 
 	public FileResource createFileResource(FileResourceCreate fileResourceCreate, SecurityContextBase securityContextBase) {
 		FileResource fileResource = createFileResourceNoMerge(fileResourceCreate, securityContextBase);
-		Baseclass security= BaseclassService.createSecurityObjectNoMerge(fileResource,securityContextBase);
-		fileResourceRepository.massMerge(Arrays.asList(fileResource,security));
+		fileResourceRepository.merge(fileResource);
 		return fileResource;
 	}
 
@@ -106,6 +105,8 @@ public class FileResourceService implements Plugin {
 		FileResource fileResource = new FileResource();
 		fileResource.setId(Baseclass.getBase64ID());
 		updateFileResourceNoMerge(fileResourceCreate, fileResource);
+		BaseclassService.createSecurityObjectNoMerge(fileResource,securityContextBase);
+
 		return fileResource;
 	}
 
