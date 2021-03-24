@@ -88,9 +88,13 @@ public class Baseclass extends Basic implements Syncable {
 
 
 
-
-
 	public void init() {
+		init(null);
+	}
+
+
+
+	public void init(Class<?> javaClass) {
 		if (id == null) {
 			id = getBase64ID();
 		}
@@ -98,9 +102,11 @@ public class Baseclass extends Basic implements Syncable {
 		if (getCreationDate() == null) {
 			setCreationDate(OffsetDateTime.now());
 		}
+		if(javaClass==null){
+			javaClass=getClass();
+		}
 
 
-		Class<? extends Baseclass> javaClass = this.getClass();
 		String typeName = javaClass.getCanonicalName();
 		Clazz clazz = Clazz.class.equals(javaClass) && this.name.equals("com.flexicore.model.Clazz") ? (Clazz) this : allclazzes.get(typeName);
 		this.setClazz(clazz);
@@ -156,15 +162,19 @@ public class Baseclass extends Basic implements Syncable {
 	@OneToMany(targetEntity = SecurityLink.class, mappedBy = "rightside")
 	public List<SecurityLink> securityLinks = new ArrayList<>();
 
-
 	public Baseclass(String name, SecurityContextBase securityContext) {
+		this(name,null,securityContext);
+	}
+
+
+	public Baseclass(String name,Class<?> javaType, SecurityContextBase securityContext) {
 		this.name = name;
 		if (securityContext != null) {
 			this.creator = securityContext.getUser();
 			this.tenant = securityContext.getTenantToCreateIn();
 		}
 
-		init();
+		init(javaType);
 
 	}
 

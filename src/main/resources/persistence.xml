@@ -9,6 +9,7 @@
     <persistence-unit name="primary" transaction-type="JTA">
 
 
+        <class>com.flexicore.model.SecuredBasic</class>
         <class>com.flexicore.model.Basic</class>
         <class>com.flexicore.model.Baseclass</class>
         <class>com.flexicore.model.SecurityEntity</class>
