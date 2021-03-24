@@ -253,7 +253,7 @@
         <dependency>
             <groupId>com.wizzdi</groupId>
             <artifactId>flexicore-base-model</artifactId>
-            <version>1.0.5-SNAPSHOT</version>
+            <version>1.0.5</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
