@@ -4,7 +4,7 @@
 
     <groupId>com.wizzdi</groupId>
     <artifactId>flexicore-security-model</artifactId>
-    <version>1.0.6-SNAPSHOT</version>
+    <version>1.0.5-SNAPSHOT</version>
     <name>FlexiCore security model</name>
     <description>flexicore security model</description>
     <url>https://wizzdi.com</url>
