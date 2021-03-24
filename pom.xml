@@ -93,6 +93,11 @@
 
         </dependency>
         <dependency>
+            <groupId>com.wizzdi</groupId>
+            <artifactId>flexicore-file-model</artifactId>
+            <version>1.0.0-SNAPSHOT</version>
+        </dependency>
+        <dependency>
             <groupId>org.pf4j</groupId>
             <artifactId>pf4j-spring</artifactId>
             <version>${pf4j-spring.version}</version>
@@ -216,7 +221,7 @@
                     <dependency>
                         <groupId>com.wizzdi</groupId>
                         <artifactId>flexicore-security-model</artifactId>
-                        <version>1.0.1</version>
+                        <version>1.0.5-SNAPSHOT</version>
                     </dependency>
                     <dependency>
                         <groupId>com.wizzdi</groupId>

@@ -21,7 +21,6 @@
 		<class>com.flexicore.model.SecurityTenant</class>
 		<class>com.flexicore.model.SecurityUser</class>
 		<class>com.flexicore.model.DocumentationTag</class>
-		<class>com.flexicore.model.FileResource</class>
 		<class>com.flexicore.model.Operation</class>
 		<class>com.flexicore.model.OperationCategory</class>
 		<class>com.flexicore.model.OperationToClazz</class>
@@ -45,12 +44,7 @@
 		<class>com.flexicore.model.dynamic.DynamicInvoker</class>
 		<class>com.flexicore.model.TenantIdFiltering</class>1
 		<class>com.flexicore.model.ClazzIdFiltering</class>
-
-
-		<class>com.flexicore.model.ZipFile</class>
-		<class>com.flexicore.model.ZipFileToFileResource</class>
 		<class>com.flexicore.model.SecurityEntity</class>
-
 		<class>com.flexicore.model.AccessRef</class>
 		<class>com.flexicore.model.DynamicInvokerRef</class>
 		<class>com.flexicore.model.BaseclassNotIdFiltering</class>
