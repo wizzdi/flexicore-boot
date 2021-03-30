@@ -1,8 +1,6 @@
 package com.wizzdi.flexicore.security.data;
 
-import com.flexicore.model.Baseclass;
-import com.flexicore.model.Baseclass_;
-import com.flexicore.model.Role;
+import com.flexicore.model.*;
 import com.wizzdi.flexicore.boot.base.interfaces.Plugin;
 import com.flexicore.security.SecurityContextBase;
 import com.wizzdi.flexicore.security.request.RoleFilter;
@@ -18,6 +16,7 @@ import javax.persistence.criteria.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Component
 @Extension
@@ -43,8 +42,13 @@ public class RoleRepository implements Plugin {
 
 	}
 
-	public <T extends Role> void addRolePredicates(RoleFilter roleFilter, CriteriaBuilder cb, CommonAbstractCriteria q, Path<T> r, List<Predicate> predicates, SecurityContextBase securityContext) {
+	public <T extends Role> void addRolePredicates(RoleFilter roleFilter, CriteriaBuilder cb, CommonAbstractCriteria q, From<?,T> r, List<Predicate> predicates, SecurityContextBase securityContext) {
 		securityEntityRepository.addSecurityEntityPredicates(roleFilter,cb,q,r,predicates,securityContext);
+		if(roleFilter.getSecurityTenants()!=null &&!roleFilter.getSecurityTenants().isEmpty()){
+			Set<String> ids=roleFilter.getSecurityTenants().stream().map(f->f.getId()).collect(Collectors.toSet());
+			Join<T, SecurityTenant> join=r.join(Role_.tenant);
+			predicates.add(join.get(SecurityTenant_.id).in(ids));
+		}
 	}
 
 	public long countAllRoles(RoleFilter roleFilter, SecurityContextBase securityContext){

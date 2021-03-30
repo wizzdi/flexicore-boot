@@ -2,6 +2,7 @@ package com.wizzdi.flexicore.security.service;
 
 import com.flexicore.model.Baseclass;
 import com.flexicore.model.Role;
+import com.flexicore.model.SecurityTenant;
 import com.wizzdi.flexicore.boot.base.interfaces.Plugin;
 import com.wizzdi.flexicore.security.data.RoleRepository;
 import com.flexicore.security.SecurityContextBase;
@@ -11,10 +12,12 @@ import com.wizzdi.flexicore.security.request.RoleUpdate;
 import com.wizzdi.flexicore.security.response.PaginationResponse;
 import org.pf4j.Extension;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
+import org.springframework.web.server.ResponseStatusException;
 
-import java.util.List;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Extension
 @Component
@@ -69,6 +72,13 @@ public class RoleService implements Plugin {
 
 	public void validate(RoleFilter roleFilter, SecurityContextBase securityContext) {
 		securityEntityService.validate(roleFilter,securityContext);
+		Set<String> securityTenantIds=roleFilter.getSecurityTenantsIds();
+		Map<String, SecurityTenant> securityTenantMap=securityTenantIds.isEmpty()?new HashMap<>():roleRepository.listByIds(SecurityTenant.class,securityTenantIds,securityContext).stream().collect(Collectors.toMap(f->f.getId(),f->f));
+		securityTenantIds.removeAll(securityTenantMap.keySet());
+		if(!securityTenantIds.isEmpty()){
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"no security tenants with ids "+securityTenantIds);
+		}
+		roleFilter.setSecurityTenants(new ArrayList<>(securityTenantMap.values()));
 	}
 
 	public <T extends Baseclass> T getByIdOrNull(String id,Class<T> c, SecurityContextBase securityContext) {
