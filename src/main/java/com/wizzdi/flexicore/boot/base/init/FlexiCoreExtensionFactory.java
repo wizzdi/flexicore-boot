@@ -6,7 +6,6 @@ import org.pf4j.PluginWrapper;
 import org.pf4j.spring.SpringExtensionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.context.ApplicationContext;
 import org.springframework.util.ClassUtils;
 
@@ -79,7 +78,7 @@ public class FlexiCoreExtensionFactory extends SpringExtensionFactory {
             contextCache.put(pluginId, applicationContext);
             List<String> dependencies = pluginWrapper!=null?pluginWrapper.getDescriptor().getDependencies().parallelStream().map(f -> f.getPluginId()).sorted().collect(Collectors.toList()):new ArrayList<>();
             List<ApplicationContext> dependenciesContexts=dependencies.stream().map(f->pluginManager.getPlugin(f)).filter(f->f!=null).map(this::getApplicationContext).collect(Collectors.toList());
-            applicationContext.getAutowireCapableBeanFactory().addDependenciesContext(dependenciesContexts);
+            applicationContext.getAutowireCapableBeanFactory().setDependenciesContext(getPluginsApplicationContexts());
             for (ContextCustomizer applicationCustomizer : pluginManager.getApplicationCustomizers()) {
                 applicationCustomizer.customize(applicationContext,pluginWrapper,pluginManager);
             }
