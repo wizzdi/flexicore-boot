@@ -4,6 +4,7 @@ import org.springframework.beans.BeansException;
 import org.springframework.beans.TypeConverter;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
+import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.beans.factory.config.DependencyDescriptor;
@@ -33,8 +34,15 @@ public class FlexiCoreBeanFactory extends DefaultListableBeanFactory {
 
     @Override
     public Object resolveDependency(DependencyDescriptor descriptor, String requestingBeanName, Set<String> autowiredBeanNames, TypeConverter typeConverter) throws BeansException {
+
+
+        if (ObjectFactory.class == descriptor.getDependencyType() ||
+                ObjectProvider.class == descriptor.getDependencyType()) {
+            return new FlexiCoreDependencyObjectProvider(this,dependenciesContext,descriptor, requestingBeanName);
+        }
+
         try {
-            return super.resolveDependency(descriptor, requestingBeanName, autowiredBeanNames, typeConverter);
+            return  super.resolveDependency(descriptor, requestingBeanName, autowiredBeanNames, typeConverter);
         }
         catch (BeansException e){
             for (ApplicationContext applicationContext : dependenciesContext) {
@@ -49,6 +57,7 @@ public class FlexiCoreBeanFactory extends DefaultListableBeanFactory {
         }
 
     }
+
 
 
 
