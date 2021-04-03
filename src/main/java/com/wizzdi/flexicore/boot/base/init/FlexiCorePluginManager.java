@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
 public class FlexiCorePluginManager extends SpringPluginManager {
 
 	private static final Logger logger = LoggerFactory.getLogger(FlexiCorePluginManager.class);
-	private static final AtomicBoolean init=new AtomicBoolean(false);
+	private static final AtomicBoolean init = new AtomicBoolean(false);
 	private ObjectProvider<ContextCustomizer> applicationCustomizers;
 
 
@@ -28,7 +28,7 @@ public class FlexiCorePluginManager extends SpringPluginManager {
 
 	public FlexiCorePluginManager(Path pluginsRoot, ObjectProvider<ContextCustomizer> applicationCustomizers) {
 		super(pluginsRoot);
-		this.applicationCustomizers=applicationCustomizers;
+		this.applicationCustomizers = applicationCustomizers;
 	}
 
 	@Override
@@ -45,6 +45,11 @@ public class FlexiCorePluginManager extends SpringPluginManager {
 		return Collections.unmodifiableCollection(extensionFactory.getPluginsApplicationContexts());
 	}
 
+	public Collection<ApplicationContext> getAllApplicationContexts() {
+		FlexiCoreExtensionFactory extensionFactory = (FlexiCoreExtensionFactory) getExtensionFactory();
+		return Collections.unmodifiableCollection(extensionFactory.getAllApplicationContext());
+	}
+
 	public ApplicationContext getApplicationContext(Class<?> c) {
 		FlexiCoreExtensionFactory extensionFactory = (FlexiCoreExtensionFactory) getExtensionFactory();
 		PluginWrapper pluginWrapper = whichPlugin(c);
@@ -52,11 +57,10 @@ public class FlexiCorePluginManager extends SpringPluginManager {
 	}
 
 	public ApplicationContext getApplicationContext(PluginWrapper pluginWrapper) {
-        FlexiCoreExtensionFactory extensionFactory = (FlexiCoreExtensionFactory) getExtensionFactory();
-        return pluginWrapper == null ? getApplicationContext() : extensionFactory.getApplicationContext(pluginWrapper);
+		FlexiCoreExtensionFactory extensionFactory = (FlexiCoreExtensionFactory) getExtensionFactory();
+		return pluginWrapper == null ? getApplicationContext() : extensionFactory.getApplicationContext(pluginWrapper);
 
-    }
-
+	}
 
 
 	@Override
@@ -74,8 +78,10 @@ public class FlexiCorePluginManager extends SpringPluginManager {
 
 	@Override
 	public void init() {
-		if(init.compareAndSet(false,true)){
+		if (init.compareAndSet(false, true)) {
 			long start = System.currentTimeMillis();
+			FlexiCoreExtensionFactory extensionFactory = (FlexiCoreExtensionFactory) getExtensionFactory();
+			extensionFactory.init();
 			try {
 				this.loadPlugins();
 			} catch (DependencyResolver.DependenciesWrongVersionException e) {

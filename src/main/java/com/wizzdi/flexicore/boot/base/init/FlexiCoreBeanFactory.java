@@ -32,6 +32,10 @@ public class FlexiCoreBeanFactory extends DefaultListableBeanFactory {
     }
 
 
+    public Object resolveDependencyDirect(DependencyDescriptor descriptor, String requestingBeanName, Set<String> autowiredBeanNames, TypeConverter typeConverter) throws BeansException {
+        return super.resolveDependency(descriptor,requestingBeanName,autowiredBeanNames,typeConverter);
+    }
+
     @Override
     public Object resolveDependency(DependencyDescriptor descriptor, String requestingBeanName, Set<String> autowiredBeanNames, TypeConverter typeConverter) throws BeansException {
 
@@ -45,13 +49,16 @@ public class FlexiCoreBeanFactory extends DefaultListableBeanFactory {
             return  super.resolveDependency(descriptor, requestingBeanName, autowiredBeanNames, typeConverter);
         }
         catch (BeansException e){
-            for (ApplicationContext applicationContext : dependenciesContext) {
-                try {
-                    return applicationContext.getAutowireCapableBeanFactory().resolveDependency(descriptor, requestingBeanName, autowiredBeanNames, typeConverter);
-                }
-                catch (BeansException ignored){
+            for (ApplicationContext applicationContext   : dependenciesContext) {
+                    try {
+                        AutowireCapableBeanFactory autowireCapableBeanFactory = applicationContext.getAutowireCapableBeanFactory();
+                        return autowireCapableBeanFactory instanceof  FlexiCoreBeanFactory?((FlexiCoreBeanFactory)autowireCapableBeanFactory).resolveDependencyDirect(descriptor, requestingBeanName, autowiredBeanNames, typeConverter):autowireCapableBeanFactory.resolveDependency(descriptor, requestingBeanName, autowiredBeanNames, typeConverter);
+                    }
+                    catch (BeansException ignored){
 
-                }
+                    }
+
+
             }
             throw e;
         }
@@ -59,7 +66,9 @@ public class FlexiCoreBeanFactory extends DefaultListableBeanFactory {
     }
 
 
-
+    public Queue<ApplicationContext> getDependenciesContext() {
+        return dependenciesContext;
+    }
 
     @Override
     public <T> ObjectProvider<T> getBeanProvider(Class<T> requiredType) throws BeansException {

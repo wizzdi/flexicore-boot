@@ -12,6 +12,8 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.event.EventListener;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -26,6 +28,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 @Component
 @Scope(value = ConfigurableBeanFactory.SCOPE_SINGLETON)
+@Order(Ordered.HIGHEST_PRECEDENCE)
 public class EventPropagator {
 
     @Autowired
@@ -42,11 +45,10 @@ public class EventPropagator {
      */
     @EventListener
     public void handleEvent(EventObject event) {
-        if (!eventsInProcess.contains(event)) {
+        if (eventsInProcess.add(event)) {
             Object eventToPrint = event instanceof PayloadApplicationEvent ? ((PayloadApplicationEvent<?>) event).getPayload() : event;
 
             logger.debug("Propagating event " + eventToPrint);
-            eventsInProcess.add(event);
             try {
                 for (ApplicationContext applicationContext : flexiCorePluginManager.getPluginApplicationContexts()) {
                     long start=System.currentTimeMillis();
