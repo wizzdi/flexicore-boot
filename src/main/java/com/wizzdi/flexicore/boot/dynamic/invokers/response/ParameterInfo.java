@@ -8,6 +8,8 @@ import org.springframework.core.annotation.AnnotationUtils;
 
 import java.lang.reflect.Field;
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static com.wizzdi.flexicore.boot.dynamic.invokers.utils.InvokerUtils.getAllFields;
 
@@ -30,6 +32,8 @@ public class ParameterInfo {
     private boolean actionIdHolder;
     private Class<?> idRefType;
     private List<ParameterInfo> subParameters;
+    private Set<String> possibleValues;
+
     private static Set<Class<?>> wrappers = new HashSet<>();
 
     static {
@@ -68,6 +72,12 @@ public class ParameterInfo {
 
 
         Class<?> type = parameter.getType();
+        if(type.isEnum()){
+            Class<? extends Enum> enumType= (Class<? extends Enum>) type;
+            EnumSet enumSet = EnumSet.allOf(enumType);
+            Stream<Enum<?>> stream = enumSet.stream();
+            possibleValues= stream.map(f->f.name()).collect(Collectors.toSet());
+        }
         iterateFields(type);
 
 
@@ -292,6 +302,15 @@ public class ParameterInfo {
 
     public <T extends ParameterInfo> T setActionIdHolder(boolean actionIdHolder) {
         this.actionIdHolder = actionIdHolder;
+        return (T) this;
+    }
+
+    public Set<String> getPossibleValues() {
+        return possibleValues;
+    }
+
+    public <T extends ParameterInfo> T setPossibleValues(Set<String> possibleValues) {
+        this.possibleValues = possibleValues;
         return (T) this;
     }
 

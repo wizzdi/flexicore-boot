@@ -175,7 +175,7 @@ public class DynamicInvokerService implements Plugin {
 	}
 
 	private List<Plugin> getInvokers(Set<String> invokerNames) {
-		Map<String,Plugin> allPlugins=pluginManager.getExtensions(Plugin.class).stream().collect(Collectors.toMap(f-> ClassUtils.getUserClass(f.getClass()).getName(), f->f,(a, b)->a));
+		Map<String,Plugin> allPlugins=pluginManager.getExtensions(Plugin.class).stream().filter(Objects::nonNull).collect(Collectors.toMap(f-> ClassUtils.getUserClass(f.getClass()).getName(), f->f,(a, b)->a));
 		return invokerNames.stream().map(f->getInvoker(allPlugins,f)).filter(Objects::nonNull).collect(Collectors.toList());
 	}
 
