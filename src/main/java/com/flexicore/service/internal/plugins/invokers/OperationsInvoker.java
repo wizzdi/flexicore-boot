@@ -11,13 +11,15 @@ import com.flexicore.request.OperationUpdate;
 import com.flexicore.security.SecurityContext;
 import com.flexicore.service.impl.OperationService;
 import org.pf4j.Extension;
+import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
 import javax.ws.rs.BadRequestException;
 
 @PluginInfo(version = 1)
-@InvokerInfo()
+@InvokerInfo
 @Extension
+@Component
 public class OperationsInvoker implements ListingInvoker<Operation, OperationFiltering> {
 
     @Inject

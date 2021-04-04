@@ -11,10 +11,12 @@ import com.flexicore.security.SecurityContext;
 import com.flexicore.service.impl.TenantService;
 import org.pf4j.Extension;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 @PluginInfo(version = 1)
 @InvokerInfo
 @Extension
+@Component
 public class TenantsInvoker implements ListingInvoker<Tenant, TenantFilter> {
 
     @Autowired
