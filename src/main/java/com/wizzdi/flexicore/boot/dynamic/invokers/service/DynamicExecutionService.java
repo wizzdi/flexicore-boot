@@ -2,24 +2,31 @@ package com.wizzdi.flexicore.boot.dynamic.invokers.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.flexicore.model.Baseclass;
+import com.flexicore.model.Basic;
+import com.flexicore.model.SecuredBasic_;
 import com.flexicore.security.SecurityContextBase;
 import com.wizzdi.flexicore.boot.base.interfaces.Plugin;
 import com.wizzdi.flexicore.boot.dynamic.invokers.data.DynamicExecutionRepository;
 import com.wizzdi.flexicore.boot.dynamic.invokers.interfaces.ExecutionContext;
 import com.wizzdi.flexicore.boot.dynamic.invokers.model.DynamicExecution;
+import com.wizzdi.flexicore.boot.dynamic.invokers.model.DynamicExecution_;
 import com.wizzdi.flexicore.boot.dynamic.invokers.model.ServiceCanonicalName;
 import com.wizzdi.flexicore.boot.dynamic.invokers.request.*;
 import com.wizzdi.flexicore.boot.dynamic.invokers.response.InvokerInfo;
 import com.wizzdi.flexicore.boot.dynamic.invokers.response.InvokerMethodInfo;
 import com.wizzdi.flexicore.security.response.PaginationResponse;
+import com.wizzdi.flexicore.security.service.BaseclassService;
+import com.wizzdi.flexicore.security.service.BasicService;
 import org.pf4j.Extension;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.HttpClientErrorException;
 
+import javax.persistence.metamodel.SingularAttribute;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -38,45 +45,38 @@ public class DynamicExecutionService implements Plugin {
 	private ExampleService exampleService;
 	@Autowired
 	private ObjectMapper objectMapper;
+	@Autowired
+	private BasicService basicService;
 
 
 	public DynamicExecution createDynamicExecution(DynamicExecutionCreate dynamicExecutionCreate, SecurityContextBase securityContext) {
 		List<Object> toMerge = new ArrayList<>();
 		DynamicExecution dynamicExecution = createDynamicExecutionNoMerge(dynamicExecutionCreate, toMerge, securityContext);
-		Baseclass security = new Baseclass(dynamicExecutionCreate.getName(), securityContext);
-		dynamicExecution.setSecurity(security);
-		toMerge.add(security);
 		dynamicExecutionRepository.massMerge(toMerge);
 		return dynamicExecution;
 	}
 
-	public void merge(Object o) {
-		dynamicExecutionRepository.merge(o);
+	@Transactional
+	public void merge(Object base) {
+		dynamicExecutionRepository.merge(base);
 	}
 
-	public void massMerge(List<Object> list) {
-		dynamicExecutionRepository.massMerge(list);
+	@Transactional
+	public void massMerge(List<?> toMerge) {
+		dynamicExecutionRepository.massMerge(toMerge);
 	}
-
 
 	public DynamicExecution createDynamicExecutionNoMerge(DynamicExecutionCreate dynamicExecutionCreate, List<Object> toMerge, SecurityContextBase securityContext) {
 		DynamicExecution dynamicExecution = new DynamicExecution();
 		dynamicExecution.setId(UUID.randomUUID().toString());
 		updateDynamicExecutionNoMerge(dynamicExecutionCreate, toMerge, dynamicExecution);
+		BaseclassService.createSecurityObjectNoMerge(dynamicExecution,securityContext);
 		toMerge.add(dynamicExecution);
 		return dynamicExecution;
 	}
 
 	public boolean updateDynamicExecutionNoMerge(DynamicExecutionCreate dynamicExecutionCreate, List<Object> toMerge, DynamicExecution dynamicExecution) {
-		boolean update = false;
-		if (dynamicExecutionCreate.getName() != null && !dynamicExecutionCreate.getName().equals(dynamicExecution.getName())) {
-			dynamicExecution.setName(dynamicExecutionCreate.getName());
-			update = true;
-		}
-		if (dynamicExecutionCreate.getDescription() != null && !dynamicExecutionCreate.getDescription().equals(dynamicExecution.getDescription())) {
-			dynamicExecution.setDescription(dynamicExecutionCreate.getDescription());
-			update = true;
-		}
+		boolean update = basicService.updateBasicNoMerge(dynamicExecutionCreate,dynamicExecution);
 		if (dynamicExecutionCreate.getMethodName() != null && !dynamicExecutionCreate.getMethodName().equals(dynamicExecution.getMethodName())) {
 			dynamicExecution.setMethodName(dynamicExecutionCreate.getMethodName());
 			update = true;
@@ -118,6 +118,7 @@ public class DynamicExecutionService implements Plugin {
 	}
 
 	public void validate(DynamicExecutionCreate dynamicExecutionCreate, SecurityContextBase securityContext) {
+		basicService.validate(dynamicExecutionCreate,securityContext);
 	}
 
 	public void validateCreate(DynamicExecutionCreate dynamicExecutionCreate, SecurityContextBase securityContext) {
@@ -132,6 +133,9 @@ public class DynamicExecutionService implements Plugin {
 	}
 
 	public void validate(DynamicExecutionFilter dynamicExecutionFilter, SecurityContextBase securityContext) {
+		if(dynamicExecutionFilter.getBasicPropertiesFilter()!=null){
+			basicService.validate(dynamicExecutionFilter.getBasicPropertiesFilter(),securityContext);
+		}
 	}
 
 
@@ -145,17 +149,37 @@ public class DynamicExecutionService implements Plugin {
 		return dynamicExecutionRepository.listAllDynamicExecutions(dynamicExecutionFilter, securityContext);
 	}
 
-	public <T extends DynamicExecution> T getByIdOrNull(String id, Class<T> c, SecurityContextBase securityContext) {
+	public <T extends Baseclass> List<T> listByIds(Class<T> c, Set<String> ids, SecurityContextBase securityContext) {
+		return dynamicExecutionRepository.listByIds(c, ids, securityContext);
+	}
+
+	public <T extends Baseclass> T getByIdOrNull(String id, Class<T> c, SecurityContextBase securityContext) {
 		return dynamicExecutionRepository.getByIdOrNull(id, c, securityContext);
 	}
 
-	public <T extends DynamicExecution> List<T> listByIds(Set<String> ids, Class<T> c, SecurityContextBase securityContext) {
-		return dynamicExecutionRepository.listByIds(ids, c, securityContext);
+	public <D extends Basic, E extends Baseclass, T extends D> T getByIdOrNull(String id, Class<T> c, SingularAttribute<D, E> baseclassAttribute, SecurityContextBase securityContext) {
+		return dynamicExecutionRepository.getByIdOrNull(id, c, baseclassAttribute, securityContext);
+	}
+
+	public <D extends Basic, E extends Baseclass, T extends D> List<T> listByIds(Class<T> c, Set<String> ids, SingularAttribute<D, E> baseclassAttribute, SecurityContextBase securityContext) {
+		return dynamicExecutionRepository.listByIds(c, ids, baseclassAttribute, securityContext);
+	}
+
+	public <D extends Basic, T extends D> List<T> findByIds(Class<T> c, Set<String> ids, SingularAttribute<D, String> idAttribute) {
+		return dynamicExecutionRepository.findByIds(c, ids, idAttribute);
+	}
+
+	public <T extends Basic> List<T> findByIds(Class<T> c, Set<String> requested) {
+		return dynamicExecutionRepository.findByIds(c, requested);
+	}
+
+	public <T> T findByIdOrNull(Class<T> type, String id) {
+		return dynamicExecutionRepository.findByIdOrNull(type, id);
 	}
 
 	public void validate(DynamicExecutionExampleRequest dynamicExecutionExampleRequest, SecurityContextBase securityContext) {
 		String id = dynamicExecutionExampleRequest.getId();
-		DynamicExecution dynamicExecution = id != null ? getByIdOrNull(id, DynamicExecution.class, securityContext) : null;
+		DynamicExecution dynamicExecution = id != null ? getByIdOrNull(id, DynamicExecution.class, SecuredBasic_.security, securityContext) : null;
 		if (dynamicExecution == null) {
 			throw new HttpClientErrorException(HttpStatus.BAD_REQUEST,"No DynamicExectuion with id " + id);
 		}
@@ -230,7 +254,7 @@ public class DynamicExecutionService implements Plugin {
 
 	public void validate(ExecuteDynamicExecution executeDynamicExecution, SecurityContextBase securityContext) {
 		String dynamicExecutionId=executeDynamicExecution.getDynamicExecutionId();
-		DynamicExecution dynamicExecution=dynamicExecutionId!=null?getByIdOrNull(dynamicExecutionId,DynamicExecution.class,securityContext):null;
+		DynamicExecution dynamicExecution=dynamicExecutionId!=null?getByIdOrNull(dynamicExecutionId,DynamicExecution.class,SecuredBasic_.security,securityContext):null;
 		if(dynamicExecution==null){
 			throw new HttpClientErrorException(HttpStatus.BAD_REQUEST,"no dynamic execution with id "+dynamicExecutionId);
 		}

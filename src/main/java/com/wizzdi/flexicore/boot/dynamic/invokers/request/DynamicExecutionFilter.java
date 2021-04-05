@@ -1,26 +1,19 @@
 package com.wizzdi.flexicore.boot.dynamic.invokers.request;
 
 import com.wizzdi.flexicore.security.request.BaseclassFilter;
+import com.wizzdi.flexicore.security.request.BasicPropertiesFilter;
+import com.wizzdi.flexicore.security.request.PaginationFilter;
 
 import java.util.Set;
 
-public class DynamicExecutionFilter extends BaseclassFilter {
+public class DynamicExecutionFilter extends PaginationFilter {
 
 
-	private String nameLike;
+	private BasicPropertiesFilter basicPropertiesFilter;
 	private Set<String> canonicalNames;
 	private Set<String> methodNames;
 	private Set<String> onlyIds;
 
-
-	public String getNameLike() {
-		return nameLike;
-	}
-
-	public <T extends DynamicExecutionFilter> T setNameLike(String nameLike) {
-		this.nameLike = nameLike;
-		return (T) this;
-	}
 
 	public Set<String> getCanonicalNames() {
 		return canonicalNames;
@@ -46,6 +39,15 @@ public class DynamicExecutionFilter extends BaseclassFilter {
 
 	public <T extends DynamicExecutionFilter> T setOnlyIds(Set<String> onlyIds) {
 		this.onlyIds = onlyIds;
+		return (T) this;
+	}
+
+	public BasicPropertiesFilter getBasicPropertiesFilter() {
+		return basicPropertiesFilter;
+	}
+
+	public <T extends DynamicExecutionFilter> T setBasicPropertiesFilter(BasicPropertiesFilter basicPropertiesFilter) {
+		this.basicPropertiesFilter = basicPropertiesFilter;
 		return (T) this;
 	}
 }

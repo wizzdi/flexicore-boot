@@ -2,9 +2,12 @@ package com.wizzdi.flexicore.boot.dynamic.invokers.controllers;
 
 import com.flexicore.annotations.IOperation;
 import com.flexicore.annotations.OperationsInside;
+import com.flexicore.model.SecuredBasic;
+import com.flexicore.model.SecuredBasic_;
 import com.flexicore.security.SecurityContextBase;
 import com.wizzdi.flexicore.boot.base.interfaces.Plugin;
 import com.wizzdi.flexicore.boot.dynamic.invokers.model.DynamicExecution;
+import com.wizzdi.flexicore.boot.dynamic.invokers.model.DynamicExecution_;
 import com.wizzdi.flexicore.boot.dynamic.invokers.request.*;
 import com.wizzdi.flexicore.boot.dynamic.invokers.service.DynamicExecutionService;
 import com.wizzdi.flexicore.security.response.PaginationResponse;
@@ -48,7 +51,7 @@ public class DynamicExecutionController implements Plugin {
 	@PutMapping("/update")
 	public DynamicExecution update(@RequestBody DynamicExecutionUpdate dynamicExecutionUpdate, @RequestAttribute SecurityContextBase securityContext){
 		String id=dynamicExecutionUpdate.getId();
-		DynamicExecution dynamicExecution=id!=null?dynamicExecutionService.getByIdOrNull(id,DynamicExecution.class,securityContext):null;
+		DynamicExecution dynamicExecution=id!=null?dynamicExecutionService.getByIdOrNull(id,DynamicExecution.class, SecuredBasic_.security,securityContext):null;
 		if(dynamicExecution==null){
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"no Dynamic Execution with id "+id);
 		}
