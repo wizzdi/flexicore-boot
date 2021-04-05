@@ -1,10 +1,19 @@
 package com.flexicore.model;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import com.fasterxml.jackson.databind.annotation.JsonTypeResolver;
+import com.flexicore.data.jsoncontainers.FCTypeResolver;
+
 import javax.persistence.Column;
 import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
 import java.time.OffsetDateTime;
 
+@JsonIdentityInfo(generator = ObjectIdGenerators.UUIDGenerator.class, property = "json-id")
+@JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, property = "json-type", visible = true)
+@JsonTypeResolver(FCTypeResolver.class)
 @MappedSuperclass
 public abstract class Basic {
 
