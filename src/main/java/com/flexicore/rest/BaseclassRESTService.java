@@ -28,6 +28,8 @@ import com.flexicore.service.impl.BaseclassNoSQLService;
 import com.flexicore.service.impl.BaseclassService;
 import com.flexicore.utils.InheritanceUtils;
 import com.wizzdi.flexicore.boot.dynamic.invokers.response.ParameterInfo;
+import com.wizzdi.flexicore.security.data.BasicRepository;
+import com.wizzdi.flexicore.security.data.SecuredBasicRepository;
 import io.swagger.v3.oas.annotations.ExternalDocumentation;
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.Operation;
@@ -42,6 +44,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.util.ClassUtils;
 
 import javax.enterprise.context.RequestScoped;
 import javax.ws.rs.*;
@@ -97,6 +100,7 @@ public class BaseclassRESTService implements RESTService {
     @Autowired
     @Baseclassroot
     private BaseclassRepository repository;
+
 
     @Autowired
     private BaseclassService baseclassService;
@@ -274,13 +278,14 @@ public class BaseclassRESTService implements RESTService {
     @IOperation(access = Access.allow, Name = "softDelete", Description = "soft delete baseclass")
     @Operation(summary = "softDelete", description = "soft delete baseclass")
     public void softDelete(@HeaderParam("authenticationkey") String authenticationkey,
+                           @HeaderParam("type") String type,
                            @PathParam("id") String id,
                            @Context SecurityContext securityContext) {
-        Baseclass baseclass = repository.getByIdOrNull(id, Baseclass.class, null, securityContext);
-        if (baseclass == null) {
-            throw new BadRequestException("could not find baseclass with id: " + id);
-        }
-        baseclassService.softDelete(baseclass, securityContext);
+        SoftDeleteRequest softDeleteRequest = new SoftDeleteRequest()
+                .setId(id)
+                .setType(type);
+        baseclassService.validate(softDeleteRequest,securityContext);
+        baseclassService.softDelete(softDeleteRequest, securityContext);
     }
 
 
