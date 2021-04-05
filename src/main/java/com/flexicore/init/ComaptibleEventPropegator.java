@@ -7,17 +7,20 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
+import java.util.concurrent.atomic.AtomicBoolean;
+
 @Component
 public class ComaptibleEventPropegator {
 
 	@Autowired
 	private ApplicationEventPublisher applicationEventPublisher;
 
-	@Autowired
-	private EventPropagator eventPropagator;
+	private static final AtomicBoolean init=new AtomicBoolean(false);
 
 	@EventListener
 	public void onEvent(PluginsLoadedEvent pluginsLoadedEvent){
-		eventPropagator.handleEvent(new com.flexicore.events.PluginsLoadedEvent(pluginsLoadedEvent.getApplicationContext(),pluginsLoadedEvent.getStartedPlugins()));
+		if(init.compareAndSet(false,true)){
+			applicationEventPublisher.publishEvent(new com.flexicore.events.PluginsLoadedEvent(pluginsLoadedEvent.getApplicationContext(),pluginsLoadedEvent.getStartedPlugins()));
+		}
 	}
 }

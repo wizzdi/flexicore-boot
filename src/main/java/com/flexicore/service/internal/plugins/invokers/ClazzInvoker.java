@@ -11,10 +11,12 @@ import com.flexicore.security.SecurityContext;
 import com.flexicore.service.impl.ClazzService;
 import org.pf4j.Extension;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 @PluginInfo(version = 1)
 @InvokerInfo
 @Extension
+@Component
 public class ClazzInvoker implements ListingInvoker<Clazz, ClazzFilter> {
 
     @Autowired

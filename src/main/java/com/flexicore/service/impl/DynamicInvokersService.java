@@ -14,6 +14,7 @@ import com.flexicore.interfaces.dynamic.Invoker;
 import com.flexicore.model.Baseclass;
 import com.wizzdi.flexicore.file.model.FileResource;
 import com.flexicore.model.Operation;
+import com.flexicore.model.SecuredBasic_;
 import com.flexicore.model.dynamic.*;
 import com.flexicore.request.*;
 import com.flexicore.response.*;
@@ -84,7 +85,7 @@ public class DynamicInvokersService implements ServicePlugin {
     }
 
     public <T extends DynamicExecution> T getDynamicExectionByIdOrNull(String id, Class<T> c, SecurityContext securityContext) {
-        return dynamicExecutionService.getByIdOrNull(id, c, securityContext);
+        return dynamicExecutionService.getByIdOrNull(id, c, SecuredBasic_.security, securityContext);
     }
 
     

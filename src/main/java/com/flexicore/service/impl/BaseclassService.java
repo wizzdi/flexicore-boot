@@ -29,6 +29,8 @@ import com.wizzdi.flexicore.boot.dynamic.invokers.response.ParameterInfo;
 import com.wizzdi.flexicore.boot.dynamic.invokers.service.DynamicExecutionService;
 import com.wizzdi.flexicore.boot.dynamic.invokers.service.DynamicInvokerService;
 import com.wizzdi.flexicore.file.model.FileResource;
+import com.wizzdi.flexicore.security.data.BasicRepository;
+import com.wizzdi.flexicore.security.data.SecuredBasicRepository;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 import org.apache.commons.io.ByteOrderMark;
@@ -70,6 +72,11 @@ public class BaseclassService implements com.flexicore.service.BaseclassService 
     @Autowired
     @Baseclassroot
     private BaseclassRepository baseclassRepository;
+
+    @Autowired
+    private BasicRepository basicRepository;
+    @Autowired
+    private SecuredBasicRepository securedBasicRepository;
 
     @Autowired
     private BaselinkRepository baselinkRepository;
@@ -291,6 +298,42 @@ public class BaseclassService implements com.flexicore.service.BaseclassService 
     @Override
     public List<BaseclassCount> getBaseclassCount(BaseclassCountRequest baseclassCountRequest, SecurityContext securityContext) {
         return baseclassRepository.getBaseclassCount(baseclassCountRequest, securityContext);
+    }
+
+    public void validate(SoftDeleteRequest softDeleteRequest, SecurityContext securityContext) {
+        String type=softDeleteRequest.getType();
+        String id=softDeleteRequest.getId();
+        if(type==null){
+            type=Baseclass.class.getCanonicalName();
+        }
+        Class<? extends Basic> basicType;
+        try {
+            Class<?> c = Class.forName(type);
+            if(!Basic.class.isAssignableFrom(c)){
+                throw new BadRequestException("Type "+type +" is not assignable from Basic");
+            }
+            basicType= (Class<? extends Basic>) c;
+        }
+        catch (Throwable e){
+            throw new BadRequestException("No Type "+type);
+        }
+        softDeleteRequest.setClazz(basicType);
+        Basic basic;
+        if(SecuredBasic.class.isAssignableFrom(basicType)){
+            basic=securedBasicRepository.getByIdOrNull(id,(Class<? extends SecuredBasic>)basicType,SecuredBasic_.security,securityContext);
+        }
+        else{
+            if(Baseclass.class.isAssignableFrom(basicType)){
+                basic=baseclassRepository.getByIdOrNull(id,Baseclass.class,null,securityContext);
+            }
+            else{
+                basic=basicRepository.findByIdOrNull(basicType,id);
+            }
+        }
+        if (basic == null) {
+            throw new BadRequestException("could not find basic with id: " + id);
+        }
+        softDeleteRequest.setBasic(basic);
     }
 
     public enum LinkSide {
@@ -558,8 +601,14 @@ public class BaseclassService implements com.flexicore.service.BaseclassService 
 
     @Override
     public void softDelete(Baseclass baseclass, SecurityContext securityContext) {
-        baseclass.setSoftDelete(true);
-        baseclassRepository.merge(baseclass);
+       softDelete(new SoftDeleteRequest().setBasic(baseclass),securityContext);
+
+    }
+
+    public void softDelete(SoftDeleteRequest softDeleteRequest, SecurityContext securityContext) {
+        Basic basic=softDeleteRequest.getBasic();
+        basic.setSoftDelete(true);
+        baseclassRepository.merge(basic);
 
     }
 
