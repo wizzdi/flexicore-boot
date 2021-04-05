@@ -11,6 +11,7 @@ import com.flexicore.annotations.AnnotatedClazz;
 import com.flexicore.annotations.FullTextSearch;
 import com.flexicore.annotations.sync.SyncOption;
 import com.flexicore.security.SecurityContext;
+import com.wizzdi.flexicore.file.model.FileResource;
 
 
 import javax.persistence.Entity;
