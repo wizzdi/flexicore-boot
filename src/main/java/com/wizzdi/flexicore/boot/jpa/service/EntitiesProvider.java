@@ -4,6 +4,7 @@ import org.reflections.Reflections;
 import org.reflections.util.ConfigurationBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
@@ -46,8 +47,9 @@ public class EntitiesProvider {
 	@Bean
 	@Scope(value = ConfigurableBeanFactory.SCOPE_SINGLETON)
 	@Primary
-	public EntitiesHolder getEntities() {
+	public Reflections reflections(){
 		ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+
 		List<URL> entitiesJarsUrls;
 		entitiesJarsUrls = getEntitiesJarsUrls();
 		Map<String, Object> beansWithAnnotation = context.getBeansWithAnnotation(SpringBootApplication.class);
@@ -55,12 +57,21 @@ public class EntitiesProvider {
 		ConfigurationBuilder configuration = ConfigurationBuilder.build()
 				.addClassLoader(classLoader)
 				.setUrls(entitiesJarsUrls);
-		Reflections reflections = new Reflections(configuration);
+		return new Reflections(configuration);
+	}
+
+	@Bean
+	@Scope(value = ConfigurableBeanFactory.SCOPE_SINGLETON)
+	@Primary
+	public EntitiesHolder getEntities(Reflections reflections) {
+
 		Set<Class<?>> typesAnnotatedWith = reflections.getTypesAnnotatedWith(Entity.class);
 		Set<Class<?>> converters = new HashSet<>(reflections.getTypesAnnotatedWith(Converter.class));
 		converters.addAll(typesAnnotatedWith);
 		return new EntitiesHolder(converters);
 	}
+
+
 
 
 	private List<URL> getEntitiesJarsUrls() {
@@ -82,4 +93,5 @@ public class EntitiesProvider {
 		}
 		return null;
 	}
+
 }
