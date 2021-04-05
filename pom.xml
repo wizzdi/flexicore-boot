@@ -4,7 +4,7 @@
 
     <groupId>com.wizzdi</groupId>
     <artifactId>flexicore-base-model</artifactId>
-    <version>1.0.6-SNAPSHOT</version>
+    <version>1.0.6</version>
     <name>FlexiCore base model</name>
     <description>flexicore base model</description>
     <url>https://wizzdi.com</url>
@@ -55,7 +55,7 @@
         <connection>scm:git:git://wizzdi/flexicore-base-model.git</connection>
         <developerConnection>scm:git:git@github.com:wizzdi/flexicore-base-model.git</developerConnection>
         <url>https://github.com/wizzdi/flexicore-base-model</url>
-        <tag>flexicore-base-model-${version}</tag>
+        <tag>flexicore-base-model-1.0.6</tag>
     </scm>
     <dependencyManagement>
         <dependencies>
