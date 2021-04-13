@@ -1110,6 +1110,10 @@ public class BaseclassRepository implements com.flexicore.data.BaseclassReposito
     }
     private static final Map<String, Boolean> freeTextSuportMap = new ConcurrentHashMap<>();
 
+    static{
+        addFreeTextSupport(Role.class);
+    }
+
     private Object invoke(Baseclass b, Method f) {
         try {
             return f.invoke(b);
@@ -1117,6 +1121,10 @@ public class BaseclassRepository implements com.flexicore.data.BaseclassReposito
             logger.error("unable to invoke method",e);
         }
         return null;
+    }
+
+    public static void addFreeTextSupport(Class<?> type){
+        freeTextSuportMap.put(type.getCanonicalName(), true);
     }
 
     private boolean isFreeTextSupport(Class<? extends Baseclass> aClass) {
