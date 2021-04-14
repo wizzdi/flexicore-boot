@@ -14,6 +14,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.ws.rs.BadRequestException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -46,11 +47,12 @@ public class BaseclassNewService implements com.flexicore.service.BaseclassNewSe
 
     /**
      * keeping compatibility with code gen
+     *
      * @param filteringInformationHolder filteringinformationholder
-     * @param securityContext security context
+     * @param securityContext            security context
      */
     @Override
-    public void validateFilter(FilteringInformationHolder filteringInformationHolder, SecurityContext securityContext){
+    public void validateFilter(FilteringInformationHolder filteringInformationHolder, SecurityContext securityContext) {
 
     }
 
@@ -89,26 +91,36 @@ public class BaseclassNewService implements com.flexicore.service.BaseclassNewSe
 
     }
 
-    public boolean updateDynamic(Map<String,Object> newVals,Map<String,Object> current){
-        boolean update=false;
+    /**
+     * returns a set of merged values from two maps if there was an update otherwise null
+     * @param newVals incoming values
+     * @param current existing values
+     * @return merged map or null
+     */
+    public Map<String, Object> updateDynamic(Map<String, Object> newVals, Map<String, Object> current) {
+        boolean update = false;
         if (newVals != null && !newVals.isEmpty()) {
             if (current == null) {
-                update = true;
+                return newVals;
             } else {
+                Map<String, Object> copy = new HashMap<>(newVals);
                 for (Map.Entry<String, Object> entry : newVals.entrySet()) {
                     String key = entry.getKey();
                     Object newVal = entry.getValue();
                     Object val = current.get(key);
-                    if (newVal!=null&&!newVal.equals(val)) {
-                        newVals.put(key, newVal);
+                    if (newVal != null && !newVal.equals(val)) {
+                        copy.put(key, newVal);
                         update = true;
                     }
+                }
+                if (update) {
+                    return copy;
                 }
             }
 
 
         }
-        return update;
+        return null;
     }
 
     @Override
