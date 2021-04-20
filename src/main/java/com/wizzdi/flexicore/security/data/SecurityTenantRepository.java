@@ -41,7 +41,7 @@ public class SecurityTenantRepository implements Plugin {
 
 	}
 
-	public <T extends SecurityTenant> void addTenantPredicates(SecurityTenantFilter tenantFilter, CriteriaBuilder cb, CommonAbstractCriteria q, Path<T> r, List<Predicate> predicates, SecurityContextBase securityContext) {
+	public <T extends SecurityTenant> void addTenantPredicates(SecurityTenantFilter tenantFilter, CriteriaBuilder cb, CommonAbstractCriteria q, From<?,T> r, List<Predicate> predicates, SecurityContextBase securityContext) {
 		securityEntityRepository.addSecurityEntityPredicates(tenantFilter,cb,q,r,predicates,securityContext);
 	}
 

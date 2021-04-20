@@ -45,7 +45,7 @@ public class PermissionGroupRepository implements Plugin {
 
 	}
 
-	public <T extends PermissionGroup> void addPermissionGroupPredicates(PermissionGroupFilter permissionGroupFilter, CriteriaBuilder cb, CommonAbstractCriteria q, Path<T> r, List<Predicate> predicates, SecurityContextBase securityContext) {
+	public <T extends PermissionGroup> void addPermissionGroupPredicates(PermissionGroupFilter permissionGroupFilter, CriteriaBuilder cb, CommonAbstractCriteria q, From<?,T> r, List<Predicate> predicates, SecurityContextBase securityContext) {
 		securityEntityRepository.addSecurityEntityPredicates(permissionGroupFilter,cb,q,r,predicates,securityContext);
 	}
 

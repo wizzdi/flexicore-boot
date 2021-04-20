@@ -43,7 +43,7 @@ public class ClazzRepository implements Plugin {
 
 	}
 
-	public <T extends Clazz> void addClazzPredicates(ClazzFilter ClazzFilter, CriteriaBuilder cb, CommonAbstractCriteria q, Path<T> r, List<Predicate> predicates, SecurityContextBase securityContext) {
+	public <T extends Clazz> void addClazzPredicates(ClazzFilter ClazzFilter, CriteriaBuilder cb, CommonAbstractCriteria q, From<?,T> r, List<Predicate> predicates, SecurityContextBase securityContext) {
 		securityEntityRepository.addSecurityEntityPredicates(ClazzFilter,cb,q,r,predicates,securityContext);
 	}
 

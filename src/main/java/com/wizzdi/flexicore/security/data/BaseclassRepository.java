@@ -43,6 +43,7 @@ public class BaseclassRepository implements Plugin {
 		return BasicRepository.addPagination(baseclassFilter, q);
 	}
 
+
 	public <T extends Baseclass> void addBaseclassPredicates(CriteriaBuilder cb, CommonAbstractCriteria q, Path<T> r, List<Predicate> predicates, SecurityContextBase securityContext) {
 		if (securityContext == null) {
 			return;

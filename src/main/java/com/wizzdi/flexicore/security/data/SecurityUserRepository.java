@@ -42,7 +42,7 @@ public class SecurityUserRepository implements Plugin {
 
 	}
 
-	public <T extends SecurityUser> void addSecurityUserPredicates(SecurityUserFilter securityUserFilter, CriteriaBuilder cb, CommonAbstractCriteria q, Path<T> r, List<Predicate> predicates, SecurityContextBase securityContext) {
+	public <T extends SecurityUser> void addSecurityUserPredicates(SecurityUserFilter securityUserFilter, CriteriaBuilder cb, CommonAbstractCriteria q, From<?,T> r, List<Predicate> predicates, SecurityContextBase securityContext) {
 		securityEntityRepository.addSecurityEntityPredicates(securityUserFilter,cb,q,r,predicates,securityContext);
 	}
 
