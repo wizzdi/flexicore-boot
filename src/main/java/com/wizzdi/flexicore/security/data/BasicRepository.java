@@ -123,6 +123,9 @@ public class BasicRepository implements Plugin {
 			if (updateDate) {
 				base1.setUpdateDate(now);
 			}
+			if(created){
+				base1.setCreationDate(now);
+			}
 			if (logger.isDebugEnabled()) {
 				logger.debug("merging " + base1.getId() + " updateDate flag is " + updateDate + " update date " + base1.getUpdateDate());
 			}
@@ -157,6 +160,9 @@ public class BasicRepository implements Plugin {
 				boolean created = baseclass.getUpdateDate() == null;
 				if (updatedate) {
 					baseclass.setUpdateDate(now);
+				}
+				if(created){
+					baseclass.setCreationDate(now);
 				}
 				if (logger.isDebugEnabled()) {
 					logger.debug("merging " + baseclass.getId() + " updateDate flag is " + updatedate + " update date is " + baseclass.getUpdateDate());
