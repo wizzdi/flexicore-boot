@@ -8,14 +8,14 @@ import java.util.List;
 public class PaginationResponse<T> {
 
 	private List<T> list;
-	private long totalRecords;
-	private long totalPages;
-	private long startPage;
-	private long endPage;
+	private Long totalRecords;
+	private Long totalPages;
+	private Long startPage;
+	private Long endPage;
 
 	public PaginationResponse(List<T> list, Integer pageSize, long totalRecords) {
 		this.list = list;
-		this.startPage = 0;
+		this.startPage = 0L;
 		this.totalRecords = totalRecords;
 		this.totalPages = pageSize != null ? 1 + totalRecords / pageSize : totalRecords;
 		this.endPage = totalPages;
@@ -38,38 +38,38 @@ public class PaginationResponse<T> {
 		return this;
 	}
 
-	public long getTotalRecords() {
+	public Long getTotalRecords() {
 		return totalRecords;
 	}
 
-	public PaginationResponse<T> setTotalRecords(long totalRecords) {
+	public PaginationResponse<T> setTotalRecords(Long totalRecords) {
 		this.totalRecords = totalRecords;
 		return this;
 	}
 
-	public long getTotalPages() {
+	public Long getTotalPages() {
 		return totalPages;
 	}
 
-	public PaginationResponse<T> setTotalPages(long totalPages) {
+	public PaginationResponse<T> setTotalPages(Long totalPages) {
 		this.totalPages = totalPages;
 		return this;
 	}
 
-	public long getStartPage() {
+	public Long getStartPage() {
 		return startPage;
 	}
 
-	public PaginationResponse<T> setStartPage(long startPage) {
+	public PaginationResponse<T> setStartPage(Long startPage) {
 		this.startPage = startPage;
 		return this;
 	}
 
-	public long getEndPage() {
+	public Long getEndPage() {
 		return endPage;
 	}
 
-	public PaginationResponse<T> setEndPage(long endPage) {
+	public PaginationResponse<T> setEndPage(Long endPage) {
 		this.endPage = endPage;
 		return this;
 	}
