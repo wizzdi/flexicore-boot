@@ -17,8 +17,8 @@ public class PaginationResponse<T> {
 		this.list = list;
 		this.startPage = 0L;
 		this.totalRecords = totalRecords;
-		this.totalPages = pageSize != null ? 1 + totalRecords / pageSize : totalRecords;
-		this.endPage = totalPages;
+		this.totalPages = pageSize != null ? (long)Math.ceil(totalRecords / (double)pageSize) : totalRecords;
+		this.endPage = totalPages-1;
 	}
 
 	public PaginationResponse(List<T> list, PaginationFilter baseclassFilter, long totalRecords) {
