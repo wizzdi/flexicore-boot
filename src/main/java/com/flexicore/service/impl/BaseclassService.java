@@ -384,7 +384,17 @@ public class BaseclassService implements com.flexicore.service.BaseclassService 
 
     @Override
     public <T extends Baselink, E extends Baseclass> PaginationResponse<E> getDisconnected(GetDisconnected getDisconnected, SecurityContext securityContext) {
-        Class<E> type = (Class<E>) getDisconnected.getWantedClass();
+        Class<?> rawType = getDisconnected.getWantedClass();
+        if(!(Baseclass.class.isAssignableFrom(rawType))){
+            Clazz clazz=Baseclass.getClazzByName(rawType.getCanonicalName());
+            if(clazz==null){
+                throw new BadRequestException("Could not find clazz for non baseclass type "+rawType);
+            }
+            rawType=Baseclass.class;
+            getDisconnected.setWantedClass(rawType);
+            getDisconnected.setClazzIds(Collections.singletonList(new ClazzIdFiltering().setId(clazz.getId())));
+        }
+        Class<E> type = (Class<E>) rawType;
         Class<T> linkclass = (Class<T>) getDisconnected.getBaselinkFilter().getLinkClass();
         Boolean right = onRight(type, linkclass);
         if (right == null) {
@@ -398,7 +408,17 @@ public class BaseclassService implements com.flexicore.service.BaseclassService 
 
     @Override
     public <T extends Baselink, E extends Baseclass> PaginationResponse<E> getConnected(GetConnected getConnected, SecurityContext securityContext) {
-        Class<E> type = (Class<E>) getConnected.getWantedClass();
+        Class<?> rawType = getConnected.getWantedClass();
+        if(!(Baseclass.class.isAssignableFrom(rawType))){
+            Clazz clazz=Baseclass.getClazzByName(rawType.getCanonicalName());
+            if(clazz==null){
+                throw new BadRequestException("Could not find clazz for non baseclass type "+rawType);
+            }
+            rawType=Baseclass.class;
+            getConnected.setWantedClass(rawType);
+            getConnected.setClazzIds(Collections.singletonList(new ClazzIdFiltering().setId(clazz.getId())));
+        }
+        Class<E> type = (Class<E>) rawType;
         Class<T> linkclass = (Class<T>) getConnected.getBaselinkFilter().getLinkClass();
         Boolean right = onRight(type, linkclass);
         if (right == null) {

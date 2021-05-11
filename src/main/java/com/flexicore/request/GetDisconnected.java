@@ -7,7 +7,7 @@ import com.flexicore.model.FilteringInformationHolder;
 public class GetDisconnected extends FilteringInformationHolder {
     private String wantedClassName;
     @JsonIgnore
-    private Class<? extends Baseclass> wantedClass;
+    private Class<?> wantedClass;
     private BaselinkFilter baselinkFilter;
 
     public BaselinkFilter getBaselinkFilter() {
@@ -29,11 +29,11 @@ public class GetDisconnected extends FilteringInformationHolder {
     }
 
     @JsonIgnore
-    public Class<? extends Baseclass> getWantedClass() {
+    public Class<?> getWantedClass() {
         return wantedClass;
     }
 
-    public <T extends GetDisconnected> T setWantedClass(Class<? extends Baseclass> wantedClass) {
+    public <T extends GetDisconnected> T setWantedClass(Class<?> wantedClass) {
         this.wantedClass = wantedClass;
         return (T) this;
     }

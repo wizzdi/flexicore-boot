@@ -41,10 +41,10 @@ public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionH
 			body=new ExceptionHolder(status.value(),-1,message);
 		}
 		if(status.equals(HttpStatus.UNAUTHORIZED)){
-			logger.warn(ex);
+			logger.warn("UNAUTHORIZED",ex);
 		}
 		else{
-			logger.error(ex);
+			logger.error("exception:",ex);
 		}
 		return handleExceptionInternal(ex,body,new HttpHeaders(),status,request);
 	}
