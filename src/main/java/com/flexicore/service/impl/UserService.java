@@ -64,6 +64,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.ws.rs.BadRequestException;
 import javax.ws.rs.NotAuthorizedException;
@@ -900,5 +901,10 @@ public class UserService implements com.flexicore.service.UserService {
             tenantRepository.merge(tenantToUser);
         }
         return tenantToUser;
+    }
+
+    @Transactional
+    public void merge(Object base) {
+        userrepository.merge(base);
     }
 }

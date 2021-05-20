@@ -40,11 +40,11 @@ public class OperationBuilderImpl implements OperationBuilder, Plugin {
 			securityOperation=operationService.createOperationNoMerge(securityOperationCreate,securityContextBase);
 			securityOperation.setId(securityOperationCreate.getIdForCreate());
 			existing.put(securityOperation.getId(),securityOperation);
-			toMerge.add(securityOperation);
+			operationService.merge(securityOperation);
 		}
 		else{
 			if(operationService.updateOperationNoMerge(securityOperationCreate,securityOperation)){
-				toMerge.add(securityOperation);
+				operationService.merge(securityOperation);
 			}
 		}
 		Class<?>[] relatedClasses = operationScanContext.getRelatedClasses();
@@ -59,7 +59,7 @@ public class OperationBuilderImpl implements OperationBuilder, Plugin {
 							.setClazz(clazz)
 							.setSecurityOperation(securityOperation);
 					existingOperationToClazz = operationToClazzService.createOperationToClazzNoMerge(operationToClazzCreate, securityContextBase);
-					toMerge.add(existingOperationToClazz);
+					operationToClazzService.merge(existingOperationToClazz);
 					operationClazzes.put(clazzId, existingOperationToClazz);
 				}
 			}

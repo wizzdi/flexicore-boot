@@ -7,14 +7,8 @@
 package com.flexicore.init;
 
 import com.flexicore.interfaces.ServicePlugin;
-import com.flexicore.model.Clazz;
-import com.flexicore.model.Tenant;
-import com.flexicore.request.ClazzFilter;
-import com.flexicore.request.TenantFilter;
-import com.flexicore.service.BaseclassService;
 import com.flexicore.service.impl.DefaultObjectsProvider;
 import com.wizzdi.flexicore.boot.base.events.PluginsLoadedEvent;
-import com.wizzdi.flexicore.security.service.ClassScannerService;
 import org.pf4j.Extension;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,7 +19,6 @@ import org.springframework.context.event.EventListener;
 
 import java.io.File;
 import java.util.Arrays;
-import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -82,7 +75,6 @@ public class Initializator implements ServicePlugin {
             try {
 
                 defaultObjectsProvider.initializeInvokers();
-                registerFilterClasses();
 
 
 
@@ -96,12 +88,6 @@ public class Initializator implements ServicePlugin {
     }
 
 
-    private void registerFilterClasses() {
-        BaseclassService.registerFilterClass(TenantFilter.class, Tenant.class);
-        BaseclassService.registerFilterClass(ClazzFilter.class, Clazz.class);
-
-
-    }
 
 
     private void createFolderStructure() {
