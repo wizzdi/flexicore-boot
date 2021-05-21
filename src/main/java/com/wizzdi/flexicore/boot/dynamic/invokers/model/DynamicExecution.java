@@ -16,7 +16,7 @@ public class DynamicExecution extends SecuredBasic {
     public DynamicExecution() {
     }
 
-    @OneToMany(targetEntity = ServiceCanonicalName.class,mappedBy = "dynamicExecution")
+    @OneToMany(targetEntity = ServiceCanonicalName.class,mappedBy = "dynamicExecution",fetch = FetchType.EAGER)
 
     private List<ServiceCanonicalName> serviceCanonicalNames=new ArrayList<>();
     private String methodName;
@@ -30,7 +30,7 @@ public class DynamicExecution extends SecuredBasic {
     private OffsetDateTime lastExecuted;
 
 
-    @OneToMany(targetEntity = ServiceCanonicalName.class,mappedBy = "dynamicExecution")
+    @OneToMany(targetEntity = ServiceCanonicalName.class,mappedBy = "dynamicExecution",fetch = FetchType.EAGER)
     public List<ServiceCanonicalName> getServiceCanonicalNames() {
         return serviceCanonicalNames;
     }
@@ -79,7 +79,6 @@ public class DynamicExecution extends SecuredBasic {
                 "id='" + id + '\'' +
                 ", name='" + name + '\'' +
                 ", description='" + description + '\'' +
-                ", serviceCanonicalNames=" + serviceCanonicalNames +
                 ", methodName='" + methodName + '\'' +
                 ", body='" + executionParametersHolder + '\'' +
                 ", lastExecuted=" + lastExecuted +

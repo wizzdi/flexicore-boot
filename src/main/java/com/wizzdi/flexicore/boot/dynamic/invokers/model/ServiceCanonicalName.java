@@ -2,6 +2,7 @@ package com.wizzdi.flexicore.boot.dynamic.invokers.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
@@ -12,7 +13,7 @@ public class ServiceCanonicalName {
     @Id
     private String id;
 
-    @ManyToOne(targetEntity = DynamicExecution.class)
+    @ManyToOne(targetEntity = DynamicExecution.class,cascade = CascadeType.MERGE)
     @JsonIgnore
     private DynamicExecution dynamicExecution;
 
@@ -37,7 +38,7 @@ public class ServiceCanonicalName {
         return this;
     }
 
-    @ManyToOne(targetEntity = DynamicExecution.class)
+    @ManyToOne(targetEntity = DynamicExecution.class,cascade = CascadeType.MERGE)
     @JsonIgnore
     public DynamicExecution getDynamicExecution() {
         return dynamicExecution;
