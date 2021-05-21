@@ -18,9 +18,7 @@ import java.util.List;
 
 //the table name 'user' isn't allowed in Postgresql
 @SuppressWarnings("serial")
-@Table(name = "UserTable", indexes = {
-        @Index(name = "user_email_ix", columnList = "email")
-})
+@Table(name = "UserTable")
 @Entity
 
 public class SecurityUser extends SecurityEntity {
