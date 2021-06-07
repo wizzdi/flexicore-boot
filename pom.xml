@@ -1,12 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.wizzdi</groupId>
     <artifactId>dynamic-properties-database-converter</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
+    <version>1.0.0</version>
     <name>Dynamic properties database converter</name>
     <description>Dynamic properties database converter</description>
     <url>https://wizzdi.com</url>
@@ -50,7 +48,7 @@
         <connection>scm:git:git://wizzdi/dynamic-properties-database-converter.git</connection>
         <developerConnection>scm:git:git@github.com:wizzdi/dynamic-properties-database-converter.git</developerConnection>
         <url>https://github.com/wizzdi/dynamic-properties-database-converter</url>
-        <tag>dynamic-properties-database-converter-${version}</tag>
+        <tag>dynamic-properties-database-converter-1.0.0</tag>
     </scm>
 
 
