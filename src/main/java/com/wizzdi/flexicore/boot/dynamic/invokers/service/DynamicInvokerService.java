@@ -4,12 +4,13 @@ import com.flexicore.model.SecurityOperation;
 import com.flexicore.security.SecurityContextBase;
 import com.wizzdi.flexicore.boot.base.interfaces.Plugin;
 import com.wizzdi.flexicore.boot.dynamic.invokers.interfaces.ExecutionContext;
-import com.wizzdi.flexicore.boot.dynamic.invokers.request.DynamicInvokerFilter;
-import com.wizzdi.flexicore.boot.dynamic.invokers.request.ExecuteInvokerRequest;
-import com.wizzdi.flexicore.boot.dynamic.invokers.request.ExecuteInvokerResponse;
-import com.wizzdi.flexicore.boot.dynamic.invokers.request.ExecuteInvokersResponse;
+import com.wizzdi.flexicore.boot.dynamic.invokers.request.*;
+import com.wizzdi.flexicore.boot.dynamic.invokers.response.InvokerHolder;
 import com.wizzdi.flexicore.boot.dynamic.invokers.response.InvokerInfo;
+import com.wizzdi.flexicore.boot.dynamic.invokers.response.InvokerMethodHolder;
+import com.wizzdi.flexicore.boot.dynamic.invokers.response.InvokerMethodInfo;
 import com.wizzdi.flexicore.security.interfaces.OperationsMethodScanner;
+import com.wizzdi.flexicore.security.request.PaginationFilter;
 import com.wizzdi.flexicore.security.response.OperationScanContext;
 import com.wizzdi.flexicore.security.response.PaginationResponse;
 import com.wizzdi.flexicore.security.service.OperationValidatorService;
@@ -36,156 +37,201 @@ import java.util.stream.Stream;
 @Service
 public class DynamicInvokerService implements Plugin {
 
-	private static final Logger logger= LoggerFactory.getLogger(DynamicInvokerService.class);
+    private static final Logger logger = LoggerFactory.getLogger(DynamicInvokerService.class);
 
-	@Autowired
-	@Lazy
-	private List<InvokerInfo> invokerInfos;
+    @Autowired
+    @Lazy
+    private List<InvokerInfo> invokerInfos;
 
-	@Autowired
-	private PluginManager pluginManager;
-	@Autowired
-	private OperationValidatorService securityService;
-	@Autowired
-	private OperationsMethodScanner operationsMethodScanner;
-	@Autowired
-	private SecurityOperationService securityOperationService;
-
-
+    @Autowired
+    private PluginManager pluginManager;
+    @Autowired
+    private OperationValidatorService securityService;
+    @Autowired
+    private OperationsMethodScanner operationsMethodScanner;
+    @Autowired
+    private SecurityOperationService securityOperationService;
 
 
-	public void validate(DynamicInvokerFilter dynamicInvokerFilter, SecurityContextBase securityContext) {
+    public void validate(DynamicInvokerFilter dynamicInvokerFilter, SecurityContextBase securityContext) {
 
-	}
+    }
 
-	public PaginationResponse<InvokerInfo> getAllDynamicInvokers(DynamicInvokerFilter dynamicInvokerFilter, SecurityContextBase securityContext) {
-		List<InvokerInfo> list = listAllDynamicInvokers(dynamicInvokerFilter,securityContext);
-		long count= countAllDynamicInvokers(dynamicInvokerFilter,securityContext);
-		return new PaginationResponse<>(list,dynamicInvokerFilter.getPageSize(),count);
-	}
+    public void validate(DynamicInvokerMethodFilter dynamicInvokerMethodFilter, SecurityContextBase securityContext) {
+        if(dynamicInvokerMethodFilter.getDynamicInvokerFilter()!=null){
+            validate(dynamicInvokerMethodFilter.getDynamicInvokerFilter(),securityContext);
+        }
+    }
 
-	private long countAllDynamicInvokers(DynamicInvokerFilter dynamicInvokerFilter,SecurityContextBase securityContextBase) {
-		return invokerInfos.stream().filter(f -> filter(f, dynamicInvokerFilter)).count();
-	}
+    public PaginationResponse<InvokerInfo> getAllDynamicInvokers(DynamicInvokerFilter dynamicInvokerFilter, SecurityContextBase securityContext) {
+        List<InvokerInfo> list = listAllDynamicInvokers(dynamicInvokerFilter, securityContext);
+        long count = countAllDynamicInvokers(dynamicInvokerFilter, securityContext);
+        return new PaginationResponse<>(list, dynamicInvokerFilter.getPageSize(), count);
+    }
 
-	public List<InvokerInfo> listAllDynamicInvokers(DynamicInvokerFilter dynamicInvokerFilter,SecurityContextBase securityContextBase) {
-		return paginate(invokerInfos.stream().filter(f -> filter(f, dynamicInvokerFilter)), dynamicInvokerFilter).collect(Collectors.toList());
-	}
+    private long countAllDynamicInvokers(DynamicInvokerFilter dynamicInvokerFilter, SecurityContextBase securityContextBase) {
+        return invokerInfos.stream().filter(f -> filter(f, dynamicInvokerFilter)).count();
+    }
 
-	private Stream<InvokerInfo> paginate(Stream<InvokerInfo> invokerInfoStream,DynamicInvokerFilter dynamicInvokerFilter) {
-		if(dynamicInvokerFilter.getCurrentPage()!=null&&dynamicInvokerFilter.getCurrentPage()>-1&&dynamicInvokerFilter.getPageSize()!=null&&dynamicInvokerFilter.getPageSize()>0){
-			return invokerInfoStream.skip((long) dynamicInvokerFilter.getPageSize() *dynamicInvokerFilter.getCurrentPage()).limit(dynamicInvokerFilter.getPageSize());
-		}
-		return invokerInfoStream;
-	}
+    public List<InvokerInfo> listAllDynamicInvokers(DynamicInvokerFilter dynamicInvokerFilter, SecurityContextBase securityContextBase) {
+        return paginate(invokerInfos.stream().filter(f -> filter(f, dynamicInvokerFilter)), dynamicInvokerFilter).collect(Collectors.toList());
+    }
 
-	private boolean filter(InvokerInfo f, DynamicInvokerFilter dynamicInvokerFilter) {
-		boolean pred=true;
-		if(dynamicInvokerFilter.getNameLike()!=null){
-			pred=pred&&(f.getDisplayName().contains(dynamicInvokerFilter.getNameLike()) ||f.getDescription().contains(dynamicInvokerFilter.getNameLike()) );
-		}
-		if(dynamicInvokerFilter.getMethodNameLike()!=null){
-			pred=pred&&f.getMethods().stream().map(e->e.getName()).anyMatch(e->e.contains(dynamicInvokerFilter.getMethodNameLike()));
-		}
-		if(dynamicInvokerFilter.getInvokerTypes()!=null&&!dynamicInvokerFilter.getInvokerTypes().isEmpty()){
-			pred=pred&&dynamicInvokerFilter.getInvokerTypes().contains(f.getName().getCanonicalName());
-		}
+    private <T> Stream<T> paginate(Stream<T> stream, PaginationFilter paginationFilter) {
+        if (paginationFilter.getCurrentPage() != null && paginationFilter.getCurrentPage() > -1 && paginationFilter.getPageSize() != null && paginationFilter.getPageSize() > 0) {
+            return stream.skip((long) paginationFilter.getPageSize() * paginationFilter.getCurrentPage()).limit(paginationFilter.getPageSize());
+        }
+        return stream;
+    }
 
-
-		return pred;
-	}
-
-	public ExecuteInvokersResponse executeInvoker(ExecuteInvokerRequest executeInvokerRequest, SecurityContextBase securityContext) {
-		List<? extends Plugin> invokers = getInvokers(executeInvokerRequest.getInvokerNames());
-
-		List<ExecuteInvokerResponse<?>> responses = new ArrayList<>();
-		Object executionParametersHolder = executeInvokerRequest.getExecutionParametersHolder();
-		ExecutionContext executionContext = executeInvokerRequest.getExecutionContext();
-
-		for (Object invoker : invokers) {
-			Class<?> clazz = ClassUtils.getUserClass(invoker.getClass());
-			String invokerName=clazz.getCanonicalName();
-			try {
+    private boolean filter(InvokerInfo f, DynamicInvokerFilter dynamicInvokerFilter) {
+        boolean pred = true;
+        if (dynamicInvokerFilter.getNameLike() != null) {
+            pred = pred && (f.getDisplayName().contains(dynamicInvokerFilter.getNameLike()) || f.getDescription().contains(dynamicInvokerFilter.getNameLike()));
+        }
+        if (dynamicInvokerFilter.getMethodNameLike() != null) {
+            pred = pred && f.getMethods().stream().map(e -> e.getName()).anyMatch(e -> e.contains(dynamicInvokerFilter.getMethodNameLike()));
+        }
+        if (dynamicInvokerFilter.getInvokerTypes() != null && !dynamicInvokerFilter.getInvokerTypes().isEmpty()) {
+            pred = pred && dynamicInvokerFilter.getInvokerTypes().contains(f.getName().getCanonicalName());
+        }
 
 
-				Method[] methods = clazz.getDeclaredMethods();
-				for (Method method : methods) {
-					if (method.isBridge()) {
-						continue;
-					}
-					Class<?>[] parameterTypes = method.getParameterTypes();
+        return pred;
+    }
 
-					if (method.getName().equals(executeInvokerRequest.getInvokerMethodName()) ) {
-						int bodyIndex=getParameterIndex(parameterTypes,executeInvokerRequest.getExecutionParametersHolder().getClass());
-						if(bodyIndex>-1){
-							OperationScanContext operationScanContext = operationsMethodScanner.scanOperationOnMethod(method);
-							SecurityOperation securityOperation=operationScanContext!=null?securityOperationService.getByIdOrNull(operationScanContext.getSecurityOperationCreate().getIdForCreate(),SecurityOperation.class,null):null;
-							SecurityOperation original = securityContext.getOperation();
-							try {
-								if (securityOperation != null) {
-									securityContext.setOperation(securityOperation);
-								}
-								if(!securityService.checkIfAllowed(securityContext)){
-									throw new HttpClientErrorException(HttpStatus.UNAUTHORIZED,"not allow to operation "+securityContext.getOperation());
-								}
-								Object[] parameters = new Object[parameterTypes.length];
-								parameters[bodyIndex] = executionParametersHolder;
-								for (int i = 0; i < parameterTypes.length; i++) {
-									Class<?> parameterType = parameterTypes[i];
-									if (SecurityContextBase.class.isAssignableFrom(parameterType)) {
-										parameters[i] = securityContext;
-									}
-									if (executionContext != null && parameterType.isAssignableFrom(executionContext.getClass())) {
-										parameters[i] = executionContext;
-									}
-								}
-								Object ret = AopUtils.isCglibProxy(invoker.getClass()) ? AopUtils.invokeJoinpointUsingReflection(invoker, method, parameters) : method.invoke(invoker, parameters);
-								ExecuteInvokerResponse<?> e = new ExecuteInvokerResponse<>(invokerName, true, ret);
-								responses.add(e);
-								break;
-							}finally {
-								securityContext.setOperation(original);
-							}
-						}
+    public ExecuteInvokersResponse executeInvoker(ExecuteInvokerRequest executeInvokerRequest, SecurityContextBase securityContext) {
+        List<? extends Plugin> invokers = getInvokers(executeInvokerRequest.getInvokerNames());
+
+        List<ExecuteInvokerResponse<?>> responses = new ArrayList<>();
+        Object executionParametersHolder = executeInvokerRequest.getExecutionParametersHolder();
+        ExecutionContext executionContext = executeInvokerRequest.getExecutionContext();
+
+        for (Object invoker : invokers) {
+            Class<?> clazz = ClassUtils.getUserClass(invoker.getClass());
+            String invokerName = clazz.getCanonicalName();
+            try {
 
 
-					}
-				}
-			} catch (Throwable e) {
-				logger.error( "failed executing " + invokerName, e);
-				responses.add(new ExecuteInvokerResponse<>(invokerName, false, e));
-			}
+                Method[] methods = clazz.getDeclaredMethods();
+                for (Method method : methods) {
+                    if (method.isBridge()) {
+                        continue;
+                    }
+                    Class<?>[] parameterTypes = method.getParameterTypes();
 
-		}
+                    if (method.getName().equals(executeInvokerRequest.getInvokerMethodName())) {
+                        int bodyIndex = getParameterIndex(parameterTypes, executeInvokerRequest.getExecutionParametersHolder().getClass());
+                        if (bodyIndex > -1) {
+                            OperationScanContext operationScanContext = operationsMethodScanner.scanOperationOnMethod(method);
+                            SecurityOperation securityOperation = operationScanContext != null ? securityOperationService.getByIdOrNull(operationScanContext.getSecurityOperationCreate().getIdForCreate(), SecurityOperation.class, null) : null;
+                            SecurityOperation original = securityContext.getOperation();
+                            try {
+                                if (securityOperation != null) {
+                                    securityContext.setOperation(securityOperation);
+                                }
+                                if (!securityService.checkIfAllowed(securityContext)) {
+                                    throw new HttpClientErrorException(HttpStatus.UNAUTHORIZED, "not allow to operation " + securityContext.getOperation());
+                                }
+                                Object[] parameters = new Object[parameterTypes.length];
+                                parameters[bodyIndex] = executionParametersHolder;
+                                for (int i = 0; i < parameterTypes.length; i++) {
+                                    Class<?> parameterType = parameterTypes[i];
+                                    if (SecurityContextBase.class.isAssignableFrom(parameterType)) {
+                                        parameters[i] = securityContext;
+                                    }
+                                    if (executionContext != null && parameterType.isAssignableFrom(executionContext.getClass())) {
+                                        parameters[i] = executionContext;
+                                    }
+                                }
+                                Object ret = AopUtils.isCglibProxy(invoker.getClass()) ? AopUtils.invokeJoinpointUsingReflection(invoker, method, parameters) : method.invoke(invoker, parameters);
+                                ExecuteInvokerResponse<?> e = new ExecuteInvokerResponse<>(invokerName, true, ret);
+                                responses.add(e);
+                                break;
+                            } finally {
+                                securityContext.setOperation(original);
+                            }
+                        }
 
 
-		return new ExecuteInvokersResponse(responses);
+                    }
+                }
+            } catch (Throwable e) {
+                logger.error("failed executing " + invokerName, e);
+                responses.add(new ExecuteInvokerResponse<>(invokerName, false, e));
+            }
+
+        }
 
 
-	}
-
-	private int getParameterIndex(Class<?>[] parameterTypes, Class<?> aClass) {
-		for (int i = 0; i < parameterTypes.length; i++) {
-			Class<?> parameterType=parameterTypes[i];
-			if(parameterType.isAssignableFrom(aClass)){
-				return i;
-			}
-		}
-		return -1;
-	}
-
-	private List<Plugin> getInvokers(Set<String> invokerNames) {
-		Map<String,Plugin> allPlugins=pluginManager.getExtensions(Plugin.class).stream().filter(Objects::nonNull).collect(Collectors.toMap(f-> ClassUtils.getUserClass(f.getClass()).getName(), f->f,(a, b)->a));
-		return invokerNames.stream().map(f->getInvoker(allPlugins,f)).filter(Objects::nonNull).collect(Collectors.toList());
-	}
-
-	private Plugin getInvoker(Map<String, Plugin> allPlugins, String invokerClassName) {
-		Plugin invoker = allPlugins.get(invokerClassName);
-		if(invoker==null){
-			logger.warn("invoker "+invokerClassName +" could not be found");
-		}
-		return invoker;
-	}
+        return new ExecuteInvokersResponse(responses);
 
 
+    }
+
+    private int getParameterIndex(Class<?>[] parameterTypes, Class<?> aClass) {
+        for (int i = 0; i < parameterTypes.length; i++) {
+            Class<?> parameterType = parameterTypes[i];
+            if (parameterType.isAssignableFrom(aClass)) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    private List<Plugin> getInvokers(Set<String> invokerNames) {
+        Map<String, Plugin> allPlugins = pluginManager.getExtensions(Plugin.class).stream().filter(Objects::nonNull).collect(Collectors.toMap(f -> ClassUtils.getUserClass(f.getClass()).getName(), f -> f, (a, b) -> a));
+        return invokerNames.stream().map(f -> getInvoker(allPlugins, f)).filter(Objects::nonNull).collect(Collectors.toList());
+    }
+
+    private Plugin getInvoker(Map<String, Plugin> allPlugins, String invokerClassName) {
+        Plugin invoker = allPlugins.get(invokerClassName);
+        if (invoker == null) {
+            logger.warn("invoker " + invokerClassName + " could not be found");
+        }
+        return invoker;
+    }
+
+
+    public PaginationResponse<InvokerHolder> getAllDynamicInvokerHolders(DynamicInvokerFilter dynamicInvokerFilter, SecurityContextBase securityContext) {
+        PaginationResponse<InvokerInfo> paginationResponse = getAllDynamicInvokers(dynamicInvokerFilter, securityContext);
+        List<InvokerHolder> invokerHolders = paginationResponse.getList().stream().map(f -> new InvokerHolder(f)).collect(Collectors.toList());
+        return new PaginationResponse<>(invokerHolders, dynamicInvokerFilter, paginationResponse.getTotalRecords());
+    }
+
+    public PaginationResponse<InvokerMethodHolder> getAllInvokerMethodHolders(DynamicInvokerMethodFilter dynamicInvokerMethodFilter, SecurityContextBase securityContext) {
+        List<InvokerMethodHolder> invokerMethodHolders = listAllInvokerMethodHolders(dynamicInvokerMethodFilter);
+        long count = countAllInvokerMethodHolders(dynamicInvokerMethodFilter);
+        return new PaginationResponse<>(invokerMethodHolders, dynamicInvokerMethodFilter, count);
+    }
+
+    private List<InvokerMethodHolder> listAllInvokerMethodHolders(DynamicInvokerMethodFilter dynamicInvokerMethodFilter) {
+        Stream<InvokerInfo> stream = invokerInfos.stream();
+        if(dynamicInvokerMethodFilter.getDynamicInvokerFilter()!=null){
+            stream=stream.filter(f->filter(f,dynamicInvokerMethodFilter.getDynamicInvokerFilter()));
+        }
+        return paginate(stream.map(f -> getMethodHolders(f)).filter(f -> f != null).flatMap(List::stream).filter(f -> filterMethods(f, dynamicInvokerMethodFilter)).sorted(Comparator.comparing(f->f.getName())), dynamicInvokerMethodFilter).collect(Collectors.toList());
+    }
+
+    private List<InvokerMethodHolder> getMethodHolders(InvokerInfo invokerInfo) {
+
+        return invokerInfo.getMethods().stream().map(f->new InvokerMethodHolder(invokerInfo.getName().getCanonicalName(),f)).collect(Collectors.toList());
+    }
+
+    private long countAllInvokerMethodHolders(DynamicInvokerMethodFilter dynamicInvokerMethodFilter) {
+        return invokerInfos.stream().map(f ->  getMethodHolders(f)).filter(f -> f != null).flatMap(List::stream).filter(f -> filterMethods(f, dynamicInvokerMethodFilter)).count();
+    }
+
+    private boolean filterMethods(InvokerMethodHolder invokerMethodHolder, DynamicInvokerMethodFilter dynamicInvokerMethodFilter) {
+        boolean pred = true;
+        if (dynamicInvokerMethodFilter.getNameLike() != null) {
+            pred = pred && (invokerMethodHolder.getDisplayName().contains(dynamicInvokerMethodFilter.getNameLike()) || invokerMethodHolder.getDescription().contains(dynamicInvokerMethodFilter.getNameLike()));
+        }
+        if (dynamicInvokerMethodFilter.getCategories() != null && !dynamicInvokerMethodFilter.getCategories().isEmpty()) {
+            pred = pred && invokerMethodHolder.getCategories() != null && Collections.disjoint(dynamicInvokerMethodFilter.getCategories(), invokerMethodHolder.getCategories());
+        }
+
+
+        return pred;
+    }
 }

@@ -7,6 +7,7 @@ import com.wizzdi.flexicore.boot.base.interfaces.Plugin;
 import com.wizzdi.flexicore.boot.dynamic.invokers.request.DynamicInvokerFilter;
 import com.wizzdi.flexicore.boot.dynamic.invokers.request.ExecuteInvokerRequest;
 import com.wizzdi.flexicore.boot.dynamic.invokers.request.ExecuteInvokersResponse;
+import com.wizzdi.flexicore.boot.dynamic.invokers.response.InvokerHolder;
 import com.wizzdi.flexicore.boot.dynamic.invokers.response.InvokerInfo;
 import com.wizzdi.flexicore.boot.dynamic.invokers.service.DynamicInvokerService;
 import com.wizzdi.flexicore.security.response.PaginationResponse;
@@ -36,6 +37,13 @@ public class DynamicInvokersController implements Plugin {
 	@PostMapping("/executeInvoker")
 	public ExecuteInvokersResponse executeInvoker(@RequestBody ExecuteInvokerRequest executeInvokerRequest, @RequestAttribute SecurityContextBase securityContext){
 		return dynamicInvokerService.executeInvoker(executeInvokerRequest,securityContext);
+	}
+
+	@IOperation(Name = "returns dynamicInvoker holders",Description = "returns dynamicInvoker holders")
+	@PostMapping("/getAllInvokerHolders")
+	public PaginationResponse<InvokerHolder> getAllInvokerHolders(@RequestBody DynamicInvokerFilter dynamicInvokerFilter, @RequestAttribute SecurityContextBase securityContext){
+		dynamicInvokerService.validate(dynamicInvokerFilter,securityContext);
+		return dynamicInvokerService.getAllDynamicInvokerHolders(dynamicInvokerFilter,securityContext);
 	}
 
 

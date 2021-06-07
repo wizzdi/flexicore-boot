@@ -21,7 +21,7 @@ public class TestInvoker implements Invoker {
 
 
 
-    @IOperation(Name = "listTests",Description = "lists all Clazzes")
+    @IOperation(Name = "listTests",Description = "lists all Tests")
     @PostMapping("/listTests")
     public PaginationResponse<TestEntity> listTests(@RequestBody TestFilter filter, @RequestAttribute("securityContext") SecurityContextBase securityContext) {
         if(filter==null||filter.getPageSize()==null){
