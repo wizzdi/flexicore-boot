@@ -9,12 +9,14 @@ package com.flexicore.model;
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.flexicore.converters.JsonConverter;
 import com.flexicore.data.jsoncontainers.SortingOrder;
 import com.flexicore.interfaces.dynamic.FieldInfo;
 import com.flexicore.interfaces.dynamic.IdRefFieldInfo;
 import com.flexicore.interfaces.dynamic.ListFieldInfo;
 import com.flexicore.model.dynamic.ExecutionParametersHolder;
+import com.wizzdi.dynamic.annotations.service.TransformAnnotations;
+import com.wizzdi.dynamic.properties.converter.DynamicColumnDefinition;
+import com.wizzdi.dynamic.properties.converter.JsonConverter;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 import javax.persistence.Column;
@@ -36,6 +38,7 @@ import java.util.Map;
  */
 @Entity
 @Schema(description = "This class is used to filter a list. There are many extenders of this class adding information pertinent to some class, for example the EquipmentShort class has an extender that includes additional information such as location area on the map, street etc.")
+@TransformAnnotations
 public class FilteringInformationHolder extends ExecutionParametersHolder  {
 
 
@@ -91,13 +94,11 @@ public class FilteringInformationHolder extends ExecutionParametersHolder  {
     @FieldInfo(displayName = "permissionContextLike", description = "Search Permission Context")
     private String permissionContextLike;
 
-    @Column(columnDefinition = "jsonb")
     @Convert(converter = JsonConverter.class)
     @JsonIgnore
     private Map<String, Object> genericPredicates=new HashMap<>();
 
-
-    @Column(columnDefinition = "jsonb")
+    @DynamicColumnDefinition
     @Convert(converter = JsonConverter.class)
     @JsonIgnore
     public Map<String, Object> getGenericPredicates() {
