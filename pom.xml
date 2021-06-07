@@ -1,12 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.wizzdi</groupId>
     <artifactId>dynamic-properties-converter-postgresql</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
+    <version>1.0.0</version>
     <name>Dynamic properties converter postgresql</name>
     <description>Dynamic properties converter postgresql</description>
     <url>https://wizzdi.com</url>
@@ -50,7 +48,7 @@
         <connection>scm:git:git://wizzdi/dynamic-annotations-service-postgresql.git</connection>
         <developerConnection>scm:git:git@github.com:wizzdi/dynamic-annotations-service-postgresql.git</developerConnection>
         <url>https://github.com/wizzdi/dynamic-annotations-service-postgresql</url>
-        <tag>dynamic-annotations-service-postgresql-${version}</tag>
+        <tag>dynamic-properties-converter-postgresql-1.0.0</tag>
     </scm>
 
 
