@@ -1,6 +1,6 @@
 package com.wizzdi.flexicore.boot.jpa.init.hibernate;
 
-import com.wizzdi.flexicore.boot.jpa.init.hibernate.cn.xdean.jex.ReflectUtil;
+import com.wizzdi.dynamic.annotations.service.cn.xdean.jex.ReflectUtil;
 
 import java.lang.reflect.Method;
 

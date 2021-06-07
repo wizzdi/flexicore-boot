@@ -1,6 +1,8 @@
 package com.wizzdi.flexicore.boot.jpa.init.hibernate;
 
-import com.wizzdi.flexicore.boot.jpa.init.hibernate.cn.xdean.jex.AnnotationUtil;
+import com.wizzdi.dynamic.annotations.service.AnnotationTransformer;
+import com.wizzdi.dynamic.annotations.service.TransformAnnotations;
+import com.wizzdi.dynamic.annotations.service.cn.xdean.jex.AnnotationUtil;
 import com.wizzdi.flexicore.boot.jpa.service.EntitiesHolder;
 import org.hibernate.annotations.ColumnTransformer;
 import org.hibernate.boot.model.naming.ImplicitNamingStrategy;
@@ -104,11 +106,16 @@ public class HibernateLinkJpaConfiguration extends JpaBaseConfiguration {
 
     @Bean
     @Primary
-    public LocalContainerEntityManagerFactoryBean entityManagerFactory(final EntityManagerFactoryBuilder builder, @Autowired DataSource dataSource, @Autowired List<EntitiesHolder> entitiesHolder,@Autowired ObjectProvider<EncryptionConfigurations> encryptionConfigurations) {
+    public LocalContainerEntityManagerFactoryBean entityManagerFactory(final EntityManagerFactoryBuilder builder, @Autowired DataSource dataSource, @Autowired List<EntitiesHolder> entitiesHolder,@Autowired ObjectProvider<EncryptionConfigurations> encryptionConfigurations,@Autowired ObjectProvider<AnnotationTransformer<?>> annotationTransformers) {
         encryptionConfigurations.stream().map(f->f.getEncryptionConfigurations()).flatMap(List::stream).forEach(this::applyEncryption);
         Map<String, Object> vendorProperties = getVendorProperties();
         customizeVendorProperties(vendorProperties);
         Set<Class<?>> entities = entitiesHolder.stream().map(f->f.getEntities()).flatMap(Set::stream).collect(Collectors.toSet());
+        for (Class<?> entity : entities) {
+            if(entity.isAnnotationPresent(TransformAnnotations.class)){
+                annotationTransformers.forEach(f->f.applyTransformation(entity));
+            }
+        }
         logger.debug("Discovered Entities: " + entities.stream().map(f -> f.getCanonicalName()).collect(Collectors.joining(System.lineSeparator())));
         Class<?>[] entitiesArr = new Class<?>[entities.size()];
         entities.toArray(entitiesArr);

@@ -81,6 +81,12 @@
 
         <dependency>
             <groupId>com.wizzdi</groupId>
+            <artifactId>dynamic-annoatations-service</artifactId>
+            <version>1.0.0-SNAPSHOT</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.wizzdi</groupId>
             <artifactId>flexicore-boot-starter-data-jpa</artifactId>
             <version>1.0.3</version>
         </dependency>
