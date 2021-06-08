@@ -1,13 +1,11 @@
 package com.flexicore.config;
 
 import com.flexicore.annotations.IOperation;
-import com.flexicore.converters.JsonConverter;
 import com.flexicore.model.Baseclass;
 import com.flexicore.request.OperationCreate;
 import com.flexicore.service.impl.OperationService;
 import com.wizzdi.flexicore.boot.base.interfaces.Plugin;
 import com.wizzdi.flexicore.security.interfaces.OperationsMethodScanner;
-import com.wizzdi.flexicore.security.request.SecurityOperationCreate;
 import com.wizzdi.flexicore.security.response.OperationScanContext;
 import org.pf4j.Extension;
 import org.springframework.beans.factory.annotation.Autowired;
