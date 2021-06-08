@@ -6,9 +6,7 @@ import com.flexicore.model.Basic_;
 import com.wizzdi.flexicore.boot.base.interfaces.Plugin;
 import com.wizzdi.flexicore.security.events.BasicCreated;
 import com.wizzdi.flexicore.security.events.BasicUpdated;
-import com.wizzdi.flexicore.security.request.BasicPropertiesFilter;
-import com.wizzdi.flexicore.security.request.DateFilter;
-import com.wizzdi.flexicore.security.request.PaginationFilter;
+import com.wizzdi.flexicore.security.request.*;
 import org.pf4j.Extension;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,6 +25,7 @@ import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 
 @Extension
@@ -74,6 +73,14 @@ public class BasicRepository implements Plugin {
 		if(dateFilter.getEnd()!=null){
 			predicates.add(cb.lessThanOrEqualTo(r,dateFilter.getEnd()));
 		}
+	}
+
+	public static List<Order> getSorting(List<SortParameter> sortParameters,CriteriaBuilder cb,From<?,?> r){
+		return sortParameters.stream().map(f->getSorting(f,cb,r)).collect(Collectors.toList());
+	}
+
+	public static Order getSorting(SortParameter f, CriteriaBuilder cb, From<?, ?> r) {
+		return f.getOrderDirection()== OrderDirection.DESC?cb.desc(r.get(f.getName())):cb.asc(r.get(f.getName()));
 	}
 
 
