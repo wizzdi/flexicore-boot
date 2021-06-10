@@ -4,7 +4,7 @@
 
     <groupId>com.wizzdi</groupId>
     <artifactId>flexicore-boot-dynamic-invokers-service</artifactId>
-    <version>1.0.5</version>
+    <version>1.0.6-SNAPSHOT</version>
     <name>FlexiCore Boot Dynamic Invokers</name>
     <description>FlexiCore Boot Invokers</description>
     <url>https://wizzdi.com</url>
@@ -62,7 +62,7 @@
         <developerConnection>scm:git:git@github.com:wizzdi/flexicore-boot-dynamic-invokers-service.git
         </developerConnection>
         <url>https://github.com/wizzdi/flexicore-boot-dynamic-invokers-service</url>
-        <tag>flexicore-boot-dynamic-invokers-service-1.0.5</tag>
+        <tag>flexicore-boot-dynamic-invokers-service-${version}</tag>
     </scm>
 
     <dependencyManagement>
