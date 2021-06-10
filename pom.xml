@@ -4,7 +4,7 @@
 
     <groupId>com.wizzdi</groupId>
     <artifactId>dynamic-properties-database-converter</artifactId>
-    <version>1.0.2-SNAPSHOT</version>
+    <version>1.0.2</version>
     <name>Dynamic properties database converter</name>
     <description>Dynamic properties database converter</description>
     <url>https://wizzdi.com</url>
@@ -48,7 +48,7 @@
         <connection>scm:git:git://wizzdi/dynamic-properties-database-converter.git</connection>
         <developerConnection>scm:git:git@github.com:wizzdi/dynamic-properties-database-converter.git</developerConnection>
         <url>https://github.com/wizzdi/dynamic-properties-database-converter</url>
-        <tag>dynamic-properties-database-converter-${version}</tag>
+        <tag>dynamic-properties-database-converter-1.0.2</tag>
     </scm>
 
 
