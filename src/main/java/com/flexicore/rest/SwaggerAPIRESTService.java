@@ -222,11 +222,14 @@ public class SwaggerAPIRESTService extends BaseOpenApiResource implements RESTSe
 	}
 
 	private void mergeOas(OpenAPI main, OpenAPI secondary) {
+		Map<String,Tag> secondaryTags = secondary.getTags()==null?new HashMap<>():secondary.getTags().stream().collect(Collectors.toMap(f->f.getName(),f->f,(a,b)->a));
+		List<Server> secondaryServers = secondary.getServers()==null?new ArrayList<>():secondary.getServers();
+		Map<String,Server> secondaryServersMap = secondaryServers.stream().collect(Collectors.toMap(f -> f.getUrl(), f -> f, (a, b) -> a));
 		if(secondary.getPaths()!=null){
 			for (Map.Entry<String, PathItem> stringPathItemEntry : secondary.getPaths().entrySet()) {
 				PathItem value = stringPathItemEntry.getValue();
 				if(main.getPaths().putIfAbsent(stringPathItemEntry.getKey(), value)==null){
-					value.setServers(secondary.getServers());
+					value.setServers(secondaryServers);
 
 				}
 			}
@@ -237,20 +240,16 @@ public class SwaggerAPIRESTService extends BaseOpenApiResource implements RESTSe
 		main.setComponents(mergeComponents(mainComponents, components));
 
 		Map<String, Tag> existingTags = main.getTags().stream().collect(Collectors.toMap(f -> f.getName(), f -> f, (a, b) -> a));
-		if(secondary.getTags()!=null){
-			for (Tag tag : secondary.getTags()) {
-				if (!existingTags.containsKey(tag.getName())) {
-					main.getTags().add(tag);
-				}
+		for (Tag tag : secondaryTags.values()) {
+			if (existingTags.putIfAbsent(tag.getName(),tag)==null) {
+				main.getTags().add(tag);
 			}
 		}
 
 		Map<String, Server> servers = main.getServers().stream().collect(Collectors.toMap(f -> f.getUrl(), f -> f, (a, b) -> a));
-		if(secondary.getServers()!=null){
-			for (Server server : secondary.getServers()) {
-				if(!servers.containsKey(server.getUrl())){
-					main.getServers().add(server);
-				}
+		for (Server server : secondaryServersMap.values()) {
+			if(servers.putIfAbsent(server.getUrl(),server)==null){
+				main.getServers().add(server);
 			}
 		}
 

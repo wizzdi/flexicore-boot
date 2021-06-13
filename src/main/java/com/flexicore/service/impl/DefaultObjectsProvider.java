@@ -21,6 +21,7 @@ import com.wizzdi.flexicore.security.response.Clazzes;
 import com.wizzdi.flexicore.security.response.DefaultSecurityEntities;
 import com.wizzdi.flexicore.security.response.Operations;
 import com.wizzdi.flexicore.security.service.OperationToClazzService;
+import io.swagger.v3.oas.annotations.ExternalDocumentation;
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.apache.commons.io.FileUtils;
@@ -44,11 +45,15 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ClassUtils;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -61,6 +66,7 @@ public class DefaultObjectsProvider implements FlexiCoreService {
 	private static final String TENANT_TO_USER_ID = "Xk5siBx+TyWv+G6V+XuSdw";
 	private static final String SUPER_ADMIN_ROLE_ID = "HzFnw-nVR0Olq6WBvwKcQg";
 	private static final String SUPER_ADMIN_TO_ADMIN_ID = "EbVFgr+YS3ezYUblzceVGA";
+	public static final Pattern CAMEL_CASE_PATTERN = Pattern.compile("(?=[A-Z][a-z])");
 	@Autowired
 	OperationService operationService;
 	@Autowired
@@ -360,11 +366,13 @@ public class DefaultObjectsProvider implements FlexiCoreService {
         Set<Class<?>> tagClasses = new HashSet<>();
         tagClasses.addAll(pluginManager.getApplicationContext().getBeansWithAnnotation(OpenAPIDefinition.class).values().stream().map(f -> ClassUtils.getUserClass(f.getClass())).collect(Collectors.toSet()));
         tagClasses.addAll(pluginManager.getApplicationContext().getBeansWithAnnotation(Tag.class).values().stream().map(f -> ClassUtils.getUserClass(f.getClass())).collect(Collectors.toSet()));
+		tagClasses.addAll(pluginManager.getApplicationContext().getBeansWithAnnotation(RestController.class).values().stream().map(f -> ClassUtils.getUserClass(f.getClass())).collect(Collectors.toSet()));
 
         for (PluginWrapper startedPlugin : startedPlugins) {
             ApplicationContext applicationContext = pluginManager.getApplicationContext(startedPlugin);
             tagClasses.addAll(applicationContext.getBeansWithAnnotation(OpenAPIDefinition.class).values().stream().map(f -> ClassUtils.getUserClass(f.getClass())).collect(Collectors.toSet()));
             tagClasses.addAll(applicationContext.getBeansWithAnnotation(Tag.class).values().stream().map(f -> ClassUtils.getUserClass(f.getClass())).collect(Collectors.toSet()));
+			tagClasses.addAll(applicationContext.getBeansWithAnnotation(RestController.class).values().stream().map(f -> ClassUtils.getUserClass(f.getClass())).collect(Collectors.toSet()));
 
 
         }
@@ -388,7 +396,50 @@ public class DefaultObjectsProvider implements FlexiCoreService {
 		if (def != null) {
 			tags.addAll(Arrays.stream(def.tags()).collect(Collectors.toList()));
 		}
+		RestController restController = AnnotatedElementUtils.findMergedAnnotation(annotated,RestController.class);
+		if (restController != null) {
+			String name=toHypedName(annotated.getSimpleName());
+			tags.add(getTag(name));
+		}
 		tags.addAll(Arrays.stream(annotated.getAnnotationsByType(Tag.class)).collect(Collectors.toList()));
+	}
+
+	public String toHypedName(String camelCase){
+		final Matcher matcher = CAMEL_CASE_PATTERN.matcher(camelCase);
+		String s = matcher.replaceAll("-").toLowerCase();
+		if(s.startsWith("-")){
+			s=s.replaceFirst("-","");
+		}
+		return s;
+	}
+
+	private Tag getTag(String name) {
+		return new Tag(){
+			@Override
+			public String name() {
+				return name;
+			}
+
+			@Override
+			public String description() {
+				return name;
+			}
+
+			@Override
+			public ExternalDocumentation externalDocs() {
+				return null;
+			}
+
+			@Override
+			public io.swagger.v3.oas.annotations.extensions.Extension[] extensions() {
+				return new io.swagger.v3.oas.annotations.extensions.Extension[0];
+			}
+
+			@Override
+			public Class<? extends Annotation> annotationType() {
+				return Tag.class;
+			}
+		};
 	}
 
 	private DocumentationTag addTag(SecurityContext securityContext, Tag tag, String id, Map<String, DocumentationTag> existing) {
