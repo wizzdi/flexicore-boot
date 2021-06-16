@@ -1,12 +1,9 @@
 package com.wizzdi.dynamic.properties.converter;
 
-import org.springframework.context.annotation.Configuration;
-
 import javax.persistence.Converter;
 import java.util.Map;
 
 @Converter(autoApply = false)
-@Configuration
 public class JsonConverter implements javax.persistence.AttributeConverter<Map<String, Object>, Object> {
 
     private static final long serialVersionUID = 1L;
