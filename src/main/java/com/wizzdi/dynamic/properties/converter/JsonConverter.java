@@ -1,19 +1,16 @@
 package com.wizzdi.dynamic.properties.converter;
 
-import org.springframework.beans.BeansException;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
-import org.springframework.stereotype.Component;
+import org.springframework.context.annotation.Configuration;
 
 import javax.persistence.Converter;
 import java.util.Map;
 
 @Converter(autoApply = false)
-@Component
-public class JsonConverter implements javax.persistence.AttributeConverter<Map<String, Object>, Object>, ApplicationContextAware {
+@Configuration
+public class JsonConverter implements javax.persistence.AttributeConverter<Map<String, Object>, Object> {
 
     private static final long serialVersionUID = 1L;
-    private static JsonConverterImplementation implementation = null;
+    static JsonConverterImplementation implementation = null;
 
     @Override
     public Object convertToDatabaseColumn(Map<String, Object> objectValue) {
@@ -33,8 +30,4 @@ public class JsonConverter implements javax.persistence.AttributeConverter<Map<S
 
     }
 
-    @Override
-    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-        JsonConverter.implementation = applicationContext.getBean(JsonConverterImplementation.class);
-    }
 }
