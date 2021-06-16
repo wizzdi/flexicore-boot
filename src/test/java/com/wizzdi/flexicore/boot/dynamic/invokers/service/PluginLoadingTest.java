@@ -102,6 +102,16 @@ public class PluginLoadingTest {
 
 	}
 
+	@BeforeAll
+	private void init() {
+		restTemplate.getRestTemplate().setInterceptors(
+				Collections.singletonList((request, body, execution) -> {
+					request.getHeaders()
+							.add("authenticationKey", "fake");
+					return execution.execute(request, body);
+				}));
+
+	}
 
 
 
