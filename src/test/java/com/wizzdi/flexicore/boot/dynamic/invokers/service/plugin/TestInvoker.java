@@ -23,7 +23,8 @@ public class TestInvoker implements Invoker {
 
     @IOperation(Name = "listTests",Description = "lists all Tests")
     @PostMapping("/listTests")
-    public PaginationResponse<TestEntity> listTests(@RequestBody TestFilter filter, @RequestAttribute("securityContext") SecurityContextBase securityContext) {
+    public PaginationResponse<TestEntity> listTests(@RequestHeader("authenticationKey") String authenticationKey,
+			@RequestBody TestFilter filter, @RequestAttribute("securityContext") SecurityContextBase securityContext) {
         if(filter==null||filter.getPageSize()==null){
             throw new HttpClientErrorException(HttpStatus.BAD_REQUEST,"page size must be provided");
         }
@@ -32,7 +33,8 @@ public class TestInvoker implements Invoker {
 
     @IOperation(Name = "createTestEntity",Description = "createTest")
     @PostMapping("/createTestEntity")
-    public TestEntity createTest(@RequestBody TestFilter filter, @RequestAttribute("securityContext") SecurityContextBase securityContext) {
+    public TestEntity createTest(@RequestHeader("authenticationKey") String authenticationKey,
+			@RequestBody TestFilter filter, @RequestAttribute("securityContext") SecurityContextBase securityContext) {
         return new TestEntity().setName("test").setDescription("test");
     }
 

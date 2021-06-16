@@ -28,20 +28,23 @@ public class DynamicInvokersController implements Plugin {
 
 	@IOperation(Name = "returns dynamicInvoker",Description = "returns dynamicInvoker")
 	@PostMapping("/getAll")
-	public PaginationResponse<InvokerInfo> getAll(@RequestBody DynamicInvokerFilter dynamicInvokerFilter, @RequestAttribute SecurityContextBase securityContext){
+	public PaginationResponse<InvokerInfo> getAll(@RequestHeader("authenticationKey") String authenticationKey,
+			@RequestBody DynamicInvokerFilter dynamicInvokerFilter, @RequestAttribute SecurityContextBase securityContext){
 		dynamicInvokerService.validate(dynamicInvokerFilter,securityContext);
 		return dynamicInvokerService.getAllDynamicInvokers(dynamicInvokerFilter,securityContext);
 	}
 
 	@IOperation(Name = "executes dynamicInvoker",Description = "executes dynamicInvoker")
 	@PostMapping("/executeInvoker")
-	public ExecuteInvokersResponse executeInvoker(@RequestBody ExecuteInvokerRequest executeInvokerRequest, @RequestAttribute SecurityContextBase securityContext){
+	public ExecuteInvokersResponse executeInvoker(@RequestHeader("authenticationKey") String authenticationKey,
+			@RequestBody ExecuteInvokerRequest executeInvokerRequest, @RequestAttribute SecurityContextBase securityContext){
 		return dynamicInvokerService.executeInvoker(executeInvokerRequest,securityContext);
 	}
 
 	@IOperation(Name = "returns dynamicInvoker holders",Description = "returns dynamicInvoker holders")
 	@PostMapping("/getAllInvokerHolders")
-	public PaginationResponse<InvokerHolder> getAllInvokerHolders(@RequestBody DynamicInvokerFilter dynamicInvokerFilter, @RequestAttribute SecurityContextBase securityContext){
+	public PaginationResponse<InvokerHolder> getAllInvokerHolders(@RequestHeader("authenticationKey") String authenticationKey,
+			@RequestBody DynamicInvokerFilter dynamicInvokerFilter, @RequestAttribute SecurityContextBase securityContext){
 		dynamicInvokerService.validate(dynamicInvokerFilter,securityContext);
 		return dynamicInvokerService.getAllDynamicInvokerHolders(dynamicInvokerFilter,securityContext);
 	}

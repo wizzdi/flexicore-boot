@@ -31,7 +31,8 @@ public class DynamicInvokerMethodController implements Plugin {
 
 	@IOperation(Name = "returns dynamicInvokerMethod holders",Description = "returns dynamicInvokerMethod holders")
 	@PostMapping("/getAllInvokerMethodHolders")
-	public PaginationResponse<InvokerMethodHolder> getAllInvokerMethodHolders(@RequestBody DynamicInvokerMethodFilter dynamicInvokerFilter, @RequestAttribute SecurityContextBase securityContext){
+	public PaginationResponse<InvokerMethodHolder> getAllInvokerMethodHolders(@RequestHeader("authenticationKey") String authenticationKey,
+			@RequestBody DynamicInvokerMethodFilter dynamicInvokerFilter, @RequestAttribute SecurityContextBase securityContext){
 		dynamicInvokerService.validate(dynamicInvokerFilter,securityContext);
 		return dynamicInvokerService.getAllInvokerMethodHolders(dynamicInvokerFilter,securityContext);
 	}

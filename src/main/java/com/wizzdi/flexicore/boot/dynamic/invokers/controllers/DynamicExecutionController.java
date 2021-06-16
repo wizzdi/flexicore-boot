@@ -28,28 +28,32 @@ public class DynamicExecutionController implements Plugin {
 
 	@IOperation(Name = "creates dynamicExecution",Description = "creates dynamicExecution")
 	@PostMapping("/create")
-	public DynamicExecution create(@RequestBody DynamicExecutionCreate dynamicExecutionCreate, @RequestAttribute SecurityContextBase securityContext){
+	public DynamicExecution create(@RequestHeader("authenticationKey") String authenticationKey,
+			@RequestBody DynamicExecutionCreate dynamicExecutionCreate, @RequestAttribute SecurityContextBase securityContext){
 		dynamicExecutionService.validateCreate(dynamicExecutionCreate,securityContext);
 		return dynamicExecutionService.createDynamicExecution(dynamicExecutionCreate,securityContext);
 	}
 
 	@IOperation(Name = "returns dynamicExecution",Description = "returns dynamicExecution")
 	@PostMapping("/getAll")
-	public PaginationResponse<DynamicExecution> getAll(@RequestBody DynamicExecutionFilter dynamicExecutionFilter, @RequestAttribute SecurityContextBase securityContext){
+	public PaginationResponse<DynamicExecution> getAll(@RequestHeader("authenticationKey") String authenticationKey,
+			@RequestBody DynamicExecutionFilter dynamicExecutionFilter, @RequestAttribute SecurityContextBase securityContext){
 		dynamicExecutionService.validate(dynamicExecutionFilter,securityContext);
 		return dynamicExecutionService.getAllDynamicExecutions(dynamicExecutionFilter,securityContext);
 	}
 
 	@IOperation(Name = "returns example for the dynamic execution",Description = "returns example for the dynamic execution")
 	@PostMapping("/getDynamicExecutionReturnExample")
-	public Object getDynamicExecutionReturnExample(@RequestBody DynamicExecutionExampleRequest dynamicExecutionExampleRequest, @RequestAttribute SecurityContextBase securityContext){
+	public Object getDynamicExecutionReturnExample(@RequestHeader("authenticationKey") String authenticationKey,
+			@RequestBody DynamicExecutionExampleRequest dynamicExecutionExampleRequest, @RequestAttribute SecurityContextBase securityContext){
 		dynamicExecutionService.validate(dynamicExecutionExampleRequest,securityContext);
 		return dynamicExecutionService.getExample(dynamicExecutionExampleRequest.getClazz());
 	}
 
 	@IOperation(Name = "updates dynamicExecution",Description = "updates dynamicExecution")
 	@PutMapping("/update")
-	public DynamicExecution update(@RequestBody DynamicExecutionUpdate dynamicExecutionUpdate, @RequestAttribute SecurityContextBase securityContext){
+	public DynamicExecution update(@RequestHeader("authenticationKey") String authenticationKey,
+			@RequestBody DynamicExecutionUpdate dynamicExecutionUpdate, @RequestAttribute SecurityContextBase securityContext){
 		String id=dynamicExecutionUpdate.getId();
 		DynamicExecution dynamicExecution=id!=null?dynamicExecutionService.getByIdOrNull(id,DynamicExecution.class, SecuredBasic_.security,securityContext):null;
 		if(dynamicExecution==null){
@@ -62,7 +66,8 @@ public class DynamicExecutionController implements Plugin {
 
 	@IOperation(Name = "executes DynamicExecution",Description = "executes DynamicExecution")
 	@PostMapping("/executeDynamicExecution")
-	public ExecuteInvokersResponse executeDynamicExecution(@RequestBody ExecuteDynamicExecution executeDynamicExecution, @RequestAttribute SecurityContextBase securityContext){
+	public ExecuteInvokersResponse executeDynamicExecution(@RequestHeader("authenticationKey") String authenticationKey,
+			@RequestBody ExecuteDynamicExecution executeDynamicExecution, @RequestAttribute SecurityContextBase securityContext){
 		dynamicExecutionService.validate(executeDynamicExecution,securityContext);
 		return dynamicExecutionService.executeDynamicExecution(executeDynamicExecution,securityContext);
 	}
