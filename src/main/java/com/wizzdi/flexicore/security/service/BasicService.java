@@ -17,6 +17,10 @@ public class BasicService implements Plugin {
 
 	public boolean updateBasicNoMerge(BasicCreate basicCreate, Basic basic) {
 		boolean update = false;
+		if(basicCreate.getIdForCreate()!=null&&(basic.getId()==null||!basicCreate.getIdForCreate().equals(basic.getId()))){
+			basic.setId(basicCreate.getIdForCreate());
+			update=true;
+		}
 
 		if (basicCreate.getUpdateDate() != null && (!basicCreate.getUpdateDate().equals(basic.getUpdateDate()))) {
 			basic.setUpdateDate(basicCreate.getUpdateDate());

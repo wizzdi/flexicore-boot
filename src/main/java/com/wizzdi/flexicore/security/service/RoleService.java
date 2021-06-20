@@ -35,8 +35,8 @@ public class RoleService implements Plugin {
 		return role;
 	}
 
-	public void merge(Object o){
-		roleRepository.merge(o);
+	public <T> T merge(T o){
+		return roleRepository.merge(o);
 	}
 	public void massMerge(List<Object> list){
 		roleRepository.massMerge(list);

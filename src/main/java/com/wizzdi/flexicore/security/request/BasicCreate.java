@@ -12,6 +12,7 @@ public class BasicCreate {
 	@JsonIgnore
 	private OffsetDateTime updateDate;
 	private Boolean softDelete;
+	@JsonIgnore
 	private String idForCreate;
 
 
@@ -53,6 +54,7 @@ public class BasicCreate {
 		return (T) this;
 	}
 
+	@JsonIgnore
 	public String getIdForCreate() {
 		return idForCreate;
 	}
