@@ -2,12 +2,20 @@ package com.flexicore.request;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.wizzdi.flexicore.file.model.FileResource;
+import com.wizzdi.flexicore.security.request.SecurityTenantCreate;
 
-public class TenantCreate extends BaseclassCreate {
+public class TenantCreate extends SecurityTenantCreate {
     private UserCreate tenantAdmin;
     private String iconId;
     @JsonIgnore
     private FileResource icon;
+
+    public TenantCreate(SecurityTenantCreate other) {
+        super(other);
+    }
+
+    public TenantCreate() {
+    }
 
     public UserCreate getTenantAdmin() {
         return tenantAdmin;

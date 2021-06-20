@@ -23,6 +23,12 @@ public class UserCreate extends SecurityUserCreate {
     @JsonIgnore
     private String homeDir;
 
+    public UserCreate(SecurityUserCreate other) {
+        super(other);
+    }
+
+    public UserCreate() {
+    }
 
     public String getEmail() {
         return email;

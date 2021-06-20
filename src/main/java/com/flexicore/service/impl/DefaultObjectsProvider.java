@@ -17,6 +17,9 @@ import com.flexicore.service.PasswordGenerator;
 import com.wizzdi.flexicore.boot.base.init.FlexiCorePluginManager;
 import com.wizzdi.flexicore.boot.base.init.PluginInit;
 import com.wizzdi.flexicore.boot.jpa.service.EntitiesHolder;
+import com.wizzdi.flexicore.security.interfaces.DefaultTenantProvider;
+import com.wizzdi.flexicore.security.interfaces.DefaultUserProvider;
+import com.wizzdi.flexicore.security.request.SecurityUserCreate;
 import com.wizzdi.flexicore.security.response.Clazzes;
 import com.wizzdi.flexicore.security.response.DefaultSecurityEntities;
 import com.wizzdi.flexicore.security.response.Operations;
@@ -62,10 +65,6 @@ import java.util.stream.Stream;
 @Extension
 public class DefaultObjectsProvider implements FlexiCoreService {
 
-	private static final String DEFAULT_TENANT_ID = "jgV8M9d0Qd6owkPPFrbWIQ";
-	private static final String TENANT_TO_USER_ID = "Xk5siBx+TyWv+G6V+XuSdw";
-	private static final String SUPER_ADMIN_ROLE_ID = "HzFnw-nVR0Olq6WBvwKcQg";
-	private static final String SUPER_ADMIN_TO_ADMIN_ID = "EbVFgr+YS3ezYUblzceVGA";
 	public static final Pattern CAMEL_CASE_PATTERN = Pattern.compile("(?=[A-Z][a-z])");
 	@Autowired
 	OperationService operationService;
@@ -85,26 +84,15 @@ public class DefaultObjectsProvider implements FlexiCoreService {
 	private TenantService tenantService;
 
 	@Autowired
-	private RoleService roleService;
-
-	@Autowired
 	private UserService userService;
 	@Autowired
 	private DynamicInvokersService dynamicInvokersService;
-	@Autowired
-	private EntitiesHolder entitiesHolder;
-
-	@Autowired
-	private OperationToClazzService operationToClazzService;
 
 	private Reflections reflections;
 	@Value("${flexicore.users.firstRunPath:/home/flexicore/firstRun.txt}")
 	private String firstRunFilePath;
 	@Value("${flexicore.users.adminEmail:admin@flexicore.com}")
 	private String adminEmail;
-	@Autowired
-	@Qualifier("systemAdminId")
-	private String systemAdminId;
 
 	@Autowired
     @Lazy
@@ -264,64 +252,6 @@ public class DefaultObjectsProvider implements FlexiCoreService {
 
 	}
 
-
-	/**
-	 * creates all defaults instances, these are defined by the {@link AnnotatedClazz}
-	 */
-	@SuppressWarnings("unused")
-	@Scope(value = ConfigurableBeanFactory.SCOPE_SINGLETON)
-	@Bean
-	public DefaultSecurityEntities createDefaultObjects(Clazzes clazzes) {
-		List<Object> toMerge = new ArrayList<>();
-		TenantAndUserInit tenantAndUserInit = createAdminAndDefaultTenant(toMerge);
-		Tenant defaultTenant = tenantAndUserInit.getDefaultTenant();
-		User admin = tenantAndUserInit.getAdmin();
-
-		TenantToUserCreate tenantToUserCreate = new TenantToUserCreate().setDefaultTenant(true).setUser(admin).setTenant(defaultTenant);
-		TenantToUser tenantToUser = baselinkrepository.findByIdOrNull(TenantToUser.class, TENANT_TO_USER_ID);
-		if (tenantToUser == null) {
-			logger.debug("Creating Tenant To User link");
-			tenantToUser = userService.createTenantToUserNoMerge(tenantToUserCreate, null);
-			tenantToUser.setCreator(admin);
-			tenantToUser.setId(TENANT_TO_USER_ID);
-			userService.merge(tenantToUser);
-		} else {
-			if (userService.updateTenantToUserNoMerge(tenantToUserCreate, tenantToUser)) {
-				userService.merge(tenantToUser);
-				logger.debug("Updated Tenant To User");
-			}
-		}
-		RoleCreate roleCreate = new RoleCreate()
-				.setName("Super Administrators")
-				.setDescription("Role for Super Administrators of the system")
-				.setTenant(defaultTenant);
-		Role superAdminRole = baselinkrepository.findByIdOrNull(Role.class, SUPER_ADMIN_ROLE_ID);
-		if (superAdminRole == null) {
-			logger.debug("Creating Super Admin role");
-			superAdminRole = roleService.createRoleNoMerge(roleCreate, null);
-			superAdminRole.setCreator(admin);
-			superAdminRole.setId(SUPER_ADMIN_ROLE_ID);
-			roleService.merge(superAdminRole);
-		}
-		RoleToUserCreate roleToUserCreate = new RoleToUserCreate().setRole(superAdminRole).setUser(admin).setTenant(defaultTenant);
-		RoleToUser roleToUser = baselinkrepository.findByIdOrNull(RoleToUser.class, SUPER_ADMIN_TO_ADMIN_ID);
-		if (roleToUser == null) {
-			logger.debug("Creating Role To User Link");
-			roleToUser = userService.createRoleToUserNoMerge(roleToUserCreate, null);
-			roleToUser.setTenant(defaultTenant);
-			roleToUser.setCreator(admin);
-			roleToUser.setId(SUPER_ADMIN_TO_ADMIN_ID);
-			userService.merge(roleToUser);
-		} else {
-			if (userService.updateRoleToUserNoMerge(roleToUserCreate, roleToUser)) {
-				userService.merge(roleToUser);
-				logger.debug("Updated Role To User Link");
-			}
-		}
-		return new DefaultSecurityEntities(admin, defaultTenant, superAdminRole, tenantToUser, roleToUser);
-
-	}
-
 	private String readFromFirstRunFile() {
 		File file = new File(firstRunFilePath);
 		if (!file.getParentFile().exists()) {
@@ -459,83 +389,28 @@ public class DefaultObjectsProvider implements FlexiCoreService {
 		return doc;
 	}
 
-
-	public TenantAndUserInit createAdminAndDefaultTenant(List<Object> toMerge) {
-		boolean tenantUpdated = false;
-		TenantCreate tenantCreate = new TenantCreate()
-				.setName("Default Tenant")
-				.setDescription("Default Tenant");
-		Tenant defaultTenant = baselinkrepository.findByIdOrNull(Tenant.class, DEFAULT_TENANT_ID);
-		if (defaultTenant == null) {
-			logger.debug("Creating Default Tenant");
-			defaultTenant = tenantService.createTenantNoMerge(tenantCreate, null);
-			defaultTenant.setId(DEFAULT_TENANT_ID);
-			defaultTenant.setTenant(defaultTenant);
-			tenantService.merge(defaultTenant);
-		} else {
-			if (defaultTenant.getTenant() == null) {
-				tenantService.merge(defaultTenant);
-				tenantUpdated = true;
+	@Bean
+	public DefaultUserProvider<User> defaultUserProvider(){
+		return securityUserCreate -> {
+			String pass = readFromFirstRunFile();
+			if (pass == null) {
+				pass = PasswordGenerator.generateRandom(8);
+				writeToFirstRunFile(pass);
 			}
-		}
-		String pass = readFromFirstRunFile();
-		if (pass == null) {
-			pass = PasswordGenerator.generateRandom(8);
-			writeToFirstRunFile(pass);
-		}
-		UserCreate userCreate = new UserCreate()
-				.setEmail(adminEmail)
-				.setPassword(pass)
-				.setLastName("Admin")
-				.setTenant(defaultTenant)
-				.setName("Admin");
-		User admin = baselinkrepository.findByIdOrNull(User.class, systemAdminId);
-		if (admin == null) {
-			logger.debug("Creating Admin User");
-			admin = userService.createUserNoMerge(userCreate, null);
-			admin.setCreator(admin);
-			admin.setId(systemAdminId);
-			userService.merge(admin);
-		} else {
-			if (admin.getCreator() == null) {
-				userService.merge(admin);
-				toMerge.add(admin);
-			}
-		}
+			UserCreate userCreate=new UserCreate(securityUserCreate)
+					.setEmail(adminEmail)
+					.setPassword(pass);
+			return userService.createUser(userCreate,null);
+		};
+	}
 
-		if (defaultTenant.getCreator() == null) {
-			defaultTenant.setCreator(admin);
-			tenantUpdated = true;
-		}
-		if (tenantUpdated) {
-			tenantService.merge(defaultTenant);
-		}
-		if(admin.getTenant()==null){
-			admin.setTenant(defaultTenant);
-			userService.merge(admin);
-		}
-		return new TenantAndUserInit(admin, defaultTenant);
+	@Bean
+	public DefaultTenantProvider<Tenant> defaultTenantProvider(){
+		return securityTenantCreate -> {
+			TenantCreate tenantCreate=new TenantCreate(securityTenantCreate);
+			return tenantService.createTenant(tenantCreate,null);
+		};
 	}
 
 
-	private static class TenantAndUserInit {
-		private final Tenant defaultTenant;
-		private final User admin;
-
-
-		public TenantAndUserInit(User admin, Tenant defaultTenant) {
-			this.defaultTenant = defaultTenant;
-			this.admin = admin;
-		}
-
-		public Tenant getDefaultTenant() {
-			return defaultTenant;
-		}
-
-		public User getAdmin() {
-			return admin;
-		}
-
-
-	}
 }

@@ -16,6 +16,7 @@ import com.flexicore.security.SecurityContext;
 import com.wizzdi.flexicore.file.model.FileResource;
 import com.wizzdi.flexicore.file.model.FileResource_;
 import com.wizzdi.flexicore.file.service.FileResourceService;
+import com.wizzdi.flexicore.security.service.SecurityTenantService;
 import org.pf4j.Extension;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,6 +46,8 @@ public class TenantService implements com.flexicore.service.TenantService {
     @Autowired
     private BaselinkService baselinkService;
 
+    @Autowired
+    private SecurityTenantService securityTenantService;
     @Autowired
     private BaseclassNewService baseclassService;
     @Autowired
@@ -106,7 +109,7 @@ public class TenantService implements com.flexicore.service.TenantService {
 
     @Override
     public void validate(TenantCreate tenantCreate, SecurityContext securityContext) {
-        baseclassService.validate(tenantCreate,securityContext);
+        securityTenantService.validate(tenantCreate,securityContext);
         FileResource icon=tenantCreate.getIconId()!=null?fileResourceService.getByIdOrNull(tenantCreate.getIconId(),FileResource.class, FileResource_.security,securityContext):null;
         if(icon==null && tenantCreate.getIconId()!=null){
             throw new BadRequestException("No Icon with id "+tenantCreate.getIconId());
@@ -136,7 +139,7 @@ public class TenantService implements com.flexicore.service.TenantService {
     }
 
     public boolean updateTenantNoMerge(Tenant tenant, TenantCreate tenantCreate) {
-        boolean update=baseclassService.updateBaseclassNoMerge(tenantCreate,tenant);
+        boolean update=securityTenantService.updateTenantNoMerge(tenantCreate,tenant);
         if(tenantCreate.getIcon()!=null && (tenant.getIcon()==null||!tenantCreate.getIcon().getId().equals(tenant.getIcon().getId()))){
             tenant.setIcon(tenantCreate.getIcon());
             update=true;
