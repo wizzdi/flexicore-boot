@@ -11,7 +11,15 @@ public class TenantToUserCreate extends BaselinkCreate{
 	private SecurityUser securityUser;
 	private String userId;
 
+	public TenantToUserCreate(TenantToUserCreate other) {
+		super(other);
+		this.defaultTenant = other.defaultTenant;
+		this.securityUser = other.securityUser;
+		this.userId = other.userId;
+	}
 
+	public TenantToUserCreate() {
+	}
 
 	public Boolean getDefaultTenant() {
 		return defaultTenant;

@@ -15,7 +15,15 @@ public class BaseclassCreate extends BasicCreate{
 	private Boolean systemObject;
 
 
+	public BaseclassCreate(BaseclassCreate other) {
+		super(other);
+		this.tenant = other.tenant;
+		this.tenantId = other.tenantId;
+		this.systemObject = other.systemObject;
+	}
 
+	public BaseclassCreate() {
+	}
 
 	@JsonIgnore
 	public SecurityTenant getTenant() {

@@ -12,6 +12,17 @@ public class RoleToUserCreate extends BaselinkCreate{
 	private SecurityUser securityUser;
 	private String securityUserId;
 
+	public RoleToUserCreate(RoleToUserCreate other) {
+		super(other);
+		this.role = other.role;
+		this.roleId = other.roleId;
+		this.securityUser = other.securityUser;
+		this.securityUserId = other.securityUserId;
+	}
+
+	public RoleToUserCreate() {
+	}
+
 	@JsonIgnore
 	public Role getRole() {
 		return role;

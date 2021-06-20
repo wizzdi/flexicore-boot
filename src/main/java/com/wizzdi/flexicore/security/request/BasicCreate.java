@@ -15,6 +15,16 @@ public class BasicCreate {
 	@JsonIgnore
 	private String idForCreate;
 
+	public BasicCreate(BasicCreate other) {
+		this.name = other.name;
+		this.description = other.description;
+		this.updateDate = other.updateDate;
+		this.softDelete = other.softDelete;
+		this.idForCreate = other.idForCreate;
+	}
+
+	public BasicCreate() {
+	}
 
 	@JsonIgnore
 	public OffsetDateTime getUpdateDate() {
