@@ -9,5 +9,5 @@ import java.util.List;
 
 public interface InvokerParameterScanner {
 
-	ParameterInfo scan(Parameter parameter, List<Field> allFields, Field field);
+	ParameterInfo scan(Class<?> type, List<Field> brotherFields, Field handledField);
 }

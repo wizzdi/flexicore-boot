@@ -33,21 +33,8 @@ public class ParameterInfo {
     private Class<?> idRefType;
     private List<ParameterInfo> subParameters;
     private Set<String> possibleValues;
-
-    private static Set<Class<?>> wrappers = new HashSet<>();
-
-    static {
-        wrappers.add(Boolean.class);
-        wrappers.add(Character.class);
-        wrappers.add(Byte.class);
-        wrappers.add(Short.class);
-        wrappers.add(Integer.class);
-        wrappers.add(Long.class);
-        wrappers.add(Float.class);
-        wrappers.add(Double.class);
-        wrappers.add(Void.class);
-        wrappers.add(String.class);
-    }
+    private Class<?> iterationType;
+    private boolean ignoreSubParameters;
 
     public ParameterInfo() {
     }
@@ -61,7 +48,8 @@ public class ParameterInfo {
             this.mandatory = fieldInfo.mandatory();
             this.defaultValue = fieldInfo.defaultValue();
             this.regexValidation = fieldInfo.regexValidation();
-            this.actionIdHolder=fieldInfo.actionIdHolder();
+            this.actionIdHolder = fieldInfo.actionIdHolder();
+            this.ignoreSubParameters=fieldInfo.ignoreSubParameters();
             if (fieldInfo.rangeEnabled()) {
                 this.rangeMin = fieldInfo.rangeMin();
                 this.rangeMax = fieldInfo.rangeMax();
@@ -71,86 +59,69 @@ public class ParameterInfo {
         }
 
 
-        Class<?> type = parameter.getType();
-        if(type.isEnum()){
-            Class<? extends Enum> enumType= (Class<? extends Enum>) type;
+        iterationType= parameter.getType();
+        if (iterationType.isEnum()) {
+            Class<? extends Enum> enumType = (Class<? extends Enum>) iterationType;
             EnumSet enumSet = EnumSet.allOf(enumType);
             Stream<Enum<?>> stream = enumSet.stream();
-            possibleValues= stream.map(f->f.name()).collect(Collectors.toSet());
+            possibleValues = stream.map(f -> f.name()).collect(Collectors.toSet());
         }
-        iterateFields(type);
 
 
     }
 
     public ParameterInfo(Field parameter, ListFieldInfo fieldInfo) {
         this.name = parameter.getName();
-        this.displayName = fieldInfo != null && !fieldInfo.displayName().isEmpty() ? fieldInfo.displayName() : name;
-        this.description = fieldInfo != null && !fieldInfo.description().isEmpty() ? fieldInfo.description() : "No Description";
+        this.displayName = name;
+        this.description = "No Description";
         this.list = true;
-        this.mandatory = fieldInfo != null && fieldInfo.mandatory();
 
-        Class<?> type = fieldInfo != null ? fieldInfo.listType() : null;
-        this.type = type != null ? type.getCanonicalName() : null;
-        if (type != null) {
-            iterateFields(type);
-
+        if(fieldInfo!=null){
+            this.displayName = !fieldInfo.displayName().isEmpty() ? fieldInfo.displayName() : name;
+            this.description = !fieldInfo.description().isEmpty() ? fieldInfo.description() : "No Description";
+            this.mandatory = fieldInfo.mandatory();
+            iterationType = fieldInfo.listType();
+            this.type = iterationType.getCanonicalName();
+            this.ignoreSubParameters=fieldInfo.ignoreSubParameters();
         }
 
 
+
+
     }
-
-    private void iterateFields(Class<?> type) {
-        if (!type.isPrimitive() || !wrappers.contains(type)) {
-            subParameters = new ArrayList<>();
-            for (Field field : getAllFields(type)) {
-
-                IdRefFieldInfo subFieldInfo = AnnotatedElementUtils.findMergedAnnotation(field,IdRefFieldInfo.class);
-                if (subFieldInfo != null) {
-                    this.subParameters.add(new ParameterInfo(field, subFieldInfo));
-
-                } else {
-                    FieldInfo fieldInfo = AnnotatedElementUtils.findMergedAnnotation(field,FieldInfo.class);
-                    if (fieldInfo != null) {
-                        this.subParameters.add(new ParameterInfo(field, fieldInfo));
-                    } else {
-                        ListFieldInfo listFieldInfo = AnnotatedElementUtils.findMergedAnnotation(field,ListFieldInfo.class);
-                        if (listFieldInfo != null) {
-                            this.subParameters.add(new ParameterInfo(field, listFieldInfo));
-                        }
-                    }
-                }
-
-            }
-        }
-    }
-
 
 
     public ParameterInfo(Field parameter, IdRefFieldInfo fieldInfo) {
         this.name = parameter.getName();
-        this.displayName = fieldInfo != null && !fieldInfo.displayName().isEmpty() ? fieldInfo.displayName() : name;
-        this.description = fieldInfo != null && !fieldInfo.description().isEmpty() ? fieldInfo.description() : "No Description";
-        this.list = fieldInfo == null || fieldInfo.list();
-        this.mandatory = fieldInfo != null && fieldInfo.mandatory();
+        this.displayName = name;
+        this.description = "No Description";
+        this.list = true;
         this.type = "com.flexicore.model.BaseclassIdFiltering";
         idRef = true;
-        idRefType = fieldInfo != null ? fieldInfo.refType() : null;
-        this.actionId= fieldInfo != null && fieldInfo.actionId();
+        if(fieldInfo!=null){
+            this.displayName = !fieldInfo.displayName().isEmpty() ? fieldInfo.displayName() : name;
+            this.description = !fieldInfo.description().isEmpty() ? fieldInfo.description() : description;
+            this.list = fieldInfo.list();
+            this.mandatory = fieldInfo.mandatory();
+            idRefType = fieldInfo.refType();
+            this.actionId = fieldInfo.actionId();
+
+        }
 
 
 
     }
 
     public ParameterInfo(Class<?> c) {
-       this(c,c.getSimpleName());
+        this(c, c.getSimpleName());
     }
 
-    public ParameterInfo(Class<?> c , String displayName) {
+    public ParameterInfo(Class<?> c, String displayName) {
         this.displayName = displayName;
         this.name = c.getCanonicalName();
         this.type = c.getCanonicalName();
-        iterateFields(c);
+        this.iterationType=c;
+
     }
 
     public String getName() {
@@ -216,13 +187,6 @@ public class ParameterInfo {
         return this;
     }
 
-    public static Set<Class<?>> getWrappers() {
-        return wrappers;
-    }
-
-    public static void setWrappers(Set<Class<?>> wrappers) {
-        ParameterInfo.wrappers = wrappers;
-    }
 
     public boolean isList() {
         return list;
@@ -312,6 +276,14 @@ public class ParameterInfo {
     public <T extends ParameterInfo> T setPossibleValues(Set<String> possibleValues) {
         this.possibleValues = possibleValues;
         return (T) this;
+    }
+
+    public Class<?> getIterationType() {
+        return iterationType;
+    }
+
+    public boolean isIgnoreSubParameters() {
+        return ignoreSubParameters;
     }
 
     @Override

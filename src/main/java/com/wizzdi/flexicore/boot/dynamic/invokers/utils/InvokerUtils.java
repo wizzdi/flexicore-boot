@@ -130,12 +130,53 @@ public class InvokerUtils {
 					return new ParameterInfo(field, idRefFieldInfo);
 				}
 			}
-			FieldInfo fieldInfo = getFieldInfo(field);
-			return new ParameterInfo(field, fieldInfo);
+			if(Collection.class.isAssignableFrom(field.getType())){
+				ListFieldInfo listFieldInfo=getListFieldInfo(field);
+				return new ParameterInfo(field,listFieldInfo);
+			}
+			else{
+				FieldInfo fieldInfo = getFieldInfo(field);
+				return new ParameterInfo(field, fieldInfo);
+			}
+
 		}
 		return null;
 
 
+	}
+
+	private static ListFieldInfo getListFieldInfo(Field field) {
+		return new ListFieldInfo(){
+			@Override
+			public String displayName() {
+				return field.getName();
+			}
+
+			@Override
+			public String description() {
+				return field.getName();
+			}
+
+			@Override
+			public boolean mandatory() {
+				return false;
+			}
+
+			@Override
+			public Class<?> listType() {
+				return Void.class;
+			}
+
+			@Override
+			public Class<? extends Annotation> annotationType() {
+				return ListFieldInfo.class;
+			}
+
+			@Override
+			public boolean ignoreSubParameters() {
+				return false;
+			}
+		};
 	}
 
 	public static FieldInfo getFieldInfo(Field field) {
@@ -192,6 +233,11 @@ public class InvokerUtils {
 
 			@Override
 			public boolean actionIdHolder() {
+				return false;
+			}
+
+			@Override
+			public boolean ignoreSubParameters() {
 				return false;
 			}
 
