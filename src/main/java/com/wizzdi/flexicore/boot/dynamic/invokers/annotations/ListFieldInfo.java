@@ -9,5 +9,7 @@ public @interface ListFieldInfo {
     String description() default "";
     boolean mandatory() default false;
     Class<?> listType() default Void.class;
-    
+    boolean ignoreSubParameters() default false;
+
+
 }
