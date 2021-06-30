@@ -9,6 +9,7 @@ public class BasicPropertiesFilter {
 	private Boolean softDelete;
 	private DateFilter creationDateFilter;
 	private DateFilter updateDateFilter;
+	private Set<String> onlyIds;
 
 	public String getNameLike() {
 		return nameLike;
@@ -52,6 +53,15 @@ public class BasicPropertiesFilter {
 
 	public <T extends BasicPropertiesFilter> T setUpdateDateFilter(DateFilter updateDateFilter) {
 		this.updateDateFilter = updateDateFilter;
+		return (T) this;
+	}
+
+	public Set<String> getOnlyIds() {
+		return onlyIds;
+	}
+
+	public <T extends BasicPropertiesFilter> T setOnlyIds(Set<String> onlyIds) {
+		this.onlyIds = onlyIds;
 		return (T) this;
 	}
 }

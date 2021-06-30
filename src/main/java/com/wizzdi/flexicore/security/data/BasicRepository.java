@@ -3,6 +3,7 @@ package com.wizzdi.flexicore.security.data;
 import com.flexicore.model.Baseclass_;
 import com.flexicore.model.Basic;
 import com.flexicore.model.Basic_;
+import com.flexicore.model.SecuredBasic_;
 import com.wizzdi.flexicore.boot.base.interfaces.Plugin;
 import com.wizzdi.flexicore.security.events.BasicCreated;
 import com.wizzdi.flexicore.security.events.BasicUpdated;
@@ -60,6 +61,9 @@ public class BasicRepository implements Plugin {
 		}
 		if (basicPropertiesFilter.getUpdateDateFilter() != null) {
 			addDateFilter(basicPropertiesFilter.getCreationDateFilter(), cb, q, r.get(Basic_.updateDate), predicates);
+		}
+		if(basicPropertiesFilter.getOnlyIds()!=null&&!basicPropertiesFilter.getOnlyIds().isEmpty()){
+			predicates.add(r.get(Basic_.id).in(basicPropertiesFilter.getOnlyIds()));
 		}
 	}
 
