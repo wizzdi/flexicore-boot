@@ -3,6 +3,7 @@ package com.wizzdi.flexicore.boot.dynamic.invokers.data;
 import com.flexicore.model.Baseclass;
 import com.flexicore.model.Basic;
 import com.flexicore.model.Basic_;
+import com.flexicore.model.SecuredBasic_;
 import com.flexicore.security.SecurityContextBase;
 import com.wizzdi.flexicore.boot.base.interfaces.Plugin;
 import com.wizzdi.flexicore.boot.dynamic.invokers.model.DynamicExecution;
@@ -10,8 +11,11 @@ import com.wizzdi.flexicore.boot.dynamic.invokers.model.DynamicExecution_;
 import com.wizzdi.flexicore.boot.dynamic.invokers.model.ServiceCanonicalName;
 import com.wizzdi.flexicore.boot.dynamic.invokers.model.ServiceCanonicalName_;
 import com.wizzdi.flexicore.boot.dynamic.invokers.request.DynamicExecutionFilter;
+import com.wizzdi.flexicore.boot.dynamic.invokers.request.DynamicInvokerFilter;
+import com.wizzdi.flexicore.boot.dynamic.invokers.request.DynamicInvokerMethodFilter;
 import com.wizzdi.flexicore.security.data.BasicRepository;
 import com.wizzdi.flexicore.security.data.SecuredBasicRepository;
+import com.wizzdi.flexicore.security.request.BasicPropertiesFilter;
 import org.pf4j.Extension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -40,7 +44,7 @@ public class DynamicExecutionRepository implements Plugin {
 		Root<DynamicExecution> r = q.from(DynamicExecution.class);
 		List<Predicate> predicates = new ArrayList<>();
 		addDynamicExecutionPredicates(dynamicExecutionFilter, cb, q, r, predicates, securityContext);
-		q.select(r).where(predicates.toArray(Predicate[]::new));
+		q.select(r).where(predicates.toArray(Predicate[]::new)).orderBy(cb.asc(r.get(SecuredBasic_.name)));
 		TypedQuery<DynamicExecution> query = em.createQuery(q);
 		BasicRepository.addPagination(dynamicExecutionFilter, query);
 		return query.getResultList();
@@ -50,15 +54,53 @@ public class DynamicExecutionRepository implements Plugin {
 
 	public <T extends DynamicExecution> void addDynamicExecutionPredicates(DynamicExecutionFilter dynamicExecutionFilter, CriteriaBuilder cb, CommonAbstractCriteria q, From<?,T> r, List<Predicate> predicates, SecurityContextBase securityContext) {
 		securedBasicRepository.addSecuredBasicPredicates(dynamicExecutionFilter.getBasicPropertiesFilter(),cb,q,r,predicates,securityContext);
-		if(dynamicExecutionFilter.getOnlyIds()!=null&&!dynamicExecutionFilter.getOnlyIds().isEmpty()){
-			predicates.add(r.get(Basic_.id).in(dynamicExecutionFilter.getOnlyIds()));
+		DynamicInvokerMethodFilter dynamicInvokerMethodFilter = dynamicExecutionFilter.getDynamicInvokerMethodFilter();
+		if(dynamicInvokerMethodFilter!=null){
+			addDynamicInvokerMethodPredicates(cb, r, predicates, dynamicInvokerMethodFilter);
 		}
-		if(dynamicExecutionFilter.getCanonicalNames()!=null&&!dynamicExecutionFilter.getCanonicalNames().isEmpty()){
-			Join<T, ServiceCanonicalName> join=r.join(DynamicExecution_.serviceCanonicalNames);
-			predicates.add(join.get(ServiceCanonicalName_.serviceCanonicalName).in(dynamicExecutionFilter.getCanonicalNames()));
+	}
+
+	private <T extends DynamicExecution> void addDynamicInvokerMethodPredicates(CriteriaBuilder cb, From<?, T> r, List<Predicate> predicates, DynamicInvokerMethodFilter dynamicInvokerMethodFilter) {
+		BasicPropertiesFilter basicPropertiesFilter = dynamicInvokerMethodFilter.getBasicPropertiesFilter();
+		if(basicPropertiesFilter !=null){
+			if(basicPropertiesFilter.getNameLike()!=null){
+				predicates.add(cb.like(r.get(DynamicExecution_.methodName),basicPropertiesFilter.getNameLike()));
+			}
+			if(basicPropertiesFilter.getNames()!=null&&!basicPropertiesFilter.getNames().isEmpty()){
+				predicates.add(r.get(DynamicExecution_.methodName).in(basicPropertiesFilter.getNames()));
+
+			}
 		}
-		if(dynamicExecutionFilter.getMethodNames()!=null&&!dynamicExecutionFilter.getMethodNames().isEmpty()){
-			predicates.add(r.get(DynamicExecution_.methodName).in(dynamicExecutionFilter.getMethodNames()));
+		if(dynamicInvokerMethodFilter.getCategories()!=null&&!dynamicInvokerMethodFilter.getCategories().isEmpty()){
+			predicates.add(r.get(DynamicExecution_.category).in(dynamicInvokerMethodFilter.getCategories()));
+		}
+		DynamicInvokerFilter dynamicInvokerFilter = dynamicInvokerMethodFilter.getDynamicInvokerFilter();
+		if(dynamicInvokerFilter !=null){
+			addDynamicInvokersPredicates(cb, r, predicates, dynamicInvokerFilter);
+		}
+
+	}
+
+	private <T extends DynamicExecution> void addDynamicInvokersPredicates(CriteriaBuilder cb, From<?, T> r, List<Predicate> predicates, DynamicInvokerFilter dynamicInvokerFilter) {
+		Join<T,ServiceCanonicalName> join=null;
+
+		BasicPropertiesFilter basicPropertiesFilter = dynamicInvokerFilter.getBasicPropertiesFilter();
+		if(basicPropertiesFilter !=null){
+			if(basicPropertiesFilter.getNameLike()!=null){
+				join=join==null?r.join(DynamicExecution_.serviceCanonicalNames):join;
+				predicates.add(cb.like(join.get(ServiceCanonicalName_.serviceCanonicalName),basicPropertiesFilter.getNameLike()));
+			}
+			if(basicPropertiesFilter.getNames()!=null&&!basicPropertiesFilter.getNames().isEmpty()){
+				join=join==null?r.join(DynamicExecution_.serviceCanonicalNames):join;
+				predicates.add(join.get(ServiceCanonicalName_.serviceCanonicalName).in(basicPropertiesFilter.getNames()));
+
+			}
+
+		}
+		if(dynamicInvokerFilter.getInvokerTypes()!=null&&!dynamicInvokerFilter.getInvokerTypes().isEmpty()){
+			join=join==null?r.join(DynamicExecution_.serviceCanonicalNames):join;
+			predicates.add(join.get(ServiceCanonicalName_.serviceCanonicalName).in(dynamicInvokerFilter.getInvokerTypes()));
+
 		}
 	}
 

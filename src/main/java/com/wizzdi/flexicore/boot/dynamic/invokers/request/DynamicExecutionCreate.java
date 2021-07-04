@@ -1,5 +1,6 @@
 package com.wizzdi.flexicore.boot.dynamic.invokers.request;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.databind.annotation.JsonTypeIdResolver;
 import com.wizzdi.flexicore.boot.dynamic.invokers.model.PluginLoaderIdResolver;
@@ -14,6 +15,8 @@ public class DynamicExecutionCreate  extends BasicCreate {
 	@JsonTypeInfo(use = JsonTypeInfo.Id.CLASS,property = "type" )
 	@JsonTypeIdResolver(PluginLoaderIdResolver.class)
 	private Object executionParametersHolder;
+	@JsonIgnore
+	private String category;
 
 	public Set<String> getServiceCanonicalNames() {
 		return serviceCanonicalNames;
@@ -41,6 +44,16 @@ public class DynamicExecutionCreate  extends BasicCreate {
 
 	public <T extends DynamicExecutionCreate> T setExecutionParametersHolder(Object executionParametersHolder) {
 		this.executionParametersHolder = executionParametersHolder;
+		return (T) this;
+	}
+
+	@JsonIgnore
+	public String getCategory() {
+		return category;
+	}
+
+	public <T extends DynamicExecutionCreate> T setCategory(String category) {
+		this.category = category;
 		return (T) this;
 	}
 }

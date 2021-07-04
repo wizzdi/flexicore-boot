@@ -6,6 +6,7 @@ import com.wizzdi.flexicore.boot.dynamic.invokers.response.InvokerHolder;
 import com.wizzdi.flexicore.boot.dynamic.invokers.response.InvokerInfo;
 import com.wizzdi.flexicore.boot.dynamic.invokers.response.InvokerMethodHolder;
 import com.wizzdi.flexicore.boot.dynamic.invokers.service.app.App;
+import com.wizzdi.flexicore.security.request.BasicPropertiesFilter;
 import com.wizzdi.flexicore.security.response.PaginationResponse;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -49,7 +50,7 @@ public class DynamicInvokerControllerTest {
     @Order(2)
     public void testListAllDynamicInvokers() {
         DynamicInvokerFilter request=new DynamicInvokerFilter()
-                .setNameLike("Test")
+                .setBasicPropertiesFilter(new BasicPropertiesFilter().setNameLike("Test"))
                 .setMethodNameLike("listTests");
         ParameterizedTypeReference<PaginationResponse<InvokerInfo>> t= new ParameterizedTypeReference<>() {};
 
@@ -68,7 +69,7 @@ public class DynamicInvokerControllerTest {
     @Order(2)
     public void testListAllDynamicInvokerHolders() {
         DynamicInvokerFilter request=new DynamicInvokerFilter()
-                .setNameLike("Test")
+                .setBasicPropertiesFilter(new BasicPropertiesFilter().setNameLike("Test"))
                 .setMethodNameLike("listTests");
         ParameterizedTypeReference<PaginationResponse<InvokerHolder>> t= new ParameterizedTypeReference<>() {};
 
@@ -87,7 +88,7 @@ public class DynamicInvokerControllerTest {
     @Order(3)
     public void testListAllDynamicInvokerMethodHolders() {
         DynamicInvokerMethodFilter request=new DynamicInvokerMethodFilter()
-                .setNameLike("listTests");
+                .setBasicPropertiesFilter(new BasicPropertiesFilter().setNameLike("listTests"));
         ParameterizedTypeReference<PaginationResponse<InvokerMethodHolder>> t= new ParameterizedTypeReference<>() {};
 
         ResponseEntity<PaginationResponse<InvokerMethodHolder>> dynamicInvokerResponse = this.restTemplate.exchange("/dynamicInvokerMethod/getAllInvokerMethodHolders", HttpMethod.POST, new HttpEntity<>(request), t);

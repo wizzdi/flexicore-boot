@@ -10,37 +10,9 @@ public class DynamicExecutionFilter extends PaginationFilter {
 
 
 	private BasicPropertiesFilter basicPropertiesFilter;
-	private Set<String> canonicalNames;
-	private Set<String> methodNames;
-	private Set<String> onlyIds;
+	private DynamicInvokerMethodFilter dynamicInvokerMethodFilter;
 
 
-	public Set<String> getCanonicalNames() {
-		return canonicalNames;
-	}
-
-	public <T extends DynamicExecutionFilter> T setCanonicalNames(Set<String> canonicalNames) {
-		this.canonicalNames = canonicalNames;
-		return (T) this;
-	}
-
-	public Set<String> getMethodNames() {
-		return methodNames;
-	}
-
-	public <T extends DynamicExecutionFilter> T setMethodNames(Set<String> methodNames) {
-		this.methodNames = methodNames;
-		return (T) this;
-	}
-
-	public Set<String> getOnlyIds() {
-		return onlyIds;
-	}
-
-	public <T extends DynamicExecutionFilter> T setOnlyIds(Set<String> onlyIds) {
-		this.onlyIds = onlyIds;
-		return (T) this;
-	}
 
 	public BasicPropertiesFilter getBasicPropertiesFilter() {
 		return basicPropertiesFilter;
@@ -48,6 +20,15 @@ public class DynamicExecutionFilter extends PaginationFilter {
 
 	public <T extends DynamicExecutionFilter> T setBasicPropertiesFilter(BasicPropertiesFilter basicPropertiesFilter) {
 		this.basicPropertiesFilter = basicPropertiesFilter;
+		return (T) this;
+	}
+
+	public DynamicInvokerMethodFilter getDynamicInvokerMethodFilter() {
+		return dynamicInvokerMethodFilter;
+	}
+
+	public <T extends DynamicExecutionFilter> T setDynamicInvokerMethodFilter(DynamicInvokerMethodFilter dynamicInvokerMethodFilter) {
+		this.dynamicInvokerMethodFilter = dynamicInvokerMethodFilter;
 		return (T) this;
 	}
 }

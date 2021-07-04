@@ -1,24 +1,16 @@
 package com.wizzdi.flexicore.boot.dynamic.invokers.request;
 
 import com.wizzdi.flexicore.security.request.BaseclassFilter;
+import com.wizzdi.flexicore.security.request.BasicPropertiesFilter;
 
 import java.util.Set;
 
 public class DynamicInvokerMethodFilter extends BaseclassFilter {
 
-    private String nameLike;
+    private BasicPropertiesFilter basicPropertiesFilter;
     private Set<String> categories;
     private DynamicInvokerFilter dynamicInvokerFilter;
 
-
-    public String getNameLike() {
-        return nameLike;
-    }
-
-    public <T extends DynamicInvokerMethodFilter> T setNameLike(String nameLike) {
-        this.nameLike = nameLike;
-        return (T) this;
-    }
 
     public Set<String> getCategories() {
         return categories;
@@ -35,6 +27,16 @@ public class DynamicInvokerMethodFilter extends BaseclassFilter {
 
     public <T extends DynamicInvokerMethodFilter> T setDynamicInvokerFilter(DynamicInvokerFilter dynamicInvokerFilter) {
         this.dynamicInvokerFilter = dynamicInvokerFilter;
+        return (T) this;
+    }
+
+
+    public BasicPropertiesFilter getBasicPropertiesFilter() {
+        return basicPropertiesFilter;
+    }
+
+    public <T extends DynamicInvokerMethodFilter> T setBasicPropertiesFilter(BasicPropertiesFilter basicPropertiesFilter) {
+        this.basicPropertiesFilter = basicPropertiesFilter;
         return (T) this;
     }
 }

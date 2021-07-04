@@ -2,6 +2,7 @@ package com.wizzdi.flexicore.boot.dynamic.invokers.service;
 
 import com.flexicore.model.SecurityOperation;
 import com.flexicore.security.SecurityContextBase;
+import com.wizzdi.flexicore.boot.base.init.FlexiCorePluginClassLoader;
 import com.wizzdi.flexicore.boot.base.interfaces.Plugin;
 import com.wizzdi.flexicore.boot.dynamic.invokers.interfaces.ExecutionContext;
 import com.wizzdi.flexicore.boot.dynamic.invokers.request.*;
@@ -10,6 +11,7 @@ import com.wizzdi.flexicore.boot.dynamic.invokers.response.InvokerInfo;
 import com.wizzdi.flexicore.boot.dynamic.invokers.response.InvokerMethodHolder;
 import com.wizzdi.flexicore.boot.dynamic.invokers.response.InvokerMethodInfo;
 import com.wizzdi.flexicore.security.interfaces.OperationsMethodScanner;
+import com.wizzdi.flexicore.security.request.BasicPropertiesFilter;
 import com.wizzdi.flexicore.security.request.PaginationFilter;
 import com.wizzdi.flexicore.security.response.OperationScanContext;
 import com.wizzdi.flexicore.security.response.PaginationResponse;
@@ -17,6 +19,7 @@ import com.wizzdi.flexicore.security.service.OperationValidatorService;
 import com.wizzdi.flexicore.security.service.SecurityOperationService;
 import org.pf4j.Extension;
 import org.pf4j.PluginManager;
+import org.pf4j.PluginWrapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.aop.support.AopUtils;
@@ -55,6 +58,7 @@ public class DynamicInvokerService implements Plugin {
 
     public void validate(DynamicInvokerFilter dynamicInvokerFilter, SecurityContextBase securityContext) {
 
+
     }
 
     public void validate(DynamicInvokerMethodFilter dynamicInvokerMethodFilter, SecurityContextBase securityContext) {
@@ -86,14 +90,22 @@ public class DynamicInvokerService implements Plugin {
 
     private boolean filter(InvokerInfo f, DynamicInvokerFilter dynamicInvokerFilter) {
         boolean pred = true;
-        if (dynamicInvokerFilter.getNameLike() != null) {
-            pred = pred && (f.getDisplayName().contains(dynamicInvokerFilter.getNameLike()) || f.getDescription().contains(dynamicInvokerFilter.getNameLike()));
+
+        BasicPropertiesFilter basicPropertiesFilter = dynamicInvokerFilter.getBasicPropertiesFilter();
+        if (basicPropertiesFilter !=null&& basicPropertiesFilter.getNameLike() != null) {
+            pred = pred && (f.getDisplayName().contains(basicPropertiesFilter.getNameLike()) || f.getDescription().contains(basicPropertiesFilter.getNameLike()));
         }
         if (dynamicInvokerFilter.getMethodNameLike() != null) {
             pred = pred && f.getMethods().stream().map(e -> e.getName()).anyMatch(e -> e.contains(dynamicInvokerFilter.getMethodNameLike()));
         }
         if (dynamicInvokerFilter.getInvokerTypes() != null && !dynamicInvokerFilter.getInvokerTypes().isEmpty()) {
             pred = pred && dynamicInvokerFilter.getInvokerTypes().contains(f.getName().getCanonicalName());
+        }
+        if(dynamicInvokerFilter.getPluginNames()!=null&&!dynamicInvokerFilter.getPluginNames().isEmpty()){
+            Class<?> handlingType = f.getHandlingType();
+            PluginWrapper pluginWrapper = pluginManager.whichPlugin(handlingType);
+            pred = pred && pluginWrapper!=null&&dynamicInvokerFilter.getPluginNames().contains(pluginWrapper.getPluginId());
+
         }
 
 
@@ -224,8 +236,9 @@ public class DynamicInvokerService implements Plugin {
 
     private boolean filterMethods(InvokerMethodHolder invokerMethodHolder, DynamicInvokerMethodFilter dynamicInvokerMethodFilter) {
         boolean pred = true;
-        if (dynamicInvokerMethodFilter.getNameLike() != null) {
-            pred = pred && (invokerMethodHolder.getDisplayName().contains(dynamicInvokerMethodFilter.getNameLike()) || invokerMethodHolder.getDescription().contains(dynamicInvokerMethodFilter.getNameLike()));
+        BasicPropertiesFilter basicPropertiesFilter = dynamicInvokerMethodFilter.getBasicPropertiesFilter();
+        if (basicPropertiesFilter !=null&& basicPropertiesFilter.getNameLike() != null) {
+            pred = pred && (invokerMethodHolder.getDisplayName().contains(basicPropertiesFilter.getNameLike()) || invokerMethodHolder.getDescription().contains(basicPropertiesFilter.getNameLike()));
         }
         if (dynamicInvokerMethodFilter.getCategories() != null && !dynamicInvokerMethodFilter.getCategories().isEmpty()) {
             pred = pred && invokerMethodHolder.getCategories() != null && Collections.disjoint(dynamicInvokerMethodFilter.getCategories(), invokerMethodHolder.getCategories());

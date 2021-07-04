@@ -82,6 +82,10 @@ public class DynamicExecutionService implements Plugin {
 			update = true;
 		}
 
+		if (dynamicExecutionCreate.getCategory() != null && !dynamicExecutionCreate.getCategory().equals(dynamicExecution.getCategory())) {
+			dynamicExecution.setCategory(dynamicExecutionCreate.getCategory());
+			update = true;
+		}
 		if (dynamicExecutionCreate.getExecutionParametersHolder() != null&&!dynamicExecutionCreate.getExecutionParametersHolder().equals(dynamicExecution.getExecutionParametersHolder()) ) {
 			dynamicExecution.setExecutionParametersHolder(dynamicExecutionCreate.getExecutionParametersHolder());
 			update = true;
@@ -123,11 +127,28 @@ public class DynamicExecutionService implements Plugin {
 
 	public void validateCreate(DynamicExecutionCreate dynamicExecutionCreate, SecurityContextBase securityContext) {
 		validate(dynamicExecutionCreate, securityContext);
-		if (dynamicExecutionCreate.getMethodName() == null || dynamicExecutionCreate.getMethodName().isEmpty()) {
+		String methodName = dynamicExecutionCreate.getMethodName();
+		if (methodName == null || methodName.isEmpty()) {
 			throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "method name must be non null");
 		}
-		if (dynamicExecutionCreate.getServiceCanonicalNames() == null || dynamicExecutionCreate.getServiceCanonicalNames().isEmpty()) {
+		Set<String> invokerNames = dynamicExecutionCreate.getServiceCanonicalNames();
+		if (invokerNames == null || invokerNames.isEmpty()) {
 			throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "service canonical names must be non null");
+		}
+		List<InvokerInfo> list = dynamicInvokerService.listAllDynamicInvokers(new DynamicInvokerFilter().setInvokerTypes(invokerNames), null);
+		List<InvokerMethodInfo> invokerMethodInfos = new ArrayList<>();
+		for (InvokerInfo invokerInfo : list) {
+			for (InvokerMethodInfo method : invokerInfo.getMethods()) {
+				if (methodName.equals(method.getName())) {
+					invokerMethodInfos.add(method);
+				}
+			}
+		}
+		if (invokerMethodInfos.isEmpty()) {
+			throw new HttpClientErrorException(HttpStatus.BAD_REQUEST,"No method " + methodName + " for invokers " + invokerNames);
+		}
+		if(dynamicExecutionCreate.getCategory()==null){
+			invokerMethodInfos.stream().map(f->f.getCategories()).flatMap(Set::stream).findFirst().ifPresent(f->dynamicExecutionCreate.setCategory(f));
 		}
 
 	}
@@ -135,6 +156,9 @@ public class DynamicExecutionService implements Plugin {
 	public void validate(DynamicExecutionFilter dynamicExecutionFilter, SecurityContextBase securityContext) {
 		if(dynamicExecutionFilter.getBasicPropertiesFilter()!=null){
 			basicService.validate(dynamicExecutionFilter.getBasicPropertiesFilter(),securityContext);
+		}
+		if(dynamicExecutionFilter.getDynamicInvokerMethodFilter()!=null){
+			dynamicInvokerService.validate(dynamicExecutionFilter.getDynamicInvokerMethodFilter(),securityContext);
 		}
 	}
 
