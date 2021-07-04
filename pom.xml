@@ -4,7 +4,7 @@
 
     <groupId>com.wizzdi</groupId>
     <artifactId>flexicore-boot-starter-data-jpa</artifactId>
-    <version>1.0.4-SNAPSHOT</version>
+    <version>1.1.0-SNAPSHOT</version>
 
     <name>FlexiCore Boot JPA</name>
     <description>flexicore boot jpa</description>
@@ -25,8 +25,12 @@
         <maven.compiler.source>11</maven.compiler.source>
         <pf4j-spring.version>0.7.0</pf4j-spring.version>
 
-        <spring-boot.version>2.3.0.RELEASE</spring-boot.version>
+        <spring-boot.version>2.5.2</spring-boot.version>
         <junit-jupiter.version>5.6.2</junit-jupiter.version>
+        <reflections.version>0.9.12</reflections.version>
+        <flexicore-boot.version>1.1.0</flexicore-boot.version>
+        <flexicore-boot-starter-web.version>1.1.0</flexicore-boot-starter-web.version>
+        <flexicore-boot-test-helper.version>1.0.0</flexicore-boot-test-helper.version>
     </properties>
 
     <distributionManagement>
@@ -68,7 +72,7 @@
                 <!-- Import dependency management from Spring Boot -->
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-dependencies</artifactId>
-                <version>2.3.0.RELEASE</version>
+                <version>${spring-boot.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
@@ -84,12 +88,12 @@
         <dependency>
             <groupId>org.reflections</groupId>
             <artifactId>reflections</artifactId>
-            <version>0.9.11</version>
+            <version>${reflections.version}</version>
         </dependency>
         <dependency>
             <groupId>com.wizzdi</groupId>
             <artifactId>flexicore-boot</artifactId>
-            <version>1.0.4</version>
+            <version>${flexicore-boot.version}</version>
         </dependency>
         <dependency>
             <groupId>org.pf4j</groupId>
@@ -115,7 +119,7 @@
         <dependency>
             <groupId>com.wizzdi</groupId>
             <artifactId>flexicore-boot-starter-web</artifactId>
-            <version>1.0.0</version>
+            <version>${flexicore-boot-starter-web.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -149,14 +153,12 @@
         <dependency>
             <groupId>com.wizzdi</groupId>
             <artifactId>flexicore-boot-test-helper</artifactId>
-            <version>1.0.0</version>
+            <version>${flexicore-boot-test-helper.version}</version>
             <scope>test</scope>
         </dependency>
-        <!-- https://mvnrepository.com/artifact/org.postgresql/postgresql -->
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
-            <version>42.2.6</version>
             <scope>test</scope>
         </dependency>
 
@@ -233,11 +235,7 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
                 <version>3.2.0</version>
-                <configuration>
-                    <javadocExecutable>C:\Program Files\AdoptOpenJDK\jdk-8.0.212.03-hotspot\bin\javadoc.exe
-                    </javadocExecutable>
-                    <javadocVersion>1.8.0</javadocVersion>
-                </configuration>
+
             </plugin>
 
 
