@@ -4,7 +4,7 @@
 
     <groupId>com.wizzdi</groupId>
     <artifactId>flexicore-boot-dynamic-invokers-model</artifactId>
-    <version>1.0.6-SNAPSHOT</version>
+    <version>1.1.0-SNAPSHOT</version>
     <name>FlexiCore dynamic invokers model</name>
     <description>flexicore dynamic invokers model</description>
     <url>https://wizzdi.com</url>
@@ -20,11 +20,13 @@
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
         <version.eclipselink>2.7.7</version.eclipselink>
-        <jackson.version>2.11.0</jackson.version>
         <pf4j-spring.version>0.7.0</pf4j-spring.version>
 
 
-        <spring-boot.version>2.3.0.RELEASE</spring-boot.version>
+        <spring-boot.version>2.5.2</spring-boot.version>
+        <flexicore-security-model.version>1.1.0</flexicore-security-model.version>
+        <flexicore-boot-starter-data-jpa.version>1.1.0</flexicore-boot-starter-data-jpa.version>
+        <flexicore-boot.version>1.2.0</flexicore-boot.version>
     </properties>
     <distributionManagement>
         <snapshotRepository>
@@ -79,19 +81,19 @@
         <dependency>
             <groupId>com.wizzdi</groupId>
             <artifactId>flexicore-security-model</artifactId>
-            <version>1.0.6</version>
+            <version>${flexicore-security-model.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>com.wizzdi</groupId>
             <artifactId>flexicore-boot-starter-data-jpa</artifactId>
-            <version>1.0.3</version>
+            <version>${flexicore-boot-starter-data-jpa.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>com.wizzdi</groupId>
             <artifactId>flexicore-boot</artifactId>
-            <version>1.1.0</version>
+            <version>${flexicore-boot.version}</version>
             <scope>provided</scope>
         </dependency>
 
