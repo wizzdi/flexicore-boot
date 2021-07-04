@@ -1,10 +1,12 @@
 package com.wizzdi.flexicore.boot.base;
 
+import com.github.zafarkhaja.semver.Version;
 import com.wizzdi.flexicore.boot.base.app.App;
 import com.wizzdi.flexicore.boot.base.init.FlexiCorePluginManager;
 import com.wizzdi.flexicore.boot.test.helper.PluginJar;
 import org.junit.Assert;
 import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -102,10 +104,17 @@ public class PluginLoadingTest {
 	}
 
 	@Test
+	public void testVersion(){
+		Version v = Version.valueOf("1.0.0-SNAPSHOT");
+		Assertions.assertTrue(v.satisfies(">=1.0.0-SNAPSHOT"));
+
+	}
+
+	@Test
 	public void testNoFailedPlugins() {
 
 		Set<String> started = flexiCorePluginManager.getStartedPlugins().stream().map(f -> f.getPluginId()).collect(Collectors.toSet());
-		Assert.assertTrue(started.contains(PLUGIN_A_ID));
+		Assertions.assertTrue(started.contains(PLUGIN_A_ID));
 
 	}
 
