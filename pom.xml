@@ -4,7 +4,7 @@
 
     <groupId>com.wizzdi</groupId>
     <artifactId>flexicore-security-model</artifactId>
-    <version>1.0.8-SNAPSHOT</version>
+    <version>1.1.0-SNAPSHOT</version>
     <name>FlexiCore security model</name>
     <description>flexicore security model</description>
     <url>https://wizzdi.com</url>
@@ -21,7 +21,13 @@
         <maven.compiler.target>11</maven.compiler.target>
         <version.eclipselink>2.7.7</version.eclipselink>
         <pf4j-spring.version>0.7.0</pf4j-spring.version>
-        <spring-boot.version>2.3.0.RELEASE</spring-boot.version>
+        <spring-boot.version>2.5.2</spring-boot.version>
+        <commons-io.version>2.10.0</commons-io.version>
+        <commons-codec.version>1.15</commons-codec.version>
+        <flexicore-boot-starter-web.version>1.1.0</flexicore-boot-starter-web.version>
+        <flexicore-boot.version>1.2.0</flexicore-boot.version>
+        <flexicore-boot-starter-data-jpa.version>1.1.0</flexicore-boot-starter-data-jpa.version>
+        <flexicore-boot-test-helper.version>1.0.0</flexicore-boot-test-helper.version>
     </properties>
     <distributionManagement>
         <snapshotRepository>
@@ -71,18 +77,18 @@
         <dependency>
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
-            <version>2.8.0</version>
+            <version>${commons-io.version}</version>
         </dependency>
 
         <dependency>
             <groupId>commons-codec</groupId>
             <artifactId>commons-codec</artifactId>
-            <version>1.15</version>
+            <version>${commons-codec.version}</version>
         </dependency>
         <dependency>
             <groupId>com.wizzdi</groupId>
             <artifactId>flexicore-boot-starter-web</artifactId>
-            <version>1.0.2</version>
+            <version>${flexicore-boot-starter-web.version}</version>
             <scope>provided</scope>
 
         </dependency>
@@ -102,13 +108,13 @@
         <dependency>
             <groupId>com.wizzdi</groupId>
             <artifactId>flexicore-boot</artifactId>
-            <version>1.0.1</version>
+            <version>${flexicore-boot.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>com.wizzdi</groupId>
             <artifactId>flexicore-boot-starter-data-jpa</artifactId>
-            <version>1.0.1</version>
+            <version>${flexicore-boot-starter-data-jpa.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -146,7 +152,7 @@
         <dependency>
             <groupId>com.wizzdi</groupId>
             <artifactId>flexicore-boot-test-helper</artifactId>
-            <version>1.0.0</version>
+            <version>${flexicore-boot-test-helper.version}</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
