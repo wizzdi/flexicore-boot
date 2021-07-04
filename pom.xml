@@ -4,11 +4,16 @@
 
     <groupId>com.wizzdi</groupId>
     <artifactId>dynamic-annoatations-service</artifactId>
-    <version>1.0.1-SNAPSHOT</version>
+    <version>1.1.0-SNAPSHOT</version>
     <name>Dynamic annotations service</name>
     <description>Dynamic annotations service</description>
     <url>https://wizzdi.com</url>
 
+    <properties>
+        <maven.compiler.source>11</maven.compiler.source>
+        <maven.compiler.target>11</maven.compiler.target>
+        <spring-boot-dependencies.version>2.5.2</spring-boot-dependencies.version>
+    </properties>
     <licenses>
         <license>
             <name>Apache License, Version 2.0</name>
@@ -57,7 +62,7 @@
                 <!-- Import dependency management from Spring Boot -->
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-dependencies</artifactId>
-                <version>2.3.0.RELEASE</version>
+                <version>${spring-boot-dependencies.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
@@ -65,10 +70,7 @@
 
     </dependencyManagement>
 
-    <properties>
-        <maven.compiler.source>11</maven.compiler.source>
-        <maven.compiler.target>11</maven.compiler.target>
-    </properties>
+
     <dependencies>
         <dependency>
             <groupId>org.springframework.boot</groupId>
