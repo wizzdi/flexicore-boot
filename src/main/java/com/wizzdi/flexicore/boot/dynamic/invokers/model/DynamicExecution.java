@@ -28,6 +28,7 @@ public class DynamicExecution extends SecuredBasic {
     private Object executionParametersHolder;
     @Column(columnDefinition = "timestamp with time zone")
     private OffsetDateTime lastExecuted;
+    private String category;
 
 
     @OneToMany(targetEntity = ServiceCanonicalName.class,mappedBy = "dynamicExecution",fetch = FetchType.EAGER)
@@ -73,6 +74,15 @@ public class DynamicExecution extends SecuredBasic {
         return (T) this;
     }
 
+    public String getCategory() {
+        return category;
+    }
+
+    public <T extends DynamicExecution> T setCategory(String category) {
+        this.category = category;
+        return (T) this;
+    }
+
     @Override
     public String toString() {
         return "DynamicExecution{" +
@@ -80,6 +90,8 @@ public class DynamicExecution extends SecuredBasic {
                 ", name='" + name + '\'' +
                 ", description='" + description + '\'' +
                 ", methodName='" + methodName + '\'' +
+                ", category='" + category + '\'' +
+
                 ", body='" + executionParametersHolder + '\'' +
                 ", lastExecuted=" + lastExecuted +
                 '}';
