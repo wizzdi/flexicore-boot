@@ -1,5 +1,6 @@
 package com.flexicore.app;
 
+import com.flexicore.pluginA.PluginAREST;
 import com.wizzdi.flexicore.boot.base.annotations.plugins.EnableFlexiCorePlugins;
 import com.wizzdi.flexicore.boot.jaxrs.annotations.EnableFlexiCoreJAXRSPlugins;
 import org.springframework.boot.CommandLineRunner;
@@ -14,7 +15,8 @@ import java.util.Arrays;
 
 @EnableFlexiCorePlugins
 @EnableFlexiCoreJAXRSPlugins
-@SpringBootApplication
+@SpringBootApplication(scanBasePackageClasses = {App.class, PluginAREST.class})
+//TODO: fix flexicore test so it actually tests via plugins
 public class App {
 
 

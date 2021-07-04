@@ -2,7 +2,6 @@ package com.flexicore.pluginA;
 
 import com.flexicore.annotations.plugins.PluginInfo;
 import com.flexicore.interfaces.RestServicePlugin;
-import com.wizzdi.flexicore.boot.base.interfaces.Plugin;
 import org.pf4j.Extension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
