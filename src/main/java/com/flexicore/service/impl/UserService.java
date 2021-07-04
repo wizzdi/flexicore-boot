@@ -22,9 +22,6 @@
  */
 package com.flexicore.service.impl;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.flexicore.data.BaselinkRepository;
 import com.flexicore.data.TenantRepository;
 import com.flexicore.data.UserRepository;
@@ -48,10 +45,6 @@ import com.google.common.cache.CacheBuilder;
 import com.lambdaworks.crypto.SCryptUtil;
 import com.wizzdi.flexicore.security.service.SecurityPolicyService;
 import com.wizzdi.flexicore.security.service.SecurityUserService;
-import io.joshworks.restclient.http.MediaType;
-import io.joshworks.restclient.http.RestClient;
-import io.joshworks.restclient.http.mapper.ObjectMapper;
-import io.joshworks.restclient.http.mapper.ObjectMappers;
 import org.pf4j.Extension;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -70,7 +63,6 @@ import javax.ws.rs.BadRequestException;
 import javax.ws.rs.NotAuthorizedException;
 import javax.ws.rs.core.Response;
 import java.io.File;
-import java.io.IOException;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.util.*;
@@ -154,7 +146,6 @@ public class UserService implements com.flexicore.service.UserService {
         return userrepository.findById(id);
     }
 
-    private static RestClient client;
 
     /**
      *
@@ -165,41 +156,6 @@ public class UserService implements com.flexicore.service.UserService {
     private Cache<String, String> blacklist = CacheBuilder.newBuilder().expireAfterAccess(6, TimeUnit.HOURS).maximumSize(10000).build();
 
 
-    static {
-        ObjectMapper mapper = new ObjectMapper() {
-            private com.fasterxml.jackson.databind.ObjectMapper objectMapper =
-                    new com.fasterxml.jackson.databind.ObjectMapper()
-                            .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
-                            .registerModule(new JavaTimeModule());
-
-            @Override
-            public <T> T readValue(String s, Class<T> aClass) {
-                try {
-                    return objectMapper.readValue(s, aClass);
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
-            }
-
-            @Override
-            public String writeValue(Object o) {
-                try {
-                    return objectMapper.writeValueAsString(o);
-                } catch (JsonProcessingException e) {
-                    throw new RuntimeException(e);
-                }
-            }
-        };
-        MediaType mediaType = MediaType.valueOf("application/json; charset=utf-8");
-        ObjectMappers.register(MediaType.APPLICATION_JSON_TYPE, mapper);
-        ObjectMappers.register(mediaType, mapper);
-        ObjectMappers.register(MediaType.APPLICATION_FORM_URLENCODED_TYPE, mapper);
-
-
-        client = RestClient.builder().build();
-
-
-    }
 
 
     @Override

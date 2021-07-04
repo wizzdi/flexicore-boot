@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.wizzdi</groupId>
     <artifactId>flexicore-base-service</artifactId>
-    <version>2.0.4-SNAPSHOT</version>
+    <version>2.1.0-SNAPSHOT</version>
     <name>FlexiCore base service</name>
     <description>flexicore base service</description>
     <url>https://wizzdi.com</url>
@@ -22,10 +22,42 @@
         <maven.compiler.target>11</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <pf4j-spring.version>0.7.0</pf4j-spring.version>
-        <swagger.version>2.1.2</swagger.version>
+        <swagger.version>2.1.10</swagger.version>
         <reflections>${project.build.outputDirectory}/META-INF/reflections/${project.artifactId}-reflections.json
         </reflections>
 
+        <spring-boot-dependencies.version>2.5.2</spring-boot-dependencies.version>
+        <flexicore-security-model.version>1.1.0</flexicore-security-model.version>
+        <flexicore-security-service.version>1.1.0</flexicore-security-service.version>
+        <springdoc-openapi-webmvc-core.version>1.5.9</springdoc-openapi-webmvc-core.version>
+        <totp-spring-boot-starter.version>1.7.1</totp-spring-boot-starter.version>
+        <gson.version>2.8.7</gson.version>
+        <commons-codec.version>1.15</commons-codec.version>
+        <unirest-java.version>1.8.0</unirest-java.version>
+        <javassist.version>3.28.0-GA</javassist.version>
+        <reflections.version>0.9.12</reflections.version>
+        <scrypt.version>1.4.0</scrypt.version>
+        <guava.version>30.1.1-jre</guava.version>
+        <mongodb-crypt.version>1.2.0</mongodb-crypt.version>
+        <zt-zip.version>1.14</zt-zip.version>
+        <tink.version>1.6.0</tink.version>
+        <commons-io.version>2.10.0</commons-io.version>
+        <commons-csv.version>1.8</commons-csv.version>
+        <jjwt.version>0.9.1</jjwt.version>
+        <flexicore-boot-dynamic-invokers-model.version>1.1.0</flexicore-boot-dynamic-invokers-model.version>
+        <flexicore-boot-starter-websocket.version>1.1.0</flexicore-boot-starter-websocket.version>
+        <flexicore-boot-dynamic-invokers-service.version>1.1.0</flexicore-boot-dynamic-invokers-service.version>
+        <flexicore-base-model.version>2.1.0</flexicore-base-model.version>
+        <flexicore-file-service.version>1.0.0</flexicore-file-service.version>
+        <javaee-api.version>8.0</javaee-api.version>
+        <flexicore-boot.version>1.2.0</flexicore-boot.version>
+        <flexicore-boot-vintage.version>1.1.0</flexicore-boot-vintage.version>
+        <resteasy-flexicore-boot-starter.version>1.1.0</resteasy-flexicore-boot-starter.version>
+        <flexicore-boot-starter-web.version>1.1.0</flexicore-boot-starter-web.version>
+        <flexicore-boot-starter-actuator.version>1.1.0</flexicore-boot-starter-actuator.version>
+        <flexicore-boot-starter-data-jpa.version>1.1.0</flexicore-boot-starter-data-jpa.version>
+        <dynamic-properties-converter-postgresql.version>1.1.0</dynamic-properties-converter-postgresql.version>
+        <flexicore-boot-starter-data-jpa-eclipselink.version>1.1.0</flexicore-boot-starter-data-jpa-eclipselink.version>
     </properties>
 
     <distributionManagement>
@@ -65,7 +97,7 @@
             <dependency>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-dependencies</artifactId>
-                <version>2.3.0.RELEASE</version>
+                <version>${spring-boot-dependencies.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
@@ -75,35 +107,35 @@
         <dependency>
             <groupId>com.wizzdi</groupId>
             <artifactId>flexicore-security-model</artifactId>
-            <version>1.0.7</version>
+            <version>${flexicore-security-model.version}</version>
         </dependency>
         <dependency>
             <groupId>com.wizzdi</groupId>
             <artifactId>flexicore-security-service</artifactId>
-            <version>1.0.9-SNAPSHOT</version>
+            <version>${flexicore-security-service.version}</version>
         </dependency>
         <!-- https://mvnrepository.com/artifact/org.springdoc/springdoc-openapi-webmvc-core -->
         <dependency>
             <groupId>org.springdoc</groupId>
             <artifactId>springdoc-openapi-webmvc-core</artifactId>
-            <version>1.5.1</version>
+            <version>${springdoc-openapi-webmvc-core.version}</version>
         </dependency>
 
 
         <dependency>
             <groupId>dev.samstevens.totp</groupId>
             <artifactId>totp-spring-boot-starter</artifactId>
-            <version>1.7.1</version>
+            <version>${totp-spring-boot-starter.version}</version>
         </dependency>
         <dependency>
             <groupId>com.google.code.gson</groupId>
             <artifactId>gson</artifactId>
-            <version>2.8.6</version>
+            <version>${gson.version}</version>
         </dependency>
         <dependency>
             <groupId>commons-codec</groupId>
             <artifactId>commons-codec</artifactId>
-            <version>1.13</version>
+            <version>${commons-codec.version}</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -120,7 +152,7 @@
         <dependency>
             <groupId>io.joshworks.unirest</groupId>
             <artifactId>unirest-java</artifactId>
-            <version>1.8.0</version>
+            <version>${unirest-java.version}</version>
             <exclusions>
                 <exclusion>
                     <artifactId>slf4j-api</artifactId>
@@ -134,26 +166,20 @@
         <dependency>
             <groupId>org.javassist</groupId>
             <artifactId>javassist</artifactId>
-            <version>3.21.0-GA</version>
+            <version>${javassist.version}</version>
         </dependency>
 
         <dependency>
             <groupId>org.reflections</groupId>
             <artifactId>reflections</artifactId>
-            <version>0.9.11</version>
-            <exclusions>
-                <exclusion>
-                    <artifactId>guava</artifactId>
-                    <groupId>com.google.guava</groupId>
-                </exclusion>
-            </exclusions>
+            <version>${reflections.version}</version>
         </dependency>
 
 
         <dependency>
             <groupId>com.lambdaworks</groupId>
             <artifactId>scrypt</artifactId>
-            <version>1.4.0</version>
+            <version>${scrypt.version}</version>
         </dependency>
 
 
@@ -180,13 +206,13 @@
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
-            <version>26.0-jre</version>
+            <version>${guava.version}</version>
         </dependency>
         <!-- https://mvnrepository.com/artifact/org.mongodb/mongodb-crypt -->
         <dependency>
             <groupId>org.mongodb</groupId>
             <artifactId>mongodb-crypt</artifactId>
-            <version>1.0.0</version>
+            <version>${mongodb-crypt.version}</version>
 
         </dependency>
 
@@ -195,7 +221,7 @@
         <dependency>
             <groupId>org.zeroturnaround</groupId>
             <artifactId>zt-zip</artifactId>
-            <version>1.13</version>
+            <version>${zt-zip.version}</version>
             <exclusions>
                 <exclusion>
                     <artifactId>slf4j-api</artifactId>
@@ -210,23 +236,23 @@
         <dependency>
             <groupId>com.google.crypto.tink</groupId>
             <artifactId>tink</artifactId>
-            <version>1.5.0</version>
+            <version>${tink.version}</version>
         </dependency>
         <dependency>
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
-            <version>2.6</version>
+            <version>${commons-io.version}</version>
         </dependency>
 
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-csv</artifactId>
-            <version>1.8</version>
+            <version>${commons-csv.version}</version>
         </dependency>
         <dependency>
             <groupId>io.jsonwebtoken</groupId>
             <artifactId>jjwt</artifactId>
-            <version>0.9.1</version>
+            <version>${jjwt.version}</version>
             <exclusions>
                 <exclusion>
                     <artifactId>jackson-databind</artifactId>
@@ -237,29 +263,29 @@
         <dependency>
             <groupId>com.wizzdi</groupId>
             <artifactId>flexicore-boot-dynamic-invokers-model</artifactId>
-            <version>1.0.3</version>
+            <version>${flexicore-boot-dynamic-invokers-model.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>com.wizzdi</groupId>
             <artifactId>flexicore-boot-starter-websocket</artifactId>
-            <version>1.0.1</version>
+            <version>${flexicore-boot-starter-websocket.version}</version>
         </dependency>
         <dependency>
             <groupId>com.wizzdi</groupId>
             <artifactId>flexicore-boot-dynamic-invokers-service</artifactId>
-            <version>1.0.6</version>
+            <version>${flexicore-boot-dynamic-invokers-service.version}</version>
         </dependency>
         <dependency>
             <groupId>com.wizzdi</groupId>
             <artifactId>flexicore-base-model</artifactId>
-            <version>2.0.1</version>
+            <version>${flexicore-base-model.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>com.wizzdi</groupId>
             <artifactId>flexicore-file-service</artifactId>
-            <version>1.0.0</version>
+            <version>${flexicore-file-service.version}</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -270,7 +296,7 @@
         <dependency>
             <groupId>javax</groupId>
             <artifactId>javaee-api</artifactId>
-            <version>8.0</version>
+            <version>${javaee-api.version}</version>
         </dependency>
         <dependency>
             <groupId>org.eclipse.persistence</groupId>
@@ -280,32 +306,32 @@
         <dependency>
             <groupId>com.wizzdi</groupId>
             <artifactId>flexicore-boot</artifactId>
-            <version>1.1.0</version>
+            <version>${flexicore-boot.version}</version>
         </dependency>
         <dependency>
             <groupId>com.wizzdi</groupId>
             <artifactId>flexicore-boot-vintage</artifactId>
-            <version>1.0.1</version>
+            <version>${flexicore-boot-vintage.version}</version>
         </dependency>
         <dependency>
             <groupId>com.wizzdi</groupId>
             <artifactId>resteasy-flexicore-boot-starter</artifactId>
-            <version>1.0.0</version>
+            <version>${resteasy-flexicore-boot-starter.version}</version>
         </dependency>
         <dependency>
             <groupId>com.wizzdi</groupId>
             <artifactId>flexicore-boot-starter-web</artifactId>
-            <version>1.0.3</version>
+            <version>${flexicore-boot-starter-web.version}</version>
         </dependency>
         <dependency>
             <groupId>com.wizzdi</groupId>
             <artifactId>flexicore-boot-starter-actuator</artifactId>
-            <version>1.0.0</version>
+            <version>${flexicore-boot-starter-actuator.version}</version>
         </dependency>
         <dependency>
             <groupId>com.wizzdi</groupId>
             <artifactId>flexicore-boot-starter-data-jpa</artifactId>
-            <version>1.0.3</version>
+            <version>${flexicore-boot-starter-data-jpa.version}</version>
         </dependency>
         <dependency>
             <groupId>org.postgresql</groupId>
@@ -315,13 +341,13 @@
         <dependency>
             <groupId>com.wizzdi</groupId>
             <artifactId>dynamic-properties-converter-postgresql</artifactId>
-            <version>1.0.0</version>
+            <version>${dynamic-properties-converter-postgresql.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>com.wizzdi</groupId>
             <artifactId>flexicore-boot-starter-data-jpa-eclipselink</artifactId>
-            <version>1.0.1</version>
+            <version>${flexicore-boot-starter-data-jpa-eclipselink.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -405,7 +431,7 @@
                         <groupId>org.reflections</groupId>
                         <artifactId>reflections</artifactId>
                         <!-- use latest version of Reflections -->
-                        <version>0.9.11</version>
+                        <version>${reflections.version}</version>
                     </dependency>
                     <!-- https://mvnrepository.com/artifact/org.codehaus.groovy/groovy-all -->
                     <dependency>
