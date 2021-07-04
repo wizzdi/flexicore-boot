@@ -103,12 +103,6 @@ public class PluginLoadingTest {
 		}
 	}
 
-	@Test
-	public void testVersion(){
-		Version v = Version.valueOf("1.0.0-SNAPSHOT");
-		Assertions.assertTrue(v.satisfies(">=1.0.0-SNAPSHOT"));
-
-	}
 
 	@Test
 	public void testNoFailedPlugins() {
