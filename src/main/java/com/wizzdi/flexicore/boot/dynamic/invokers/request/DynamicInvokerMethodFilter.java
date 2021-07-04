@@ -10,6 +10,7 @@ public class DynamicInvokerMethodFilter extends BaseclassFilter {
     private BasicPropertiesFilter basicPropertiesFilter;
     private Set<String> categories;
     private DynamicInvokerFilter dynamicInvokerFilter;
+    private boolean emptyCategories;
 
 
     public Set<String> getCategories() {
@@ -37,6 +38,15 @@ public class DynamicInvokerMethodFilter extends BaseclassFilter {
 
     public <T extends DynamicInvokerMethodFilter> T setBasicPropertiesFilter(BasicPropertiesFilter basicPropertiesFilter) {
         this.basicPropertiesFilter = basicPropertiesFilter;
+        return (T) this;
+    }
+
+    public boolean isEmptyCategories() {
+        return emptyCategories;
+    }
+
+    public <T extends DynamicInvokerMethodFilter> T setEmptyCategories(boolean emptyCategories) {
+        this.emptyCategories = emptyCategories;
         return (T) this;
     }
 }

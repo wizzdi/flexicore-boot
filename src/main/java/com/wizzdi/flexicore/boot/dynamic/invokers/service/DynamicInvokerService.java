@@ -2,14 +2,12 @@ package com.wizzdi.flexicore.boot.dynamic.invokers.service;
 
 import com.flexicore.model.SecurityOperation;
 import com.flexicore.security.SecurityContextBase;
-import com.wizzdi.flexicore.boot.base.init.FlexiCorePluginClassLoader;
 import com.wizzdi.flexicore.boot.base.interfaces.Plugin;
 import com.wizzdi.flexicore.boot.dynamic.invokers.interfaces.ExecutionContext;
 import com.wizzdi.flexicore.boot.dynamic.invokers.request.*;
 import com.wizzdi.flexicore.boot.dynamic.invokers.response.InvokerHolder;
 import com.wizzdi.flexicore.boot.dynamic.invokers.response.InvokerInfo;
 import com.wizzdi.flexicore.boot.dynamic.invokers.response.InvokerMethodHolder;
-import com.wizzdi.flexicore.boot.dynamic.invokers.response.InvokerMethodInfo;
 import com.wizzdi.flexicore.security.interfaces.OperationsMethodScanner;
 import com.wizzdi.flexicore.security.request.BasicPropertiesFilter;
 import com.wizzdi.flexicore.security.request.PaginationFilter;
@@ -24,7 +22,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.aop.support.AopUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cglib.proxy.Proxy;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -47,6 +44,7 @@ public class DynamicInvokerService implements Plugin {
     private List<InvokerInfo> invokerInfos;
 
     @Autowired
+    @Lazy
     private PluginManager pluginManager;
     @Autowired
     private OperationValidatorService securityService;
@@ -101,10 +99,10 @@ public class DynamicInvokerService implements Plugin {
         if (dynamicInvokerFilter.getInvokerTypes() != null && !dynamicInvokerFilter.getInvokerTypes().isEmpty()) {
             pred = pred && dynamicInvokerFilter.getInvokerTypes().contains(f.getName().getCanonicalName());
         }
-        if(dynamicInvokerFilter.getPluginNames()!=null&&!dynamicInvokerFilter.getPluginNames().isEmpty()){
-            Class<?> handlingType = f.getHandlingType();
+        if(dynamicInvokerFilter.getPluginIds()!=null&&!dynamicInvokerFilter.getPluginIds().isEmpty()){
+            Class<?> handlingType = f.getName();
             PluginWrapper pluginWrapper = pluginManager.whichPlugin(handlingType);
-            pred = pred && pluginWrapper!=null&&dynamicInvokerFilter.getPluginNames().contains(pluginWrapper.getPluginId());
+            pred = pred && pluginWrapper!=null&&dynamicInvokerFilter.getPluginIds().contains(pluginWrapper.getPluginId());
 
         }
 
@@ -227,11 +225,15 @@ public class DynamicInvokerService implements Plugin {
 
     private List<InvokerMethodHolder> getMethodHolders(InvokerInfo invokerInfo) {
 
-        return invokerInfo.getMethods().stream().map(f->new InvokerMethodHolder(invokerInfo.getName().getCanonicalName(),f)).collect(Collectors.toList());
+        return invokerInfo.getMethods().stream().map(f->new InvokerMethodHolder(invokerInfo.getName().getCanonicalName(),invokerInfo.getPluginId(),f)).collect(Collectors.toList());
     }
 
     private long countAllInvokerMethodHolders(DynamicInvokerMethodFilter dynamicInvokerMethodFilter) {
-        return invokerInfos.stream().map(f ->  getMethodHolders(f)).filter(f -> f != null).flatMap(List::stream).filter(f -> filterMethods(f, dynamicInvokerMethodFilter)).count();
+        Stream<InvokerInfo> stream = invokerInfos.stream();
+        if(dynamicInvokerMethodFilter.getDynamicInvokerFilter()!=null){
+            stream=stream.filter(f->filter(f,dynamicInvokerMethodFilter.getDynamicInvokerFilter()));
+        }
+        return stream.map(f ->  getMethodHolders(f)).filter(f -> f != null).flatMap(List::stream).filter(f -> filterMethods(f, dynamicInvokerMethodFilter)).count();
     }
 
     private boolean filterMethods(InvokerMethodHolder invokerMethodHolder, DynamicInvokerMethodFilter dynamicInvokerMethodFilter) {
@@ -240,8 +242,11 @@ public class DynamicInvokerService implements Plugin {
         if (basicPropertiesFilter !=null&& basicPropertiesFilter.getNameLike() != null) {
             pred = pred && (invokerMethodHolder.getDisplayName().contains(basicPropertiesFilter.getNameLike()) || invokerMethodHolder.getDescription().contains(basicPropertiesFilter.getNameLike()));
         }
-        if (dynamicInvokerMethodFilter.getCategories() != null && !dynamicInvokerMethodFilter.getCategories().isEmpty()) {
-            pred = pred && invokerMethodHolder.getCategories() != null && Collections.disjoint(dynamicInvokerMethodFilter.getCategories(), invokerMethodHolder.getCategories());
+        boolean byCategories = dynamicInvokerMethodFilter.getCategories() != null && !dynamicInvokerMethodFilter.getCategories().isEmpty();
+        if (byCategories ||dynamicInvokerMethodFilter.isEmptyCategories()) {
+            pred = pred && invokerMethodHolder.getCategories() != null &&
+                    ((dynamicInvokerMethodFilter.isEmptyCategories()&&invokerMethodHolder.getCategories().isEmpty())
+                            || (byCategories&&invokerMethodHolder.getCategories().stream().anyMatch(e->dynamicInvokerMethodFilter.getCategories().contains(e))));
         }
 
 

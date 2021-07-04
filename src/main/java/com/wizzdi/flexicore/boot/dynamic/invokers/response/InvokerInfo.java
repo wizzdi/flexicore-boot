@@ -4,6 +4,7 @@ import com.flexicore.annotations.IOperation;
 import com.flexicore.model.Baseclass;
 import com.wizzdi.flexicore.boot.dynamic.invokers.annotations.Invoker;
 import com.wizzdi.flexicore.security.response.PaginationResponse;
+import org.pf4j.PluginWrapper;
 import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.util.ClassUtils;
@@ -24,6 +25,7 @@ public class InvokerInfo {
 	private String displayName;
 	private Class<?> handlingType;
 	private List<InvokerMethodInfo> methods = new ArrayList<>();
+	private String pluginId;
 
 	public InvokerInfo() {
 	}
@@ -37,13 +39,14 @@ public class InvokerInfo {
 
 	}
 
-	public InvokerInfo(Object invoker) {
+	public InvokerInfo(Object invoker,PluginWrapper pluginWrapper) {
 		Class<?> invokerClass = ClassUtils.getUserClass(invoker.getClass());
 		com.wizzdi.flexicore.boot.dynamic.invokers.annotations.InvokerInfo InvokerInfo = AnnotatedElementUtils.findMergedAnnotation(invokerClass, com.wizzdi.flexicore.boot.dynamic.invokers.annotations.InvokerInfo.class);
 		name = invokerClass;
 		displayName = InvokerInfo != null && !InvokerInfo.displayName().isEmpty() ? InvokerInfo.displayName() : invokerClass.getName();
 		description = InvokerInfo != null && !InvokerInfo.description().isEmpty() ? InvokerInfo.description() : "No Description";
 		handlingType = invoker instanceof Invoker ? ((Invoker) invoker).getHandlingClass() : getAutomatically(invokerClass);
+		this.pluginId=pluginWrapper!=null?pluginWrapper.getPluginId():null;
 
 
 
@@ -105,12 +108,22 @@ public class InvokerInfo {
 		return this;
 	}
 
+	public String getPluginId() {
+		return pluginId;
+	}
+
+	public <T extends InvokerInfo> T setPluginId(String pluginId) {
+		this.pluginId = pluginId;
+		return (T) this;
+	}
+
 	@Override
 	public String toString() {
 		return "InvokerInfo{" +
 				"name=" + name +
 				", description='" + description + '\'' +
 				", displayName='" + displayName + '\'' +
+				", pluginId='" + pluginId + '\'' +
 				", handlingType=" + handlingType +
 				", methods=" + methods +
 				'}';

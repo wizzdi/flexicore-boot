@@ -16,6 +16,7 @@ import com.wizzdi.flexicore.boot.dynamic.invokers.response.InvokerInfo;
 import com.wizzdi.flexicore.boot.dynamic.invokers.response.InvokerMethodInfo;
 import com.wizzdi.flexicore.boot.dynamic.invokers.response.ParameterInfo;
 import org.pf4j.Extension;
+import org.pf4j.PluginWrapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
@@ -70,11 +71,12 @@ public class DynamicInvokersProvider implements Plugin {
     public List<InvokerInfo> invokerInfos(FlexiCorePluginManager flexiCorePluginManager, InvokerMethodScanner invokerMethodScanner, InvokerParameterScanner invokerParameterScanner) {
         List<ApplicationContext> collect = flexiCorePluginManager.getStartedPlugins().stream().map(f -> flexiCorePluginManager.getApplicationContext(f)).collect(Collectors.toList());
         collect.add(flexiCorePluginManager.getApplicationContext());
-        return collect.stream().map(f -> getInvokers(f)).flatMap(List::stream).map(f -> scan(invokerMethodScanner, invokerParameterScanner, f)).collect(Collectors.toList());
+        return collect.stream().map(f -> getInvokers(f)).flatMap(List::stream).map(f -> scan(flexiCorePluginManager,invokerMethodScanner, invokerParameterScanner, f)).collect(Collectors.toList());
     }
 
-    private InvokerInfo scan(InvokerMethodScanner invokerMethodScanner, InvokerParameterScanner invokerParameterScanner, Object invoker) {
-        InvokerInfo invokerInfo = new InvokerInfo(invoker);
+    private InvokerInfo scan(FlexiCorePluginManager flexiCorePluginManager, InvokerMethodScanner invokerMethodScanner, InvokerParameterScanner invokerParameterScanner, Object invoker) {
+        PluginWrapper pluginWrapper = flexiCorePluginManager.whichPlugin(invoker.getClass());
+        InvokerInfo invokerInfo = new InvokerInfo(invoker,pluginWrapper);
         Class<?> invokerClass = invokerInfo.getName();
         Method[] methods = invokerClass.getDeclaredMethods();
         for (Method method : methods) {

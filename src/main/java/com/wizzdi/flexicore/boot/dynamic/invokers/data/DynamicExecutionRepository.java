@@ -71,8 +71,14 @@ public class DynamicExecutionRepository implements Plugin {
 
 			}
 		}
-		if(dynamicInvokerMethodFilter.getCategories()!=null&&!dynamicInvokerMethodFilter.getCategories().isEmpty()){
-			predicates.add(r.get(DynamicExecution_.category).in(dynamicInvokerMethodFilter.getCategories()));
+		boolean byCategories = dynamicInvokerMethodFilter.getCategories() != null && !dynamicInvokerMethodFilter.getCategories().isEmpty();
+		if(byCategories || dynamicInvokerMethodFilter.isEmptyCategories()){
+			Predicate pred=dynamicInvokerMethodFilter.isEmptyCategories()?r.get(DynamicExecution_.category).isNull():r.get(DynamicExecution_.category).isNotNull();
+			if(byCategories){
+				pred=cb.or(pred, r.get(DynamicExecution_.category).in(dynamicInvokerMethodFilter.getCategories()));
+
+			}
+			predicates.add(pred);
 		}
 		DynamicInvokerFilter dynamicInvokerFilter = dynamicInvokerMethodFilter.getDynamicInvokerFilter();
 		if(dynamicInvokerFilter !=null){

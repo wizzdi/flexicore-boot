@@ -9,10 +9,12 @@ public class InvokerMethodHolder {
 
     private final InvokerMethodInfo invokerMethodHolder;
     private String invokerName;
+    private String pluginId;
 
-    public InvokerMethodHolder(String invokerName,InvokerMethodInfo invokerMethodHolder) {
+    public InvokerMethodHolder(String invokerName,String pluginId,InvokerMethodInfo invokerMethodHolder) {
         this.invokerMethodHolder = invokerMethodHolder;
         this.invokerName=invokerName;
+        this.pluginId=pluginId;
     }
 
     public InvokerMethodHolder() {
@@ -106,6 +108,15 @@ public class InvokerMethodHolder {
         return (T) this;
     }
 
+    public String getPluginId() {
+        return pluginId;
+    }
+
+    public <T extends InvokerMethodHolder> T setPluginId(String pluginId) {
+        this.pluginId = pluginId;
+        return (T) this;
+    }
+
     @Override
     public String toString() {
         return "InvokerMethodHolder{" +
@@ -117,6 +128,8 @@ public class InvokerMethodHolder {
                 ", relatedMethodNames=" + getRelatedMethodNames() +
                 ", returnTypeClass=" + getReturnTypeClass() +
                 ", parameterHolderType='" + getParameterHolderType() + '\'' +
+                ", pluginId='" + getPluginId() + '\'' +
+
                 ", parameters=" + getParameters() +
                 ", invokerName=" + getInvokerName() +
 

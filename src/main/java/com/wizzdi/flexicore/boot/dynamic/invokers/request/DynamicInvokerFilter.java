@@ -10,7 +10,7 @@ public class DynamicInvokerFilter extends BaseclassFilter {
 	private BasicPropertiesFilter basicPropertiesFilter;
 	private Set<String> invokerTypes;
 	private String methodNameLike;
-	private Set<String> pluginNames;
+	private Set<String> pluginIds;
 
 
 
@@ -41,12 +41,12 @@ public class DynamicInvokerFilter extends BaseclassFilter {
 		return (T) this;
 	}
 
-	public Set<String> getPluginNames() {
-		return pluginNames;
+	public Set<String> getPluginIds() {
+		return pluginIds;
 	}
 
-	public <T extends DynamicInvokerFilter> T setPluginNames(Set<String> pluginNames) {
-		this.pluginNames = pluginNames;
+	public <T extends DynamicInvokerFilter> T setPluginIds(Set<String> pluginIds) {
+		this.pluginIds = pluginIds;
 		return (T) this;
 	}
 }

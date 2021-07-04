@@ -88,6 +88,8 @@ public class DynamicInvokerControllerTest {
     @Order(3)
     public void testListAllDynamicInvokerMethodHolders() {
         DynamicInvokerMethodFilter request=new DynamicInvokerMethodFilter()
+                .setEmptyCategories(true)
+                .setCategories(Collections.singleton("TYPE_ACTION"))
                 .setBasicPropertiesFilter(new BasicPropertiesFilter().setNameLike("listTests"));
         ParameterizedTypeReference<PaginationResponse<InvokerMethodHolder>> t= new ParameterizedTypeReference<>() {};
 
