@@ -4,7 +4,7 @@
 
     <groupId>com.wizzdi</groupId>
     <artifactId>flexicore-boot-starter-web</artifactId>
-    <version>1.0.3-SNAPSHOT</version>
+    <version>1.1.0-SNAPSHOT</version>
     <name>FlexiCore Boot REST</name>
     <description>flexicore boot REST</description>
     <url>https://wizzdi.com</url>
@@ -26,7 +26,7 @@
         <maven.compiler.source>11</maven.compiler.source>
         <pf4j-spring.version>0.7.0</pf4j-spring.version>
 
-        <spring-boot.version>2.3.0.RELEASE</spring-boot.version>
+        <spring-boot.version>2.5.2</spring-boot.version>
         <junit-jupiter.version>5.6.2</junit-jupiter.version>
     </properties>
 
@@ -69,7 +69,7 @@
                 <!-- Import dependency management from Spring Boot -->
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-dependencies</artifactId>
-                <version>2.3.0.RELEASE</version>
+                <version>${spring-boot.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
@@ -80,7 +80,7 @@
         <dependency>
             <groupId>com.wizzdi</groupId>
             <artifactId>flexicore-boot</artifactId>
-            <version>1.0.0</version>
+            <version>1.2.0</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
