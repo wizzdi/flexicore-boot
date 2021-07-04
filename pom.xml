@@ -4,7 +4,7 @@
 
     <groupId>com.wizzdi</groupId>
     <artifactId>flexicore-boot-starter-actuator</artifactId>
-    <version>1.1.0</version>
+    <version>1.1.1-SNAPSHOT</version>
     <name>FlexiCore Boot Actuator</name>
     <description>FlexiCore Boot Actuator</description>
     <url>https://wizzdi.com</url>
@@ -62,7 +62,7 @@
         <connection>scm:git:git://wizzdi/flexicore-boot-starter-actuator.git</connection>
         <developerConnection>scm:git:git@github.com:wizzdi/flexicore-boot-starter-actuator.git</developerConnection>
         <url>https://github.com/wizzdi/flexicore-boot-starter-actuator</url>
-        <tag>flexicore-boot-starter-actuator-1.1.0</tag>
+        <tag>flexicore-boot-starter-actuator-${version}</tag>
     </scm>
 
     <dependencyManagement>
