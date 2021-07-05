@@ -4,7 +4,7 @@
 
     <groupId>com.wizzdi</groupId>
     <artifactId>flexicore-boot-starter-data-jpa-eclipselink</artifactId>
-    <version>1.1.2-SNAPSHOT</version>
+    <version>1.1.1-SNAPSHOT</version>
 
     <name>FlexiCore Boot JPA Eclipselink</name>
     <description>flexicore boot jpa Eclipselink</description>
@@ -29,7 +29,7 @@
 
         <spring-boot.version>2.5.2</spring-boot.version>
         <junit-jupiter.version>5.6.2</junit-jupiter.version>
-        <dynamic-annoatations-service.version>1.1.0</dynamic-annoatations-service.version>
+        <dynamic-annoatations-service.version>1.1.1</dynamic-annoatations-service.version>
         <flexicore-boot-starter-data-jpa.version>1.1.0</flexicore-boot-starter-data-jpa.version>
         <flexicore-boot-starter-web.version>1.1.0</flexicore-boot-starter-web.version>
         <flexicore-boot-test-helper.version>1.0.0</flexicore-boot-test-helper.version>
