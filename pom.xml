@@ -4,7 +4,7 @@
 
     <groupId>com.wizzdi</groupId>
     <artifactId>flexicore-boot-starter-data-jpa-eclipselink</artifactId>
-    <version>1.1.1-SNAPSHOT</version>
+    <version>1.1.1</version>
 
     <name>FlexiCore Boot JPA Eclipselink</name>
     <description>flexicore boot jpa Eclipselink</description>
@@ -66,7 +66,7 @@
         <developerConnection>scm:git:git@github.com:wizzdi/flexicore-boot-starter-data-jpa-eclipselink.git
         </developerConnection>
         <url>https://github.com/wizzdi/flexicore-boot-starter-data-jpa-eclipselink</url>
-        <tag>flexicore-boot-starter-data-jpa-eclipselink-${version}</tag>
+        <tag>flexicore-boot-starter-data-jpa-eclipselink-1.1.1</tag>
     </scm>
 
     <dependencyManagement>
