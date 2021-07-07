@@ -19,15 +19,21 @@ import java.util.stream.Stream;
 @Extension
 public class CorsBean implements ServicePlugin {
 
-    @Value("${flexicore.cores.allowOrigin:*}")
+    @Value("${flexicore.cores.allowOrigin:@null}")
     private String allowOrigin;
+    @Value("${flexicore.cores.allowOriginPattern:*}")
+    private String allowOriginPattern;
 
     @Bean
     public FilterRegistrationBean<CorsFilter> corsFilter() {
         final UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         final CorsConfiguration config = new CorsConfiguration();
         config.setAllowCredentials(true);
-        config.setAllowedOrigins(Stream.of(allowOrigin).collect(Collectors.toList()));
+        if(allowOrigin!=null){
+            config.setAllowedOrigins(Stream.of(allowOrigin).collect(Collectors.toList()));
+
+        }
+        config.setAllowedOriginPatterns(Collections.singletonList(allowOriginPattern));
         config.setAllowedHeaders(Collections.singletonList("*"));
         config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "OPTIONS", "DELETE", "PATCH"));
         source.registerCorsConfiguration("/**", config);
