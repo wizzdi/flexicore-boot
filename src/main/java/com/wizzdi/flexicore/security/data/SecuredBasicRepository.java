@@ -7,6 +7,7 @@ import com.flexicore.model.SecuredBasic_;
 import com.flexicore.security.SecurityContextBase;
 import com.wizzdi.flexicore.boot.base.interfaces.Plugin;
 import com.wizzdi.flexicore.security.request.BasicPropertiesFilter;
+import com.wizzdi.flexicore.security.request.SoftDeleteOption;
 import org.pf4j.Extension;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,6 +32,9 @@ public class SecuredBasicRepository implements Plugin {
 	public <T extends SecuredBasic> void addSecuredBasicPredicates(BasicPropertiesFilter basicPropertiesFilter, CriteriaBuilder cb, CommonAbstractCriteria q, From<?, T> r, List<Predicate> predicates, SecurityContextBase securityContextBase) {
 		if(basicPropertiesFilter!=null){
 			BasicRepository.addBasicPropertiesFilter(basicPropertiesFilter,cb,q,r,predicates);
+		}
+		else{
+			BasicRepository.addBasicPropertiesFilter(new BasicPropertiesFilter().setSoftDelete(SoftDeleteOption.DEFAULT),cb,q,r,predicates);
 		}
 		if(securityContextBase!=null){
 			Join<T, Baseclass> join= r.join(SecuredBasic_.security);

@@ -5,8 +5,9 @@ import java.util.Set;
 public class BasicPropertiesFilter {
 
 	private String nameLike;
+	private boolean nameLikeCaseSensitive;
 	private Set<String> names;
-	private Boolean softDelete;
+	private SoftDeleteOption softDelete;
 	private DateFilter creationDateFilter;
 	private DateFilter updateDateFilter;
 	private Set<String> onlyIds;
@@ -29,11 +30,11 @@ public class BasicPropertiesFilter {
 		return (T) this;
 	}
 
-	public Boolean getSoftDelete() {
+	public SoftDeleteOption getSoftDelete() {
 		return softDelete;
 	}
 
-	public <T extends BasicPropertiesFilter> T setSoftDelete(Boolean softDelete) {
+	public <T extends BasicPropertiesFilter> T setSoftDelete(SoftDeleteOption softDelete) {
 		this.softDelete = softDelete;
 		return (T) this;
 	}
@@ -62,6 +63,15 @@ public class BasicPropertiesFilter {
 
 	public <T extends BasicPropertiesFilter> T setOnlyIds(Set<String> onlyIds) {
 		this.onlyIds = onlyIds;
+		return (T) this;
+	}
+
+	public boolean isNameLikeCaseSensitive() {
+		return nameLikeCaseSensitive;
+	}
+
+	public <T extends BasicPropertiesFilter> T setNameLikeCaseSensitive(boolean nameLikeCaseSensitive) {
+		this.nameLikeCaseSensitive = nameLikeCaseSensitive;
 		return (T) this;
 	}
 }

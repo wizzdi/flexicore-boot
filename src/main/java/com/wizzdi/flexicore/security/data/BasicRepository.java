@@ -51,10 +51,25 @@ public class BasicRepository implements Plugin {
 			predicates.add(r.get(Basic_.name).in(basicPropertiesFilter.getNames()));
 		}
 		if (basicPropertiesFilter.getNameLike() != null && !basicPropertiesFilter.getNameLike().isEmpty()) {
-			predicates.add(cb.like(r.get(Basic_.name), basicPropertiesFilter.getNameLike()));
+			if(basicPropertiesFilter.isNameLikeCaseSensitive()){
+				predicates.add(cb.like(r.get(Basic_.name), basicPropertiesFilter.getNameLike()));
+			}
+			else{
+				predicates.add(cb.like(cb.lower(r.get(Basic_.name)), basicPropertiesFilter.getNameLike().toLowerCase()));
+
+			}
 		}
-		if (basicPropertiesFilter.getSoftDelete() != null) {
-			predicates.add(cb.equal(r.get(Basic_.softDelete), basicPropertiesFilter.getSoftDelete()));
+		if (basicPropertiesFilter.getSoftDelete() == null) {
+			predicates.add(cb.equal(r.get(Basic_.softDelete), false));
+		}
+		switch (basicPropertiesFilter.getSoftDelete()){
+			case DEFAULT:
+			case NON_DELETED_ONLY:
+				predicates.add(cb.equal(r.get(Basic_.softDelete), false));
+				break;
+			case DELETED_ONLY:
+				predicates.add(cb.equal(r.get(Basic_.softDelete), true));
+			case BOTH:break;
 		}
 		if (basicPropertiesFilter.getCreationDateFilter() != null) {
 			addDateFilter(basicPropertiesFilter.getCreationDateFilter(), cb, q, r.get(Basic_.creationDate), predicates);
