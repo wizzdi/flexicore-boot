@@ -27,21 +27,21 @@ public class SecurityOperationController implements Plugin {
 
 	@IOperation(Name = "creates security operation",Description = "creates security operation")
 	@PostMapping("/create")
-	public SecurityOperation create(@RequestBody SecurityOperationCreate operationCreate, @RequestAttribute SecurityContextBase securityContext){
+	public SecurityOperation create(@RequestHeader("authenticationKey") String authenticationKey,@RequestBody SecurityOperationCreate operationCreate, @RequestAttribute SecurityContextBase securityContext){
 		operationService.validate(operationCreate,securityContext);
 		return operationService.createOperation(operationCreate,securityContext);
 	}
 
 	@IOperation(Name = "returns security operation",Description = "returns security operation")
 	@PostMapping("/getAll")
-	public PaginationResponse<SecurityOperation> getAll(@RequestBody SecurityOperationFilter operationFilter, @RequestAttribute SecurityContextBase securityContext){
+	public PaginationResponse<SecurityOperation> getAll(@RequestHeader("authenticationKey") String authenticationKey,@RequestBody SecurityOperationFilter operationFilter, @RequestAttribute SecurityContextBase securityContext){
 		operationService.validate(operationFilter,securityContext);
 		return operationService.getAllOperations(operationFilter,securityContext);
 	}
 
 	@IOperation(Name = "updates security operation",Description = "updates security operation")
 	@PutMapping("/update")
-	public SecurityOperation update(@RequestBody SecurityOperationUpdate operationUpdate, @RequestAttribute SecurityContextBase securityContext){
+	public SecurityOperation update(@RequestHeader("authenticationKey") String authenticationKey,@RequestBody SecurityOperationUpdate operationUpdate, @RequestAttribute SecurityContextBase securityContext){
 		String id=operationUpdate.getId();
 		SecurityOperation operation=id!=null?operationService.getByIdOrNull(id,SecurityOperation.class,securityContext):null;
 		if(operation==null){

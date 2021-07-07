@@ -27,21 +27,21 @@ public class TenantToUserController implements Plugin {
 
 	@IOperation(Name = "create tenant to user",Description = "creates tenant to user")
 	@PostMapping("/create")
-	public TenantToUser create(@RequestBody TenantToUserCreate tenantToUserCreate, @RequestAttribute SecurityContextBase securityContext){
+	public TenantToUser create(@RequestHeader("authenticationKey") String authenticationKey,@RequestBody TenantToUserCreate tenantToUserCreate, @RequestAttribute SecurityContextBase securityContext){
 		tenantToUserService.validate(tenantToUserCreate,securityContext);
 		return tenantToUserService.createTenantToUser(tenantToUserCreate,securityContext);
 	}
 
 	@IOperation(Name = "get all tenant to user",Description = "get all tenant to user")
 	@PostMapping("/getAll")
-	public PaginationResponse<TenantToUser> getAll(@RequestBody TenantToUserFilter tenantToUserFilter, @RequestAttribute SecurityContextBase securityContext){
+	public PaginationResponse<TenantToUser> getAll(@RequestHeader("authenticationKey") String authenticationKey,@RequestBody TenantToUserFilter tenantToUserFilter, @RequestAttribute SecurityContextBase securityContext){
 		tenantToUserService.validate(tenantToUserFilter,securityContext);
 		return tenantToUserService.getAllTenantToUsers(tenantToUserFilter,securityContext);
 	}
 
 	@IOperation(Name = "updates tenant to user",Description = "updates tenant to user")
 	@PutMapping("/update")
-	public TenantToUser update(@RequestBody TenantToUserUpdate tenantToUserUpdate, @RequestAttribute SecurityContextBase securityContext){
+	public TenantToUser update(@RequestHeader("authenticationKey") String authenticationKey,@RequestBody TenantToUserUpdate tenantToUserUpdate, @RequestAttribute SecurityContextBase securityContext){
 		String id=tenantToUserUpdate.getId();
 		TenantToUser tenantToUser=id!=null?tenantToUserService.getByIdOrNull(id,TenantToUser.class,securityContext):null;
 		if(tenantToUser==null){

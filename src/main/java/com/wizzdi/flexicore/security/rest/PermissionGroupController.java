@@ -27,21 +27,21 @@ public class PermissionGroupController implements Plugin {
 
 	@IOperation(Name = "returns PermissionGroup",Description = "returns PermissionGroup")
 	@PostMapping("/create")
-	public PermissionGroup create(@RequestBody PermissionGroupCreate permissionGroupCreate, @RequestAttribute SecurityContextBase securityContext){
+	public PermissionGroup create(@RequestHeader("authenticationKey") String authenticationKey,@RequestBody PermissionGroupCreate permissionGroupCreate, @RequestAttribute SecurityContextBase securityContext){
 		permissionGroupService.validate(permissionGroupCreate,securityContext);
 		return permissionGroupService.createPermissionGroup(permissionGroupCreate,securityContext);
 	}
 
 	@IOperation(Name = "returns PermissionGroup",Description = "returns PermissionGroup")
 	@PostMapping("/getAll")
-	public PaginationResponse<PermissionGroup> getAll(@RequestBody PermissionGroupFilter permissionGroupFilter, @RequestAttribute SecurityContextBase securityContext){
+	public PaginationResponse<PermissionGroup> getAll(@RequestHeader("authenticationKey") String authenticationKey,@RequestBody PermissionGroupFilter permissionGroupFilter, @RequestAttribute SecurityContextBase securityContext){
 		permissionGroupService.validate(permissionGroupFilter,securityContext);
 		return permissionGroupService.getAllPermissionGroups(permissionGroupFilter,securityContext);
 	}
 
 	@IOperation(Name = "updates PermissionGroup",Description = "updates PermissionGroup")
 	@PutMapping("/update")
-	public PermissionGroup update(@RequestBody PermissionGroupUpdate permissionGroupUpdate, @RequestAttribute SecurityContextBase securityContext){
+	public PermissionGroup update(@RequestHeader("authenticationKey") String authenticationKey,@RequestBody PermissionGroupUpdate permissionGroupUpdate, @RequestAttribute SecurityContextBase securityContext){
 		String id=permissionGroupUpdate.getId();
 		PermissionGroup permissionGroup=id!=null?permissionGroupService.getByIdOrNull(id,PermissionGroup.class,securityContext):null;
 		if(permissionGroup==null){

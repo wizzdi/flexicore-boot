@@ -27,21 +27,21 @@ public class RoleToBaseclassController implements Plugin {
 
 	@IOperation(Name = "creates RoleToBaseclass",Description = "creates RoleToBaseclass")
 	@PostMapping("/create")
-	public RoleToBaseclass create(@RequestBody RoleToBaseclassCreate roleToBaseclassCreate, @RequestAttribute SecurityContextBase securityContext){
+	public RoleToBaseclass create(@RequestHeader("authenticationKey") String authenticationKey,@RequestBody RoleToBaseclassCreate roleToBaseclassCreate, @RequestAttribute SecurityContextBase securityContext){
 		roleToBaseclassService.validate(roleToBaseclassCreate,securityContext);
 		return roleToBaseclassService.createRoleToBaseclass(roleToBaseclassCreate,securityContext);
 	}
 
 	@IOperation(Name = "returns RoleToBaseclass",Description = "returns RoleToBaseclass")
 	@PostMapping("/getAll")
-	public PaginationResponse<RoleToBaseclass> getAll(@RequestBody RoleToBaseclassFilter roleToBaseclassFilter, @RequestAttribute SecurityContextBase securityContext){
+	public PaginationResponse<RoleToBaseclass> getAll(@RequestHeader("authenticationKey") String authenticationKey,@RequestBody RoleToBaseclassFilter roleToBaseclassFilter, @RequestAttribute SecurityContextBase securityContext){
 		roleToBaseclassService.validate(roleToBaseclassFilter,securityContext);
 		return roleToBaseclassService.getAllRoleToBaseclass(roleToBaseclassFilter,securityContext);
 	}
 
 	@IOperation(Name = "updates RoleToBaseclass",Description = "updates RoleToBaseclass")
 	@PutMapping("/update")
-	public RoleToBaseclass update(@RequestBody RoleToBaseclassUpdate roleToBaseclassUpdate, @RequestAttribute SecurityContextBase securityContext){
+	public RoleToBaseclass update(@RequestHeader("authenticationKey") String authenticationKey,@RequestBody RoleToBaseclassUpdate roleToBaseclassUpdate, @RequestAttribute SecurityContextBase securityContext){
 		String id=roleToBaseclassUpdate.getId();
 		RoleToBaseclass roleToBaseclass=id!=null?roleToBaseclassService.getByIdOrNull(id,RoleToBaseclass.class,securityContext):null;
 		if(roleToBaseclass==null){

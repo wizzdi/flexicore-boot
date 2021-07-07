@@ -27,21 +27,21 @@ public class SecurityLinkController implements Plugin {
 
 	@IOperation(Name = "creates SecurityLink",Description = "creates SecurityLink")
 	@PostMapping("/create")
-	public SecurityLink create(@RequestBody SecurityLinkCreate securityLinkCreate, @RequestAttribute SecurityContextBase securityContext){
+	public SecurityLink create(@RequestHeader("authenticationKey") String authenticationKey,@RequestBody SecurityLinkCreate securityLinkCreate, @RequestAttribute SecurityContextBase securityContext){
 		securityLinkService.validate(securityLinkCreate,securityContext);
 		return securityLinkService.createSecurityLink(securityLinkCreate,securityContext);
 	}
 
 	@IOperation(Name = "returns SecurityLink",Description = "returns SecurityLink")
 	@PostMapping("/getAll")
-	public PaginationResponse<SecurityLink> getAll(@RequestBody SecurityLinkFilter securityLinkFilter, @RequestAttribute SecurityContextBase securityContext){
+	public PaginationResponse<SecurityLink> getAll(@RequestHeader("authenticationKey") String authenticationKey,@RequestBody SecurityLinkFilter securityLinkFilter, @RequestAttribute SecurityContextBase securityContext){
 		securityLinkService.validate(securityLinkFilter,securityContext);
 		return securityLinkService.getAllSecurityLinks(securityLinkFilter,securityContext);
 	}
 
 	@IOperation(Name = "updates SecurityLink",Description = "updates SecurityLink")
 	@PutMapping("/update")
-	public SecurityLink update(@RequestBody SecurityLinkUpdate securityLinkUpdate, @RequestAttribute SecurityContextBase securityContext){
+	public SecurityLink update(@RequestHeader("authenticationKey") String authenticationKey,@RequestBody SecurityLinkUpdate securityLinkUpdate, @RequestAttribute SecurityContextBase securityContext){
 		String id=securityLinkUpdate.getId();
 		SecurityLink securityLink=id!=null?securityLinkService.getByIdOrNull(id,SecurityLink.class,securityContext):null;
 		if(securityLink==null){

@@ -27,21 +27,21 @@ public class SecurityPolicyController implements Plugin {
 
 	@IOperation(Name = "creates security policy",Description = "creates security policy")
 	@PostMapping("/create")
-	public SecurityPolicy create(@RequestBody SecurityPolicyCreate securityPolicyCreate, @RequestAttribute SecurityContextBase securityContext){
+	public SecurityPolicy create(@RequestHeader("authenticationKey") String authenticationKey,@RequestBody SecurityPolicyCreate securityPolicyCreate, @RequestAttribute SecurityContextBase securityContext){
 		securityPolicyService.validate(securityPolicyCreate,securityContext);
 		return securityPolicyService.createSecurityPolicy(securityPolicyCreate,securityContext);
 	}
 
 	@IOperation(Name = "returns security policy",Description = "returns security policy")
 	@PostMapping("/getAll")
-	public PaginationResponse<SecurityPolicy> getAll(@RequestBody SecurityPolicyFilter securityPolicyFilter, @RequestAttribute SecurityContextBase securityContext){
+	public PaginationResponse<SecurityPolicy> getAll(@RequestHeader("authenticationKey") String authenticationKey,@RequestBody SecurityPolicyFilter securityPolicyFilter, @RequestAttribute SecurityContextBase securityContext){
 		securityPolicyService.validate(securityPolicyFilter,securityContext);
 		return securityPolicyService.getAllSecurityPolicies(securityPolicyFilter,securityContext);
 	}
 
 	@IOperation(Name = "updates security policy",Description = "updates security policy")
 	@PutMapping("/update")
-	public SecurityPolicy update(@RequestBody SecurityPolicyUpdate securityPolicyUpdate, @RequestAttribute SecurityContextBase securityContext){
+	public SecurityPolicy update(@RequestHeader("authenticationKey") String authenticationKey,@RequestBody SecurityPolicyUpdate securityPolicyUpdate, @RequestAttribute SecurityContextBase securityContext){
 		String id=securityPolicyUpdate.getId();
 		SecurityPolicy securityPolicy=id!=null? securityPolicyService.getSecurityPolicyByIdOrNull(id,SecurityPolicy.class,securityContext):null;
 		if(securityPolicy==null){

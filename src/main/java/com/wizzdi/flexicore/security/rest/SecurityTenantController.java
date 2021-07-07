@@ -27,21 +27,21 @@ public class SecurityTenantController implements Plugin {
 
 	@IOperation(Name = "creates security tenant",Description = "creates security tenant")
 	@PostMapping("/create")
-	public SecurityTenant create(@RequestBody SecurityTenantCreate tenantCreate, @RequestAttribute SecurityContextBase securityContext){
+	public SecurityTenant create(@RequestHeader("authenticationKey") String authenticationKey,@RequestBody SecurityTenantCreate tenantCreate, @RequestAttribute SecurityContextBase securityContext){
 		tenantService.validate(tenantCreate,securityContext);
 		return tenantService.createTenant(tenantCreate,securityContext);
 	}
 
 	@IOperation(Name = "returns security tenant",Description = "returns security tenant")
 	@PostMapping("/getAll")
-	public PaginationResponse<SecurityTenant> getAll(@RequestBody SecurityTenantFilter tenantFilter, @RequestAttribute SecurityContextBase securityContext){
+	public PaginationResponse<SecurityTenant> getAll(@RequestHeader("authenticationKey") String authenticationKey,@RequestBody SecurityTenantFilter tenantFilter, @RequestAttribute SecurityContextBase securityContext){
 		tenantService.validate(tenantFilter,securityContext);
 		return tenantService.getAllTenants(tenantFilter,securityContext);
 	}
 
 	@IOperation(Name = "updates security tenant",Description = "updates security tenant")
 	@PutMapping("/update")
-	public SecurityTenant update(@RequestBody SecurityTenantUpdate tenantUpdate, @RequestAttribute SecurityContextBase securityContext){
+	public SecurityTenant update(@RequestHeader("authenticationKey") String authenticationKey,@RequestBody SecurityTenantUpdate tenantUpdate, @RequestAttribute SecurityContextBase securityContext){
 		String id=tenantUpdate.getId();
 		SecurityTenant tenant=id!=null?tenantService.getByIdOrNull(id,SecurityTenant.class,securityContext):null;
 		if(tenant==null){

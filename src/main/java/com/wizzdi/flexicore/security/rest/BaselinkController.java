@@ -27,21 +27,21 @@ public class BaselinkController implements Plugin {
 
 	@IOperation(Name = "creates Baselink",Description = "creates Baselink")
 	@PostMapping("/create")
-	public Baselink create(@RequestBody BaselinkCreate baselinkCreate, @RequestAttribute SecurityContextBase securityContext){
+	public Baselink create(@RequestHeader("authenticationKey") String authenticationKey,@RequestBody BaselinkCreate baselinkCreate, @RequestAttribute SecurityContextBase securityContext){
 		baselinkService.validate(baselinkCreate,securityContext);
 		return baselinkService.createBaselink(baselinkCreate,securityContext);
 	}
 
 	@IOperation(Name = "returns Baselink",Description = "returns Baselink")
 	@PostMapping("/getAll")
-	public PaginationResponse<Baselink> getAll(@RequestBody BaselinkFilter baselinkFilter, @RequestAttribute SecurityContextBase securityContext){
+	public PaginationResponse<Baselink> getAll(@RequestHeader("authenticationKey") String authenticationKey,@RequestBody BaselinkFilter baselinkFilter, @RequestAttribute SecurityContextBase securityContext){
 		baselinkService.validate(baselinkFilter,securityContext);
 		return baselinkService.getAllBaselinks(baselinkFilter,securityContext);
 	}
 
 	@IOperation(Name = "updates Baselink",Description = "updates Baselink")
 	@PutMapping("/update")
-	public Baselink update(@RequestBody BaselinkUpdate baselinkUpdate, @RequestAttribute SecurityContextBase securityContext){
+	public Baselink update(@RequestHeader("authenticationKey") String authenticationKey,@RequestBody BaselinkUpdate baselinkUpdate, @RequestAttribute SecurityContextBase securityContext){
 		String id=baselinkUpdate.getId();
 		Baselink baselink=id!=null?baselinkService.getByIdOrNull(id,Baselink.class,securityContext):null;
 		if(baselink==null){

@@ -27,21 +27,21 @@ public class RoleToUserController implements Plugin {
 
 	@IOperation(Name = "creates RoleToUser",Description = "creates RoleToUser")
 	@PostMapping("/create")
-	public RoleToUser create(@RequestBody RoleToUserCreate roleToUserCreate, @RequestAttribute SecurityContextBase securityContext){
+	public RoleToUser create(@RequestHeader("authenticationKey") String authenticationKey,@RequestBody RoleToUserCreate roleToUserCreate, @RequestAttribute SecurityContextBase securityContext){
 		roleToUserService.validate(roleToUserCreate,securityContext);
 		return roleToUserService.createRoleToUser(roleToUserCreate,securityContext);
 	}
 
 	@IOperation(Name = "returns RoleToUser",Description = "returns RoleToUser")
 	@PostMapping("/getAll")
-	public PaginationResponse<RoleToUser> getAll(@RequestBody RoleToUserFilter roleToUserFilter, @RequestAttribute SecurityContextBase securityContext){
+	public PaginationResponse<RoleToUser> getAll(@RequestHeader("authenticationKey") String authenticationKey,@RequestBody RoleToUserFilter roleToUserFilter, @RequestAttribute SecurityContextBase securityContext){
 		roleToUserService.validate(roleToUserFilter,securityContext);
 		return roleToUserService.getAllRoleToUsers(roleToUserFilter,securityContext);
 	}
 
 	@IOperation(Name = "updates RoleToUser",Description = "updates RoleToUser")
 	@PutMapping("/update")
-	public RoleToUser update(@RequestBody RoleToUserUpdate roleToUserUpdate, @RequestAttribute SecurityContextBase securityContext){
+	public RoleToUser update(@RequestHeader("authenticationKey") String authenticationKey,@RequestBody RoleToUserUpdate roleToUserUpdate, @RequestAttribute SecurityContextBase securityContext){
 		String id=roleToUserUpdate.getId();
 		RoleToUser roleToUser=id!=null?roleToUserService.getByIdOrNull(id,RoleToUser.class,securityContext):null;
 		if(roleToUser==null){

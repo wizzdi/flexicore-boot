@@ -27,21 +27,21 @@ public class ClazzController implements Plugin {
 
 	@IOperation(Name = "creates Clazz",Description = "creates Clazz")
 	@PostMapping("/create")
-	public Clazz create(@RequestBody ClazzCreate ClazzCreate, @RequestAttribute SecurityContextBase securityContext){
+	public Clazz create(@RequestHeader("authenticationKey") String authenticationKey,@RequestBody ClazzCreate ClazzCreate, @RequestAttribute SecurityContextBase securityContext){
 		ClazzService.validate(ClazzCreate,securityContext);
 		return ClazzService.createClazz(ClazzCreate,securityContext);
 	}
 
 	@IOperation(Name = "returns Clazz",Description = "returns Clazz")
 	@PostMapping("/getAll")
-	public PaginationResponse<Clazz> getAll(@RequestBody ClazzFilter ClazzFilter, @RequestAttribute SecurityContextBase securityContext){
+	public PaginationResponse<Clazz> getAll(@RequestHeader("authenticationKey") String authenticationKey,@RequestBody ClazzFilter ClazzFilter, @RequestAttribute SecurityContextBase securityContext){
 		ClazzService.validate(ClazzFilter,securityContext);
 		return ClazzService.getAllClazzs(ClazzFilter,securityContext);
 	}
 
 	@IOperation(Name = "updates Clazz",Description = "updates Clazz")
 	@PutMapping("/update")
-	public Clazz update(@RequestBody ClazzUpdate clazzUpdate, @RequestAttribute SecurityContextBase securityContext){
+	public Clazz update(@RequestHeader("authenticationKey") String authenticationKey,@RequestBody ClazzUpdate clazzUpdate, @RequestAttribute SecurityContextBase securityContext){
 		String id=clazzUpdate.getId();
 		Clazz clazz=id!=null?ClazzService.getByIdOrNull(id,Clazz.class,securityContext):null;
 		if(clazz==null){

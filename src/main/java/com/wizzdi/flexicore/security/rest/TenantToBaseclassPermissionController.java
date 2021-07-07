@@ -27,21 +27,21 @@ public class TenantToBaseclassPermissionController implements Plugin {
 
 	@IOperation(Name = "creates tenant to baseclass",Description = "creates tenant to baseclass")
 	@PostMapping("/create")
-	public TenantToBaseClassPremission create(@RequestBody TenantToBaseclassPermissionCreate tenantToBaseclassPermissionCreate, @RequestAttribute SecurityContextBase securityContext){
+	public TenantToBaseClassPremission create(@RequestHeader("authenticationKey") String authenticationKey,@RequestBody TenantToBaseclassPermissionCreate tenantToBaseclassPermissionCreate, @RequestAttribute SecurityContextBase securityContext){
 		tenantToBaseclassPermissionService.validate(tenantToBaseclassPermissionCreate,securityContext);
 		return tenantToBaseclassPermissionService.createTenantToBaseclassPermission(tenantToBaseclassPermissionCreate,securityContext);
 	}
 
 	@IOperation(Name = "returns tenant to baseclass",Description = "returns tenant to baseclass")
 	@PostMapping("/getAll")
-	public PaginationResponse<TenantToBaseClassPremission> getAll(@RequestBody TenantToBaseclassPermissionFilter tenantToBaseclassPermissionFilter, @RequestAttribute SecurityContextBase securityContext){
+	public PaginationResponse<TenantToBaseClassPremission> getAll(@RequestHeader("authenticationKey") String authenticationKey,@RequestBody TenantToBaseclassPermissionFilter tenantToBaseclassPermissionFilter, @RequestAttribute SecurityContextBase securityContext){
 		tenantToBaseclassPermissionService.validate(tenantToBaseclassPermissionFilter,securityContext);
 		return tenantToBaseclassPermissionService.getAllTenantToBaseclassPermissions(tenantToBaseclassPermissionFilter,securityContext);
 	}
 
 	@IOperation(Name = "update tenant to baseclass",Description = "update tenant to baseclass")
 	@PutMapping("/update")
-	public TenantToBaseClassPremission update(@RequestBody TenantToBaseclassPermissionUpdate tenantToBaseclassPermissionUpdate, @RequestAttribute SecurityContextBase securityContext){
+	public TenantToBaseClassPremission update(@RequestHeader("authenticationKey") String authenticationKey,@RequestBody TenantToBaseclassPermissionUpdate tenantToBaseclassPermissionUpdate, @RequestAttribute SecurityContextBase securityContext){
 		String id=tenantToBaseclassPermissionUpdate.getId();
 		TenantToBaseClassPremission tenantToBaseclassPermission=id!=null?tenantToBaseclassPermissionService.getByIdOrNull(id,TenantToBaseClassPremission.class,securityContext):null;
 		if(tenantToBaseclassPermission==null){

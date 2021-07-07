@@ -27,21 +27,21 @@ public class RoleController implements Plugin {
 
 	@IOperation(Name = "creates Role",Description = "creates Role")
 	@PostMapping("/create")
-	public Role create(@RequestBody RoleCreate roleCreate, @RequestAttribute SecurityContextBase securityContext){
+	public Role create(@RequestHeader("authenticationKey") String authenticationKey,@RequestBody RoleCreate roleCreate, @RequestAttribute SecurityContextBase securityContext){
 		roleService.validate(roleCreate,securityContext);
 		return roleService.createRole(roleCreate,securityContext);
 	}
 
 	@IOperation(Name = "returns Role",Description = "returns Role")
 	@PostMapping("/getAll")
-	public PaginationResponse<Role> getAll(@RequestBody RoleFilter roleFilter, @RequestAttribute SecurityContextBase securityContext){
+	public PaginationResponse<Role> getAll(@RequestHeader("authenticationKey") String authenticationKey,@RequestBody RoleFilter roleFilter, @RequestAttribute SecurityContextBase securityContext){
 		roleService.validate(roleFilter,securityContext);
 		return roleService.getAllRoles(roleFilter,securityContext);
 	}
 
 	@IOperation(Name = "updates Role",Description = "updates Role")
 	@PutMapping("/update")
-	public Role update(@RequestBody RoleUpdate roleUpdate, @RequestAttribute SecurityContextBase securityContext){
+	public Role update(@RequestHeader("authenticationKey") String authenticationKey,@RequestBody RoleUpdate roleUpdate, @RequestAttribute SecurityContextBase securityContext){
 		String id=roleUpdate.getId();
 		Role role=id!=null?roleService.getByIdOrNull(id,Role.class,securityContext):null;
 		if(role==null){

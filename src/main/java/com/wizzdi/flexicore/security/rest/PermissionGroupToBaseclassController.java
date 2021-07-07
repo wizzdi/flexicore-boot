@@ -27,21 +27,21 @@ public class PermissionGroupToBaseclassController implements Plugin {
 
 	@IOperation(Name = "creates PermissionGroupToBaseclass",Description = "creates PermissionGroupToBaseclass")
 	@PostMapping("/create")
-	public PermissionGroupToBaseclass create(@RequestBody PermissionGroupToBaseclassCreate permissionGroupToBaseclassCreate, @RequestAttribute SecurityContextBase securityContext){
+	public PermissionGroupToBaseclass create(@RequestHeader("authenticationKey") String authenticationKey,@RequestBody PermissionGroupToBaseclassCreate permissionGroupToBaseclassCreate, @RequestAttribute SecurityContextBase securityContext){
 		permissionGroupToBaseclassService.validate(permissionGroupToBaseclassCreate,securityContext);
 		return permissionGroupToBaseclassService.createPermissionGroupToBaseclass(permissionGroupToBaseclassCreate,securityContext);
 	}
 
 	@IOperation(Name = "returns PermissionGroupToBaseclass",Description = "returns PermissionGroupToBaseclass")
 	@PostMapping("/getAll")
-	public PaginationResponse<PermissionGroupToBaseclass> getAll(@RequestBody PermissionGroupToBaseclassFilter permissionGroupToBaseclassFilter, @RequestAttribute SecurityContextBase securityContext){
+	public PaginationResponse<PermissionGroupToBaseclass> getAll(@RequestHeader("authenticationKey") String authenticationKey,@RequestBody PermissionGroupToBaseclassFilter permissionGroupToBaseclassFilter, @RequestAttribute SecurityContextBase securityContext){
 		permissionGroupToBaseclassService.validate(permissionGroupToBaseclassFilter,securityContext);
 		return permissionGroupToBaseclassService.getAllPermissionGroupToBaseclass(permissionGroupToBaseclassFilter,securityContext);
 	}
 
 	@IOperation(Name = "updates PermissionGroupToBaseclass",Description = "updates PermissionGroupToBaseclass")
 	@PutMapping("/update")
-	public PermissionGroupToBaseclass update(@RequestBody PermissionGroupToBaseclassUpdate permissionGroupToBaseclassUpdate, @RequestAttribute SecurityContextBase securityContext){
+	public PermissionGroupToBaseclass update(@RequestHeader("authenticationKey") String authenticationKey,@RequestBody PermissionGroupToBaseclassUpdate permissionGroupToBaseclassUpdate, @RequestAttribute SecurityContextBase securityContext){
 		String id=permissionGroupToBaseclassUpdate.getId();
 		PermissionGroupToBaseclass permissionGroupToBaseclass=id!=null?permissionGroupToBaseclassService.getByIdOrNull(id,PermissionGroupToBaseclass.class,securityContext):null;
 		if(permissionGroupToBaseclass==null){

@@ -27,21 +27,21 @@ public class SecurityUserController implements Plugin {
 
 	@IOperation(Name = "creates security user",Description = "creates security user")
 	@PostMapping("/create")
-	public SecurityUser create(@RequestBody SecurityUserCreate securityUserCreate, @RequestAttribute SecurityContextBase securityContext){
+	public SecurityUser create(@RequestHeader("authenticationKey") String authenticationKey,@RequestBody SecurityUserCreate securityUserCreate, @RequestAttribute SecurityContextBase securityContext){
 		securityUserService.validate(securityUserCreate,securityContext);
 		return securityUserService.createSecurityUser(securityUserCreate,securityContext);
 	}
 
 	@IOperation(Name = "returns security user",Description = "returns security user")
 	@PostMapping("/getAll")
-	public PaginationResponse<SecurityUser> getAll(@RequestBody SecurityUserFilter securityUserFilter, @RequestAttribute SecurityContextBase securityContext){
+	public PaginationResponse<SecurityUser> getAll(@RequestHeader("authenticationKey") String authenticationKey,@RequestBody SecurityUserFilter securityUserFilter, @RequestAttribute SecurityContextBase securityContext){
 		securityUserService.validate(securityUserFilter,securityContext);
 		return securityUserService.getAllSecurityUsers(securityUserFilter,securityContext);
 	}
 
 	@IOperation(Name = "updates security user",Description = "updates security user")
 	@PutMapping("/update")
-	public SecurityUser update(@RequestBody SecurityUserUpdate securityUserUpdate, @RequestAttribute SecurityContextBase securityContext){
+	public SecurityUser update(@RequestHeader("authenticationKey") String authenticationKey,@RequestBody SecurityUserUpdate securityUserUpdate, @RequestAttribute SecurityContextBase securityContext){
 		String id=securityUserUpdate.getId();
 		SecurityUser securityUser=id!=null?securityUserService.getByIdOrNull(id,SecurityUser.class,securityContext):null;
 		if(securityUser==null){

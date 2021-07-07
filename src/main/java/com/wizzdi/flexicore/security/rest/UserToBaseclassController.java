@@ -27,7 +27,7 @@ public class UserToBaseclassController implements Plugin {
 
 	@IOperation(Name = "create user to baseclass",Description = "creates user to baseclass")
 	@PostMapping("/create")
-	public UserToBaseClass create(@RequestBody UserToBaseclassCreate userToBaseclassCreate, @RequestAttribute SecurityContextBase securityContext){
+	public UserToBaseClass create(@RequestHeader("authenticationKey") String authenticationKey,@RequestBody UserToBaseclassCreate userToBaseclassCreate, @RequestAttribute SecurityContextBase securityContext){
 		userToBaseclassService.validate(userToBaseclassCreate,securityContext);
 		return userToBaseclassService.createUserToBaseclass(userToBaseclassCreate,securityContext);
 	}
@@ -35,7 +35,7 @@ public class UserToBaseclassController implements Plugin {
 	@IOperation(Name = "returns user to baseclass",Description = "returns user to baseclass")
 
 	@PostMapping("/getAll")
-	public PaginationResponse<UserToBaseClass> getAll(@RequestBody UserToBaseclassFilter userToBaseclassFilter, @RequestAttribute SecurityContextBase securityContext){
+	public PaginationResponse<UserToBaseClass> getAll(@RequestHeader("authenticationKey") String authenticationKey,@RequestBody UserToBaseclassFilter userToBaseclassFilter, @RequestAttribute SecurityContextBase securityContext){
 		userToBaseclassService.validate(userToBaseclassFilter,securityContext);
 		return userToBaseclassService.getAllUserToBaseclass(userToBaseclassFilter,securityContext);
 	}
@@ -43,7 +43,7 @@ public class UserToBaseclassController implements Plugin {
 	@IOperation(Name = "updates user to baseclass",Description = "updates user to baseclass")
 
 	@PutMapping("/update")
-	public UserToBaseClass update(@RequestBody UserToBaseclassUpdate userToBaseclassUpdate, @RequestAttribute SecurityContextBase securityContext){
+	public UserToBaseClass update(@RequestHeader("authenticationKey") String authenticationKey,@RequestBody UserToBaseclassUpdate userToBaseclassUpdate, @RequestAttribute SecurityContextBase securityContext){
 		String id=userToBaseclassUpdate.getId();
 		UserToBaseClass userToBaseclass=id!=null?userToBaseclassService.getByIdOrNull(id,UserToBaseClass.class,securityContext):null;
 		if(userToBaseclass==null){
