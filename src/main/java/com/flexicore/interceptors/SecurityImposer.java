@@ -20,6 +20,7 @@ import com.flexicore.request.RecoverTotpRequest;
 import com.flexicore.request.TotpAuthenticationRequest;
 import com.flexicore.rest.TotpRESTService;
 import com.flexicore.security.SecurityContext;
+import com.flexicore.security.SecurityContextBase;
 import com.flexicore.service.impl.SecurityService;
 import io.jsonwebtoken.JwtException;
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -84,6 +85,12 @@ public class SecurityImposer implements AspectPlugin {
 			logger.info("Method is: " + methodName + " , on Thread " + Thread.currentThread().getName());
 			String authenticationkey = (String) parameters[0];
 			websocketSession = getWebsocketSession(parameters);
+			SecurityContextBase existing = Stream.of(parameters).filter(f -> f instanceof SecurityContextBase).map(f -> (SecurityContextBase) f).findFirst().orElse(null);
+			if(existing!=null){
+				logger.debug("existing security context - will not authenticate again");
+				Object procceed = procceed(existing, joinPoint, methodName, parameters, start);
+				return procceed;
+			}
 
 
 			if (authenticationkey != null && !authenticationkey.isEmpty()) {
@@ -217,7 +224,7 @@ public class SecurityImposer implements AspectPlugin {
 	}
 
 
-	private Object procceed(SecurityContext securityContext, ProceedingJoinPoint proceedingJoinPoint, String methodName, Object[] parameters, long start) throws Throwable {
+	private Object procceed(SecurityContextBase securityContext, ProceedingJoinPoint proceedingJoinPoint, String methodName, Object[] parameters, long start) throws Throwable {
 		Object param = parameters[parameters.length - 1];
 		if (param instanceof Session) {
 			Session session = (Session) param;

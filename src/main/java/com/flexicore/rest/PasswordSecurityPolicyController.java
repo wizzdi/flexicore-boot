@@ -34,7 +34,7 @@ public class PasswordSecurityPolicyController implements Plugin {
 
 	@PostMapping("/create")
 	@Operation(description = "creates Security Policy",summary = "creates Security Policy")
-	public PasswordSecurityPolicy create(@RequestHeader(value = "authenticationKey",required = false)String key, @RequestBody PasswordSecurityPolicyCreate securityPolicyCreate, @Parameter(hidden = true) SecurityContextBase securityContext){
+	public PasswordSecurityPolicy create(@RequestHeader(value = "authenticationKey",required = false)String key, @RequestBody PasswordSecurityPolicyCreate securityPolicyCreate, @RequestAttribute SecurityContextBase securityContext){
 		passwordSecurityPolicyService.validate(securityPolicyCreate,securityContext);
 		return passwordSecurityPolicyService.createSecurityPolicy(securityPolicyCreate,securityContext);
 	}
@@ -42,7 +42,7 @@ public class PasswordSecurityPolicyController implements Plugin {
 	@PostMapping("/getAll")
 	@Operation(description = "returns Security Policies",summary = "returns Security Policies")
 
-	public PaginationResponse<PasswordSecurityPolicy> getAll(@RequestHeader(value = "authenticationKey",required = false)String key,@RequestBody PasswordSecurityPolicyFilter securityPolicyFilter,  @Parameter(hidden = true) SecurityContextBase securityContext){
+	public PaginationResponse<PasswordSecurityPolicy> getAll(@RequestHeader(value = "authenticationKey",required = false)String key,@RequestBody PasswordSecurityPolicyFilter securityPolicyFilter,  @RequestAttribute SecurityContextBase securityContext){
 		passwordSecurityPolicyService.validate(securityPolicyFilter,securityContext);
 		return passwordSecurityPolicyService.getAllSecurityPolicies(securityPolicyFilter,securityContext);
 	}
@@ -50,7 +50,7 @@ public class PasswordSecurityPolicyController implements Plugin {
 	@PutMapping("/update")
 	@Operation(description = "updates Security Policies",summary = "updates Security Policies")
 
-	public PasswordSecurityPolicy update(@RequestHeader(value = "authenticationKey",required = false)String key,@RequestBody PasswordSecurityPolicyUpdate securityPolicyUpdate, @Parameter(hidden = true) SecurityContextBase securityContext){
+	public PasswordSecurityPolicy update(@RequestHeader(value = "authenticationKey",required = false)String key,@RequestBody PasswordSecurityPolicyUpdate securityPolicyUpdate, @RequestAttribute SecurityContextBase securityContext){
 		String id=securityPolicyUpdate.getId();
 		PasswordSecurityPolicy passwordSecurityPolicy=id!=null? passwordSecurityPolicyService.getSecurityPolicyByIdOrNull(id,PasswordSecurityPolicy.class,securityContext):null;
 		if(passwordSecurityPolicy==null){

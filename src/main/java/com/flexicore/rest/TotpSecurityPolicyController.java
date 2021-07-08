@@ -33,7 +33,7 @@ public class TotpSecurityPolicyController implements Plugin {
 
 	@PostMapping("/create")
 	@Operation(description = "creates Security Policy",summary = "creates Security Policy")
-	public SecurityPolicy create(@RequestHeader(value = "authenticationKey",required = false)String key, @RequestBody TotpSecurityPolicyCreate securityPolicyCreate, @Parameter(hidden = true) SecurityContextBase securityContext){
+	public SecurityPolicy create(@RequestHeader(value = "authenticationKey",required = false)String key, @RequestBody TotpSecurityPolicyCreate securityPolicyCreate, @RequestAttribute SecurityContextBase securityContext){
 		totpSecurityPolicyService.validate(securityPolicyCreate,securityContext);
 		return totpSecurityPolicyService.createSecurityPolicy(securityPolicyCreate,securityContext);
 	}
@@ -41,7 +41,7 @@ public class TotpSecurityPolicyController implements Plugin {
 	@PostMapping("/getAll")
 	@Operation(description = "returns Security Policies",summary = "returns Security Policies")
 
-	public PaginationResponse<TotpSecurityPolicy> getAll(@RequestHeader(value = "authenticationKey",required = false)String key,@RequestBody TotpSecurityPolicyFilter securityPolicyFilter,  @Parameter(hidden = true) SecurityContextBase securityContext){
+	public PaginationResponse<TotpSecurityPolicy> getAll(@RequestHeader(value = "authenticationKey",required = false)String key,@RequestBody TotpSecurityPolicyFilter securityPolicyFilter,  @RequestAttribute SecurityContextBase securityContext){
 		totpSecurityPolicyService.validate(securityPolicyFilter,securityContext);
 		return totpSecurityPolicyService.getAllSecurityPolicies(securityPolicyFilter,securityContext);
 	}
@@ -49,7 +49,7 @@ public class TotpSecurityPolicyController implements Plugin {
 	@PutMapping("/update")
 	@Operation(description = "updates Security Policies",summary = "updates Security Policies")
 
-	public TotpSecurityPolicy update(@RequestHeader(value = "authenticationKey",required = false)String key,@RequestBody TotpSecurityPolicyUpdate securityPolicyUpdate, @Parameter(hidden = true) SecurityContextBase securityContext){
+	public TotpSecurityPolicy update(@RequestHeader(value = "authenticationKey",required = false)String key,@RequestBody TotpSecurityPolicyUpdate securityPolicyUpdate, @RequestAttribute SecurityContextBase securityContext){
 		String id=securityPolicyUpdate.getId();
 		TotpSecurityPolicy totpSecurityPolicy=id!=null? totpSecurityPolicyService.getSecurityPolicyByIdOrNull(id,TotpSecurityPolicy.class,securityContext):null;
 		if(totpSecurityPolicy==null){

@@ -78,7 +78,7 @@ public class SecurityService implements com.flexicore.service.SecurityService {
 		List<Tenant> tenants = runningUser.getTenants();
 		boolean impersonated = runningUser.isImpersonated();
 
-		Operation operation = operationrepository.findById(operationId);
+		Operation operation = getOperation(operationId);
 		return new SecurityContext(tenants, user, operation, tenantToCreateIn)
 				.setTotpVerified(runningUser.isTotpVerified())
 				.setSecurityPolicies(runningUser.getSecurityPolicies())
@@ -87,6 +87,11 @@ public class SecurityService implements com.flexicore.service.SecurityService {
 				.setExpiresDate(runningUser.getExpiresDate());
 
 
+	}
+
+	public Operation getOperation(String operationId) {
+		Operation operation = operationrepository.findById(operationId);
+		return operation;
 	}
 
 	@Override
