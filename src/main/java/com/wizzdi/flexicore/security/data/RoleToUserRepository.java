@@ -64,7 +64,6 @@ public class RoleToUserRepository implements Plugin {
 		addRoleToUserPredicates(roleToUserFilter,cb,q,r,predicates,securityContext);
 		q.select(cb.count(r)).where(predicates.toArray(Predicate[]::new));
 		TypedQuery<Long> query = em.createQuery(q);
-		BaseclassRepository.addPagination(roleToUserFilter,query);
 		return query.getFirstResult();
 
 	}
