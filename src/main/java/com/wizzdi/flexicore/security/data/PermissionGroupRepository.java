@@ -57,7 +57,7 @@ public class PermissionGroupRepository implements Plugin {
 		addPermissionGroupPredicates(permissionGroupFilter,cb,q,r,predicates,securityContext);
 		q.select(cb.count(r)).where(predicates.toArray(Predicate[]::new));
 		TypedQuery<Long> query = em.createQuery(q);
-		return query.getFirstResult();
+		return query.getSingleResult();
 
 	}
 

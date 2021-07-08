@@ -53,7 +53,7 @@ public class SecurityTenantRepository implements Plugin {
 		addTenantPredicates(tenantFilter,cb,q,r,predicates,securityContext);
 		q.select(cb.count(r)).where(predicates.toArray(Predicate[]::new));
 		TypedQuery<Long> query = em.createQuery(q);
-		return query.getFirstResult();
+		return query.getSingleResult();
 
 	}
 

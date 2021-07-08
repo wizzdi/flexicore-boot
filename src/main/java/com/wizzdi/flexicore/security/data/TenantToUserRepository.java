@@ -64,7 +64,7 @@ public class TenantToUserRepository implements Plugin {
 		addTenantToUserPredicates(tenantToUserFilter,cb,q,r,predicates,securityContext);
 		q.select(cb.count(r)).where(predicates.toArray(Predicate[]::new));
 		TypedQuery<Long> query = em.createQuery(q);
-		return query.getFirstResult();
+		return query.getSingleResult();
 
 	}
 

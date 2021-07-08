@@ -76,7 +76,7 @@ full example:
       q.select(cb.count(r)).where(predicates.toArray(Predicate[]::new));  
       TypedQuery<Long> query = em.createQuery(q);  
       BaseclassRepository.addPagination(TestEntityFilter, query);  
-     return query.getFirstResult();  
+     return query.getSingleResult();  
       
       }
     }
