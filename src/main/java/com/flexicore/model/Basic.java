@@ -9,6 +9,7 @@ import com.flexicore.data.jsoncontainers.FCTypeResolver;
 import javax.persistence.Column;
 import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
+import javax.persistence.Transient;
 import java.time.OffsetDateTime;
 
 @JsonIdentityInfo(generator = ObjectIdGenerators.UUIDGenerator.class, property = "json-id")
@@ -81,5 +82,10 @@ public abstract class Basic {
 	public <T extends Basic> T setUpdateDate(OffsetDateTime updateDate) {
 		this.updateDate = updateDate;
 		return (T) this;
+	}
+
+	@Transient
+	public String getJavaType(){
+		return getClass().getCanonicalName();
 	}
 }
