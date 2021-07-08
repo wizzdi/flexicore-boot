@@ -60,7 +60,7 @@ public class BasicRepository implements Plugin {
 			}
 		}
 		if (basicPropertiesFilter.getSoftDelete() == null) {
-			predicates.add(cb.equal(r.get(Basic_.softDelete), false));
+			basicPropertiesFilter.setSoftDelete(SoftDeleteOption.DEFAULT);
 		}
 		switch (basicPropertiesFilter.getSoftDelete()){
 			case DEFAULT:
