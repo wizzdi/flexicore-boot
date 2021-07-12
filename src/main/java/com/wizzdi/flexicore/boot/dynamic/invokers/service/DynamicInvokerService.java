@@ -105,6 +105,9 @@ public class DynamicInvokerService implements Plugin {
             pred = pred && pluginWrapper!=null&&dynamicInvokerFilter.getPluginIds().contains(pluginWrapper.getPluginId());
 
         }
+        if(dynamicInvokerFilter.getHandlingTypes()!=null&&!dynamicInvokerFilter.getHandlingTypes().isEmpty()){
+            pred=pred&&dynamicInvokerFilter.getHandlingTypes().contains(f.getHandlingType().getCanonicalName());
+        }
 
 
         return pred;

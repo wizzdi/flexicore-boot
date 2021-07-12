@@ -11,6 +11,7 @@ public class DynamicInvokerFilter extends BaseclassFilter {
 	private Set<String> invokerTypes;
 	private String methodNameLike;
 	private Set<String> pluginIds;
+	private Set<String> handlingTypes;
 
 
 
@@ -47,6 +48,15 @@ public class DynamicInvokerFilter extends BaseclassFilter {
 
 	public <T extends DynamicInvokerFilter> T setPluginIds(Set<String> pluginIds) {
 		this.pluginIds = pluginIds;
+		return (T) this;
+	}
+
+	public Set<String> getHandlingTypes() {
+		return handlingTypes;
+	}
+
+	public <T extends DynamicInvokerFilter> T setHandlingTypes(Set<String> handlingTypes) {
+		this.handlingTypes = handlingTypes;
 		return (T) this;
 	}
 }
