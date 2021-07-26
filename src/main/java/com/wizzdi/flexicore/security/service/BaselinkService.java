@@ -2,6 +2,7 @@ package com.wizzdi.flexicore.security.service;
 
 import com.flexicore.model.Baseclass;
 import com.flexicore.model.Baselink;
+import com.flexicore.model.SecurityTenant;
 import com.wizzdi.flexicore.boot.base.interfaces.Plugin;
 import com.wizzdi.flexicore.security.data.BaselinkRepository;
 import com.flexicore.security.SecurityContextBase;
@@ -11,10 +12,12 @@ import com.wizzdi.flexicore.security.request.BaselinkUpdate;
 import com.wizzdi.flexicore.security.response.PaginationResponse;
 import org.pf4j.Extension;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
+import org.springframework.web.server.ResponseStatusException;
 
-import java.util.List;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Extension
 @Component
@@ -67,6 +70,21 @@ public class BaselinkService implements Plugin {
 	}
 
 	public void validate(BaselinkFilter baselinkFilter, SecurityContextBase securityContext) {
+		Set<String> leftsideIds=baselinkFilter.getLeftsideIds();
+		Map<String, Baseclass> leftsideMap=leftsideIds.isEmpty()?new HashMap<>():baselinkRepository.listByIds(Baseclass.class,leftsideIds,securityContext).stream().collect(Collectors.toMap(f->f.getId(), f->f));
+		leftsideIds.removeAll(leftsideMap.keySet());
+		if(!leftsideIds.isEmpty()){
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"no Baseclass with ids "+leftsideIds);
+		}
+		baselinkFilter.setLeftside(new ArrayList<>(leftsideMap.values()));
+
+		Set<String> rightsideIds=baselinkFilter.getRightsideIds();
+		Map<String, Baseclass> rightsideMap=rightsideIds.isEmpty()?new HashMap<>():baselinkRepository.listByIds(Baseclass.class,rightsideIds,securityContext).stream().collect(Collectors.toMap(f->f.getId(), f->f));
+		rightsideIds.removeAll(rightsideMap.keySet());
+		if(!rightsideIds.isEmpty()){
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"no Baseclass with ids "+rightsideIds);
+		}
+		baselinkFilter.setRightside(new ArrayList<>(rightsideMap.values()));
 	}
 
 	public <T extends Baseclass> T getByIdOrNull(String id,Class<T> c, SecurityContextBase securityContext) {

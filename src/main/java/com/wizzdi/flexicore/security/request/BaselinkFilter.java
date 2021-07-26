@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.flexicore.model.Baseclass;
 import com.flexicore.model.Baselink;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -11,8 +12,10 @@ public class BaselinkFilter  extends BaseclassFilter{
 
 	@JsonIgnore
 	private List<Baseclass> leftside;
+	private Set<String> leftsideIds=new HashSet<>();
 	@JsonIgnore
 	private List<Baseclass> rightside;
+	private Set<String> rightsideIds=new HashSet<>();
 	@JsonIgnore
 	private List<Baseclass> values;
 	private Set<String> simpleValues;
@@ -53,6 +56,24 @@ public class BaselinkFilter  extends BaseclassFilter{
 
 	public <T extends BaselinkFilter> T setSimpleValues(Set<String> simpleValues) {
 		this.simpleValues = simpleValues;
+		return (T) this;
+	}
+
+	public Set<String> getLeftsideIds() {
+		return leftsideIds;
+	}
+
+	public <T extends BaselinkFilter> T setLeftsideIds(Set<String> leftsideIds) {
+		this.leftsideIds = leftsideIds;
+		return (T) this;
+	}
+
+	public Set<String> getRightsideIds() {
+		return rightsideIds;
+	}
+
+	public <T extends BaselinkFilter> T setRightsideIds(Set<String> rightsideIds) {
+		this.rightsideIds = rightsideIds;
 		return (T) this;
 	}
 }
