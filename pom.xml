@@ -24,7 +24,7 @@
 
 
         <spring-boot.version>2.5.2</spring-boot.version>
-        <flexicore-security-model.version>1.1.0</flexicore-security-model.version>
+        <flexicore-security-model.version>1.1.1-SNAPSHOT</flexicore-security-model.version>
         <flexicore-boot-starter-data-jpa.version>1.1.0</flexicore-boot-starter-data-jpa.version>
         <flexicore-boot.version>1.2.0</flexicore-boot.version>
     </properties>
