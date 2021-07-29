@@ -1,6 +1,7 @@
 package com.flexicore.request;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.flexicore.annotations.TypeRetention;
 import com.flexicore.model.Baseclass;
 import com.flexicore.model.Baselink;
 import com.flexicore.model.FilteringInformationHolder;
@@ -11,15 +12,19 @@ import java.util.Set;
 
 public class BaselinkFilter extends FilteringInformationHolder {
 
-    private Set<String> leftsideIds=new HashSet<>();
+    private Set<String> leftsideIds = new HashSet<>();
     @JsonIgnore
+    @TypeRetention(Baseclass.class)
     private List<Baseclass> leftside;
     private String leftsideTypeClassName;
-    private Class<? extends Baseclass> leftsideType;
-    private Set<String> rightsideIds=new HashSet<>();
     @JsonIgnore
+    private Class<? extends Baseclass> leftsideType;
+    private Set<String> rightsideIds = new HashSet<>();
+    @JsonIgnore
+    @TypeRetention(Baseclass.class)
     private List<Baseclass> rightside;
     private String rightsideTypeClassName;
+    @JsonIgnore
     private Class<? extends Baseclass> rightsideType;
     private String valueId;
     @JsonIgnore
@@ -47,8 +52,8 @@ public class BaselinkFilter extends FilteringInformationHolder {
         this.simpleValue = other.simpleValue;
         this.linkClassName = other.linkClassName;
         this.linkClass = other.linkClass;
-        this.rightsideType=other.getRightsideType();
-        this.leftsideType=other.getLeftsideType();
+        this.rightsideType = other.rightsideType;
+        this.leftsideType = other.leftsideType;
     }
 
     public Set<String> getLeftsideIds() {

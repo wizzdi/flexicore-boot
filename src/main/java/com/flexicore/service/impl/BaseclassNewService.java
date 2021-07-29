@@ -11,6 +11,7 @@ import com.flexicore.security.SecurityContext;
 import com.wizzdi.flexicore.security.request.BasicPropertiesFilter;
 import com.wizzdi.flexicore.security.request.DateFilter;
 import com.wizzdi.flexicore.security.request.PaginationFilter;
+import com.wizzdi.flexicore.security.request.SoftDeleteOption;
 import org.pf4j.Extension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
@@ -34,7 +35,7 @@ public class BaseclassNewService implements com.flexicore.service.BaseclassNewSe
     public static BasicPropertiesFilter getCompatible(FilteringInformationHolder zipFileFilter) {
         return new BasicPropertiesFilter()
                 .setNameLike(zipFileFilter.getNameLike())
-                .setSoftDelete(zipFileFilter.isFetchSoftDelete())
+                .setSoftDelete(zipFileFilter.isFetchSoftDelete()? SoftDeleteOption.BOTH:SoftDeleteOption.NON_DELETED_ONLY)
                 .setCreationDateFilter(new DateFilter().setStart(zipFileFilter.getFromDate()).setEnd(zipFileFilter.getToDate()));
     }
 
