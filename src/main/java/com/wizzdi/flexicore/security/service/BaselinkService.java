@@ -74,7 +74,7 @@ public class BaselinkService implements Plugin {
 		Map<String, Baseclass> leftsideMap=leftsideIds.isEmpty()?new HashMap<>():baselinkRepository.listByIds(Baseclass.class,leftsideIds,securityContext).stream().collect(Collectors.toMap(f->f.getId(), f->f));
 		leftsideIds.removeAll(leftsideMap.keySet());
 		if(!leftsideIds.isEmpty()){
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"no Baseclass with ids "+leftsideIds);
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"no Baseclass(leftside) with ids "+leftsideIds);
 		}
 		baselinkFilter.setLeftside(new ArrayList<>(leftsideMap.values()));
 
@@ -82,9 +82,17 @@ public class BaselinkService implements Plugin {
 		Map<String, Baseclass> rightsideMap=rightsideIds.isEmpty()?new HashMap<>():baselinkRepository.listByIds(Baseclass.class,rightsideIds,securityContext).stream().collect(Collectors.toMap(f->f.getId(), f->f));
 		rightsideIds.removeAll(rightsideMap.keySet());
 		if(!rightsideIds.isEmpty()){
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"no Baseclass with ids "+rightsideIds);
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"no Baseclass(rightside) with ids "+rightsideIds);
 		}
 		baselinkFilter.setRightside(new ArrayList<>(rightsideMap.values()));
+
+		Set<String> valuesIds=baselinkFilter.getValuesIds();
+		Map<String, Baseclass> valuesMap=valuesIds.isEmpty()?new HashMap<>():baselinkRepository.listByIds(Baseclass.class,valuesIds,securityContext).stream().collect(Collectors.toMap(f->f.getId(), f->f));
+		valuesIds.removeAll(valuesMap.keySet());
+		if(!valuesIds.isEmpty()){
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"no Baseclass(value) with ids "+valuesIds);
+		}
+		baselinkFilter.setValues(new ArrayList<>(valuesMap.values()));
 	}
 
 	public <T extends Baseclass> T getByIdOrNull(String id,Class<T> c, SecurityContextBase securityContext) {
