@@ -46,7 +46,7 @@ public class DynamicInvokersProvider implements Plugin {
 
     private static final Logger logger = LoggerFactory.getLogger(DynamicInvokersProvider.class);
     private static final Set<Class<?>> KNOWN_SYSTEM_TYPES = new HashSet<>(Arrays.asList(
-            Boolean.class, Character.class, Byte.class, Short.class, Integer.class, Long.class, Float.class, Double.class, Void.class, String.class, OffsetDateTime.class, ZonedDateTime.class, LocalDateTime.class, LocalDate.class, LocalTime.class,OffsetTime.class
+            Boolean.class, Character.class, Byte.class, Short.class, Integer.class, Long.class, Float.class, Double.class, Void.class, String.class, OffsetDateTime.class, ZonedDateTime.class, LocalDateTime.class, LocalDate.class, LocalTime.class,OffsetTime.class,Class.class
     ));
 
 

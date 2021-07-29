@@ -7,9 +7,9 @@ import com.wizzdi.flexicore.boot.dynamic.invokers.annotations.FieldInfo;
 import com.wizzdi.flexicore.boot.dynamic.invokers.annotations.IdRefFieldInfo;
 import com.wizzdi.flexicore.boot.dynamic.invokers.annotations.ListFieldInfo;
 import com.wizzdi.flexicore.boot.dynamic.invokers.response.ParameterInfo;
+import com.wizzdi.flexicore.security.annotations.TypeRetention;
 import com.wizzdi.flexicore.security.response.PaginationResponse;
 import org.springframework.core.annotation.AnnotatedElementUtils;
-import org.springframework.core.annotation.AnnotationUtils;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
@@ -20,6 +20,9 @@ import java.util.stream.Collectors;
 
 public class InvokerUtils {
 
+
+
+	public static final List<FieldNameSuffix> POSSIBLE_SUFFIX = Arrays.asList(new FieldNameSuffix(false,"id"),new FieldNameSuffix(true, "ids"),new FieldNameSuffix(true,"sids"));
 
 	public static IOperation getIOOperation(Method method) {
 		Class<?> methodSubject = getMethodSubject(method);
@@ -121,15 +124,19 @@ public class InvokerUtils {
 	public static ParameterInfo detectAutomatically(Field field, List<Field> fields, Field[] declaredFields) {
 		if (AnnotatedElementUtils.findMergedAnnotation(field,JsonIgnore.class) == null) {
 			String fieldName = field.getName();
-			if (fieldName.toLowerCase().endsWith("id")) {
-				String refName = fieldName.substring(0, fieldName.length() - 2);
-				Optional<IdRefFieldInfo> related = fields.stream().filter(f -> f.getName().equals(refName)).findFirst().map(f -> getIdRefInfo(field, f.getType(), false)).or(() -> fromDeclared(field, declaredFields).map(f -> getIdRefInfo(field, f.getType(), true)));
+			for (FieldNameSuffix fieldNameSuffix : POSSIBLE_SUFFIX) {
+				String possibleSuffix=fieldNameSuffix.suffix;
+				if (fieldName.toLowerCase().endsWith(possibleSuffix)) {
+					String refName = fieldName.substring(0, fieldName.length() - possibleSuffix.length());
+					Optional<IdRefFieldInfo> related = fields.stream().filter(f -> f.getName().equals(refName)).findFirst().map(f -> getIdRefInfo(field,fieldNameSuffix.list, f, false)).or(() -> fromDeclared(field, declaredFields).map(f -> getIdRefInfo(field, fieldNameSuffix.list, f, true)));
 
-				if (related.isPresent()) {
-					IdRefFieldInfo idRefFieldInfo = related.get();
-					return new ParameterInfo(field, idRefFieldInfo);
+					if (related.isPresent()) {
+						IdRefFieldInfo idRefFieldInfo = related.get();
+						return new ParameterInfo(field, idRefFieldInfo);
+					}
 				}
 			}
+
 			if(Collection.class.isAssignableFrom(field.getType())){
 				ListFieldInfo listFieldInfo=getListFieldInfo(field);
 				return new ParameterInfo(field,listFieldInfo);
@@ -255,16 +262,16 @@ public class InvokerUtils {
 		return Optional.empty();
 	}
 
-	public static IdRefFieldInfo getIdRefInfo(Field field, Class<?> type, boolean action) {
+	public static IdRefFieldInfo getIdRefInfo(Field idField, boolean list, Field relatedField, boolean action) {
 		return new IdRefFieldInfo() {
 			@Override
 			public String displayName() {
-				return field.getName();
+				return idField.getName();
 			}
 
 			@Override
 			public String description() {
-				return field.getName();
+				return idField.getName();
 			}
 
 			@Override
@@ -274,12 +281,13 @@ public class InvokerUtils {
 
 			@Override
 			public Class<?> refType() {
-				return type;
+				TypeRetention typeRetention = AnnotatedElementUtils.findMergedAnnotation(relatedField, TypeRetention.class);
+				return typeRetention!=null?typeRetention.value(): relatedField.getType();
 			}
 
 			@Override
 			public boolean list() {
-				return false;
+				return list;
 			}
 
 			@Override
@@ -292,5 +300,24 @@ public class InvokerUtils {
 				return IdRefFieldInfo.class;
 			}
 		};
+	}
+
+
+	private static class FieldNameSuffix{
+		private final boolean list;
+		private final String suffix;
+
+		public FieldNameSuffix(boolean list, String suffix) {
+			this.list = list;
+			this.suffix = suffix;
+		}
+
+		public boolean isList() {
+			return list;
+		}
+
+		public String getSuffix() {
+			return suffix;
+		}
 	}
 }

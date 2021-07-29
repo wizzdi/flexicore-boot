@@ -32,7 +32,7 @@
         <flexicore-boot-starter-data-jpa.version>1.1.0</flexicore-boot-starter-data-jpa.version>
         <flexicore-boot-starter-web.version>1.1.0</flexicore-boot-starter-web.version>
         <flexicore-security-model.version>1.1.0</flexicore-security-model.version>
-        <flexicore-security-service.version>1.1.0</flexicore-security-service.version>
+        <flexicore-security-service.version>1.1.1-SNAPSHOT</flexicore-security-service.version>
         <flexicore-boot.version>1.2.0</flexicore-boot.version>
         <flexicore-boot-test-helper.version>1.0.0</flexicore-boot-test-helper.version>
         <flexicore-boot-starter-data-jpa-eclipselink.version>1.1.0</flexicore-boot-starter-data-jpa-eclipselink.version>
