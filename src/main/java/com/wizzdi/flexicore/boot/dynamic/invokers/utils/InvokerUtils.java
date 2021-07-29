@@ -2,12 +2,12 @@ package com.wizzdi.flexicore.boot.dynamic.invokers.utils;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.flexicore.annotations.IOperation;
+import com.flexicore.annotations.TypeRetention;
 import com.flexicore.model.Baseclass;
 import com.wizzdi.flexicore.boot.dynamic.invokers.annotations.FieldInfo;
 import com.wizzdi.flexicore.boot.dynamic.invokers.annotations.IdRefFieldInfo;
 import com.wizzdi.flexicore.boot.dynamic.invokers.annotations.ListFieldInfo;
 import com.wizzdi.flexicore.boot.dynamic.invokers.response.ParameterInfo;
-import com.wizzdi.flexicore.security.annotations.TypeRetention;
 import com.wizzdi.flexicore.security.response.PaginationResponse;
 import org.springframework.core.annotation.AnnotatedElementUtils;
 

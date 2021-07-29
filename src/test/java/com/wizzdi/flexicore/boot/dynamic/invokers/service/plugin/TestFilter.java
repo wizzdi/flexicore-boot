@@ -2,7 +2,7 @@ package com.wizzdi.flexicore.boot.dynamic.invokers.service.plugin;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import com.wizzdi.flexicore.security.annotations.TypeRetention;
+import com.flexicore.annotations.TypeRetention;
 import com.wizzdi.flexicore.security.request.BaseclassFilter;
 
 import java.util.HashSet;
