@@ -2,6 +2,8 @@ package com.wizzdi.dynamic.properties.converter.postgresql;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.wizzdi.dynamic.properties.converter.JsonConverterImplementation;
 import org.postgresql.util.PGobject;
 import org.springframework.stereotype.Component;
@@ -16,7 +18,8 @@ import java.util.Map;
 public class PostgresqlJsonConverter implements JsonConverterImplementation, AttributeConverter<Map<String, Object>, Object> {
 
     private static final long serialVersionUID = 1L;
-    private static ObjectMapper mapper = new ObjectMapper();
+    private static final ObjectMapper mapper = new ObjectMapper().registerModule(new JavaTimeModule())
+            .configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
     private static TypeReference<Map<String, Object>> type= new TypeReference<>() {};
 
     @Override
