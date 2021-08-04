@@ -19,7 +19,7 @@ public class DynamicPropertiesUtils {
             if (current == null) {
                 return newVals;
             } else {
-                Map<String, Object> copy = new HashMap<>(newVals);
+                Map<String, Object> copy = new HashMap<>(current);
                 for (Map.Entry<String, Object> entry : newVals.entrySet()) {
                     String key = entry.getKey();
                     Object newVal = entry.getValue();
