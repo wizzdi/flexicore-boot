@@ -47,8 +47,10 @@ import org.springframework.stereotype.Component;
 
 import javax.persistence.OneToMany;
 import javax.ws.rs.BadRequestException;
+import javax.ws.rs.ClientErrorException;
 import javax.ws.rs.NotAuthorizedException;
 import javax.ws.rs.ServiceUnavailableException;
+import javax.ws.rs.core.Response;
 import java.beans.BeanInfo;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
@@ -334,6 +336,44 @@ public class BaseclassService implements com.flexicore.service.BaseclassService 
             throw new BadRequestException("could not find basic with id: " + id);
         }
         softDeleteRequest.setBasic(basic);
+    }
+
+    public <T extends Basic> T findById(String id, String classname, SecurityContext securityContext) {
+            Class<T> clazz;
+            try {
+                clazz = (Class<T>) Class.forName(classname);
+                if(Baseclass.class.isAssignableFrom(clazz)){
+                    return (T) findByIdBaseclass(id,(Class<? extends Baseclass>)clazz,securityContext);
+                }
+                if(SecuredBasic.class.isAssignableFrom(clazz)){
+                    return (T) findByIdSecuredBasic(id,(Class<? extends SecuredBasic>)clazz,securityContext);
+                }
+                throw new BadRequestException("could not determine how to fetch entity of type "+clazz);
+
+            } catch (ClassNotFoundException e) {
+                throw new BadRequestException("unable to find class: ", e);
+            }
+
+    }
+
+    private <T extends Baseclass> T findByIdBaseclass(String id, Class<T> clazz, SecurityContext securityContext) {
+        long start = System.currentTimeMillis();
+        T result = baseclassRepository.getByIdOrNull(id, clazz, null, securityContext);
+        if(result==null){
+            throw new BadRequestException("no baseclass of type "+clazz.getSimpleName() +" with id "+ id);
+        }
+        logger.info( "Find by id took: " + (System.currentTimeMillis() - start) + " MS");
+        return result;
+    }
+
+    private <T extends SecuredBasic> T findByIdSecuredBasic(String id, Class<T> clazz, SecurityContext securityContext) {
+        long start = System.currentTimeMillis();
+        T result = securedBasicRepository.getByIdOrNull(id, clazz, SecuredBasic_.security, securityContext);
+        if(result==null){
+            throw new BadRequestException("no securedBasic of type "+clazz.getSimpleName() +" with id "+ id);
+        }
+        logger.info( "Find by id took: " + (System.currentTimeMillis() - start) + " MS");
+        return result;
     }
 
     public enum LinkSide {

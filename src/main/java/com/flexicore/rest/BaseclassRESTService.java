@@ -586,7 +586,8 @@ public class BaseclassRESTService implements RESTService {
     @IOperation(access = Access.allow, Name = "Get Baseclass by ID", Description = "find any base class by its id")
     @Operation(summary = "Find an instance by ID", description = "Find an instance of a Baseclass extender by its id, returns an instance of a Baseclass")
     public Baseclass findById(@HeaderParam("authenticationkey") String authenticationkey,
-                              @PathParam("id") final String id, @Context SecurityContext securitycontext) {
+                              @PathParam("id") final String id,
+                              @Context SecurityContext securitycontext) {
 
         return repository.getById(id, Baseclass.class, null, securitycontext);
     }
@@ -631,27 +632,16 @@ public class BaseclassRESTService implements RESTService {
     @Consumes("application/json")
     @IOperation(access = Access.allow, Name = "Get T extends Baseclass by ID", Description = "get a baseclass (generic) based on Id and canonical class name")
     @Operation(summary = "find entity by id and class", description = "Find an entity by Id and type, returns null if not found")
-    public <T extends Baseclass> T findById(@HeaderParam("authenticationkey") String authenticationkey,
+    public <T extends Basic> T findById(@HeaderParam("authenticationkey") String authenticationkey,
                                             @PathParam("id") final String id,
                                             @PathParam("classname") final String classname,
                                             @Context SecurityContext securityContext) {
 
-        Class<T> clazz;
-        try {
-            clazz = (Class<T>) Class.forName(classname);
-            long start = System.currentTimeMillis();
-            T result = repository.getByIdOrNull(id, clazz, null, securityContext);
-            if(result==null){
-                throw new BadRequestException("no baseclass of type "+clazz.getSimpleName() +" with id "+id);
-            }
-            logger.info( "Find by id took: " + (System.currentTimeMillis() - start) + " MS");
-            return result;
-        } catch (ClassNotFoundException e) {
-            logger.error( "unable to find class: " + classname, e);
-            throw new ClientErrorException(Response.Status.BAD_REQUEST, e);
-        }
+        return baseclassService.findById(id, classname, securityContext);
 
     }
+
+
 
 
     @SuppressWarnings("unchecked")
