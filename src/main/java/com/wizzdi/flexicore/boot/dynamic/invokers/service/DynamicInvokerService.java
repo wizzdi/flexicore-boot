@@ -5,6 +5,7 @@ import com.flexicore.security.SecurityContextBase;
 import com.wizzdi.flexicore.boot.base.interfaces.Plugin;
 import com.wizzdi.flexicore.boot.dynamic.invokers.interfaces.ExecutionContext;
 import com.wizzdi.flexicore.boot.dynamic.invokers.request.*;
+import com.wizzdi.flexicore.boot.dynamic.invokers.response.ExceptionHolder;
 import com.wizzdi.flexicore.boot.dynamic.invokers.response.InvokerHolder;
 import com.wizzdi.flexicore.boot.dynamic.invokers.response.InvokerInfo;
 import com.wizzdi.flexicore.boot.dynamic.invokers.response.InvokerMethodHolder;
@@ -171,7 +172,7 @@ public class DynamicInvokerService implements Plugin {
                 }
             } catch (Throwable e) {
                 logger.error("failed executing " + invokerName, e);
-                responses.add(new ExecuteInvokerResponse<>(invokerName, false, e));
+                responses.add(new ExecuteInvokerResponse<>(invokerName, false, new ExceptionHolder(e)));
             }
 
         }
