@@ -18,14 +18,14 @@ public class BaselinkFilter extends FilteringInformationHolder {
     private List<Baseclass> leftside;
     private String leftsideTypeClassName;
     @JsonIgnore
-    private Class<? extends Baseclass> leftsideType;
+    private Class<?> leftsideType;
     private Set<String> rightsideIds = new HashSet<>();
     @JsonIgnore
     @TypeRetention(Baseclass.class)
     private List<Baseclass> rightside;
     private String rightsideTypeClassName;
     @JsonIgnore
-    private Class<? extends Baseclass> rightsideType;
+    private Class<?> rightsideType;
     private String valueId;
     @JsonIgnore
     private Baseclass value;
@@ -139,21 +139,21 @@ public class BaselinkFilter extends FilteringInformationHolder {
     }
 
     @JsonIgnore
-    public Class<? extends Baseclass> getLeftsideType() {
+    public Class<?> getLeftsideType() {
         return leftsideType;
     }
 
-    public <T extends BaselinkFilter> T setLeftsideType(Class<? extends Baseclass> leftsideType) {
+    public <T extends BaselinkFilter> T setLeftsideType(Class<?> leftsideType) {
         this.leftsideType = leftsideType;
         return (T) this;
     }
 
     @JsonIgnore
-    public Class<? extends Baseclass> getRightsideType() {
+    public Class<?> getRightsideType() {
         return rightsideType;
     }
 
-    public <T extends BaselinkFilter> T setRightsideType(Class<? extends Baseclass> rightsideType) {
+    public <T extends BaselinkFilter> T setRightsideType(Class<?> rightsideType) {
         this.rightsideType = rightsideType;
         return (T) this;
     }

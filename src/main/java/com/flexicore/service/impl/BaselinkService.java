@@ -8,15 +8,14 @@ package com.flexicore.service.impl;
 
 import com.flexicore.data.BaselinkRepository;
 import com.flexicore.data.jsoncontainers.PaginationResponse;
-import com.flexicore.model.Baseclass;
-import com.flexicore.model.Baselink;
-import com.flexicore.model.FilteringInformationHolder;
+import com.flexicore.model.*;
 import com.flexicore.request.BaselinkCreate;
 import com.flexicore.request.BaselinkFilter;
 import com.flexicore.request.BaselinkMassCreate;
 import com.flexicore.request.BaselinkUpdate;
 import com.flexicore.security.SecurityContext;
 import com.flexicore.security.SecurityContextBase;
+import com.wizzdi.flexicore.security.data.SecuredBasicRepository;
 import org.pf4j.Extension;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,6 +38,8 @@ public class BaselinkService implements com.flexicore.service.BaselinkService {
     private BaselinkRepository repository;
     @Autowired
     private SecurityService securityService;
+    @Autowired
+    private SecuredBasicRepository securedBasicRepository;
 
 
     @Override
@@ -234,28 +235,28 @@ public class BaselinkService implements com.flexicore.service.BaselinkService {
         }
         String rightsideClassName = baselinkFilter.getRightsideTypeClassName();
         try {
-            baselinkFilter.setRightsideType(rightsideClassName != null ? (Class<? extends Baseclass>) Class.forName(rightsideClassName) : getLinkSideClass(true,clazz));
+            baselinkFilter.setRightsideType(rightsideClassName != null ?  Class.forName(rightsideClassName) : getLinkSideClass(true,clazz));
         } catch (ClassNotFoundException e) {
             throw new BadRequestException("no class with name:" + linkClazzName);
         }
 
         String leftsideClassName = baselinkFilter.getLeftsideTypeClassName();
         try {
-            baselinkFilter.setLeftsideType(leftsideClassName != null ? (Class<? extends Baseclass>) Class.forName(leftsideClassName) : getLinkSideClass(false,clazz));
+            baselinkFilter.setLeftsideType(leftsideClassName != null ?  Class.forName(leftsideClassName) : getLinkSideClass(false,clazz));
         } catch (ClassNotFoundException e) {
             throw new BadRequestException("no class with name:" + linkClazzName);
         }
 
         baselinkFilter.setLinkClass(clazz);
         Set<String> rightsideIds = baselinkFilter.getRightsideIds();
-        Map<String, Baseclass> rightsideMap = rightsideIds.isEmpty() ? new HashMap<>() : repository.listByIds(baselinkFilter.getRightsideType(), rightsideIds, securityContext).parallelStream().collect(Collectors.toMap(f -> f.getId(), f -> f));
+        Map<String, Baseclass> rightsideMap = rightsideIds.isEmpty() ? new HashMap<>() : listByIds(baselinkFilter.getRightsideType(), securityContext, rightsideIds);
         rightsideIds.removeAll(rightsideMap.keySet());
         if (!rightsideIds.isEmpty()) {
             throw new BadRequestException("No Rightside ids " + rightsideIds);
         }
         baselinkFilter.setRightside(new ArrayList<>(rightsideMap.values()));
         Set<String> leftsideIds = baselinkFilter.getLeftsideIds();
-        Map<String, Baseclass> leftsideMap = leftsideIds.isEmpty() ? new HashMap<>() : repository.listByIds(baselinkFilter.getLeftsideType(), leftsideIds, securityContext).parallelStream().collect(Collectors.toMap(f -> f.getId(), f -> f));
+        Map<String, Baseclass> leftsideMap = leftsideIds.isEmpty() ? new HashMap<>() :  listByIds(baselinkFilter.getLeftsideType(), securityContext, leftsideIds);
         leftsideIds.removeAll(leftsideMap.keySet());
         if (!leftsideIds.isEmpty()) {
             throw new BadRequestException("No Leftside ids " + leftsideIds);
@@ -266,6 +267,19 @@ public class BaselinkService implements com.flexicore.service.BaselinkService {
             throw new BadRequestException("No Value with id " + baselinkFilter.getValueId());
         }
         baselinkFilter.setValue(value);
+    }
+
+    private Map<String, Baseclass> listByIds(Class<?> type, SecurityContext securityContext, Set<String> rightsideIds) {
+        if(Baseclass.class.isAssignableFrom(type)){
+            Class<? extends Baseclass> baseclassType= (Class<? extends Baseclass>) type;
+            return repository.listByIds(baseclassType, rightsideIds, securityContext).parallelStream().collect(Collectors.toMap(f -> f.getId(), f -> f));
+        }
+        if(SecuredBasic.class.isAssignableFrom(type)){
+            Class<? extends SecuredBasic> securedBasicType= (Class<? extends SecuredBasic>) type;
+            return securedBasicRepository.listByIds(securedBasicType, rightsideIds, SecuredBasic_.security, securityContext).parallelStream().map(f->f.getSecurity()).collect(Collectors.toMap(f -> f.getId(), f -> f,(a,b)->a));
+
+        }
+        throw new BadRequestException("cannot list by ids type "+type);
     }
 
     private Class<? extends Baseclass> getLinkSideClass(boolean rightside, Class<? extends Baselink> linkClass) {
