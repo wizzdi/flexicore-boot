@@ -11,7 +11,10 @@ public class DynamicInvokerFilter extends BaseclassFilter {
 	private Set<String> invokerTypes;
 	private String methodNameLike;
 	private Set<String> pluginIds;
+	private Boolean includeCoreInvokers;
 	private Set<String> handlingTypes;
+	private String handlingTypeLike;
+	private boolean handlingTypeLikeCaseSensitive;
 
 
 
@@ -57,6 +60,33 @@ public class DynamicInvokerFilter extends BaseclassFilter {
 
 	public <T extends DynamicInvokerFilter> T setHandlingTypes(Set<String> handlingTypes) {
 		this.handlingTypes = handlingTypes;
+		return (T) this;
+	}
+
+	public String getHandlingTypeLike() {
+		return handlingTypeLike;
+	}
+
+	public <T extends DynamicInvokerFilter> T setHandlingTypeLike(String handlingTypeLike) {
+		this.handlingTypeLike = handlingTypeLike;
+		return (T) this;
+	}
+
+	public boolean isHandlingTypeLikeCaseSensitive() {
+		return handlingTypeLikeCaseSensitive;
+	}
+
+	public <T extends DynamicInvokerFilter> T setHandlingTypeLikeCaseSensitive(boolean handlingTypeLikeCaseSensitive) {
+		this.handlingTypeLikeCaseSensitive = handlingTypeLikeCaseSensitive;
+		return (T) this;
+	}
+
+	public Boolean getIncludeCoreInvokers() {
+		return includeCoreInvokers;
+	}
+
+	public <T extends DynamicInvokerFilter> T setIncludeCoreInvokers(Boolean includeCoreInvokers) {
+		this.includeCoreInvokers = includeCoreInvokers;
 		return (T) this;
 	}
 }

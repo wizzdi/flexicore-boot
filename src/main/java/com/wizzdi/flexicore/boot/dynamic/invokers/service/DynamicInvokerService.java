@@ -100,14 +100,28 @@ public class DynamicInvokerService implements Plugin {
         if (dynamicInvokerFilter.getInvokerTypes() != null && !dynamicInvokerFilter.getInvokerTypes().isEmpty()) {
             pred = pred && dynamicInvokerFilter.getInvokerTypes().contains(f.getName().getCanonicalName());
         }
-        if(dynamicInvokerFilter.getPluginIds()!=null&&!dynamicInvokerFilter.getPluginIds().isEmpty()){
+        boolean pluginIds = dynamicInvokerFilter.getPluginIds() != null && !dynamicInvokerFilter.getPluginIds().isEmpty();
+        boolean coreInvokers = dynamicInvokerFilter.getIncludeCoreInvokers() != null;
+        if(pluginIds || coreInvokers){
             Class<?> handlingType = f.getName();
             PluginWrapper pluginWrapper = pluginManager.whichPlugin(handlingType);
-            pred = pred && pluginWrapper!=null&&dynamicInvokerFilter.getPluginIds().contains(pluginWrapper.getPluginId());
+            pred = pred && (
+                    (pluginWrapper!=null&&pluginIds&&dynamicInvokerFilter.getPluginIds().contains(pluginWrapper.getPluginId()))
+                    ||(pluginWrapper==null&& coreInvokers &&dynamicInvokerFilter.getIncludeCoreInvokers())
+            );
 
         }
         if(dynamicInvokerFilter.getHandlingTypes()!=null&&!dynamicInvokerFilter.getHandlingTypes().isEmpty()){
             pred=pred&&dynamicInvokerFilter.getHandlingTypes().contains(f.getHandlingType().getCanonicalName());
+        }
+        String handlingTypeLike = dynamicInvokerFilter.getHandlingTypeLike();
+        if(handlingTypeLike !=null){
+            String canonicalName = f.getHandlingType().getCanonicalName();
+            if(!dynamicInvokerFilter.isHandlingTypeLikeCaseSensitive()){
+                canonicalName=canonicalName.toLowerCase();
+                handlingTypeLike=handlingTypeLike.toLowerCase();
+            }
+            pred=pred&& canonicalName.contains(handlingTypeLike);
         }
 
 

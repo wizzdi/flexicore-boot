@@ -9,6 +9,7 @@ import com.wizzdi.flexicore.boot.dynamic.invokers.annotations.IdRefFieldInfo;
 import com.wizzdi.flexicore.boot.dynamic.invokers.annotations.ListFieldInfo;
 import com.wizzdi.flexicore.boot.dynamic.invokers.response.ParameterInfo;
 import com.wizzdi.flexicore.security.response.PaginationResponse;
+import org.atteo.evo.inflector.English;
 import org.springframework.core.annotation.AnnotatedElementUtils;
 
 import java.lang.annotation.Annotation;
@@ -128,7 +129,11 @@ public class InvokerUtils {
 				String possibleSuffix=fieldNameSuffix.suffix;
 				if (fieldName.toLowerCase().endsWith(possibleSuffix)) {
 					String refName = fieldName.substring(0, fieldName.length() - possibleSuffix.length());
-					Optional<IdRefFieldInfo> related = fields.stream().filter(f -> f.getName().equals(refName)).findFirst().map(f -> getIdRefInfo(field,fieldNameSuffix.list, f, false)).or(() -> fromDeclared(field, declaredFields).map(f -> getIdRefInfo(field, fieldNameSuffix.list, f, true)));
+					Set<String> refNameOptions=new HashSet<>(List.of(refName));
+					if(fieldNameSuffix.isList()){
+						refNameOptions.addAll(Arrays.asList(refName+"s",refName+"es",English.plural(refName)));
+					}
+					Optional<IdRefFieldInfo> related = fields.stream().filter(f -> refNameOptions.contains(f.getName())).findFirst().map(f -> getIdRefInfo(field,fieldNameSuffix.list, f, false)).or(() -> fromDeclared(field, declaredFields).map(f -> getIdRefInfo(field, fieldNameSuffix.list, f, true)));
 
 					if (related.isPresent()) {
 						IdRefFieldInfo idRefFieldInfo = related.get();

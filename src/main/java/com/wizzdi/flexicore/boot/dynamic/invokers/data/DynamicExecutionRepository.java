@@ -106,6 +106,16 @@ public class DynamicExecutionRepository implements Plugin {
 		if(dynamicInvokerFilter.getInvokerTypes()!=null&&!dynamicInvokerFilter.getInvokerTypes().isEmpty()){
 			join=join==null?r.join(DynamicExecution_.serviceCanonicalNames):join;
 			predicates.add(join.get(ServiceCanonicalName_.serviceCanonicalName).in(dynamicInvokerFilter.getInvokerTypes()));
+		}
+		if(dynamicInvokerFilter.getHandlingTypeLike()!=null){
+			join=join==null?r.join(DynamicExecution_.serviceCanonicalNames):join;
+			if(dynamicInvokerFilter.isHandlingTypeLikeCaseSensitive()){
+				predicates.add(cb.like(join.get(ServiceCanonicalName_.serviceCanonicalName),(dynamicInvokerFilter.getHandlingTypeLike())));
+			}
+			else{
+				predicates.add(cb.like(cb.lower(join.get(ServiceCanonicalName_.serviceCanonicalName)),(dynamicInvokerFilter.getHandlingTypeLike().toLowerCase())));
+
+			}
 
 		}
 	}
