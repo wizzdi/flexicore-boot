@@ -92,7 +92,7 @@ public class DynamicInvokerService implements Plugin {
 
         BasicPropertiesFilter basicPropertiesFilter = dynamicInvokerFilter.getBasicPropertiesFilter();
         if (basicPropertiesFilter !=null&& basicPropertiesFilter.getNameLike() != null) {
-            pred = pred && (f.getDisplayName().contains(basicPropertiesFilter.getNameLike()) || f.getDescription().contains(basicPropertiesFilter.getNameLike()));
+            pred = pred && ((f.getDisplayName().contains(basicPropertiesFilter.getNameLike()) || f.getDescription().contains(basicPropertiesFilter.getNameLike()))|| !basicPropertiesFilter.isNameLikeCaseSensitive()&&(f.getDisplayName().toLowerCase().contains(basicPropertiesFilter.getNameLike().toLowerCase()) || f.getDescription().toLowerCase().contains(basicPropertiesFilter.getNameLike().toLowerCase())));
         }
         if (dynamicInvokerFilter.getMethodNameLike() != null) {
             pred = pred && f.getMethods().stream().map(e -> e.getName()).anyMatch(e -> e.contains(dynamicInvokerFilter.getMethodNameLike()));
@@ -258,7 +258,9 @@ public class DynamicInvokerService implements Plugin {
         boolean pred = true;
         BasicPropertiesFilter basicPropertiesFilter = dynamicInvokerMethodFilter.getBasicPropertiesFilter();
         if (basicPropertiesFilter !=null&& basicPropertiesFilter.getNameLike() != null) {
-            pred = pred && (invokerMethodHolder.getDisplayName().contains(basicPropertiesFilter.getNameLike()) || invokerMethodHolder.getDescription().contains(basicPropertiesFilter.getNameLike()));
+            pred = pred && (
+                    (invokerMethodHolder.getDisplayName().contains(basicPropertiesFilter.getNameLike()) || invokerMethodHolder.getDescription().contains(basicPropertiesFilter.getNameLike())) ||
+                    (!basicPropertiesFilter.isNameLikeCaseSensitive()&&(invokerMethodHolder.getDisplayName().toLowerCase().contains(basicPropertiesFilter.getNameLike().toLowerCase()) || invokerMethodHolder.getDescription().toLowerCase().contains(basicPropertiesFilter.getNameLike().toLowerCase()))));
         }
         boolean byCategories = dynamicInvokerMethodFilter.getCategories() != null && !dynamicInvokerMethodFilter.getCategories().isEmpty();
         if (byCategories ||dynamicInvokerMethodFilter.isEmptyCategories()) {

@@ -63,8 +63,15 @@ public class DynamicExecutionRepository implements Plugin {
 	private <T extends DynamicExecution> void addDynamicInvokerMethodPredicates(CriteriaBuilder cb, From<?, T> r, List<Predicate> predicates, DynamicInvokerMethodFilter dynamicInvokerMethodFilter) {
 		BasicPropertiesFilter basicPropertiesFilter = dynamicInvokerMethodFilter.getBasicPropertiesFilter();
 		if(basicPropertiesFilter !=null){
-			if(basicPropertiesFilter.getNameLike()!=null){
-				predicates.add(cb.like(r.get(DynamicExecution_.methodName),basicPropertiesFilter.getNameLike()));
+			String nameLike = basicPropertiesFilter.getNameLike();
+			if(nameLike !=null){
+				if(basicPropertiesFilter.isNameLikeCaseSensitive()){
+					predicates.add(cb.like(r.get(DynamicExecution_.methodName), nameLike));
+				}
+				else{
+					predicates.add(cb.like(cb.lower(r.get(DynamicExecution_.methodName)), nameLike.toLowerCase()));
+
+				}
 			}
 			if(basicPropertiesFilter.getNames()!=null&&!basicPropertiesFilter.getNames().isEmpty()){
 				predicates.add(r.get(DynamicExecution_.methodName).in(basicPropertiesFilter.getNames()));
@@ -92,9 +99,15 @@ public class DynamicExecutionRepository implements Plugin {
 
 		BasicPropertiesFilter basicPropertiesFilter = dynamicInvokerFilter.getBasicPropertiesFilter();
 		if(basicPropertiesFilter !=null){
-			if(basicPropertiesFilter.getNameLike()!=null){
+			String nameLike = basicPropertiesFilter.getNameLike();
+			if(nameLike !=null){
 				join=join==null?r.join(DynamicExecution_.serviceCanonicalNames):join;
-				predicates.add(cb.like(join.get(ServiceCanonicalName_.serviceCanonicalName),basicPropertiesFilter.getNameLike()));
+				if(basicPropertiesFilter.isNameLikeCaseSensitive()){
+					predicates.add(cb.like(join.get(ServiceCanonicalName_.serviceCanonicalName), nameLike));
+				}
+				else{
+					predicates.add(cb.like(cb.lower(join.get(ServiceCanonicalName_.serviceCanonicalName)), nameLike.toLowerCase()));
+				}
 			}
 			if(basicPropertiesFilter.getNames()!=null&&!basicPropertiesFilter.getNames().isEmpty()){
 				join=join==null?r.join(DynamicExecution_.serviceCanonicalNames):join;
