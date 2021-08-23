@@ -13,6 +13,12 @@ public class BaselinkMassCreate {
     private Set<String> leftsideIds=new HashSet<>();
     @JsonIgnore
     private List<Baseclass> leftside;
+    private String leftsideTypeClassName;
+    @JsonIgnore
+    private Class<?> leftsideType;
+    private String rightsideTypeClassName;
+    @JsonIgnore
+    private Class<?> rightsideType;
     private Set<String> rightsideIds=new HashSet<>();
     @JsonIgnore
     private List<Baseclass> rightside;
@@ -104,6 +110,44 @@ public class BaselinkMassCreate {
 
     public <T extends BaselinkMassCreate> T setLinkClass(Class<? extends Baselink> linkClass) {
         this.linkClass = linkClass;
+        return (T) this;
+    }
+
+    public String getLeftsideTypeClassName() {
+        return leftsideTypeClassName;
+    }
+
+    public <T extends BaselinkMassCreate> T setLeftsideTypeClassName(String leftsideTypeClassName) {
+        this.leftsideTypeClassName = leftsideTypeClassName;
+        return (T) this;
+    }
+
+    @JsonIgnore
+    public Class<?> getLeftsideType() {
+        return leftsideType;
+    }
+
+    public <T extends BaselinkMassCreate> T setLeftsideType(Class<?> leftsideType) {
+        this.leftsideType = leftsideType;
+        return (T) this;
+    }
+
+    public String getRightsideTypeClassName() {
+        return rightsideTypeClassName;
+    }
+
+    public <T extends BaselinkMassCreate> T setRightsideTypeClassName(String rightsideTypeClassName) {
+        this.rightsideTypeClassName = rightsideTypeClassName;
+        return (T) this;
+    }
+
+    @JsonIgnore
+    public Class<?> getRightsideType() {
+        return rightsideType;
+    }
+
+    public <T extends BaselinkMassCreate> T setRightsideType(Class<?> rightsideType) {
+        this.rightsideType = rightsideType;
         return (T) this;
     }
 }

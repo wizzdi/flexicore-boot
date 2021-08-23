@@ -202,15 +202,28 @@ public class BaselinkService implements com.flexicore.service.BaselinkService {
             throw new BadRequestException("no class with name:" + linkClazzName);
         }
         createBaselinkRequest.setLinkClass(clazz);
+        String rightsideClassName = createBaselinkRequest.getRightsideTypeClassName();
+        try {
+            createBaselinkRequest.setRightsideType(rightsideClassName != null ?  Class.forName(rightsideClassName) : getLinkSideClass(true,clazz));
+        } catch (ClassNotFoundException e) {
+            throw new BadRequestException("no class with name:" + linkClazzName);
+        }
+
+        String leftsideClassName = createBaselinkRequest.getLeftsideTypeClassName();
+        try {
+            createBaselinkRequest.setLeftsideType(leftsideClassName != null ?  Class.forName(leftsideClassName) : getLinkSideClass(false,clazz));
+        } catch (ClassNotFoundException e) {
+            throw new BadRequestException("no class with name:" + linkClazzName);
+        }
         Set<String> rightsideIds = createBaselinkRequest.getRightsideIds();
-        Map<String, Baseclass> rightsideMap = rightsideIds.isEmpty() ? new HashMap<>() : repository.listByIds(Baseclass.class, rightsideIds, securityContext).parallelStream().collect(Collectors.toMap(f -> f.getId(), f -> f));
+        Map<String, Baseclass> rightsideMap = rightsideIds.isEmpty() ? new HashMap<>() : listByIds(createBaselinkRequest.getRightsideType(),securityContext,rightsideIds);
         rightsideIds.removeAll(rightsideMap.keySet());
         if (!rightsideIds.isEmpty()) {
             throw new BadRequestException("No Rightside ids " + rightsideIds);
         }
         createBaselinkRequest.setRightside(new ArrayList<>(rightsideMap.values()));
         Set<String> leftsideIds = createBaselinkRequest.getLeftsideIds();
-        Map<String, Baseclass> leftsideMap = leftsideIds.isEmpty() ? new HashMap<>() : repository.listByIds(Baseclass.class, leftsideIds, securityContext).parallelStream().collect(Collectors.toMap(f -> f.getId(), f -> f));
+        Map<String, Baseclass> leftsideMap = leftsideIds.isEmpty() ? new HashMap<>() : listByIds(createBaselinkRequest.getLeftsideType(),securityContext,leftsideIds);
         leftsideIds.removeAll(leftsideMap.keySet());
         if (!leftsideIds.isEmpty()) {
             throw new BadRequestException("No Leftside ids " + leftsideIds);
