@@ -50,6 +50,7 @@ public class SecurityLinkControllerTest {
     public void testSecurityLinkCreate() {
         String name = UUID.randomUUID().toString();
         SecurityLinkCreate request = new SecurityLinkCreate()
+                .setSimpleValue("allow")
                 .setName(name);
         ResponseEntity<SecurityLink> securityLinkResponse = this.restTemplate.postForEntity("/securityLink/create", request, SecurityLink.class);
         Assertions.assertEquals(200, securityLinkResponse.getStatusCodeValue());

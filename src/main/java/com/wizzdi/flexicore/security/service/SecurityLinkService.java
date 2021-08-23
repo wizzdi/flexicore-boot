@@ -11,7 +11,9 @@ import com.wizzdi.flexicore.security.request.SecurityLinkUpdate;
 import com.wizzdi.flexicore.security.response.PaginationResponse;
 import org.pf4j.Extension;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.Set;
@@ -51,7 +53,16 @@ public class SecurityLinkService implements Plugin {
 	}
 
 	public boolean updateSecurityLinkNoMerge(SecurityLinkCreate securityLinkCreate, SecurityLink securityLink) {
-		return baselinkService.updateBaselinkNoMerge(securityLinkCreate,securityLink);
+		boolean updated = baselinkService.updateBaselinkNoMerge(securityLinkCreate, securityLink);
+		if(securityLinkCreate.getSimpleValue()!=null&&!securityLinkCreate.getSimpleValue().equals(securityLink.getSimplevalue())){
+			securityLink.setSimplevalue(securityLinkCreate.getSimpleValue());
+			updated=true;
+		}
+		if(securityLinkCreate.getValue()!=null&&(securityLink.getValue()==null||!securityLinkCreate.getValue().getId().equals(securityLink.getValue().getId()))){
+			securityLink.setValue(securityLinkCreate.getValue());
+			updated=true;
+		}
+		return updated;
 	}
 
 	public SecurityLink updateSecurityLink(SecurityLinkUpdate securityLinkUpdate, SecurityContextBase securityContext){
@@ -64,6 +75,12 @@ public class SecurityLinkService implements Plugin {
 
 	public void validate(SecurityLinkCreate securityLinkCreate, SecurityContextBase securityContext) {
 		baselinkService.validate(securityLinkCreate,securityContext);
+		String valueId= securityLinkCreate.getValueId();;
+		Baseclass value=valueId!=null?getByIdOrNull(valueId,Baseclass.class,securityContext):null;
+		if(valueId!=null&&value==null){
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"no value with id "+valueId);
+		}
+		securityLinkCreate.setValue(value);
 	}
 
 	public void validate(SecurityLinkFilter securityLinkFilter, SecurityContextBase securityContext) {
