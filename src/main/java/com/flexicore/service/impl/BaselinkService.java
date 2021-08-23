@@ -276,7 +276,7 @@ public class BaselinkService implements com.flexicore.service.BaselinkService {
         }
         if(SecuredBasic.class.isAssignableFrom(type)){
             Class<? extends SecuredBasic> securedBasicType= (Class<? extends SecuredBasic>) type;
-            return securedBasicRepository.listByIds(securedBasicType, rightsideIds, SecuredBasic_.security, securityContext).parallelStream().map(f->f.getSecurity()).collect(Collectors.toMap(f -> f.getId(), f -> f,(a,b)->a));
+            return securedBasicRepository.listByIds(securedBasicType, rightsideIds, SecuredBasic_.security, securityContext).parallelStream().collect(Collectors.toMap(f -> f.getId(), f -> f.getSecurity(),(a,b)->a));
 
         }
         throw new BadRequestException("cannot list by ids type "+type);
