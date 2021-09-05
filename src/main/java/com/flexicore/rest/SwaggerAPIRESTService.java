@@ -38,6 +38,8 @@ import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.PathItem;
 import io.swagger.v3.oas.models.media.ComposedSchema;
 import io.swagger.v3.oas.models.media.Schema;
+import io.swagger.v3.oas.models.security.SecurityRequirement;
+import io.swagger.v3.oas.models.security.SecurityScheme;
 import io.swagger.v3.oas.models.servers.Server;
 import io.swagger.v3.oas.models.tags.Tag;
 import org.pf4j.Extension;
@@ -147,6 +149,8 @@ public class SwaggerAPIRESTService extends BaseOpenApiResource implements RESTSe
 				.ctxId(ctxId)
 				.buildContext(true);
 		OpenAPI oas = ctx.read();
+		oas.getComponents().addSecuritySchemes("FlexiCore",new SecurityScheme().description("API Key to authenticate requests. Can be acquired from the /authenticationNew/login endpoint").type(SecurityScheme.Type.APIKEY).in(SecurityScheme.In.HEADER).name("authenticationKey"));
+		oas.addSecurityItem(new SecurityRequirement().addList("FlexiCore",Collections.emptyList()));
 
 		SpringDocUtils.getConfig().removeSimpleTypesForParameterObject(SecurityContext.class);
 
