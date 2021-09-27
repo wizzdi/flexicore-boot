@@ -29,9 +29,6 @@ import java.util.concurrent.ConcurrentHashMap;
 @AnnotatedClazz(Category = "core", Name = "Baseclass", Description = "The root of all entities")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @Entity
-@JsonIdentityInfo(generator = ObjectIdGenerators.UUIDGenerator.class, property = "json-id")
-@JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, property = "json-type", visible = true)
-@JsonTypeResolver(FCTypeResolver.class)
 @Table(name = "baseclass", indexes = {@Index(name = "baseclass_id", columnList = "id", unique = true),
 		@Index(name = "clazz_idx", columnList = "clazz_id"),
 		@Index(name = "creator_idx", columnList = "creator_id"),

@@ -1,10 +1,11 @@
 package com.flexicore.model;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
-import com.fasterxml.jackson.databind.annotation.JsonTypeResolver;
-import com.flexicore.data.jsoncontainers.FCTypeResolver;
+import com.fasterxml.jackson.databind.annotation.JsonTypeIdResolver;
+import com.wizzdi.flexicore.boot.rest.resolvers.CrossLoaderResolver;
 
 import javax.persistence.Column;
 import javax.persistence.Id;
@@ -13,8 +14,8 @@ import javax.persistence.Transient;
 import java.time.OffsetDateTime;
 
 @JsonIdentityInfo(generator = ObjectIdGenerators.UUIDGenerator.class, property = "json-id")
-@JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, property = "json-type", visible = true)
-@JsonTypeResolver(FCTypeResolver.class)
+@JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, property = "json-type", visible = true,include = JsonTypeInfo.As.EXISTING_PROPERTY)
+@JsonTypeIdResolver(CrossLoaderResolver.class)
 @MappedSuperclass
 public abstract class Basic {
 
@@ -86,6 +87,11 @@ public abstract class Basic {
 
 	@Transient
 	public String getJavaType(){
+		return getClass().getCanonicalName();
+	}
+	@Transient
+	@JsonProperty("json-type")
+	public String getJsonType(){
 		return getClass().getCanonicalName();
 	}
 }
