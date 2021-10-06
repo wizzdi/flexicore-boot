@@ -10,10 +10,7 @@ import com.google.common.collect.Lists;
 import com.wizzdi.flexicore.boot.base.init.FlexiCorePluginManager;
 import com.wizzdi.flexicore.boot.base.init.PluginInit;
 import com.wizzdi.flexicore.boot.base.interfaces.Plugin;
-import com.wizzdi.flexicore.security.interfaces.OperationBuilder;
-import com.wizzdi.flexicore.security.interfaces.OperationsClassScanner;
-import com.wizzdi.flexicore.security.interfaces.OperationsMethodScanner;
-import com.wizzdi.flexicore.security.interfaces.StandardOperationScanner;
+import com.wizzdi.flexicore.security.interfaces.*;
 import com.wizzdi.flexicore.security.request.OperationToClazzCreate;
 import com.wizzdi.flexicore.security.request.OperationToClazzFilter;
 import com.wizzdi.flexicore.security.request.SecurityOperationCreate;
@@ -68,11 +65,16 @@ public class ClassScannerService implements Plugin {
 
 
 
+
     @PersistenceContext
     private EntityManager entityManager;
     @Autowired
     @Lazy
     private FlexiCorePluginManager pluginManager;
+
+
+
+
 
 
 
@@ -143,12 +145,8 @@ public class ClassScannerService implements Plugin {
     @Qualifier("adminSecurityContext")
     @Scope(value = ConfigurableBeanFactory.SCOPE_SINGLETON)
     @ConditionalOnMissingBean
-    public SecurityContextBase<?, ?, ?, ?> adminSecurityContext(DefaultSecurityEntities defaultSecurityEntities) {
-        return new SecurityContextBase<>()
-                .setTenants(Collections.singletonList(defaultSecurityEntities.getSecurityTenant()))
-                .setTenantToCreateIn(defaultSecurityEntities.getSecurityTenant())
-                .setRoleMap(Stream.of(defaultSecurityEntities.getRole()).collect(Collectors.groupingBy(f -> f.getTenant().getId())))
-                .setUser(defaultSecurityEntities.getSecurityUser());
+    public SecurityContextBase<?, ?, ?, ?> adminSecurityContext(DefaultSecurityEntities defaultSecurityEntities,SecurityContextProvider securityContextProvider) {
+        return securityContextProvider.getSecurityContext(defaultSecurityEntities.getSecurityUser());
 
     }
 
