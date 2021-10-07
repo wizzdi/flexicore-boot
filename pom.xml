@@ -106,12 +106,6 @@
     <dependencies>
         <dependency>
             <groupId>com.wizzdi</groupId>
-            <artifactId>flexicore-boot-security-bearer-jwt</artifactId>
-            <version>1.0.0-SNAPSHOT</version>
-
-        </dependency>
-        <dependency>
-            <groupId>com.wizzdi</groupId>
             <artifactId>flexicore-security-model</artifactId>
             <version>${flexicore-security-model.version}</version>
         </dependency>
