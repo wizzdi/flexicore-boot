@@ -1,6 +1,8 @@
 package com.wizzdi.flexicore.security.request;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.flexicore.annotations.TypeRetention;
+import com.flexicore.model.Baseclass;
 import com.flexicore.model.Clazz;
 import com.flexicore.model.SecurityOperation;
 
@@ -9,8 +11,10 @@ import java.util.List;
 public class OperationToClazzFilter extends BaselinkFilter {
 
 	@JsonIgnore
+	@TypeRetention(SecurityOperation.class)
 	private List<SecurityOperation> securityOperations;
 	@JsonIgnore
+	@TypeRetention(Clazz.class)
 	private List<Clazz> clazzes;
 
 	@JsonIgnore

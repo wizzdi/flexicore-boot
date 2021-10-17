@@ -1,6 +1,8 @@
 package com.wizzdi.flexicore.security.request;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.flexicore.annotations.TypeRetention;
+import com.flexicore.model.SecurityOperation;
 import com.flexicore.model.SecurityTenant;
 
 import java.util.HashSet;
@@ -11,6 +13,7 @@ public class RoleFilter extends SecurityEntityFilter {
 
 	private Set<String> securityTenantsIds=new HashSet<>();
 	@JsonIgnore
+	@TypeRetention(SecurityTenant.class)
 	private List<SecurityTenant> securityTenants;
 
 	public Set<String> getSecurityTenantsIds() {

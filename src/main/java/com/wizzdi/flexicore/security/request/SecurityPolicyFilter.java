@@ -1,7 +1,9 @@
 package com.wizzdi.flexicore.security.request;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.flexicore.annotations.TypeRetention;
 import com.flexicore.model.Role;
+import com.flexicore.model.SecurityOperation;
 import com.flexicore.model.SecurityTenant;
 
 import java.time.OffsetDateTime;
@@ -13,9 +15,12 @@ public class SecurityPolicyFilter extends BaseclassFilter {
 
 	private Set<String> securityTenantsIds=new HashSet<>();
 	@JsonIgnore
+
+	@TypeRetention(SecurityTenant.class)
 	private List<SecurityTenant> securityTenants;
 	private Set<String> rolesIds=new HashSet<>();
 	@JsonIgnore
+	@TypeRetention(Role.class)
 	private List<Role> roles;
 	private OffsetDateTime startTime;
 	private Boolean enabled;

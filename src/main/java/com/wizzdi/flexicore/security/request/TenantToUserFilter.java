@@ -1,6 +1,7 @@
 package com.wizzdi.flexicore.security.request;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.flexicore.annotations.TypeRetention;
 import com.flexicore.model.SecurityTenant;
 import com.flexicore.model.SecurityUser;
 
@@ -11,10 +12,12 @@ import java.util.Set;
 public class TenantToUserFilter extends BaselinkFilter {
 
 	private Set<String> usersIds=new HashSet<>();
+	@TypeRetention(SecurityUser.class)
 	@JsonIgnore
 	private List<SecurityUser> securityUsers;
 	private Set<String> tenantsIds=new HashSet<>();
 	@JsonIgnore
+	@TypeRetention(SecurityTenant.class)
 	private List<SecurityTenant> securityTenants;
 
 	public Set<String> getUsersIds() {

@@ -1,7 +1,9 @@
 package com.wizzdi.flexicore.security.request;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.flexicore.annotations.TypeRetention;
 import com.flexicore.model.Role;
+import com.flexicore.model.SecurityTenant;
 import com.flexicore.model.SecurityUser;
 
 import java.util.HashSet;
@@ -12,9 +14,11 @@ public class RoleToUserFilter extends BaselinkFilter {
 
 	private Set<String> rolesIds=new HashSet<>();
 	@JsonIgnore
+	@TypeRetention(Role.class)
 	private List<Role> roles;
 	private Set<String> usersIds=new HashSet<>();
 	@JsonIgnore
+	@TypeRetention(SecurityUser.class)
 	private List<SecurityUser> securityUsers;
 
 	public Set<String> getRolesIds() {
