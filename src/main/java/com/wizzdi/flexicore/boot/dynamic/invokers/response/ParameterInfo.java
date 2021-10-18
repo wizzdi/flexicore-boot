@@ -1,5 +1,7 @@
 package com.wizzdi.flexicore.boot.dynamic.invokers.response;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.wizzdi.flexicore.boot.dynamic.invokers.annotations.FieldInfo;
 import com.wizzdi.flexicore.boot.dynamic.invokers.annotations.IdRefFieldInfo;
 import com.wizzdi.flexicore.boot.dynamic.invokers.annotations.ListFieldInfo;
@@ -13,6 +15,7 @@ import java.util.stream.Stream;
 
 import static com.wizzdi.flexicore.boot.dynamic.invokers.utils.InvokerUtils.getAllFields;
 
+@JsonIdentityInfo(generator = ObjectIdGenerators.UUIDGenerator.class, property = "json-id")
 public class ParameterInfo {
 
 

@@ -1,10 +1,13 @@
 package com.wizzdi.flexicore.boot.dynamic.invokers.response;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 import java.util.List;
 import java.util.Set;
 
+@JsonIdentityInfo(generator = ObjectIdGenerators.UUIDGenerator.class, property = "json-id")
 public class InvokerMethodHolder {
 
     private final InvokerMethodInfo invokerMethodHolder;
