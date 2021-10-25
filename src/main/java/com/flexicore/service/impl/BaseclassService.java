@@ -668,7 +668,12 @@ public class BaseclassService implements com.flexicore.service.BaseclassService 
     public void softDelete(SoftDeleteRequest softDeleteRequest, SecurityContext securityContext) {
         Basic basic=softDeleteRequest.getBasic();
         basic.setSoftDelete(true);
-        baseclassRepository.merge(basic);
+        if(basic instanceof Baseclass){
+            baseclassRepository.merge(basic);
+        }
+        else{
+            securedBasicRepository.merge(basic);
+        }
 
     }
 
