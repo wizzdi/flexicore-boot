@@ -16,6 +16,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.metamodel.SingularAttribute;
 import java.util.List;
@@ -39,17 +40,7 @@ public class ZipFileToFileResourceService implements Plugin {
 		return zipFileToFileResource;
 	}
 
-	public void merge(Object o) {
-		zipFileToFileResourceRepository.merge(o);
-	}
 
-	public void massMerge(List<Object> list) {
-		zipFileToFileResourceRepository.massMerge(list);
-	}
-
-	public <T extends Baseclass> List<T> listByIds(Class<T> c, Set<String> ids, SecurityContextBase securityContextBase) {
-		return zipFileToFileResourceRepository.listByIds(c, ids, securityContextBase);
-	}
 
 	public ZipFileToFileResource createZipFileToFileResourceNoMerge(ZipFileToFileResourceCreate zipFileToFileResourceCreate, SecurityContextBase securityContextBase) {
 		ZipFileToFileResource zipFileToFileResource = new ZipFileToFileResource();
@@ -93,25 +84,7 @@ public class ZipFileToFileResourceService implements Plugin {
 
 	}
 
-	public <D extends Basic, E extends Baseclass, T extends D> T getByIdOrNull(String id, Class<T> c, SingularAttribute<D, E> baseclassAttribute, SecurityContextBase securityContextBase) {
-		return zipFileToFileResourceRepository.getByIdOrNull(id, c, baseclassAttribute, securityContextBase);
-	}
 
-	public <D extends Basic, E extends Baseclass, T extends D> List<T> listByIds(Class<T> c, Set<String> ids, SingularAttribute<D, E> baseclassAttribute, SecurityContextBase securityContextBase) {
-		return zipFileToFileResourceRepository.listByIds(c, ids, baseclassAttribute, securityContextBase);
-	}
-
-	public <D extends Basic, T extends D> List<T> findByIds(Class<T> c, Set<String> ids, SingularAttribute<D, String> idAttribute) {
-		return zipFileToFileResourceRepository.findByIds(c, ids, idAttribute);
-	}
-
-	public <T> T findByIdOrNull(Class<T> type, String id) {
-		return zipFileToFileResourceRepository.findByIdOrNull(type, id);
-	}
-
-	public <T extends Baseclass> T getByIdOrNull(String id, Class<T> c, SecurityContextBase securityContextBase) {
-		return zipFileToFileResourceRepository.getByIdOrNull(id, c, securityContextBase);
-	}
 
 	public PaginationResponse<ZipFileToFileResource> getAllZipFileToFileResources(ZipFileToFileResourceFilter ZipFileToFileResourceFilter, SecurityContextBase securityContextBase) {
 		List<ZipFileToFileResource> list = listAllZipFileToFileResources(ZipFileToFileResourceFilter, securityContextBase);
@@ -123,8 +96,35 @@ public class ZipFileToFileResourceService implements Plugin {
 		return zipFileToFileResourceRepository.listAllZipFileToFileResources(ZipFileToFileResourceFilter, securityContextBase);
 	}
 
-	public <T extends Baseclass> List<T> findByIds(Class<T> c, Set<String> requested) {
+	public <D extends Basic, T extends D> List<T> findByIds(Class<T> c, Set<String> ids, SingularAttribute<D, String> idAttribute) {
+		return zipFileToFileResourceRepository.findByIds(c, ids, idAttribute);
+	}
+
+	public <T extends Basic> List<T> findByIds(Class<T> c, Set<String> requested) {
 		return zipFileToFileResourceRepository.findByIds(c, requested);
 	}
 
+	public <T> T findByIdOrNull(Class<T> type, String id) {
+		return zipFileToFileResourceRepository.findByIdOrNull(type, id);
+	}
+
+	@Transactional
+	public void merge(Object base) {
+		zipFileToFileResourceRepository.merge(base);
+	}
+
+	@Transactional
+	public void merge(Object base, boolean updateDate) {
+		zipFileToFileResourceRepository.merge(base, updateDate);
+	}
+
+	@Transactional
+	public void massMerge(List<?> toMerge) {
+		zipFileToFileResourceRepository.massMerge(toMerge);
+	}
+
+	@Transactional
+	public void massMerge(List<?> toMerge, boolean updatedate) {
+		zipFileToFileResourceRepository.massMerge(toMerge, updatedate);
+	}
 }

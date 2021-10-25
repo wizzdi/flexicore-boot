@@ -60,44 +60,42 @@ public class ZipFileRepository implements Plugin {
 
 	}
 
-	@Transactional
-	public void merge(Object o) {
-		em.merge(o);
+
+	public <T extends Baseclass> List<T> listByIds(Class<T> c, Set<String> ids, SecurityContextBase securityContext) {
+		return fileResourceRepository.listByIds(c, ids, securityContext);
 	}
 
-	@Transactional
-	public void massMerge(List<Object> list) {
-		for (Object o : list) {
-			em.merge(o);
-		}
+	public <T extends Baseclass> T getByIdOrNull(String id, Class<T> c, SecurityContextBase securityContext) {
+		return fileResourceRepository.getByIdOrNull(id, c, securityContext);
 	}
 
-	public <T extends Baseclass> List<T> listByIds(Class<T> c, Set<String> ids, SecurityContextBase securityContextBase) {
-		return fileResourceRepository.listByIds(c, ids, securityContextBase);
+	public <D extends Basic, E extends Baseclass, T extends D> T getByIdOrNull(String id, Class<T> c, SingularAttribute<D, E> baseclassAttribute, SecurityContextBase securityContext) {
+		return fileResourceRepository.getByIdOrNull(id, c, baseclassAttribute, securityContext);
 	}
 
-	public <T extends Baseclass> T getByIdOrNull(String id, Class<T> c, SecurityContextBase securityContextBase) {
-		return fileResourceRepository.getByIdOrNull(id, c, securityContextBase);
-	}
-
-	public <T extends Baseclass> List<T> findByIds(Class<T> c, Set<String> requested) {
-		return fileResourceRepository.findByIds(c, requested);
-	}
-
-
-	public <D extends Basic, E extends Baseclass, T extends D> T getByIdOrNull(String id, Class<T> c, SingularAttribute<D, E> baseclassAttribute, SecurityContextBase securityContextBase) {
-		return fileResourceRepository.getByIdOrNull(id, c, baseclassAttribute, securityContextBase);
-	}
-
-	public <D extends Basic, E extends Baseclass, T extends D> List<T> listByIds(Class<T> c, Set<String> ids, SingularAttribute<D, E> baseclassAttribute, SecurityContextBase securityContextBase) {
-		return fileResourceRepository.listByIds(c, ids, baseclassAttribute, securityContextBase);
+	public <D extends Basic, E extends Baseclass, T extends D> List<T> listByIds(Class<T> c, Set<String> ids, SingularAttribute<D, E> baseclassAttribute, SecurityContextBase securityContext) {
+		return fileResourceRepository.listByIds(c, ids, baseclassAttribute, securityContext);
 	}
 
 	public <D extends Basic, T extends D> List<T> findByIds(Class<T> c, Set<String> ids, SingularAttribute<D, String> idAttribute) {
 		return fileResourceRepository.findByIds(c, ids, idAttribute);
 	}
 
+	public <T extends Basic> List<T> findByIds(Class<T> c, Set<String> requested) {
+		return fileResourceRepository.findByIds(c, requested);
+	}
+
 	public <T> T findByIdOrNull(Class<T> type, String id) {
 		return fileResourceRepository.findByIdOrNull(type, id);
+	}
+
+	@Transactional
+	public void merge(Object base) {
+		fileResourceRepository.merge(base);
+	}
+
+	@Transactional
+	public void massMerge(List<?> toMerge) {
+		fileResourceRepository.massMerge(toMerge);
 	}
 }

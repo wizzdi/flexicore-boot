@@ -5,10 +5,10 @@ import com.flexicore.model.Basic;
 import com.flexicore.security.SecurityContextBase;
 import com.wizzdi.flexicore.boot.base.interfaces.Plugin;
 import com.wizzdi.flexicore.file.request.FileResourceFilter;
-import com.wizzdi.flexicore.security.data.BaseclassRepository;
 import com.wizzdi.flexicore.security.data.BasicRepository;
 import com.wizzdi.flexicore.file.model.FileResource;
 import com.wizzdi.flexicore.file.model.FileResource_;
+import com.wizzdi.flexicore.security.data.SecuredBasicRepository;
 import org.pf4j.Extension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -28,10 +28,9 @@ import java.util.Set;
 public class FileResourceRepository implements Plugin {
 	@PersistenceContext
 	private EntityManager em;
+
 	@Autowired
-	private BaseclassRepository baseclassRepository;
-	@Autowired
-	private BasicRepository basicRepository;
+	private SecuredBasicRepository securedBasicRepository;
 
 
 	public List<FileResource> listAllFileResources(FileResourceFilter FileResourceFilter, SecurityContextBase securityContextBase) {
@@ -49,19 +48,13 @@ public class FileResourceRepository implements Plugin {
 
 	public <T extends FileResource> void addFileResourcePredicates(FileResourceFilter fileResourceFilter, CriteriaBuilder cb, CommonAbstractCriteria q, From<?, T> r, List<Predicate> predicates, SecurityContextBase securityContextBase) {
 		
-		if(fileResourceFilter.getBasicPropertiesFilter()!=null){
-			BasicRepository.addBasicPropertiesFilter(fileResourceFilter.getBasicPropertiesFilter(),cb,q,r,predicates);
-
-		}
+		securedBasicRepository.addSecuredBasicPredicates(fileResourceFilter.getBasicPropertiesFilter(),cb,q,r,predicates,securityContextBase);
 
 		if(fileResourceFilter.getMd5s()!=null&&!fileResourceFilter.getMd5s().isEmpty()){
 			predicates.add(r.get(FileResource_.md5).in(fileResourceFilter.getMd5s()));
 		}
 
-		if(securityContextBase!=null){
-			Join<T,Baseclass> join=r.join(FileResource_.security);
-			baseclassRepository.addBaseclassPredicates(cb,q,join,predicates,securityContextBase);
-		}
+
 
 	}
 
@@ -77,44 +70,41 @@ public class FileResourceRepository implements Plugin {
 
 	}
 
-	@Transactional
-	public void merge(Object o) {
-		em.merge(o);
+	public <T extends Baseclass> List<T> listByIds(Class<T> c, Set<String> ids, SecurityContextBase securityContext) {
+		return securedBasicRepository.listByIds(c, ids, securityContext);
 	}
 
-	@Transactional
-	public void massMerge(List<Object> list) {
-		for (Object o : list) {
-			em.merge(o);
-		}
+	public <T extends Baseclass> T getByIdOrNull(String id, Class<T> c, SecurityContextBase securityContext) {
+		return securedBasicRepository.getByIdOrNull(id, c, securityContext);
 	}
 
-	public <T extends Baseclass> List<T> listByIds(Class<T> c, Set<String> ids, SecurityContextBase securityContextBase) {
-		return baseclassRepository.listByIds(c, ids, securityContextBase);
+	public <D extends Basic, E extends Baseclass, T extends D> T getByIdOrNull(String id, Class<T> c, SingularAttribute<D, E> baseclassAttribute, SecurityContextBase securityContext) {
+		return securedBasicRepository.getByIdOrNull(id, c, baseclassAttribute, securityContext);
 	}
 
-	public <T extends Baseclass> T getByIdOrNull(String id, Class<T> c, SecurityContextBase securityContextBase) {
-		return baseclassRepository.getByIdOrNull(id, c, securityContextBase);
-	}
-
-	public <T extends Baseclass> List<T> findByIds(Class<T> c, Set<String> requested) {
-		return baseclassRepository.findByIds(c, requested);
-	}
-
-
-	public <D extends Basic, E extends Baseclass, T extends D> T getByIdOrNull(String id, Class<T> c, SingularAttribute<D, E> baseclassAttribute, SecurityContextBase securityContextBase) {
-		return baseclassRepository.getByIdOrNull(id, c, baseclassAttribute, securityContextBase);
-	}
-
-	public <D extends Basic, E extends Baseclass, T extends D> List<T> listByIds(Class<T> c, Set<String> ids, SingularAttribute<D, E> baseclassAttribute, SecurityContextBase securityContextBase) {
-		return baseclassRepository.listByIds(c, ids, baseclassAttribute, securityContextBase);
+	public <D extends Basic, E extends Baseclass, T extends D> List<T> listByIds(Class<T> c, Set<String> ids, SingularAttribute<D, E> baseclassAttribute, SecurityContextBase securityContext) {
+		return securedBasicRepository.listByIds(c, ids, baseclassAttribute, securityContext);
 	}
 
 	public <D extends Basic, T extends D> List<T> findByIds(Class<T> c, Set<String> ids, SingularAttribute<D, String> idAttribute) {
-		return baseclassRepository.findByIds(c, ids, idAttribute);
+		return securedBasicRepository.findByIds(c, ids, idAttribute);
+	}
+
+	public <T extends Basic> List<T> findByIds(Class<T> c, Set<String> requested) {
+		return securedBasicRepository.findByIds(c, requested);
 	}
 
 	public <T> T findByIdOrNull(Class<T> type, String id) {
-		return baseclassRepository.findByIdOrNull(type, id);
+		return securedBasicRepository.findByIdOrNull(type, id);
+	}
+
+	@Transactional
+	public void merge(Object base) {
+		securedBasicRepository.merge(base);
+	}
+
+	@Transactional
+	public void massMerge(List<?> toMerge) {
+		securedBasicRepository.massMerge(toMerge);
 	}
 }
