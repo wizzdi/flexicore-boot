@@ -3,6 +3,7 @@ package com.wizzdi.flexicore.security.data;
 import com.flexicore.model.Baseclass;
 import com.flexicore.model.Baseclass_;
 import com.flexicore.model.PermissionGroup;
+import com.flexicore.model.PermissionGroup_;
 import com.wizzdi.flexicore.boot.base.interfaces.Plugin;
 import com.flexicore.security.SecurityContextBase;
 import com.wizzdi.flexicore.security.request.PermissionGroupFilter;
@@ -47,6 +48,9 @@ public class PermissionGroupRepository implements Plugin {
 
 	public <T extends PermissionGroup> void addPermissionGroupPredicates(PermissionGroupFilter permissionGroupFilter, CriteriaBuilder cb, CommonAbstractCriteria q, From<?,T> r, List<Predicate> predicates, SecurityContextBase securityContext) {
 		securityEntityRepository.addSecurityEntityPredicates(permissionGroupFilter,cb,q,r,predicates,securityContext);
+		if(permissionGroupFilter.getExternalIds()!=null&&!permissionGroupFilter.getExternalIds().isEmpty()){
+			predicates.add(r.get(PermissionGroup_.externalId).in(permissionGroupFilter.getExternalIds()));
+		}
 	}
 
 	public long countAllPermissionGroups(PermissionGroupFilter permissionGroupFilter, SecurityContextBase securityContext){
