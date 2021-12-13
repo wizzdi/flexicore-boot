@@ -7,7 +7,7 @@
     <version>1.1.5-SNAPSHOT</version>
 
     <name>FlexiCore security service</name>
-    <description>flexicore base service</description>
+    <description>flexicore security service</description>
     <url>https://wizzdi.com</url>
 
     <licenses>
@@ -65,10 +65,10 @@
         </developer>
     </developers>
     <scm>
-        <connection>scm:git:git://wizzdi/flexicore-base-service.git</connection>
-        <developerConnection>scm:git:git@github.com:wizzdi/flexicore-base-service.git</developerConnection>
-        <url>https://github.com/wizzdi/flexicore-base-service</url>
-        <tag>flexicore-base-service-${version}</tag>
+        <connection>scm:git:git://wizzdi/flexicore-security-service.git</connection>
+        <developerConnection>scm:git:git@github.com:wizzdi/flexicore-security-service.git</developerConnection>
+        <url>https://github.com/wizzdi/flexicore-security-service</url>
+        <tag>flexicore-security-service-${version}</tag>
     </scm>
     <dependencyManagement>
         <dependencies>
