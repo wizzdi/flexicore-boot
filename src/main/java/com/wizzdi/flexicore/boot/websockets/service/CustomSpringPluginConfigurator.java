@@ -13,6 +13,7 @@ import org.springframework.stereotype.Component;
 
 import javax.websocket.server.ServerEndpointConfig;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Component
 public class CustomSpringPluginConfigurator extends ServerEndpointConfig.Configurator implements ApplicationContextAware {
@@ -28,7 +29,7 @@ public class CustomSpringPluginConfigurator extends ServerEndpointConfig.Configu
 		try {
 			FlexiCorePluginManager pluginManager = context.getBean(FlexiCorePluginManager.class);
 			ApplicationContext applicationContext = pluginManager.getApplicationContext(clazz);
-			List<AspectPlugin> aspects = pluginManager.getExtensions(AspectPlugin.class);
+			List<AspectPlugin> aspects = pluginManager.getExtensions(AspectPlugin.class).stream().filter(f->f!=null).collect(Collectors.toList());
 			T bean = applicationContext.getBean(clazz);
 			if(!aspects.isEmpty()){
 				AspectJProxyFactory factory = new AspectJProxyFactory(bean);
