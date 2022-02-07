@@ -34,6 +34,8 @@
         <flexicore-boot.version>1.2.0</flexicore-boot.version>
         <javaee-api.version>8.0</javaee-api.version>
         <dynamic-properties-database-converter.version>1.1.0</dynamic-properties-database-converter.version>
+        <flexicore-common-user-model.version>1.0.0-SNAPSHOT</flexicore-common-user-model.version>
+
     </properties>
     <distributionManagement>
         <snapshotRepository>
@@ -79,6 +81,12 @@
         </dependencies>
     </dependencyManagement>
     <dependencies>
+        <dependency>
+            <groupId>com.wizzdi</groupId>
+            <artifactId>flexicore-common-user-model</artifactId>
+            <version>${flexicore-common-user-model.version}</version>
+        </dependency>
+
         <dependency>
             <groupId>com.wizzdi</groupId>
             <artifactId>flexicore-boot-dynamic-invokers-model</artifactId>
