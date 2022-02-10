@@ -1097,6 +1097,7 @@ public class BaseclassRepository implements com.flexicore.data.BaseclassReposito
     public void updateSearchKey(Baseclass b){
         try {
             if (isFreeTextSupport(b.getClass())) {
+
                 String freeText= Stream.of( Introspector.getBeanInfo(b.getClass(), Object.class).getPropertyDescriptors()).filter(this::isPropertyForTextSearch).map(PropertyDescriptor::getReadMethod).filter(this::isIncludeMethod).map(f-> invoke(b, f)).filter(Objects::nonNull).map(f->f+"").filter(f->!f.isEmpty()).collect(Collectors.joining("|"));
                 b.setSearchKey(freeText);
                 logger.debug("Free Text field for "+b.getId() +" is set");
@@ -1131,9 +1132,10 @@ public class BaseclassRepository implements com.flexicore.data.BaseclassReposito
         return freeTextSuportMap.computeIfAbsent(aClass.getCanonicalName(),f-> checkFreeTextSupport(aClass));
     }
     private boolean isIncludeMethod(Method f) {
-        if(f==null||f.isAnnotationPresent(Transient.class)){
+        if(f==null||f.isAnnotationPresent(Transient.class)||f.getDeclaringClass().equals(Baseclass.class)&&f.getName().equals("getSearchKey")){
             return false;
         }
+
         FullTextSearchOptions fullTextSearchOptions=f.getAnnotation(FullTextSearchOptions.class);
 
         return fullTextSearchOptions==null||fullTextSearchOptions.include();
