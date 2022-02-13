@@ -76,7 +76,7 @@
     <dependencies>
         <dependency>
             <groupId>com.wizzdi</groupId>
-            <artifactId>flexicore-boot-spring-security-adapter</artifactId>
+            <artifactId>flexicore-boot-security-adapter</artifactId>
             <version>1.0.0</version>
         </dependency>
         <dependency>
