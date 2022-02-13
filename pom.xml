@@ -3,8 +3,8 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.wizzdi</groupId>
-    <artifactId>flexicore-boot-spring-security-adapter</artifactId>
-    <version>1.0.1-SNAPSHOT</version>
+    <artifactId>flexicore-boot-security-adapter</artifactId>
+    <version>1.0.0-SNAPSHOT</version>
     <name>FlexiCore Boot Security Adapter</name>
     <description>FlexiCore Boot Security Adapter</description>
     <url>https://wizzdi.com</url>
