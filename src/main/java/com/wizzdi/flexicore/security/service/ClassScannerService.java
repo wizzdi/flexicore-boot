@@ -22,6 +22,7 @@ import org.pf4j.Extension;
 import org.pf4j.PluginWrapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
@@ -59,11 +60,8 @@ public class ClassScannerService implements Plugin {
     private ClazzService clazzService;
 
 
-
     @Autowired
     private OperationToClazzService operationToClazzService;
-
-
 
 
     @PersistenceContext
@@ -71,11 +69,6 @@ public class ClassScannerService implements Plugin {
     @Autowired
     @Lazy
     private FlexiCorePluginManager pluginManager;
-
-
-
-
-
 
 
     /**
@@ -87,8 +80,8 @@ public class ClassScannerService implements Plugin {
     @Bean
     @Scope(value = ConfigurableBeanFactory.SCOPE_SINGLETON)
     @ConditionalOnMissingBean
-    public OperationsMethodScanner operationsMethodScanner() {
-        return this::scanOperationOnMethod;
+    public OperationsMethodScanner operationsMethodScanner(ObjectProvider<OperationAnnotationConverter> converters) {
+        return f->scanOperationOnMethod(f,converters);
     }
 
     @Bean
@@ -145,7 +138,7 @@ public class ClassScannerService implements Plugin {
     @Qualifier("adminSecurityContext")
     @Scope(value = ConfigurableBeanFactory.SCOPE_SINGLETON)
     @ConditionalOnMissingBean
-    public SecurityContextBase<?, ?, ?, ?> adminSecurityContext(DefaultSecurityEntities defaultSecurityEntities,SecurityContextProvider securityContextProvider) {
+    public SecurityContextBase<?, ?, ?, ?> adminSecurityContext(DefaultSecurityEntities defaultSecurityEntities, SecurityContextProvider securityContextProvider) {
         return securityContextProvider.getSecurityContext(defaultSecurityEntities.getSecurityUser());
 
     }
@@ -222,8 +215,14 @@ public class ClassScannerService implements Plugin {
 
     }
 
-    private OperationScanContext scanOperationOnMethod(Method method) {
-        IOperation ioperation = AnnotatedElementUtils.findMergedAnnotation(method, IOperation.class);
+    @Bean
+    @Scope(value = ConfigurableBeanFactory.SCOPE_SINGLETON)
+    private OperationAnnotationConverter ioperationConverter() {
+        return method -> AnnotatedElementUtils.findMergedAnnotation(method, IOperation.class);
+    }
+
+    private OperationScanContext scanOperationOnMethod(Method method, ObjectProvider<OperationAnnotationConverter> converters) {
+        IOperation ioperation = converters.orderedStream().map(f -> f.getIOperation(method)).filter(Objects::nonNull).findFirst().orElse(null);
         if (ioperation != null) {
             Class<? extends Baseclass>[] relatedClasses = ioperation.relatedClazzes();
             if (relatedClasses.length == 0 && method.getReturnType() != null && Baseclass.class.isAssignableFrom(method.getReturnType())) {
