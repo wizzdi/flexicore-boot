@@ -10,6 +10,7 @@ import com.wizzdi.security.adapter.FlexicoreUserDetails;
 import com.wizzdi.security.adapter.OperationInterceptor;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
@@ -34,7 +35,7 @@ public class JwtTokenFilter extends OncePerRequestFilter implements FlexiCoreSec
 
 
     public JwtTokenFilter(JwtTokenUtil jwtTokenUtil,
-                          SecurityUserService securityUserService, SecurityContextProvider securityContextProvider,TokenExtractor tokenExtractor) {
+                          @Lazy SecurityUserService securityUserService, @Lazy SecurityContextProvider securityContextProvider, TokenExtractor tokenExtractor) {
         this.jwtTokenUtil = jwtTokenUtil;
         this.securityUserService = securityUserService;
         this.securityContextProvider=securityContextProvider;
