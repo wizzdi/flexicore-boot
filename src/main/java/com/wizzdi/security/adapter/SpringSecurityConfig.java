@@ -3,6 +3,7 @@ package com.wizzdi.security.adapter;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -20,7 +21,7 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
     private final ObjectProvider<SecurityPathConfigurator> securityPathConfigurators;
     private final UserDetailsService userDetailsService;
 
-    public SpringSecurityConfig(ObjectProvider<FlexiCoreSecurityFilter> flexiCoreSecurityFilters, UserDetailsService userDetailsService,ObjectProvider<SecurityPathConfigurator> securityPathConfigurators) {
+    public SpringSecurityConfig(ObjectProvider<FlexiCoreSecurityFilter> flexiCoreSecurityFilters, @Lazy UserDetailsService userDetailsService, ObjectProvider<SecurityPathConfigurator> securityPathConfigurators) {
         this.flexiCoreSecurityFilters = flexiCoreSecurityFilters;
         this.userDetailsService = userDetailsService;
         this.securityPathConfigurators=securityPathConfigurators;
