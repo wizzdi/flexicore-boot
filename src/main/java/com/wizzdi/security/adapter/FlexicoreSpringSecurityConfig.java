@@ -1,6 +1,7 @@
 package com.wizzdi.security.adapter;
 
 import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
@@ -16,12 +17,12 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import javax.servlet.http.HttpServletResponse;
 
 @Configuration
-public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
+public class FlexicoreSpringSecurityConfig extends WebSecurityConfigurerAdapter {
     private final ObjectProvider<FlexiCoreSecurityFilter> flexiCoreSecurityFilters;
     private final ObjectProvider<SecurityPathConfigurator> securityPathConfigurators;
     private final UserDetailsService userDetailsService;
 
-    public SpringSecurityConfig(ObjectProvider<FlexiCoreSecurityFilter> flexiCoreSecurityFilters, @Lazy UserDetailsService userDetailsService, ObjectProvider<SecurityPathConfigurator> securityPathConfigurators) {
+    public FlexicoreSpringSecurityConfig(ObjectProvider<FlexiCoreSecurityFilter> flexiCoreSecurityFilters, @Lazy UserDetailsService userDetailsService, ObjectProvider<SecurityPathConfigurator> securityPathConfigurators) {
         this.flexiCoreSecurityFilters = flexiCoreSecurityFilters;
         this.userDetailsService = userDetailsService;
         this.securityPathConfigurators=securityPathConfigurators;
