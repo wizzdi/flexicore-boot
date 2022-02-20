@@ -10,8 +10,8 @@ import com.wizzdi.security.adapter.FlexicoreUserDetails;
 import com.wizzdi.security.adapter.OperationInterceptor;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Lazy;
-import org.springframework.http.HttpHeaders;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
@@ -23,20 +23,19 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-import static org.springframework.util.ObjectUtils.isEmpty;
 
 @Component
-public class JwtTokenFilter extends OncePerRequestFilter implements FlexiCoreSecurityFilter {
+public class FlexicoreJwtTokenFilter extends OncePerRequestFilter implements FlexiCoreSecurityFilter {
 
-    private final JwtTokenUtil jwtTokenUtil;
+    private final FlexicoreJwtTokenUtil flexicoreJwtTokenUtil;
     private final SecurityUserService securityUserService;
     private final SecurityContextProvider securityContextProvider;
     private final TokenExtractor tokenExtractor;
 
 
-    public JwtTokenFilter(JwtTokenUtil jwtTokenUtil,
-                          @Lazy SecurityUserService securityUserService, @Lazy SecurityContextProvider securityContextProvider, TokenExtractor tokenExtractor) {
-        this.jwtTokenUtil = jwtTokenUtil;
+    public FlexicoreJwtTokenFilter(FlexicoreJwtTokenUtil flexicoreJwtTokenUtil,
+                                   @Lazy SecurityUserService securityUserService, @Lazy SecurityContextProvider securityContextProvider, TokenExtractor tokenExtractor) {
+        this.flexicoreJwtTokenUtil = flexicoreJwtTokenUtil;
         this.securityUserService = securityUserService;
         this.securityContextProvider=securityContextProvider;
         this.tokenExtractor=tokenExtractor;
@@ -53,13 +52,13 @@ public class JwtTokenFilter extends OncePerRequestFilter implements FlexiCoreSec
             chain.doFilter(request,response);
             return;
         }
-        Jws<Claims> claimsJws = jwtTokenUtil.getClaims(token);
+        Jws<Claims> claimsJws = flexicoreJwtTokenUtil.getClaims(token);
         if (claimsJws==null) {
             chain.doFilter(request, response);
             return;
         }
         // Get user identity and set it on the spring security context
-        String id = jwtTokenUtil.getId(claimsJws);
+        String id = flexicoreJwtTokenUtil.getId(claimsJws);
         SecurityUser securityUser = securityUserService.getByIdOrNull(id, SecurityUser.class, null);
         FlexicoreUserDetails userDetails = getUserDetails(securityUser);
         SecurityContextBase securityContext = securityContextProvider.getSecurityContext(securityUser);

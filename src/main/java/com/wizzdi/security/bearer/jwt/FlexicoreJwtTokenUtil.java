@@ -25,8 +25,8 @@ import java.util.Date;
 import static java.lang.String.format;
 
 @Component
-public class JwtTokenUtil {
-    private static final Logger logger= LoggerFactory.getLogger(JwtTokenUtil.class);
+public class FlexicoreJwtTokenUtil {
+    private static final Logger logger= LoggerFactory.getLogger(FlexicoreJwtTokenUtil.class);
     private static final String ID = "ID";
 
     @Value("${flexicore.security.jwt.secretLocation:/home/flexicore/jwt.secret}")

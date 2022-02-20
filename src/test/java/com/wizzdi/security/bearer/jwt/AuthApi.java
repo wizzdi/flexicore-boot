@@ -3,7 +3,6 @@ package com.wizzdi.security.bearer.jwt;
 import com.wizzdi.security.adapter.FlexicoreUserDetails;
 import com.wizzdi.security.bearer.jwt.request.AuthRequest;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,12 +23,12 @@ import javax.validation.Valid;
 public class AuthApi {
 
     private final AuthenticationManager authenticationManager;
-    private final JwtTokenUtil jwtTokenUtil;
+    private final FlexicoreJwtTokenUtil flexicoreJwtTokenUtil;
 
     public AuthApi(AuthenticationManager authenticationManager,
-                   JwtTokenUtil jwtTokenUtil) {
+                   FlexicoreJwtTokenUtil flexicoreJwtTokenUtil) {
         this.authenticationManager = authenticationManager;
-        this.jwtTokenUtil = jwtTokenUtil;
+        this.flexicoreJwtTokenUtil = flexicoreJwtTokenUtil;
     }
 
     @PostMapping("login")
@@ -46,7 +45,7 @@ public class AuthApi {
             return ResponseEntity.ok()
                 .header(
                     HttpHeaders.AUTHORIZATION,
-                    jwtTokenUtil.generateAccessToken(flexicoreUserDetails)
+                    flexicoreJwtTokenUtil.generateAccessToken(flexicoreUserDetails)
                 )
                 .body(authenticate.getPrincipal());
         } catch (BadCredentialsException ex) {
