@@ -48,17 +48,15 @@ public class ZipFileController implements Plugin {
     /**
      * zips list of fileResources and sends it
      *
-     * @param authenticationkey authentication key
      * @param zipAndDownload zip and download request
-     * @param securityContextBase security context
+     * @param securityContext security context
      * @return binary zip data
      */
     @PostMapping("zipAndDownload")
     @Operation(summary = "zipAndDownload", description = "Mass Download")
-    public ResponseEntity<Resource> zipAndDownload(@RequestHeader("authenticationKey") String authenticationkey,
-                                   ZipAndDownloadRequest zipAndDownload, @RequestAttribute SecurityContextBase securityContextBase) {
-        zipFileService.validate(zipAndDownload, securityContextBase);
-        ZipFile zipFile = zipFileService.zipAndDownload(zipAndDownload, securityContextBase);
+    public ResponseEntity<Resource> zipAndDownload(ZipAndDownloadRequest zipAndDownload, @RequestAttribute SecurityContextBase securityContext) {
+        zipFileService.validate(zipAndDownload, securityContext);
+        ZipFile zipFile = zipFileService.zipAndDownload(zipAndDownload, securityContext);
 
         return fileResourceService.prepareFileResourceForDownload(zipFile, zipAndDownload.getOffset(), 0);
 
@@ -67,10 +65,9 @@ public class ZipFileController implements Plugin {
 
     @PostMapping("getOrCreateZipFile")
     @Operation(summary = "getOrCreateZipFile", description = "getOrCreateZipFile")
-    public ZipFile getOrCreateZipFile(@RequestHeader("authenticationKey") String authenticationkey,
-                                      ZipAndDownloadRequest zipAndDownload, @RequestAttribute SecurityContextBase securityContextBase) {
-        zipFileService.validate(zipAndDownload, securityContextBase);
-        return zipFileService.zipAndDownload(zipAndDownload, securityContextBase);
+    public ZipFile getOrCreateZipFile(   ZipAndDownloadRequest zipAndDownload, @RequestAttribute SecurityContextBase securityContext) {
+        zipFileService.validate(zipAndDownload, securityContext);
+        return zipFileService.zipAndDownload(zipAndDownload, securityContext);
     }
 
 

@@ -46,7 +46,7 @@ public class DownloadController implements Plugin {
      *
      * @param authenticationkey authentication key
      * @param id id
-     * @param securityContextBase security context
+     * @param securityContext security context
      * @param offset offset to start reading from
      * @param req request context
      * @param size length to read
@@ -58,8 +58,8 @@ public class DownloadController implements Plugin {
                                              @Parameter(description = "id of the FileResource Object to Download")
                              @RequestHeader(value = "offset",required = false) long offset,
                                              @RequestHeader(value = "size",required = false) long size,
-                                             @PathVariable("id") String id, HttpServletRequest req, @RequestAttribute SecurityContextBase securityContextBase) {
-        return fileResourceService.download(offset, size, id, req.getRemoteAddr(), securityContextBase);
+                                             @PathVariable("id") String id, HttpServletRequest req, @RequestAttribute SecurityContextBase securityContext) {
+        return fileResourceService.download(offset, size, id, req.getRemoteAddr(), securityContext);
 
     }
 

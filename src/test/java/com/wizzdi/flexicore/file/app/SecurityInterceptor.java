@@ -29,7 +29,7 @@ public class SecurityInterceptor implements HandlerInterceptor {
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
 		String token = request.getHeader(AUTHENTICATION_KEY);
 		if(token!=null){
-			request.setAttribute("securityContextBase",securityContextBase);
+			request.setAttribute("securityContext",securityContextBase);
 		}
 		return true;
 	}

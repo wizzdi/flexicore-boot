@@ -11,6 +11,7 @@ import com.wizzdi.flexicore.file.model.FileResource;
 import com.wizzdi.flexicore.file.request.FileResourceCreate;
 import com.wizzdi.flexicore.file.request.FileResourceFilter;
 import com.wizzdi.flexicore.file.request.FileResourceUpdate;
+import com.wizzdi.flexicore.security.request.BasicPropertiesFilter;
 import com.wizzdi.flexicore.security.response.PaginationResponse;
 import com.wizzdi.flexicore.security.service.BaseclassService;
 import com.wizzdi.flexicore.security.service.BasicService;
@@ -34,7 +35,6 @@ import org.springframework.web.server.ResponseStatusException;
 
 import javax.activation.MimetypesFileTypeMap;
 import javax.persistence.metamodel.SingularAttribute;
-import javax.ws.rs.core.Response;
 import java.io.*;
 import java.nio.channels.FileChannel;
 import java.util.*;
@@ -196,7 +196,7 @@ public class FileResourceService implements Plugin {
 	}
 
 	public ResponseEntity<Resource> download(long offset, long size, String id, String remoteIp, SecurityContextBase securityContext) {
-		FileResource fileResource = getFileResource(id, securityContext);
+		FileResource fileResource = getFileResourceById(id, securityContext);
 		if (fileResource == null) {
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"No File resource with id " + id);
 		}
@@ -244,7 +244,7 @@ public class FileResourceService implements Plugin {
 					return ResponseEntity.ok()
 							.contentLength(contentLength)
 							.header("fileName", name)
-							.contentType(MediaType.asMediaType(new MimeType(mimeType)))
+							.contentType(MediaType.asMediaType(MimeType.valueOf(mimeType)))
 							.body(new InputStreamResource(inputStream,name));
 
 				} catch (IOException e) {
@@ -380,7 +380,21 @@ public class FileResourceService implements Plugin {
 		return data;
 	}
 
-	public FileResource getFileResource(String md5, SecurityContextBase securityContextBase) {
+	public FileResource getFileResourceById(String id, SecurityContextBase securityContextBase) {
+		Optional<FileResource> fileResourceOptional = id != null ? listAllFileResources(new FileResourceFilter().setBasicPropertiesFilter(new BasicPropertiesFilter().setOnlyIds(Collections.singleton(id))), securityContextBase).stream().findFirst() : Optional.empty();
+		FileResource fileResource = fileResourceOptional.orElse(null);
+		if (fileResource != null) {
+			File file = new File(fileResource.getFullPath());
+			if (!file.exists()) {
+				fileResource.setDone(false);
+				fileResource.setOffset(0);
+				merge(fileResource);
+			}
+		}
+		return fileResource;
+	}
+
+	public FileResource getFileResourceByMd5(String md5, SecurityContextBase securityContextBase) {
 		Optional<FileResource> fileResourceOptional = md5 != null ? listAllFileResources(new FileResourceFilter().setMd5s(Collections.singleton(md5)), securityContextBase).stream().findFirst() : Optional.empty();
 		FileResource fileResource = fileResourceOptional.orElse(null);
 		if (fileResource != null) {

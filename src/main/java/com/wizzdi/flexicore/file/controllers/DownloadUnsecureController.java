@@ -41,9 +41,9 @@ public class DownloadUnsecureController implements Plugin {
     @GetMapping("{id}")
     @IOperation(access = Access.allow, Name = "downloadFile", Description = "downloads file by its fileResource ID")
     public ResponseEntity<Resource> download(@Parameter(description = "id of the FileResource Object to Download")
-            @RequestHeader("offset") @DefaultValue("0") long offset,
-											 @RequestHeader("size") @DefaultValue("0") long size,
-											 @PathVariable("id") String id, @RequestAttribute HttpServletRequest req) {
+            @RequestHeader(value = "offset",defaultValue = "0")  long offset,
+											 @RequestHeader(value = "size",defaultValue = "0")  long size,
+											 @PathVariable("id") String id, HttpServletRequest req) {
         return fileResourceService.download(offset, size, id, req.getRemoteAddr(), null);
 
     }

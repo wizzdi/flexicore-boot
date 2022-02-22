@@ -13,6 +13,7 @@ import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.*;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.util.MimeType;
 import org.springframework.util.StreamUtils;
 import org.springframework.web.client.ResponseExtractor;
 
@@ -29,7 +30,7 @@ import java.util.Random;
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @ActiveProfiles("test")
 
-public class FileUploadRESTServiceTest {
+public class FileUploadControllerServiceTest {
 
     private Role role;
     @Autowired
@@ -41,6 +42,7 @@ public class FileUploadRESTServiceTest {
 
     @BeforeAll
     private void init() {
+
         restTemplate.getRestTemplate().setInterceptors(
                 Collections.singletonList((request, body, execution) -> {
                     request.getHeaders()

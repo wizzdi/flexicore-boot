@@ -18,10 +18,7 @@ import org.pf4j.Extension;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
-
-import java.io.InputStream;
 
 @RestController
 @RequestMapping("/fileResource")
@@ -39,17 +36,15 @@ public class FileResourceController implements Plugin {
     /**
      * retreives file resource by md5
      *
-     * @param authenticationkey authentication key
      * @param md5               md5 of requested file
-     * @param securityContextBase security context
+     * @param securityContext security context
      * @return FileResource requested file
      */
     @GetMapping("{md5}")
     @IOperation(access = Access.allow, Name = "gets file resource", Description = "gets a fileResource by MD5")
 
-    public FileResource getFileResource(@RequestHeader("authenticationkey") String authenticationkey,
-                                        @PathVariable("md5") String md5, @RequestAttribute SecurityContextBase securityContextBase) {
-        return fileResourceService.getFileResource(md5, securityContextBase);
+    public FileResource getFileResource(     @PathVariable("md5") String md5, @RequestAttribute SecurityContextBase securityContext) {
+        return fileResourceService.getFileResourceByMd5(md5, securityContext);
 
     }
 

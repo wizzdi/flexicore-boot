@@ -41,12 +41,11 @@ public class FileUploadController implements Plugin {
 
     @PostMapping(consumes = MediaType.APPLICATION_OCTET_STREAM_VALUE,produces = MediaType.APPLICATION_JSON_VALUE)
     @IOperation(access = Access.allow, Name = "uploadOctet", Description = "uploads a file octat way")
-    public FileResource uploadFile(@RequestHeader("authenticationkey") String authenticationkey,
-                                   @RequestHeader("md5") String md5, @RequestHeader(value = "name",required = false) String name,
+    public FileResource uploadFile(@RequestHeader("md5") String md5, @RequestHeader(value = "name",required = false) String name,
                                    @RequestHeader(value = "chunkMd5",required = false) String chunkMd5,
                                    @RequestHeader(value = "lastChunk",required = false) boolean lastChunk,
-                                   InputStream stream, @RequestAttribute SecurityContextBase securityContextBase) {
-        return fileResourceService.uploadFileResource(name, securityContextBase, md5,chunkMd5,lastChunk, stream);
+                                   InputStream stream, @RequestAttribute SecurityContextBase securityContext) {
+        return fileResourceService.uploadFileResource(name, securityContext, md5,chunkMd5,lastChunk, stream);
 
     }
 
