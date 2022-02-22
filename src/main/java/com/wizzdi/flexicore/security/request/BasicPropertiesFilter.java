@@ -1,15 +1,19 @@
 package com.wizzdi.flexicore.security.request;
 
+import com.flexicore.annotations.TypeRetention;
+
 import java.util.Set;
 
 public class BasicPropertiesFilter {
 
 	private String nameLike;
 	private boolean nameLikeCaseSensitive;
+	@TypeRetention(String.class)
 	private Set<String> names;
 	private SoftDeleteOption softDelete;
 	private DateFilter creationDateFilter;
 	private DateFilter updateDateFilter;
+	@TypeRetention(String.class)
 	private Set<String> onlyIds;
 
 	public String getNameLike() {
