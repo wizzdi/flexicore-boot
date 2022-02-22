@@ -16,6 +16,9 @@ public class TestFilter extends BaseclassFilter {
     @TypeRetention(TestEntity.class)
     private List<TestEntity> testEntities;
 
+    @TypeRetention(Integer.class)
+    private Set<Integer> testProperty;
+
     public Set<String> getTestEntityIds() {
         return testEntityIds;
     }
@@ -32,6 +35,15 @@ public class TestFilter extends BaseclassFilter {
 
     public <T extends TestFilter> T setTestEntities(List<TestEntity> testEntities) {
         this.testEntities = testEntities;
+        return (T) this;
+    }
+
+    public Set<Integer> getTestProperty() {
+        return testProperty;
+    }
+
+    public <T extends TestFilter> T setTestProperty(Set<Integer> testProperty) {
+        this.testProperty = testProperty;
         return (T) this;
     }
 }

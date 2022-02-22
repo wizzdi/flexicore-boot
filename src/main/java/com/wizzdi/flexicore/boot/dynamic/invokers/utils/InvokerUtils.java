@@ -176,7 +176,9 @@ public class InvokerUtils {
 
 			@Override
 			public Class<?> listType() {
-				return Void.class;
+				TypeRetention typeRetention = AnnotatedElementUtils.findMergedAnnotation(field, TypeRetention.class);
+
+				return typeRetention!=null?typeRetention.value(): Void.class;
 			}
 
 			@Override
