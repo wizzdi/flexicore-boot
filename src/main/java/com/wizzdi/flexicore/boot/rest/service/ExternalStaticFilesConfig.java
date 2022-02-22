@@ -1,5 +1,7 @@
 package com.wizzdi.flexicore.boot.rest.service;
 
+import com.wizzdi.flexicore.boot.rest.interfaces.ApiPathChangeExclusion;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.web.servlet.WebMvcRegistrations;
 import org.springframework.boot.web.server.ErrorPage;
@@ -14,6 +16,11 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Configuration
 public class ExternalStaticFilesConfig {
@@ -27,13 +34,17 @@ public class ExternalStaticFilesConfig {
     private String internalStaticLocation;
     @Value("${flexicore.internalStaticMapping:/FlexiCore/**}")
     private String internalStaticMapping;
+    @Value("${flexicore.api.path:#{null}}")
+    private String apiPath;
 
     @Bean
-    public WebMvcRegistrations webMvcRegistrations(){
+    public WebMvcRegistrations webMvcRegistrations(ObjectProvider<ApiPathChangeExclusion> objectProvider){
         return new WebMvcRegistrations() {
             @Override
             public RequestMappingHandlerMapping getRequestMappingHandlerMapping() {
-                return new CustomRequestMappingHandlerMapping();
+                Map<String, ? extends Class<?>> collect = objectProvider.stream().map(f -> f.getExclusion()).flatMap(List::stream).collect(Collectors.toMap(f -> f.getCanonicalName(), f -> f, (a, b) -> a));
+                Set<String> packageNames=objectProvider.stream().map(f -> f.getExcludedPackages()).flatMap(Set::stream).collect(Collectors.toSet());
+                return new CustomRequestMappingHandlerMapping(new ArrayList<>(collect.values()),packageNames,apiPath);
             }
         };
     }
@@ -56,6 +67,7 @@ public class ExternalStaticFilesConfig {
                 registry.addViewController("/FlexiCore").setViewName("redirect:/FlexiCore/"); //delete these two lines if looping with directory as below
                 registry.addViewController("/FlexiCore/").setViewName("forward:/FlexiCore/index.html"); //delete these two lines if looping with directory as below
                 registry.addViewController("/notFound").setViewName("forward:/index.html");
+                registry.addViewController("/").setViewName("forward:/index.html");
 
                 String[] directories = listDirectories(externalStatic);
                 if(directories!=null){

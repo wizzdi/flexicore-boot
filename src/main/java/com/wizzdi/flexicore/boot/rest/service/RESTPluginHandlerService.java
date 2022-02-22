@@ -83,7 +83,7 @@ public class RESTPluginHandlerService implements InitializingBean {
 		for (Method method : originalClass.getMethods()) {
 			RequestMappingInfo mappingForMethod = requestMappingHandlerMapping.getMappingForMethod(method, pluginClass);
 			if(mappingForMethod!=null){
-				requestMappingHandlerMapping.registerMapping(mappingForMethod,plugin,method);
+				requestMappingHandlerMapping.registerHandlerMethod(plugin,method,mappingForMethod);
 			}
 
 		}
