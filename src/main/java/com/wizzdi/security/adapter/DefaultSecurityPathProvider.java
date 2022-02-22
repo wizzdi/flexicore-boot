@@ -10,6 +10,7 @@ public class DefaultSecurityPathProvider {
 
     @Bean
     @Order(100)
+    @ConditionalOnMissingBean(SecurityPathConfigurator.class)
     public SecurityPathConfigurator securityPathConfigurator(){
         return expressionInterceptUrlRegistry->expressionInterceptUrlRegistry.anyRequest().authenticated();
     }
