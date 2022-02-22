@@ -20,13 +20,15 @@ import javax.crypto.SecretKey;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.time.Duration;
+import java.time.OffsetDateTime;
 import java.util.Date;
 
 import static java.lang.String.format;
 
 @Component
 public class FlexicoreJwtTokenUtil {
-    private static final Logger logger= LoggerFactory.getLogger(FlexicoreJwtTokenUtil.class);
+    private static final Logger logger = LoggerFactory.getLogger(FlexicoreJwtTokenUtil.class);
     private static final String ID = "ID";
 
     @Value("${flexicore.security.jwt.secretLocation:/home/flexicore/jwt.secret}")
@@ -35,6 +37,8 @@ public class FlexicoreJwtTokenUtil {
     private String jwtTokenSecret;
     @Value("${flexicore.security.jwt.issuer:FlexiCore}")
     private String jwtIssuer;
+    @Value("${flexicore.security.jwt.ttl:7d}")
+    private Duration ttl;
 
     @Autowired
     @Qualifier("cachedJWTSecret")
@@ -46,22 +50,22 @@ public class FlexicoreJwtTokenUtil {
     @Bean
     @Scope(value = ConfigurableBeanFactory.SCOPE_SINGLETON)
     @Qualifier("cachedJWTSecret")
-    public SecretKey cachedJWTSecret(){
+    public SecretKey cachedJWTSecret() {
         return getJWTSecret();
     }
 
     @Bean
-    public JwtParser jwtParser (){
+    public JwtParser jwtParser() {
         return Jwts.parserBuilder().setSigningKey(cachedJWTSecret).build();
     }
 
     private SecretKey getJWTSecret() {
-        if(cachedJWTSecret==null){
-            if(jwtTokenSecret!=null){
+        if (cachedJWTSecret == null) {
+            if (jwtTokenSecret != null) {
                 return Keys.hmacShaKeyFor(Decoders.BASE64.decode(jwtTokenSecret));
             }
-            File file=new File(jwtTokenSecretLocation);
-            if(file.exists()){
+            File file = new File(jwtTokenSecretLocation);
+            if (file.exists()) {
                 try {
                     String cachedJWTSecretStr = FileUtils.readFileToString(file, StandardCharsets.UTF_8);
                     this.cachedJWTSecret = Keys.hmacShaKeyFor(Decoders.BASE64.decode(cachedJWTSecretStr));
@@ -69,12 +73,12 @@ public class FlexicoreJwtTokenUtil {
                     e.printStackTrace();
                 }
             }
-            if(cachedJWTSecret==null){
-                cachedJWTSecret=  Keys.secretKeyFor(SignatureAlgorithm.HS512);
+            if (cachedJWTSecret == null) {
+                cachedJWTSecret = Keys.secretKeyFor(SignatureAlgorithm.HS512);
 
                 try {
-                    String secret=Encoders.BASE64.encode(cachedJWTSecret.getEncoded());
-                    FileUtils.write(file,secret,StandardCharsets.UTF_8);
+                    String secret = Encoders.BASE64.encode(cachedJWTSecret.getEncoded());
+                    FileUtils.write(file, secret, StandardCharsets.UTF_8);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -86,16 +90,20 @@ public class FlexicoreJwtTokenUtil {
     }
 
 
-
     public String generateAccessToken(FlexicoreUserDetails user) {
+        return generateAccessToken(user, OffsetDateTime.now().plus(ttl));
+    }
+
+
+    public String generateAccessToken(FlexicoreUserDetails user, OffsetDateTime expirationDate) {
 
         String id = user.getId();
         return Jwts.builder()
                 .setSubject(format("%s,%s", id, user.getUsername()))
                 .setIssuer(jwtIssuer)
                 .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + 7 * 24 * 60 * 60 * 1000)) // 1 week
-                .claim(ID,id)
+                .setExpiration(Date.from(expirationDate.toInstant())) // 1 week
+                .claim(ID, id)
                 .signWith(cachedJWTSecret)
                 .compact();
     }
@@ -105,10 +113,10 @@ public class FlexicoreJwtTokenUtil {
     }
 
 
-        public Jws<Claims> getClaims(String token) {
+    public Jws<Claims> getClaims(String token) {
         try {
             return jwtParser.parseClaimsJws(token);
-        }  catch (MalformedJwtException ex) {
+        } catch (MalformedJwtException ex) {
             logger.error("Invalid JWT token - {}", ex.getMessage());
         } catch (ExpiredJwtException ex) {
             logger.error("Expired JWT token - {}", ex.getMessage());
