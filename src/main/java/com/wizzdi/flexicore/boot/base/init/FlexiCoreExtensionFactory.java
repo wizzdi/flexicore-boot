@@ -101,8 +101,8 @@ public class FlexiCoreExtensionFactory extends SpringExtensionFactory {
 				applicationCustomizer.customize(applicationContext, pluginWrapper, pluginManager);
 			}
 			try {
-				applicationContext.refresh();
 				addContext(applicationContext);
+				applicationContext.refresh();
 				logger.debug("creating context for " + pluginId + " took " + (System.currentTimeMillis() - start) + "ms");
 			}
 			catch (Throwable e){
