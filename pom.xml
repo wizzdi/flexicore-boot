@@ -281,7 +281,6 @@
                                     <manifestEntries>
                                         <Plugin-Id>${artifactId}</Plugin-Id>
                                         <Plugin-Version>${version}</Plugin-Version>
-                                        <!--suppress UnresolvedMavenProperty -->
                                     </manifestEntries>
                                 </transformer>
                             </transformers>
