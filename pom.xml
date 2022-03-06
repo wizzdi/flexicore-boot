@@ -88,11 +88,13 @@
             <groupId>com.wizzdi</groupId>
             <artifactId>flexicore-security-model</artifactId>
             <version>${flexicore-security-model.version}</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>com.wizzdi</groupId>
             <artifactId>flexicore-security-service</artifactId>
             <version>${flexicore-security-service.version}</version>
+            <scope>provided</scope>
         </dependency>
     
         <dependency>
@@ -102,9 +104,6 @@
         </dependency>
 
 
-        <!-- https://mvnrepository.com/artifact/javax.enterprise/cdi-api -->
-
-
         <dependency>
             <groupId>io.swagger.core.v3</groupId>
             <artifactId>swagger-jaxrs2</artifactId>
@@ -112,15 +111,6 @@
 			<scope>provided</scope>
         </dependency>
 
-
-
-        <!-- https://mvnrepository.com/artifact/com.google.crypto.tink/tink -->
-        <dependency>
-            <groupId>com.google.crypto.tink</groupId>
-            <artifactId>tink</artifactId>
-            <version>${tink.version}</version>
-        </dependency>
-        
         <dependency>
             <groupId>com.wizzdi</groupId>
             <artifactId>flexicore-common-user-model</artifactId>
@@ -132,6 +122,7 @@
             <groupId>com.wizzdi</groupId>
             <artifactId>flexicore-boot</artifactId>
             <version>${flexicore-boot.version}</version>
+            <scope>provided</scope>
         </dependency>
       
     
@@ -139,12 +130,14 @@
             <groupId>com.wizzdi</groupId>
             <artifactId>flexicore-boot-starter-web</artifactId>
             <version>${flexicore-boot-starter-web.version}</version>
+            <scope>provided</scope>
         </dependency>
       
         <dependency>
             <groupId>com.wizzdi</groupId>
             <artifactId>flexicore-boot-starter-data-jpa</artifactId>
             <version>${flexicore-boot-starter-data-jpa.version}</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.postgresql</groupId>
@@ -268,6 +261,33 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
                 <version>3.2.0</version>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>3.2.1</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                        <configuration>
+                            <minimizeJar>false</minimizeJar>
+                            <createDependencyReducedPom>true</createDependencyReducedPom>
+                            <dependencyReducedPomLocation>${java.io.tmpdir}/dependency-reduced-pom.xml</dependencyReducedPomLocation>
+                            <transformers>
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                                    <manifestEntries>
+                                        <Plugin-Id>${artifactId}</Plugin-Id>
+                                        <Plugin-Version>${version}</Plugin-Version>
+                                        <!--suppress UnresolvedMavenProperty -->
+                                    </manifestEntries>
+                                </transformer>
+                            </transformers>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
 
         </plugins>
