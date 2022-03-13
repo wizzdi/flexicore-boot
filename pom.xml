@@ -4,7 +4,7 @@
 
     <groupId>com.wizzdi</groupId>
     <artifactId>flexicore-boot-swagger</artifactId>
-    <version>1.1.1-SNAPSHOT</version>
+    <version>1.1.1</version>
     <name>FlexiCore Boot REST</name>
     <description>flexicore boot swagger</description>
     <url>https://wizzdi.com</url>
@@ -66,7 +66,7 @@
         <connection>scm:git:git://wizzdi/flexicore-boot-swagger.git</connection>
         <developerConnection>scm:git:git@github.com:wizzdi/flexicore-boot-swagger.git</developerConnection>
         <url>https://github.com/wizzdi/flexicore-boot-swagger</url>
-        <tag>flexicore-boot-swagger-${version}</tag>
+        <tag>flexicore-boot-swagger-1.1.1</tag>
     </scm>
 
     <dependencyManagement>
