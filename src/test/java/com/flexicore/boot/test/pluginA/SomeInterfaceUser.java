@@ -1,4 +1,4 @@
-package com.wizzdi.flexicore.boot.base.pluginA;
+package com.flexicore.boot.test.pluginA;
 
 import com.wizzdi.flexicore.boot.base.interfaces.Plugin;
 import org.pf4j.Extension;

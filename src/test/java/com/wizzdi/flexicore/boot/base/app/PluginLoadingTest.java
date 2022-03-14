@@ -1,10 +1,7 @@
-package com.wizzdi.flexicore.boot.base;
+package com.wizzdi.flexicore.boot.base.app;
 
-import com.github.zafarkhaja.semver.Version;
-import com.wizzdi.flexicore.boot.base.app.App;
 import com.wizzdi.flexicore.boot.base.init.FlexiCorePluginManager;
 import com.wizzdi.flexicore.boot.test.helper.PluginJar;
-import org.junit.Assert;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -23,6 +20,8 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -56,14 +55,14 @@ public class PluginLoadingTest {
 				}
 			}
 			PluginJar pluginAZip = new PluginJar.Builder(pluginsDir.toPath().resolve("plugin-A-1.0.0.zip"), PLUGIN_A_ID)
-					.extension("com.wizzdi.flexicore.boot.base.pluginA.PluginAService")
-					.extension("com.wizzdi.flexicore.boot.base.pluginA.SomeInterface")
-					.extension("com.wizzdi.flexicore.boot.base.pluginA.SomeInterfaceUser")
+					.extension("com.flexicore.boot.test.pluginA.PluginAService")
+					.extension("com.flexicore.boot.test.pluginA.SomeInterface")
+					.extension("com.flexicore.boot.test.pluginA.SomeInterfaceUser")
 					.pluginVersion("1.0.0")
 					.build();
 
 			PluginJar pluginBZip = new PluginJar.Builder(pluginsDir.toPath().resolve("plugin-B-1.0.0.zip"), PLUGIN_B_ID)
-					.extension("com.wizzdi.flexicore.boot.base.pluginB.PluginBService")
+					.extension("com.flexicore.boot.test.pluginB.PluginBService")
 					.pluginVersion("1.0.0")
 					.manifestAttribute("Plugin-Dependencies",PLUGIN_A_ID+"@>=1.0.0")
 					.build();
@@ -109,6 +108,9 @@ public class PluginLoadingTest {
 
 		Set<String> started = flexiCorePluginManager.getStartedPlugins().stream().map(f -> f.getPluginId()).collect(Collectors.toSet());
 		Assertions.assertTrue(started.contains(PLUGIN_A_ID));
+
+		Map<String,List<Object>> collect = flexiCorePluginManager.getStartedPlugins().stream().map(f -> f.getPluginId()).collect(Collectors.toMap(f->f, f->flexiCorePluginManager.getExtensions(f)));
+		System.out.println("loaded objects:"+collect);
 
 	}
 

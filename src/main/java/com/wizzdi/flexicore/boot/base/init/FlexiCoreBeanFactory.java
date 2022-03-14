@@ -18,7 +18,7 @@ import java.util.stream.Stream;
 
 public class FlexiCoreBeanFactory extends DefaultListableBeanFactory {
 
-    private Queue<ApplicationContext> dependenciesContext=new LinkedBlockingQueue<>();
+    private Queue<ApplicationContext> dependenciesContext = new LinkedBlockingQueue<>();
 
     public FlexiCoreBeanFactory() {
     }
@@ -27,53 +27,45 @@ public class FlexiCoreBeanFactory extends DefaultListableBeanFactory {
         super(parentBeanFactory);
     }
 
-    public void setDependenciesContext(Queue<ApplicationContext> dependenciesContext){
-        this.dependenciesContext=dependenciesContext;
+    public void setDependenciesContext(Queue<ApplicationContext> dependenciesContext) {
+        this.dependenciesContext = dependenciesContext;
     }
 
 
-    public Object resolveDependencyDirect(DependencyDescriptor descriptor, String requestingBeanName, Set<String> autowiredBeanNames, TypeConverter typeConverter) throws BeansException {
-        return super.resolveDependency(descriptor,requestingBeanName,autowiredBeanNames,typeConverter);
-    }
 
     @Override
-    public Object resolveDependency(DependencyDescriptor descriptor, String requestingBeanName, Set<String> autowiredBeanNames, TypeConverter typeConverter) throws BeansException {
-
-
-        if (ObjectFactory.class == descriptor.getDependencyType() ||
-                ObjectProvider.class == descriptor.getDependencyType()) {
-            return new FlexiCoreDependencyObjectProvider(this,dependenciesContext,descriptor, requestingBeanName);
-        }
-
+    public Object doResolveDependency(DependencyDescriptor descriptor, String beanName, Set<String> autowiredBeanNames, TypeConverter typeConverter) throws BeansException {
         try {
-            return  super.resolveDependency(descriptor, requestingBeanName, autowiredBeanNames, typeConverter);
-        }
-        catch (BeansException e){
-            for (ApplicationContext applicationContext   : dependenciesContext) {
-                    try {
-                        AutowireCapableBeanFactory autowireCapableBeanFactory = applicationContext.getAutowireCapableBeanFactory();
-                        return autowireCapableBeanFactory instanceof  FlexiCoreBeanFactory?((FlexiCoreBeanFactory)autowireCapableBeanFactory).resolveDependencyDirect(descriptor, requestingBeanName, autowiredBeanNames, typeConverter):autowireCapableBeanFactory.resolveDependency(descriptor, requestingBeanName, autowiredBeanNames, typeConverter);
-                    }
-                    catch (BeansException ignored){
+            return super.doResolveDependency(descriptor, beanName, autowiredBeanNames, typeConverter);
+        } catch (BeansException e) {
 
+            if (!(descriptor instanceof FlexicoreDependencyDescriptor)) {
+                descriptor = new FlexicoreDependencyDescriptor(descriptor);
+            }
+            FlexicoreDependencyDescriptor flexicoreDependencyDescriptor = (FlexicoreDependencyDescriptor) descriptor;
+
+            for (ApplicationContext applicationContext : dependenciesContext) {
+                try {
+                    AutowireCapableBeanFactory autowireCapableBeanFactory = applicationContext.getAutowireCapableBeanFactory();
+                    if (autowireCapableBeanFactory instanceof FlexiCoreBeanFactory) {
+                        FlexiCoreBeanFactory flexiCoreBeanFactory = (FlexiCoreBeanFactory) autowireCapableBeanFactory;
+                        if (flexicoreDependencyDescriptor.addVisitedContextId(applicationContext.getId())) {
+                            return flexiCoreBeanFactory.doResolveDependency(descriptor, beanName, autowiredBeanNames, typeConverter);
+                        }
                     }
+                } catch (BeansException ignored) {
+
+                }
 
 
             }
             throw e;
         }
-
     }
-
 
     public Queue<ApplicationContext> getDependenciesContext() {
         return dependenciesContext;
     }
 
-    @Override
-    public <T> ObjectProvider<T> getBeanProvider(Class<T> requiredType) throws BeansException {
-        ObjectProvider<T> beanProvider = super.getBeanProvider(requiredType);
 
-        return new FlexiCoreObjectProvider<>(requiredType,beanProvider,dependenciesContext);
-    }
 }
