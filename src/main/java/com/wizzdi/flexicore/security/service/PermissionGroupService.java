@@ -52,7 +52,7 @@ public class PermissionGroupService implements Plugin {
 
 	public boolean updatePermissionGroupNoMerge(PermissionGroupCreate permissionGroupCreate, PermissionGroup permissionGroup) {
 		boolean update = baseclassService.updateBaseclassNoMerge(permissionGroupCreate, permissionGroup);
-		if(permissionGroupCreate.getExternalId()!=null&&!permissionGroup.getExternalId().equals(permissionGroup.getExternalId())){
+		if(permissionGroupCreate.getExternalId()!=null&&!permissionGroupCreate.getExternalId().equals(permissionGroup.getExternalId())){
 			permissionGroup.setExternalId(permissionGroupCreate.getExternalId());
 			update=true;
 		}
