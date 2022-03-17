@@ -42,6 +42,18 @@ public class SecuredBasicRepository implements Plugin {
 		}
 	}
 
+	public <T extends Baseclass> void addBaseclassPredicates(BasicPropertiesFilter basicPropertiesFilter, CriteriaBuilder cb, CommonAbstractCriteria q, From<?, T> r, List<Predicate> predicates, SecurityContextBase securityContextBase) {
+		if(basicPropertiesFilter!=null){
+			BasicRepository.addBasicPropertiesFilter(basicPropertiesFilter,cb,q,r,predicates);
+		}
+		else{
+			BasicRepository.addBasicPropertiesFilter(new BasicPropertiesFilter().setSoftDelete(SoftDeleteOption.DEFAULT),cb,q,r,predicates);
+		}
+		if(securityContextBase!=null){
+			baseclassRepository.addBaseclassPredicates(cb,q,r,predicates,securityContextBase);
+		}
+	}
+
 
 	public <T extends Baseclass> List<T> listByIds(Class<T> c, Set<String> ids, SecurityContextBase securityContext) {
 		return baseclassRepository.listByIds(c, ids, securityContext);
