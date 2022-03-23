@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.wizzdi</groupId>
     <artifactId>flexicore-file-service</artifactId>
-    <version>1.0.4-SNAPSHOT</version>
+    <version>1.0.3-SNAPSHOT</version>
     <name>FlexiCore File service</name>
     <description>flexicore File service</description>
     <url>https://wizzdi.com</url>
