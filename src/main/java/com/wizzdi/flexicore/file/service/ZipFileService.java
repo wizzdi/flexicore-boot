@@ -67,6 +67,7 @@ public class ZipFileService implements Plugin {
 		ZipFile zipFile = new ZipFile();
 		zipFile.setId(Baseclass.getBase64ID());
 		updateZipFileNoMerge(zipFileCreate, zipFile);
+		BaseclassService.createSecurityObjectNoMerge(zipFile,securityContextBase);
 		return zipFile;
 	}
 
