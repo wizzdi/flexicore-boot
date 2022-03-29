@@ -10,6 +10,7 @@ import com.wizzdi.security.adapter.FlexicoreUserDetails;
 import com.wizzdi.security.adapter.OperationInterceptor;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -22,6 +23,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.stream.Collectors;
 
 
 @Component
@@ -31,14 +33,16 @@ public class FlexicoreJwtTokenFilter extends OncePerRequestFilter implements Fle
     private final SecurityUserService securityUserService;
     private final SecurityContextProvider securityContextProvider;
     private final TokenExtractor tokenExtractor;
+    private final  ObjectProvider<SecurityContextCustomizer> securityContextCustomizers;
 
 
     public FlexicoreJwtTokenFilter(FlexicoreJwtTokenUtil flexicoreJwtTokenUtil,
-                                   @Lazy SecurityUserService securityUserService, @Lazy SecurityContextProvider securityContextProvider, TokenExtractor tokenExtractor) {
+                                   @Lazy SecurityUserService securityUserService, @Lazy SecurityContextProvider securityContextProvider, TokenExtractor tokenExtractor, ObjectProvider<SecurityContextCustomizer> securityContextCustomizers) {
         this.flexicoreJwtTokenUtil = flexicoreJwtTokenUtil;
         this.securityUserService = securityUserService;
         this.securityContextProvider=securityContextProvider;
         this.tokenExtractor=tokenExtractor;
+        this.securityContextCustomizers=securityContextCustomizers;
     }
 
     @Override
@@ -62,6 +66,9 @@ public class FlexicoreJwtTokenFilter extends OncePerRequestFilter implements Fle
         SecurityUser securityUser = securityUserService.getByIdOrNull(id, SecurityUser.class, null);
         FlexicoreUserDetails userDetails = getUserDetails(securityUser);
         SecurityContextBase securityContext = securityContextProvider.getSecurityContext(securityUser);
+        for (SecurityContextCustomizer securityContextCustomizer : securityContextCustomizers.orderedStream().collect(Collectors.toList())) {
+            securityContext=securityContextCustomizer.customize(securityContext);
+        }
         FlexiCoreAuthentication
                 authentication = new FlexiCoreAuthentication(
                 userDetails, securityContext

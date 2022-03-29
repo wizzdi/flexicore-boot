@@ -23,6 +23,7 @@ import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.time.OffsetDateTime;
 import java.util.Date;
+import java.util.Optional;
 
 import static java.lang.String.format;
 
@@ -94,18 +95,23 @@ public class FlexicoreJwtTokenUtil {
         return generateAccessToken(user, OffsetDateTime.now().plus(ttl));
     }
 
+    public String generateAccessToken(FlexicoreUserDetails user, OffsetDateTime expirationDate){
+        return generateAccessToken(user,expirationDate,Optional.empty());
+    }
 
-    public String generateAccessToken(FlexicoreUserDetails user, OffsetDateTime expirationDate) {
+
+    public String generateAccessToken(FlexicoreUserDetails user, OffsetDateTime expirationDate, Optional<TokenCustomizer> tokenCustomizer) {
 
         String id = user.getId();
-        return Jwts.builder()
+        JwtBuilder jwtBuilder = Jwts.builder()
                 .setSubject(format("%s,%s", id, user.getUsername()))
                 .setIssuer(jwtIssuer)
                 .setIssuedAt(new Date())
                 .setExpiration(Date.from(expirationDate.toInstant())) // 1 week
                 .claim(ID, id)
-                .signWith(cachedJWTSecret)
-                .compact();
+                .signWith(cachedJWTSecret);
+        JwtBuilder jwtBuilderCustomized=tokenCustomizer.map(f->f.customizeToken(jwtBuilder)).orElse(jwtBuilder);
+        return jwtBuilderCustomized.compact();
     }
 
     public String getId(Jws<Claims> claimsJws) {
