@@ -4,7 +4,7 @@
 
     <groupId>com.wizzdi</groupId>
     <artifactId>flexicore-boot-security-bearer-jwt</artifactId>
-    <version>1.0.7-SNAPSHOT</version>
+    <version>1.0.7</version>
     <name>FlexiCore Boot Security Bearer JWT</name>
     <description>FlexiCore Boot Security Bearer JWT</description>
     <url>https://wizzdi.com</url>
@@ -57,7 +57,7 @@
         <connection>scm:git:git://wizzdi/flexicore-boot-security-bearer-jwt.git</connection>
         <developerConnection>scm:git:git@github.com:wizzdi/flexicore-boot-security-bearer-jwt.git</developerConnection>
         <url>https://github.com/wizzdi/flexicore-boot-security-bearer-jwt</url>
-        <tag>flexicore-boot-security-bearer-jwt-${version}</tag>
+        <tag>flexicore-boot-security-bearer-jwt-1.0.7</tag>
     </scm>
 
     <dependencyManagement>
