@@ -61,13 +61,14 @@ public class FlexicoreJwtTokenFilter extends OncePerRequestFilter implements Fle
             chain.doFilter(request, response);
             return;
         }
+        Claims claims = claimsJws.getBody();
         // Get user identity and set it on the spring security context
         String id = flexicoreJwtTokenUtil.getId(claimsJws);
         SecurityUser securityUser = securityUserService.getByIdOrNull(id, SecurityUser.class, null);
         FlexicoreUserDetails userDetails = getUserDetails(securityUser);
         SecurityContextBase securityContext = securityContextProvider.getSecurityContext(securityUser);
         for (SecurityContextCustomizer securityContextCustomizer : securityContextCustomizers.orderedStream().collect(Collectors.toList())) {
-            securityContext=securityContextCustomizer.customize(securityContext);
+            securityContext=securityContextCustomizer.customize(securityContext,claims);
         }
         FlexiCoreAuthentication
                 authentication = new FlexiCoreAuthentication(
