@@ -6,6 +6,7 @@ import com.wizzdi.flexicore.security.request.RoleFilter;
 import com.wizzdi.flexicore.security.request.RoleUpdate;
 import com.wizzdi.flexicore.security.response.PaginationResponse;
 import com.wizzdi.flexicore.security.test.app.App;
+import com.wizzdi.flexicore.security.validation.ValidationErrorResponse;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,6 +45,7 @@ public class RoleControllerTest {
                 }));
 
     }
+
 
     @Test
     @Order(1)
@@ -91,6 +93,41 @@ public class RoleControllerTest {
         Assertions.assertEquals(200, roleResponse.getStatusCodeValue());
         role = roleResponse.getBody();
         assertRole(request, role);
+
+    }
+
+    @Test
+    @Order(4)
+    public void testRoleUpdateValidationNoId(){
+        String name = UUID.randomUUID().toString();
+        RoleUpdate request = new RoleUpdate()
+                .setName(name);
+        ResponseEntity<ValidationErrorResponse> roleResponse = this.restTemplate.exchange("/role/update",HttpMethod.PUT, new HttpEntity<>(request), ValidationErrorResponse.class);
+        Assertions.assertEquals(400, roleResponse.getStatusCodeValue());
+        ValidationErrorResponse body = roleResponse.getBody();
+        Assertions.assertNotNull(body);
+        Assertions.assertFalse(body.getViolations().isEmpty());
+        Assertions.assertTrue(body.getViolations().stream().allMatch(f->f.getFieldName().equals("id")));
+        System.out.println(body);
+
+
+    }
+
+    @Test
+    @Order(5)
+    public void testRoleUpdateValidationBadId(){
+        String name = UUID.randomUUID().toString();
+        RoleUpdate request = new RoleUpdate()
+                .setId("test")
+                .setName(name);
+        ResponseEntity<ValidationErrorResponse> roleResponse = this.restTemplate.exchange("/role/update",HttpMethod.PUT, new HttpEntity<>(request), ValidationErrorResponse.class);
+        Assertions.assertEquals(400, roleResponse.getStatusCodeValue());
+        ValidationErrorResponse body = roleResponse.getBody();
+        Assertions.assertNotNull(body);
+        Assertions.assertFalse(body.getViolations().isEmpty());
+        Assertions.assertTrue(body.getViolations().stream().allMatch(f->f.getFieldName().equals("id")));
+        System.out.println(body);
+
 
     }
 

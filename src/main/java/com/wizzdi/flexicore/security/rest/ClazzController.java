@@ -10,11 +10,14 @@ import com.wizzdi.flexicore.security.request.ClazzFilter;
 import com.wizzdi.flexicore.security.request.ClazzUpdate;
 import com.wizzdi.flexicore.security.response.PaginationResponse;
 import com.wizzdi.flexicore.security.service.ClazzService;
+import com.wizzdi.flexicore.security.validation.Create;
+import com.wizzdi.flexicore.security.validation.Update;
 import org.pf4j.Extension;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
+
+import javax.validation.Valid;
 
 @RestController
 @OperationsInside
@@ -22,33 +25,27 @@ import org.springframework.web.server.ResponseStatusException;
 @Extension
 public class ClazzController implements Plugin {
 
-	@Autowired
-	private ClazzService ClazzService;
+    @Autowired
+    private ClazzService ClazzService;
 
-	@IOperation(Name = "creates Clazz",Description = "creates Clazz")
-	@PostMapping("/create")
-	public Clazz create(@RequestHeader("authenticationKey") String authenticationKey,@RequestBody ClazzCreate ClazzCreate, @RequestAttribute SecurityContextBase securityContext){
-		ClazzService.validate(ClazzCreate,securityContext);
-		return ClazzService.createClazz(ClazzCreate,securityContext);
-	}
+    @IOperation(Name = "creates Clazz", Description = "creates Clazz")
+    @PostMapping("/create")
+    public Clazz create(@RequestBody @Validated(Create.class) ClazzCreate ClazzCreate, @RequestAttribute SecurityContextBase securityContext) {
 
-	@IOperation(Name = "returns Clazz",Description = "returns Clazz")
-	@PostMapping("/getAll")
-	public PaginationResponse<Clazz> getAll(@RequestHeader("authenticationKey") String authenticationKey,@RequestBody ClazzFilter ClazzFilter, @RequestAttribute SecurityContextBase securityContext){
-		ClazzService.validate(ClazzFilter,securityContext);
-		return ClazzService.getAllClazzs(ClazzFilter,securityContext);
-	}
+        return ClazzService.createClazz(ClazzCreate, securityContext);
+    }
 
-	@IOperation(Name = "updates Clazz",Description = "updates Clazz")
-	@PutMapping("/update")
-	public Clazz update(@RequestHeader("authenticationKey") String authenticationKey,@RequestBody ClazzUpdate clazzUpdate, @RequestAttribute SecurityContextBase securityContext){
-		String id=clazzUpdate.getId();
-		Clazz clazz=id!=null?ClazzService.getByIdOrNull(id,Clazz.class,securityContext):null;
-		if(clazz==null){
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"no security user with id "+id);
-		}
-		clazzUpdate.setClazz(clazz);
-		ClazzService.validate(clazzUpdate,securityContext);
-		return ClazzService.updateClazz(clazzUpdate,securityContext);
-	}
+    @IOperation(Name = "returns Clazz", Description = "returns Clazz")
+    @PostMapping("/getAll")
+    public PaginationResponse<Clazz> getAll(@RequestBody @Valid ClazzFilter ClazzFilter, @RequestAttribute SecurityContextBase securityContext) {
+
+        return ClazzService.getAllClazzs(ClazzFilter, securityContext);
+    }
+
+    @IOperation(Name = "updates Clazz", Description = "updates Clazz")
+    @PutMapping("/update")
+    public Clazz update(@RequestBody @Validated(Update.class) ClazzUpdate clazzUpdate, @RequestAttribute SecurityContextBase securityContext) {
+
+        return ClazzService.updateClazz(clazzUpdate, securityContext);
+    }
 }

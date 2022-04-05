@@ -3,17 +3,26 @@ package com.wizzdi.flexicore.security.request;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.flexicore.model.Baseclass;
 import com.flexicore.model.PermissionGroup;
+import com.wizzdi.flexicore.security.validation.Create;
+import com.wizzdi.flexicore.security.validation.IdValid;
+import com.wizzdi.flexicore.security.validation.Update;
 
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+@IdValid.List({
+        @IdValid(targetField = "baseclasses", fieldType = Baseclass.class, field = "baseclassesIds", groups = {Create.class, Update.class}),
+        @IdValid(targetField = "permissionGroups", fieldType = PermissionGroup.class, field = "permissionGroupIds", groups = {Create.class, Update.class})
+
+
+})
 public class PermissionGroupToBaseclassMassCreate {
 
-    private Set<String> baseclassesIds=new HashSet<>();
+    private Set<String> baseclassesIds = new HashSet<>();
     @JsonIgnore
     private List<Baseclass> baseclasses;
-    private Set<String> permissionGroupIds=new HashSet<>();
+    private Set<String> permissionGroupIds = new HashSet<>();
     @JsonIgnore
     private List<PermissionGroup> permissionGroups;
 

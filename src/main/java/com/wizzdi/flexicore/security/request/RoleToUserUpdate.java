@@ -2,29 +2,37 @@ package com.wizzdi.flexicore.security.request;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.flexicore.model.RoleToUser;
+import com.wizzdi.flexicore.security.validation.IdValid;
+import com.wizzdi.flexicore.security.validation.Update;
 
-public class RoleToUserUpdate extends RoleToUserCreate{
+import javax.validation.constraints.NotNull;
 
-	private String id;
-	@JsonIgnore
-	private RoleToUser roleToUser;
+@IdValid.List({
+        @IdValid(targetField = "roleToUser", fieldType = RoleToUser.class, field = "id", groups = {Update.class}),
+})
+public class RoleToUserUpdate extends RoleToUserCreate {
 
-	public String getId() {
-		return id;
-	}
+    @NotNull(groups = Update.class)
+    private String id;
+    @JsonIgnore
+    private RoleToUser roleToUser;
 
-	public <T extends RoleToUserUpdate> T setId(String id) {
-		this.id = id;
-		return (T) this;
-	}
+    public String getId() {
+        return id;
+    }
 
-	@JsonIgnore
-	public RoleToUser getRoleToUser() {
-		return roleToUser;
-	}
+    public <T extends RoleToUserUpdate> T setId(String id) {
+        this.id = id;
+        return (T) this;
+    }
 
-	public <T extends RoleToUserUpdate> T setRoleToUser(RoleToUser roleToUser) {
-		this.roleToUser = roleToUser;
-		return (T) this;
-	}
+    @JsonIgnore
+    public RoleToUser getRoleToUser() {
+        return roleToUser;
+    }
+
+    public <T extends RoleToUserUpdate> T setRoleToUser(RoleToUser roleToUser) {
+        this.roleToUser = roleToUser;
+        return (T) this;
+    }
 }

@@ -10,11 +10,14 @@ import com.wizzdi.flexicore.security.request.RoleToUserFilter;
 import com.wizzdi.flexicore.security.request.RoleToUserUpdate;
 import com.wizzdi.flexicore.security.response.PaginationResponse;
 import com.wizzdi.flexicore.security.service.RoleToUserService;
+import com.wizzdi.flexicore.security.validation.Create;
+import com.wizzdi.flexicore.security.validation.Update;
 import org.pf4j.Extension;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
+
+import javax.validation.Valid;
 
 @RestController
 @OperationsInside
@@ -22,33 +25,27 @@ import org.springframework.web.server.ResponseStatusException;
 @Extension
 public class RoleToUserController implements Plugin {
 
-	@Autowired
-	private RoleToUserService roleToUserService;
+    @Autowired
+    private RoleToUserService roleToUserService;
 
-	@IOperation(Name = "creates RoleToUser",Description = "creates RoleToUser")
-	@PostMapping("/create")
-	public RoleToUser create(@RequestHeader("authenticationKey") String authenticationKey,@RequestBody RoleToUserCreate roleToUserCreate, @RequestAttribute SecurityContextBase securityContext){
-		roleToUserService.validate(roleToUserCreate,securityContext);
-		return roleToUserService.createRoleToUser(roleToUserCreate,securityContext);
-	}
+    @IOperation(Name = "creates RoleToUser", Description = "creates RoleToUser")
+    @PostMapping("/create")
+    public RoleToUser create(@RequestBody @Validated(Create.class) RoleToUserCreate roleToUserCreate, @RequestAttribute SecurityContextBase securityContext) {
 
-	@IOperation(Name = "returns RoleToUser",Description = "returns RoleToUser")
-	@PostMapping("/getAll")
-	public PaginationResponse<RoleToUser> getAll(@RequestHeader("authenticationKey") String authenticationKey,@RequestBody RoleToUserFilter roleToUserFilter, @RequestAttribute SecurityContextBase securityContext){
-		roleToUserService.validate(roleToUserFilter,securityContext);
-		return roleToUserService.getAllRoleToUsers(roleToUserFilter,securityContext);
-	}
+        return roleToUserService.createRoleToUser(roleToUserCreate, securityContext);
+    }
 
-	@IOperation(Name = "updates RoleToUser",Description = "updates RoleToUser")
-	@PutMapping("/update")
-	public RoleToUser update(@RequestHeader("authenticationKey") String authenticationKey,@RequestBody RoleToUserUpdate roleToUserUpdate, @RequestAttribute SecurityContextBase securityContext){
-		String id=roleToUserUpdate.getId();
-		RoleToUser roleToUser=id!=null?roleToUserService.getByIdOrNull(id,RoleToUser.class,securityContext):null;
-		if(roleToUser==null){
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"no security user with id "+id);
-		}
-		roleToUserUpdate.setRoleToUser(roleToUser);
-		roleToUserService.validate(roleToUserUpdate,securityContext);
-		return roleToUserService.updateRoleToUser(roleToUserUpdate,securityContext);
-	}
+    @IOperation(Name = "returns RoleToUser", Description = "returns RoleToUser")
+    @PostMapping("/getAll")
+    public PaginationResponse<RoleToUser> getAll(@RequestBody @Valid RoleToUserFilter roleToUserFilter, @RequestAttribute SecurityContextBase securityContext) {
+
+        return roleToUserService.getAllRoleToUsers(roleToUserFilter, securityContext);
+    }
+
+    @IOperation(Name = "updates RoleToUser", Description = "updates RoleToUser")
+    @PutMapping("/update")
+    public RoleToUser update(@RequestBody @Validated(Update.class) RoleToUserUpdate roleToUserUpdate, @RequestAttribute SecurityContextBase securityContext) {
+
+        return roleToUserService.updateRoleToUser(roleToUserUpdate, securityContext);
+    }
 }

@@ -3,7 +3,7 @@ package com.wizzdi.flexicore.security.request;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.flexicore.model.Baseclass;
 
-public class SecurityLinkCreate extends BaselinkCreate{
+public class SecurityLinkCreate extends BaselinkCreate {
 
     private String valueId;
     @JsonIgnore

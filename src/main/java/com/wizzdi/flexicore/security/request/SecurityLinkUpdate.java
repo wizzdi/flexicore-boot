@@ -2,29 +2,37 @@ package com.wizzdi.flexicore.security.request;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.flexicore.model.SecurityLink;
+import com.wizzdi.flexicore.security.validation.IdValid;
+import com.wizzdi.flexicore.security.validation.Update;
 
-public class SecurityLinkUpdate extends SecurityLinkCreate{
+import javax.validation.constraints.NotNull;
 
-	private String id;
-	@JsonIgnore
-	private SecurityLink securityLink;
+@IdValid.List({
+        @IdValid(targetField = "securityLink", fieldType = SecurityLink.class, field = "id", groups = {Update.class}),
+})
+public class SecurityLinkUpdate extends SecurityLinkCreate {
 
-	public String getId() {
-		return id;
-	}
+    @NotNull(groups = Update.class)
+    private String id;
+    @JsonIgnore
+    private SecurityLink securityLink;
 
-	public <T extends SecurityLinkUpdate> T setId(String id) {
-		this.id = id;
-		return (T) this;
-	}
+    public String getId() {
+        return id;
+    }
 
-	@JsonIgnore
-	public SecurityLink getSecurityLink() {
-		return securityLink;
-	}
+    public <T extends SecurityLinkUpdate> T setId(String id) {
+        this.id = id;
+        return (T) this;
+    }
 
-	public <T extends SecurityLinkUpdate> T setSecurityLink(SecurityLink securityLink) {
-		this.securityLink = securityLink;
-		return (T) this;
-	}
+    @JsonIgnore
+    public SecurityLink getSecurityLink() {
+        return securityLink;
+    }
+
+    public <T extends SecurityLinkUpdate> T setSecurityLink(SecurityLink securityLink) {
+        this.securityLink = securityLink;
+        return (T) this;
+    }
 }

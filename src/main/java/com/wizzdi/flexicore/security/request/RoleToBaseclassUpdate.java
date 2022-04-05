@@ -2,29 +2,38 @@ package com.wizzdi.flexicore.security.request;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.flexicore.model.RoleToBaseclass;
+import com.wizzdi.flexicore.security.validation.IdValid;
+import com.wizzdi.flexicore.security.validation.Update;
 
-public class RoleToBaseclassUpdate extends RoleToBaseclassCreate{
+import javax.validation.constraints.NotNull;
 
-	private String id;
-	@JsonIgnore
-	private RoleToBaseclass roleToBaseclass;
+@IdValid.List({
+        @IdValid(targetField = "roleToBaseclass", fieldType = RoleToBaseclass.class, field = "id", groups = {Update.class})
 
-	public String getId() {
-		return id;
-	}
+})
+public class RoleToBaseclassUpdate extends RoleToBaseclassCreate {
 
-	public <T extends RoleToBaseclassUpdate> T setId(String id) {
-		this.id = id;
-		return (T) this;
-	}
+    @NotNull(groups = Update.class)
+    private String id;
+    @JsonIgnore
+    private RoleToBaseclass roleToBaseclass;
 
-	@JsonIgnore
-	public RoleToBaseclass getRoleToBaseclass() {
-		return roleToBaseclass;
-	}
+    public String getId() {
+        return id;
+    }
 
-	public <T extends RoleToBaseclassUpdate> T setRoleToBaseclass(RoleToBaseclass roleToBaseclass) {
-		this.roleToBaseclass = roleToBaseclass;
-		return (T) this;
-	}
+    public <T extends RoleToBaseclassUpdate> T setId(String id) {
+        this.id = id;
+        return (T) this;
+    }
+
+    @JsonIgnore
+    public RoleToBaseclass getRoleToBaseclass() {
+        return roleToBaseclass;
+    }
+
+    public <T extends RoleToBaseclassUpdate> T setRoleToBaseclass(RoleToBaseclass roleToBaseclass) {
+        this.roleToBaseclass = roleToBaseclass;
+        return (T) this;
+    }
 }

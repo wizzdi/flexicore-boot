@@ -1,55 +1,61 @@
 package com.wizzdi.flexicore.security.request;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.flexicore.model.Baseclass;
 import com.flexicore.model.Clazz;
-import com.flexicore.model.PermissionGroup;
 import com.flexicore.model.SecurityOperation;
+import com.wizzdi.flexicore.security.validation.Create;
+import com.wizzdi.flexicore.security.validation.IdValid;
+import com.wizzdi.flexicore.security.validation.Update;
 
-public class OperationToClazzCreate extends BaselinkCreate{
+@IdValid.List({
+        @IdValid(targetField = "securityOperation", fieldType = SecurityOperation.class, field = "securityOperationId", groups = {Create.class, Update.class}),
+        @IdValid(targetField = "clazz", fieldType = Clazz.class, field = "clazzId", groups = {Create.class, Update.class})
 
-	@JsonIgnore
-	private SecurityOperation securityOperation;
-	private String securityOperationId;
-	@JsonIgnore
-	private Clazz clazz;
-	private String clazzId;
+})
+public class OperationToClazzCreate extends BaselinkCreate {
 
-	@JsonIgnore
-	public SecurityOperation getSecurityOperation() {
-		return securityOperation;
-	}
+    @JsonIgnore
+    private SecurityOperation securityOperation;
+    private String securityOperationId;
+    @JsonIgnore
+    private Clazz clazz;
+    private String clazzId;
 
-	public <T extends OperationToClazzCreate> T setSecurityOperation(SecurityOperation securityOperation) {
-		this.securityOperation = securityOperation;
-		return (T) this;
-	}
+    @JsonIgnore
+    public SecurityOperation getSecurityOperation() {
+        return securityOperation;
+    }
 
-	public String getSecurityOperationId() {
-		return securityOperationId;
-	}
+    public <T extends OperationToClazzCreate> T setSecurityOperation(SecurityOperation securityOperation) {
+        this.securityOperation = securityOperation;
+        return (T) this;
+    }
 
-	public <T extends OperationToClazzCreate> T setSecurityOperationId(String securityOperationId) {
-		this.securityOperationId = securityOperationId;
-		return (T) this;
-	}
+    public String getSecurityOperationId() {
+        return securityOperationId;
+    }
 
-	@JsonIgnore
-	public Clazz getClazz() {
-		return clazz;
-	}
+    public <T extends OperationToClazzCreate> T setSecurityOperationId(String securityOperationId) {
+        this.securityOperationId = securityOperationId;
+        return (T) this;
+    }
 
-	public <T extends OperationToClazzCreate> T setClazz(Clazz clazz) {
-		this.clazz = clazz;
-		return (T) this;
-	}
+    @JsonIgnore
+    public Clazz getClazz() {
+        return clazz;
+    }
 
-	public String getClazzId() {
-		return clazzId;
-	}
+    public <T extends OperationToClazzCreate> T setClazz(Clazz clazz) {
+        this.clazz = clazz;
+        return (T) this;
+    }
 
-	public <T extends OperationToClazzCreate> T setClazzId(String clazzId) {
-		this.clazzId = clazzId;
-		return (T) this;
-	}
+    public String getClazzId() {
+        return clazzId;
+    }
+
+    public <T extends OperationToClazzCreate> T setClazzId(String clazzId) {
+        this.clazzId = clazzId;
+        return (T) this;
+    }
 }

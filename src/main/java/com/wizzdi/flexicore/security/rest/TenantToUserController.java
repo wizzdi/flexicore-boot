@@ -10,11 +10,14 @@ import com.wizzdi.flexicore.security.request.TenantToUserFilter;
 import com.wizzdi.flexicore.security.request.TenantToUserUpdate;
 import com.wizzdi.flexicore.security.response.PaginationResponse;
 import com.wizzdi.flexicore.security.service.TenantToUserService;
+import com.wizzdi.flexicore.security.validation.Create;
+import com.wizzdi.flexicore.security.validation.Update;
 import org.pf4j.Extension;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
+
+import javax.validation.Valid;
 
 @RestController
 @OperationsInside
@@ -22,33 +25,27 @@ import org.springframework.web.server.ResponseStatusException;
 @Extension
 public class TenantToUserController implements Plugin {
 
-	@Autowired
-	private TenantToUserService tenantToUserService;
+    @Autowired
+    private TenantToUserService tenantToUserService;
 
-	@IOperation(Name = "create tenant to user",Description = "creates tenant to user")
-	@PostMapping("/create")
-	public TenantToUser create(@RequestHeader("authenticationKey") String authenticationKey,@RequestBody TenantToUserCreate tenantToUserCreate, @RequestAttribute SecurityContextBase securityContext){
-		tenantToUserService.validate(tenantToUserCreate,securityContext);
-		return tenantToUserService.createTenantToUser(tenantToUserCreate,securityContext);
-	}
+    @IOperation(Name = "create tenant to user", Description = "creates tenant to user")
+    @PostMapping("/create")
+    public TenantToUser create(@RequestBody @Validated(Create.class) TenantToUserCreate tenantToUserCreate, @RequestAttribute SecurityContextBase securityContext) {
 
-	@IOperation(Name = "get all tenant to user",Description = "get all tenant to user")
-	@PostMapping("/getAll")
-	public PaginationResponse<TenantToUser> getAll(@RequestHeader("authenticationKey") String authenticationKey,@RequestBody TenantToUserFilter tenantToUserFilter, @RequestAttribute SecurityContextBase securityContext){
-		tenantToUserService.validate(tenantToUserFilter,securityContext);
-		return tenantToUserService.getAllTenantToUsers(tenantToUserFilter,securityContext);
-	}
+        return tenantToUserService.createTenantToUser(tenantToUserCreate, securityContext);
+    }
 
-	@IOperation(Name = "updates tenant to user",Description = "updates tenant to user")
-	@PutMapping("/update")
-	public TenantToUser update(@RequestHeader("authenticationKey") String authenticationKey,@RequestBody TenantToUserUpdate tenantToUserUpdate, @RequestAttribute SecurityContextBase securityContext){
-		String id=tenantToUserUpdate.getId();
-		TenantToUser tenantToUser=id!=null?tenantToUserService.getByIdOrNull(id,TenantToUser.class,securityContext):null;
-		if(tenantToUser==null){
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"no security user with id "+id);
-		}
-		tenantToUserUpdate.setTenantToUser(tenantToUser);
-		tenantToUserService.validate(tenantToUserUpdate,securityContext);
-		return tenantToUserService.updateTenantToUser(tenantToUserUpdate,securityContext);
-	}
+    @IOperation(Name = "get all tenant to user", Description = "get all tenant to user")
+    @PostMapping("/getAll")
+    public PaginationResponse<TenantToUser> getAll(@RequestBody @Valid TenantToUserFilter tenantToUserFilter, @RequestAttribute SecurityContextBase securityContext) {
+
+        return tenantToUserService.getAllTenantToUsers(tenantToUserFilter, securityContext);
+    }
+
+    @IOperation(Name = "updates tenant to user", Description = "updates tenant to user")
+    @PutMapping("/update")
+    public TenantToUser update(@RequestBody @Validated(Update.class) TenantToUserUpdate tenantToUserUpdate, @RequestAttribute SecurityContextBase securityContext) {
+
+        return tenantToUserService.updateTenantToUser(tenantToUserUpdate, securityContext);
+    }
 }

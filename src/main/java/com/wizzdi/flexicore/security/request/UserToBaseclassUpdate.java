@@ -2,29 +2,37 @@ package com.wizzdi.flexicore.security.request;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.flexicore.model.UserToBaseClass;
+import com.wizzdi.flexicore.security.validation.IdValid;
+import com.wizzdi.flexicore.security.validation.Update;
 
-public class UserToBaseclassUpdate extends UserToBaseclassCreate{
+import javax.validation.constraints.NotNull;
 
-	private String id;
-	@JsonIgnore
-	private UserToBaseClass userToBaseclass;
+@IdValid.List({
+        @IdValid(targetField = "userToBaseclass", fieldType = UserToBaseClass.class, field = "id", groups = {Update.class}),
+})
+public class UserToBaseclassUpdate extends UserToBaseclassCreate {
 
-	public String getId() {
-		return id;
-	}
+    @NotNull(groups = Update.class)
+    private String id;
+    @JsonIgnore
+    private UserToBaseClass userToBaseclass;
 
-	public <T extends UserToBaseclassUpdate> T setId(String id) {
-		this.id = id;
-		return (T) this;
-	}
+    public String getId() {
+        return id;
+    }
 
-	@JsonIgnore
-	public UserToBaseClass getUserToBaseclass() {
-		return userToBaseclass;
-	}
+    public <T extends UserToBaseclassUpdate> T setId(String id) {
+        this.id = id;
+        return (T) this;
+    }
 
-	public <T extends UserToBaseclassUpdate> T setUserToBaseclass(UserToBaseClass userToBaseclass) {
-		this.userToBaseclass = userToBaseclass;
-		return (T) this;
-	}
+    @JsonIgnore
+    public UserToBaseClass getUserToBaseclass() {
+        return userToBaseclass;
+    }
+
+    public <T extends UserToBaseclassUpdate> T setUserToBaseclass(UserToBaseClass userToBaseclass) {
+        this.userToBaseclass = userToBaseclass;
+        return (T) this;
+    }
 }

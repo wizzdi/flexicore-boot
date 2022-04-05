@@ -2,29 +2,37 @@ package com.wizzdi.flexicore.security.request;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.flexicore.model.PermissionGroup;
+import com.wizzdi.flexicore.security.validation.IdValid;
+import com.wizzdi.flexicore.security.validation.Update;
 
-public class PermissionGroupUpdate extends PermissionGroupCreate{
+import javax.validation.constraints.NotNull;
 
-	private String id;
-	@JsonIgnore
-	private PermissionGroup permissionGroup;
+@IdValid.List({
+        @IdValid(targetField = "permissionGroup", fieldType = PermissionGroup.class, field = "id", groups = {Update.class})
+})
+public class PermissionGroupUpdate extends PermissionGroupCreate {
 
-	public String getId() {
-		return id;
-	}
+    @NotNull(groups = Update.class)
+    private String id;
+    @JsonIgnore
+    private PermissionGroup permissionGroup;
 
-	public <T extends PermissionGroupUpdate> T setId(String id) {
-		this.id = id;
-		return (T) this;
-	}
+    public String getId() {
+        return id;
+    }
 
-	@JsonIgnore
-	public PermissionGroup getPermissionGroup() {
-		return permissionGroup;
-	}
+    public <T extends PermissionGroupUpdate> T setId(String id) {
+        this.id = id;
+        return (T) this;
+    }
 
-	public <T extends PermissionGroupUpdate> T setPermissionGroup(PermissionGroup permissionGroup) {
-		this.permissionGroup = permissionGroup;
-		return (T) this;
-	}
+    @JsonIgnore
+    public PermissionGroup getPermissionGroup() {
+        return permissionGroup;
+    }
+
+    public <T extends PermissionGroupUpdate> T setPermissionGroup(PermissionGroup permissionGroup) {
+        this.permissionGroup = permissionGroup;
+        return (T) this;
+    }
 }

@@ -3,18 +3,21 @@ package com.wizzdi.flexicore.security.rest;
 import com.flexicore.annotations.IOperation;
 import com.flexicore.annotations.OperationsInside;
 import com.flexicore.model.SecurityUser;
-import com.wizzdi.flexicore.boot.base.interfaces.Plugin;
 import com.flexicore.security.SecurityContextBase;
+import com.wizzdi.flexicore.boot.base.interfaces.Plugin;
 import com.wizzdi.flexicore.security.request.SecurityUserCreate;
 import com.wizzdi.flexicore.security.request.SecurityUserFilter;
 import com.wizzdi.flexicore.security.request.SecurityUserUpdate;
 import com.wizzdi.flexicore.security.response.PaginationResponse;
 import com.wizzdi.flexicore.security.service.SecurityUserService;
+import com.wizzdi.flexicore.security.validation.Create;
+import com.wizzdi.flexicore.security.validation.Update;
 import org.pf4j.Extension;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
+
+import javax.validation.Valid;
 
 @RestController
 @RequestMapping("/securityUser")
@@ -22,33 +25,27 @@ import org.springframework.web.server.ResponseStatusException;
 @Extension
 public class SecurityUserController implements Plugin {
 
-	@Autowired
-	private SecurityUserService securityUserService;
+    @Autowired
+    private SecurityUserService securityUserService;
 
-	@IOperation(Name = "creates security user",Description = "creates security user")
-	@PostMapping("/create")
-	public SecurityUser create(@RequestHeader("authenticationKey") String authenticationKey,@RequestBody SecurityUserCreate securityUserCreate, @RequestAttribute SecurityContextBase securityContext){
-		securityUserService.validate(securityUserCreate,securityContext);
-		return securityUserService.createSecurityUser(securityUserCreate,securityContext);
-	}
+    @IOperation(Name = "creates security user", Description = "creates security user")
+    @PostMapping("/create")
+    public SecurityUser create(@RequestBody @Validated(Create.class) SecurityUserCreate securityUserCreate, @RequestAttribute SecurityContextBase securityContext) {
 
-	@IOperation(Name = "returns security user",Description = "returns security user")
-	@PostMapping("/getAll")
-	public PaginationResponse<SecurityUser> getAll(@RequestHeader("authenticationKey") String authenticationKey,@RequestBody SecurityUserFilter securityUserFilter, @RequestAttribute SecurityContextBase securityContext){
-		securityUserService.validate(securityUserFilter,securityContext);
-		return securityUserService.getAllSecurityUsers(securityUserFilter,securityContext);
-	}
+        return securityUserService.createSecurityUser(securityUserCreate, securityContext);
+    }
 
-	@IOperation(Name = "updates security user",Description = "updates security user")
-	@PutMapping("/update")
-	public SecurityUser update(@RequestHeader("authenticationKey") String authenticationKey,@RequestBody SecurityUserUpdate securityUserUpdate, @RequestAttribute SecurityContextBase securityContext){
-		String id=securityUserUpdate.getId();
-		SecurityUser securityUser=id!=null?securityUserService.getByIdOrNull(id,SecurityUser.class,securityContext):null;
-		if(securityUser==null){
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"no security user with id "+id);
-		}
-		securityUserUpdate.setSecurityUser(securityUser);
-		securityUserService.validate(securityUserUpdate,securityContext);
-		return securityUserService.updateSecurityUser(securityUserUpdate,securityContext);
-	}
+    @IOperation(Name = "returns security user", Description = "returns security user")
+    @PostMapping("/getAll")
+    public PaginationResponse<SecurityUser> getAll(@RequestBody @Valid SecurityUserFilter securityUserFilter, @RequestAttribute SecurityContextBase securityContext) {
+
+        return securityUserService.getAllSecurityUsers(securityUserFilter, securityContext);
+    }
+
+    @IOperation(Name = "updates security user", Description = "updates security user")
+    @PutMapping("/update")
+    public SecurityUser update(@RequestBody @Validated(Update.class) SecurityUserUpdate securityUserUpdate, @RequestAttribute SecurityContextBase securityContext) {
+
+        return securityUserService.updateSecurityUser(securityUserUpdate, securityContext);
+    }
 }

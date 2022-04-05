@@ -17,14 +17,14 @@ import org.springframework.web.bind.annotation.*;
 @Extension
 public class GenericDeleteController implements Plugin {
 
-	@Autowired
-	private GenericDeleteService genericDeleteService;
+    @Autowired
+    private GenericDeleteService genericDeleteService;
 
-	@IOperation(Name = "soft deletes Objects",Description = "soft deletes Objects")
-	@DeleteMapping("/softDelete")
-	public DeleteResponse softDelete(@RequestHeader("authenticationKey") String authenticationKey, @RequestBody DeleteObjectsRequest deleteObjectsRequest, @RequestAttribute SecurityContextBase securityContext){
-		genericDeleteService.validate(deleteObjectsRequest,securityContext);
-		return genericDeleteService.softDelete(deleteObjectsRequest,securityContext);
-	}
+    @IOperation(Name = "soft deletes Objects", Description = "soft deletes Objects")
+    @DeleteMapping("/softDelete")
+    public DeleteResponse softDelete(@RequestBody DeleteObjectsRequest deleteObjectsRequest, @RequestAttribute SecurityContextBase securityContext) {
+        genericDeleteService.validate(deleteObjectsRequest, securityContext);
+        return genericDeleteService.softDelete(deleteObjectsRequest, securityContext);
+    }
 
 }

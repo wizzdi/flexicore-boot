@@ -2,29 +2,37 @@ package com.wizzdi.flexicore.security.request;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.flexicore.model.security.SecurityPolicy;
+import com.wizzdi.flexicore.security.validation.IdValid;
+import com.wizzdi.flexicore.security.validation.Update;
 
-public class SecurityPolicyUpdate extends SecurityPolicyCreate{
+import javax.validation.constraints.NotNull;
 
-	private String id;
-	@JsonIgnore
-	private SecurityPolicy securityPolicy;
+@IdValid.List({
+        @IdValid(targetField = "securityPolicy", fieldType = SecurityPolicy.class, field = "id", groups = {Update.class}),
+})
+public class SecurityPolicyUpdate extends SecurityPolicyCreate {
 
-	public String getId() {
-		return id;
-	}
+    @NotNull(groups = Update.class)
+    private String id;
+    @JsonIgnore
+    private SecurityPolicy securityPolicy;
 
-	public <T extends SecurityPolicyUpdate> T setId(String id) {
-		this.id = id;
-		return (T) this;
-	}
+    public String getId() {
+        return id;
+    }
 
-	@JsonIgnore
-	public SecurityPolicy getSecurityPolicy() {
-		return securityPolicy;
-	}
+    public <T extends SecurityPolicyUpdate> T setId(String id) {
+        this.id = id;
+        return (T) this;
+    }
 
-	public <T extends SecurityPolicyUpdate> T setSecurityPolicy(SecurityPolicy SecurityPolicy) {
-		this.securityPolicy = SecurityPolicy;
-		return (T) this;
-	}
+    @JsonIgnore
+    public SecurityPolicy getSecurityPolicy() {
+        return securityPolicy;
+    }
+
+    public <T extends SecurityPolicyUpdate> T setSecurityPolicy(SecurityPolicy SecurityPolicy) {
+        this.securityPolicy = SecurityPolicy;
+        return (T) this;
+    }
 }
