@@ -61,10 +61,12 @@ public class SecurityOperationService implements Plugin {
 		return operation;
 	}
 
+	@Deprecated
 	public void validate(SecurityOperationCreate operationCreate, SecurityContextBase securityContext) {
 		baseclassService.validate(operationCreate,securityContext);
 	}
 
+	@Deprecated
 	public void validate(SecurityOperationFilter operationFilter, SecurityContextBase securityContext) {
 	}
 

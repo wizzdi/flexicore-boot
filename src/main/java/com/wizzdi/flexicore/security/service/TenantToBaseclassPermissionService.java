@@ -70,10 +70,12 @@ public class TenantToBaseclassPermissionService implements Plugin {
 		return tenantToBaseclassPermission;
 	}
 
+	@Deprecated
 	public void validate(TenantToBaseclassPermissionCreate tenantToBaseclassPermissionCreate, SecurityContextBase securityContext) {
 		securityLinkService.validate(tenantToBaseclassPermissionCreate,securityContext);
 	}
 
+	@Deprecated
 	public void validate(TenantToBaseclassPermissionFilter tenantToBaseclassPermissionFilter, SecurityContextBase securityContext) {
 		securityLinkService.validate(tenantToBaseclassPermissionFilter,securityContext);
 	}

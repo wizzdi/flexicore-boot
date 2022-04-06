@@ -25,10 +25,12 @@ public class SecurityEntityService implements Plugin {
 		return baseclassService.updateBaseclassNoMerge(securityEntityCreate,securityEntity);
 	}
 
+	@Deprecated
 	public void validate(SecurityEntityCreate securityEntityCreate, SecurityContextBase securityContext) {
 		baseclassService.validate(securityEntityCreate,securityContext);
 	}
 
+	@Deprecated
 	public void validate(SecurityEntityFilter securityEntityFilter, SecurityContextBase securityContext) {
 	}
 }

@@ -70,10 +70,12 @@ public class OperationToClazzService implements Plugin {
 		return operationToClazz;
 	}
 
+	@Deprecated
 	public void validate(OperationToClazzCreate operationToClazzCreate, SecurityContextBase securityContext) {
 		baselinkService.validate(operationToClazzCreate,securityContext);
 	}
 
+	@Deprecated
 	public void validate(OperationToClazzFilter operationToClazzFilter, SecurityContextBase securityContext) {
 		baselinkService.validate(operationToClazzFilter,securityContext);
 	}

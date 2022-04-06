@@ -62,10 +62,12 @@ public class SecurityTenantService implements Plugin {
 		return tenant;
 	}
 
+	@Deprecated
 	public void validate(SecurityTenantCreate tenantCreate, SecurityContextBase securityContext) {
 		securityEntityService.validate(tenantCreate,securityContext);
 	}
 
+	@Deprecated
 	public void validate(SecurityTenantFilter tenantFilter, SecurityContextBase securityContext) {
 		securityEntityService.validate(tenantFilter,securityContext);
 	}

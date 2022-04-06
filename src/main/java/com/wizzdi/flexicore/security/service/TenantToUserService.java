@@ -76,10 +76,12 @@ public class TenantToUserService implements Plugin {
 		return tenantToUser;
 	}
 
+	@Deprecated
 	public void validate(TenantToUserCreate tenantToUserCreate, SecurityContextBase securityContext) {
 		baselinkService.validate(tenantToUserCreate,securityContext);
 	}
 
+	@Deprecated
 	public void validate(TenantToUserFilter tenantToUserFilter, SecurityContextBase securityContext) {
 		baselinkService.validate(tenantToUserFilter,securityContext);
 		Set<String> tenantsIds=tenantToUserFilter.getTenantsIds();

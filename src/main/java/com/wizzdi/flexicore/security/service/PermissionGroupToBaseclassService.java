@@ -74,10 +74,12 @@ public class PermissionGroupToBaseclassService implements Plugin {
 		return permissionGroupToBaseclass;
 	}
 
+	@Deprecated
 	public void validate(PermissionGroupToBaseclassCreate permissionGroupToBaseclassCreate, SecurityContextBase securityContext) {
 		baselinkService.validate(permissionGroupToBaseclassCreate,securityContext);
 	}
 
+	@Deprecated
 	public void validate(PermissionGroupToBaseclassMassCreate permissionGroupToBaseclassMassCreate, SecurityContextBase securityContext) {
 		Set<String> permissionGroupIds=permissionGroupToBaseclassMassCreate.getPermissionGroupIds();
 		Map<String, PermissionGroup> permissionGroupMap=permissionGroupIds.isEmpty()?new HashMap<>():listByIds(PermissionGroup.class,permissionGroupIds,securityContext).stream().collect(Collectors.toMap(f->f.getId(), f->f));

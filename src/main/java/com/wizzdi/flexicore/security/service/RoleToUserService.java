@@ -75,10 +75,12 @@ public class RoleToUserService implements Plugin {
 		return roleToUser;
 	}
 
+	@Deprecated
 	public void validate(RoleToUserCreate roleToUserCreate, SecurityContextBase securityContext) {
 		baselinkService.validate(roleToUserCreate,securityContext);
 	}
 
+	@Deprecated
 	public void validate(RoleToUserFilter roleToUserFilter, SecurityContextBase securityContext) {
 		baselinkService.validate(roleToUserFilter,securityContext);
 		Set<String> roleIds=roleToUserFilter.getRolesIds();

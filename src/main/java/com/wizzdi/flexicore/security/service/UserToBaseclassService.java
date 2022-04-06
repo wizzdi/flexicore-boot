@@ -58,10 +58,12 @@ public class UserToBaseclassService implements Plugin {
 		userToBaseclassRepository.massMerge(list);
 	}
 
+	@Deprecated
 	public void validate(UserToBaseclassCreate userToBaseclassCreate, SecurityContextBase securityContext) {
 		securityLinkService.validate(userToBaseclassCreate,securityContext);
 	}
 
+	@Deprecated
 	public void validate(UserToBaseclassFilter userToBaseclassFilter, SecurityContextBase securityContext) {
 		securityLinkService.validate(userToBaseclassFilter,securityContext);
 	}

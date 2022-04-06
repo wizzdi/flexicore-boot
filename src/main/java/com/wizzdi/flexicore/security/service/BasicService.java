@@ -44,14 +44,17 @@ public class BasicService implements Plugin {
 		return update;
 	}
 
+	@Deprecated
 	public void validate(BasicCreate basicCreate, SecurityContextBase securityContext) {
 
 	}
 
+	@Deprecated
 	public void validate(PaginationFilter paginationFilter, SecurityContextBase securityContext) {
 
 	}
 
+	@Deprecated
 	public void validate(BasicPropertiesFilter basicPropertiesFilter, SecurityContextBase securityContext) {
 
 	}

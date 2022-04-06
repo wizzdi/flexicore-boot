@@ -73,6 +73,7 @@ public class SecurityLinkService implements Plugin {
 		return securityLink;
 	}
 
+	@Deprecated
 	public void validate(SecurityLinkCreate securityLinkCreate, SecurityContextBase securityContext) {
 		baselinkService.validate(securityLinkCreate,securityContext);
 		String valueId= securityLinkCreate.getValueId();;
@@ -83,6 +84,7 @@ public class SecurityLinkService implements Plugin {
 		securityLinkCreate.setValue(value);
 	}
 
+	@Deprecated
 	public void validate(SecurityLinkFilter securityLinkFilter, SecurityContextBase securityContext) {
 		baselinkService.validate(securityLinkFilter,securityContext);
 	}

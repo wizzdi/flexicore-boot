@@ -67,10 +67,12 @@ public class PermissionGroupService implements Plugin {
 		return permissionGroup;
 	}
 
+	@Deprecated
 	public void validate(PermissionGroupCreate permissionGroupCreate, SecurityContextBase securityContext) {
 		baseclassService.validate(permissionGroupCreate,securityContext);
 	}
 
+	@Deprecated
 	public void validate(PermissionGroupFilter permissionGroupFilter, SecurityContextBase securityContext) {
 	}
 

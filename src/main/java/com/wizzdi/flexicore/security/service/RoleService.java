@@ -66,10 +66,12 @@ public class RoleService implements Plugin {
 		return role;
 	}
 
+	@Deprecated
 	public void validate(RoleCreate roleCreate, SecurityContextBase securityContext) {
 		securityEntityService.validate(roleCreate,securityContext);
 	}
 
+	@Deprecated
 	public void validate(RoleFilter roleFilter, SecurityContextBase securityContext) {
 		securityEntityService.validate(roleFilter,securityContext);
 		Set<String> securityTenantIds=roleFilter.getSecurityTenantsIds();

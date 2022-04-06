@@ -93,6 +93,7 @@ public class SecurityPolicyService implements Plugin {
 		return SecurityPolicy;
 	}
 
+	@Deprecated
 	public void validate(SecurityPolicyCreate securityPolicyCreate, SecurityContextBase securityContext) {
 		String policyRoleId=securityPolicyCreate.getPolicyRoleId();
 		Role role=policyRoleId!=null?getByIdOrNull(policyRoleId,Role.class,securityContext):null;
@@ -116,6 +117,7 @@ public class SecurityPolicyService implements Plugin {
 		securityPolicyCreate.setSecurity(baseclass);
 	}
 
+	@Deprecated
 	public void validate(SecurityPolicyFilter securityPolicyFilter, SecurityContextBase securityContext) {
 		Set<String> securityTenantsIds=securityPolicyFilter.getSecurityTenantsIds();
 		Map<String,SecurityTenant> securityTenantMap=securityTenantsIds.isEmpty()?new HashMap<>():listByIds(SecurityTenant.class,securityTenantsIds,securityContext).stream().collect(Collectors.toMap(f->f.getId(),f->f));

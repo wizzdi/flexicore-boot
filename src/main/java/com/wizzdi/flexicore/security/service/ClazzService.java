@@ -62,10 +62,12 @@ public class ClazzService implements Plugin {
 		return Clazz;
 	}
 
+	@Deprecated
 	public void validate(ClazzCreate ClazzCreate, SecurityContextBase securityContext) {
 		baseclassService.validate(ClazzCreate,securityContext);
 	}
 
+	@Deprecated
 	public void validate(ClazzFilter ClazzFilter, SecurityContextBase securityContext) {
 	}
 

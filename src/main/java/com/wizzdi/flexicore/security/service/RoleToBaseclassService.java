@@ -71,10 +71,12 @@ public class RoleToBaseclassService implements Plugin {
 		return roleToBaseclass;
 	}
 
+	@Deprecated
 	public void validate(RoleToBaseclassCreate roleToBaseclassCreate, SecurityContextBase securityContext) {
 		securityLinkService.validate(roleToBaseclassCreate,securityContext);
 	}
 
+	@Deprecated
 	public void validate(RoleToBaseclassFilter roleToBaseclassFilter, SecurityContextBase securityContext) {
 		securityLinkService.validate(roleToBaseclassFilter,securityContext);
 	}

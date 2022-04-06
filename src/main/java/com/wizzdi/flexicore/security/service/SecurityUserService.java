@@ -61,10 +61,12 @@ public class SecurityUserService implements Plugin {
 		return securityUser;
 	}
 
+	@Deprecated
 	public void validate(SecurityUserCreate securityUserCreate, SecurityContextBase securityContext) {
 		securityEntityService.validate(securityUserCreate,securityContext);
 	}
 
+	@Deprecated
 	public void validate(SecurityUserFilter securityUserFilter, SecurityContextBase securityContext) {
 		securityEntityService.validate(securityUserFilter,securityContext);
 	}
