@@ -4,7 +4,7 @@
 
     <groupId>com.wizzdi</groupId>
     <artifactId>flexicore-base-model</artifactId>
-    <version>2.1.2-SNAPSHOT</version>
+    <version>2.2.0-SNAPSHOT</version>
     <name>FlexiCore base model</name>
     <description>flexicore base model</description>
     <url>https://wizzdi.com</url>
@@ -23,18 +23,18 @@
         <pf4j-spring.version>0.7.0</pf4j-spring.version>
 
 
-        <spring-boot.version>2.5.2</spring-boot.version>
-        <flexicore-boot-dynamic-invokers-model.version>1.1.0</flexicore-boot-dynamic-invokers-model.version>
-        <flexicore-security-model.version>1.1.0</flexicore-security-model.version>
-        <resteasy-flexicore-boot-starter.version>1.1.0</resteasy-flexicore-boot-starter.version>
-        <flexicore-boot-starter-web.version>1.1.0</flexicore-boot-starter-web.version>
-        <flexicore-file-model.version>1.0.0</flexicore-file-model.version>
+        <spring-boot.version>2.6.6</spring-boot.version>
+        <flexicore-boot-dynamic-invokers-model.version>1.2.0</flexicore-boot-dynamic-invokers-model.version>
+        <flexicore-security-model.version>1.3.0-SNAPSHOT</flexicore-security-model.version>
+        <resteasy-flexicore-boot-starter.version>1.2.0</resteasy-flexicore-boot-starter.version>
+        <flexicore-boot-starter-web.version>1.2.0</flexicore-boot-starter-web.version>
+        <flexicore-file-model.version>1.1.0</flexicore-file-model.version>
         <commons-codec.version>1.15</commons-codec.version>
-        <swagger-jaxrs2.version>2.1.10</swagger-jaxrs2.version>
-        <flexicore-boot.version>1.2.0</flexicore-boot.version>
+        <swagger-jaxrs2.version>2.2.0</swagger-jaxrs2.version>
+        <flexicore-boot.version>1.3.0</flexicore-boot.version>
         <javaee-api.version>8.0</javaee-api.version>
-        <dynamic-properties-database-converter.version>1.1.0</dynamic-properties-database-converter.version>
-        <flexicore-common-user-model.version>1.0.0</flexicore-common-user-model.version>
+        <dynamic-properties-database-converter.version>1.2.0</dynamic-properties-database-converter.version>
+        <flexicore-common-user-model.version>1.1.0</flexicore-common-user-model.version>
 
     </properties>
     <distributionManagement>
