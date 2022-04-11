@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.wizzdi</groupId>
     <artifactId>flexicore-file-service</artifactId>
-    <version>1.0.4-SNAPSHOT</version>
+    <version>1.1.0</version>
     <name>FlexiCore File service</name>
     <description>flexicore File service</description>
     <url>https://wizzdi.com</url>
@@ -21,6 +21,11 @@
         <version.compiler.plugin>3.3</version.compiler.plugin>
         <version.eclipselink>2.7.7</version.eclipselink>
         <pf4j-spring.version>0.7.0</pf4j-spring.version>
+        <spring-boot-dependencies.version>2.6.6</spring-boot-dependencies.version>
+        <flexicore-boot-dependencies.version>2.1.19</flexicore-boot-dependencies.version>
+        <zt-zip.version>1.15</zt-zip.version>
+        <flexicore-file-model.version>1.1.0</flexicore-file-model.version>
+        <swagger-jaxrs2.version>2.2.0</swagger-jaxrs2.version>
     </properties>
     <distributionManagement>
         <snapshotRepository>
@@ -59,14 +64,14 @@
             <dependency>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-dependencies</artifactId>
-                <version>2.5.2</version>
+                <version>${spring-boot-dependencies.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
             <dependency>
                 <groupId>com.wizzdi</groupId>
                 <artifactId>flexicore-boot-dependencies</artifactId>
-                <version>2.1.12</version>
+                <version>${flexicore-boot-dependencies.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
@@ -76,7 +81,7 @@
         <dependency>
             <groupId>org.zeroturnaround</groupId>
             <artifactId>zt-zip</artifactId>
-            <version>1.13</version>
+            <version>${zt-zip.version}</version>
             <exclusions>
                 <exclusion>
                     <artifactId>slf4j-api</artifactId>
@@ -88,7 +93,7 @@
         <dependency>
             <groupId>com.wizzdi</groupId>
             <artifactId>flexicore-file-model</artifactId>
-            <version>1.0.0</version>
+            <version>${flexicore-file-model.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -127,7 +132,7 @@
         <dependency>
             <groupId>io.swagger.core.v3</groupId>
             <artifactId>swagger-jaxrs2</artifactId>
-            <version>2.1.2</version>
+            <version>${swagger-jaxrs2.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
