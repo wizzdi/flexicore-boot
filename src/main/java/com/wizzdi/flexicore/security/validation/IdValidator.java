@@ -72,7 +72,7 @@ public class IdValidator implements ConstraintValidator<IdValid, Object> {
                 ids.removeAll(basicMap.keySet());
                 if (!ids.isEmpty()) {
                     constraintValidatorContext.buildConstraintViolationWithTemplate("cannot find "+fieldType.getCanonicalName() +" with ids \""+ids+"\"").addPropertyNode(field).addConstraintViolation();
-
+                    return false;
                 }
                 objectWrapper.setPropertyValue(targetField, new ArrayList<>(basicMap.values()));
             }
@@ -99,7 +99,7 @@ public class IdValidator implements ConstraintValidator<IdValid, Object> {
                 }
                 if (basic == null) {
                     constraintValidatorContext.buildConstraintViolationWithTemplate("cannot find "+fieldType.getCanonicalName() +" with id \""+id+"\"").addPropertyNode(field).addConstraintViolation();
-
+                    return false;
                 }
                 objectWrapper.setPropertyValue(targetField, basic);
 
