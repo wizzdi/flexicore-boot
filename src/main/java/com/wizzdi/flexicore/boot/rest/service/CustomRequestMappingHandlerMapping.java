@@ -3,13 +3,17 @@ package com.wizzdi.flexicore.boot.rest.service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.method.HandlerTypePredicate;
+import org.springframework.web.servlet.mvc.condition.PathPatternsRequestCondition;
 import org.springframework.web.servlet.mvc.condition.PatternsRequestCondition;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 
 import java.lang.reflect.Method;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.function.Predicate;
 
 public class CustomRequestMappingHandlerMapping extends RequestMappingHandlerMapping {
 
@@ -23,6 +27,14 @@ public class CustomRequestMappingHandlerMapping extends RequestMappingHandlerMap
 		this.excludedClassesFromMappingChange=excludedClassesFromMappingChange;
 		this.path=path;
 		this.excludedPackageNames=excludedPackageNames;
+		if(path!=null){
+			setPathPrefixes(Map.of(path, this::shouldPrefix));
+		}
+	}
+
+	private boolean shouldPrefix(Class<?> aClass){
+		RestController restApiController = aClass.getAnnotation(RestController.class);
+		return restApiController != null&&!excludedClassesFromMappingChange.contains(aClass)&&!startsWith(aClass.getPackageName());
 	}
 
 	@Override
@@ -31,29 +43,9 @@ public class CustomRequestMappingHandlerMapping extends RequestMappingHandlerMap
 		return super.getMappingForMethod(method, handlerType);
 	}
 
+
 	@Override
 	protected void registerHandlerMethod(Object handler, Method method, RequestMappingInfo mapping) {
-		if(path!=null){
-			Class<?> beanType = method.getDeclaringClass();
-			RestController restApiController = beanType.getAnnotation(RestController.class);
-			if (restApiController != null&&!excludedClassesFromMappingChange.contains(beanType)&&!startsWith(beanType.getPackageName())) {
-				PatternsRequestCondition apiPattern = new PatternsRequestCondition(path)
-						.combine(mapping.getPatternsCondition());
-				logger.debug("controller "+beanType.getCanonicalName() +" prefix re-written to "+apiPattern.getPatterns());
-
-
-				mapping = new RequestMappingInfo(mapping.getName(), apiPattern,
-						mapping.getMethodsCondition(), mapping.getParamsCondition(),
-						mapping.getHeadersCondition(), mapping.getConsumesCondition(),
-						mapping.getProducesCondition(), mapping.getCustomCondition());
-			}
-			else{
-				logger.debug("controller "+beanType.getCanonicalName() +" prefix remained "+mapping.getPatternsCondition());
-
-			}
-
-		}
-
 		super.registerHandlerMethod(handler, method, mapping);
 	}
 
