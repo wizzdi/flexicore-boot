@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.wizzdi</groupId>
     <artifactId>flexicore-common-user-service</artifactId>
-    <version>1.0.2-SNAPSHOT</version>
+    <version>1.1.0-SNAPSHOT</version>
     <name>FlexiCore common user service</name>
     <description>flexicore common-user service</description>
     <url>https://wizzdi.com</url>
@@ -21,22 +21,22 @@
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <swagger.version>2.1.10</swagger.version>
+        <swagger.version>2.2.0</swagger.version>
    
 
-        <spring-boot-dependencies.version>2.5.2</spring-boot-dependencies.version>
-        <flexicore-security-model.version>1.1.1</flexicore-security-model.version>
-        <flexicore-security-service.version>1.1.4</flexicore-security-service.version>
+        <spring-boot-dependencies.version>2.6.6</spring-boot-dependencies.version>
+        <flexicore-security-model.version>1.3.0</flexicore-security-model.version>
+        <flexicore-security-service.version>1.3.0</flexicore-security-service.version>
 
         <scrypt.version>1.4.0</scrypt.version>
 
-        <flexicore-common-user-model.version>1.0.0</flexicore-common-user-model.version>
-        <flexicore-boot.version>1.2.0</flexicore-boot.version>
-        <flexicore-boot-vintage.version>1.1.0</flexicore-boot-vintage.version>
-        <flexicore-boot-starter-web.version>1.1.0</flexicore-boot-starter-web.version>
-        <flexicore-boot-starter-data-jpa.version>1.1.0</flexicore-boot-starter-data-jpa.version>
-        <flexicore-boot-starter-data-jpa-eclipselink.version>1.1.0</flexicore-boot-starter-data-jpa-eclipselink.version>
-        <tink.version>1.6.0</tink.version>
+        <flexicore-common-user-model.version>1.1.0</flexicore-common-user-model.version>
+        <flexicore-boot.version>1.3.0</flexicore-boot.version>
+        <flexicore-boot-vintage.version>1.2.0</flexicore-boot-vintage.version>
+        <flexicore-boot-starter-web.version>1.2.0</flexicore-boot-starter-web.version>
+        <flexicore-boot-starter-data-jpa.version>1.2.0</flexicore-boot-starter-data-jpa.version>
+        <flexicore-boot-starter-data-jpa-eclipselink.version>1.2.0</flexicore-boot-starter-data-jpa-eclipselink.version>
+        <tink.version>1.6.1</tink.version>
 
     </properties>
 
