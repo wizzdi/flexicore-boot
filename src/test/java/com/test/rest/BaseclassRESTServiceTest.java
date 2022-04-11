@@ -61,15 +61,15 @@ public class BaseclassRESTServiceTest {
     @Order(1)
     public void testMassDelete() {
         String name = UUID.randomUUID().toString();
-        Role category = createRole();
+        Role role = createRole();
         MassDeleteRequest request = new MassDeleteRequest()
-                .setIds(Collections.singleton(category.getId()));
+                .setIds(Collections.singleton(role.getId()));
         ResponseEntity<MassDeleteResponse> roleResponse = this.restTemplate.postForEntity("/FlexiCore/rest/baseclass/massDelete", request, MassDeleteResponse.class);
         Assertions.assertEquals(200, roleResponse.getStatusCodeValue());
         MassDeleteResponse body = roleResponse.getBody();
         Assertions.assertNotNull(body);
         Assertions.assertEquals(body.getDeletedIds(),request.getIds());
-        ResponseEntity<User> categoryResponse = this.restTemplate.getForEntity("/FlexiCore/rest/baseclass/getbyid/"+category.getId()+"/"+User.class.getCanonicalName(), User.class);
+        ResponseEntity<User> categoryResponse = this.restTemplate.getForEntity("/FlexiCore/rest/baseclass/getbyid/"+role.getId()+"/"+Role.class.getCanonicalName(), User.class);
         Assertions.assertEquals(400,categoryResponse.getStatusCodeValue());
 
         roleResponse = this.restTemplate.postForEntity("/FlexiCore/rest/baseclass/massDelete", request, MassDeleteResponse.class);

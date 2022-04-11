@@ -1,5 +1,7 @@
 package com.test.rest;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.flexicore.model.Role;
 import com.flexicore.request.AuthenticationRequest;
 import com.flexicore.response.AuthenticationResponse;
@@ -37,6 +39,8 @@ public class FileUploadRESTServiceTest {
     private TestRestTemplate restTemplate;
     private static final int FILE_LENGTH=3500000;
     private static final int CHUNK_SIZE = 2000000;
+    @Autowired
+    private ObjectMapper objectMapper;
 
     @BeforeAll
     private void init() {
@@ -101,7 +105,7 @@ public class FileUploadRESTServiceTest {
 
     @Test
     @Order(1)
-    public void testUploadFileChunkErrorRecovery() {
+    public void testUploadFileChunkErrorRecovery() throws JsonProcessingException {
         Random rd = new Random();
         byte[] data = new byte[FILE_LENGTH];
         rd.nextBytes(data);
@@ -128,7 +132,7 @@ public class FileUploadRESTServiceTest {
 
             HttpEntity<byte[]> requestEntity = new HttpEntity<>(chunk, headers);
 
-            ResponseEntity<FileResource> response=this.restTemplate.exchange("/FlexiCore/rest/resources/upload", HttpMethod.POST, requestEntity, FileResource.class);
+            ResponseEntity<String> response=this.restTemplate.exchange("/FlexiCore/rest/resources/upload", HttpMethod.POST, requestEntity, String.class);
             if(error){
                 Assertions.assertEquals(Response.Status.PRECONDITION_FAILED.getStatusCode(),response.getStatusCodeValue());
                 i-=chunk.length;
@@ -136,7 +140,7 @@ public class FileUploadRESTServiceTest {
                 continue;
             }
             Assertions.assertEquals(200, response.getStatusCodeValue());
-            FileResource fileResource=response.getBody();
+            FileResource fileResource=objectMapper.readValue(response.getBody(),FileResource.class);
             Assertions.assertNotNull(fileResource);
             Assertions.assertEquals(fileResource.isDone(),lastChunk);
         }
@@ -145,7 +149,7 @@ public class FileUploadRESTServiceTest {
 
     @Test
     @Order(1)
-    public void testUploadFileFileErrorRecovery() {
+    public void testUploadFileFileErrorRecovery() throws JsonProcessingException {
         Random rd = new Random();
         byte[] data = new byte[FILE_LENGTH];
         rd.nextBytes(data);
@@ -174,14 +178,15 @@ public class FileUploadRESTServiceTest {
 
             HttpEntity<byte[]> requestEntity = new HttpEntity<>(chunk, headers);
 
-            ResponseEntity<FileResource> response=this.restTemplate.exchange("/FlexiCore/rest/resources/upload", HttpMethod.POST, requestEntity, FileResource.class);
+            ResponseEntity<String> response=this.restTemplate.exchange("/FlexiCore/rest/resources/upload", HttpMethod.POST, requestEntity, String.class);
             if(lastChunk){
                 Assertions.assertEquals(Response.Status.EXPECTATION_FAILED.getStatusCode(), response.getStatusCodeValue());
                 break;
 
             }
             Assertions.assertEquals(200, response.getStatusCodeValue());
-            FileResource fileResource=response.getBody();
+
+            FileResource fileResource=objectMapper.readValue(response.getBody(),FileResource.class);
             Assertions.assertNotNull(fileResource);
             Assertions.assertEquals(fileResource.isDone(),lastChunk);
         }
