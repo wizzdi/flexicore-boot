@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -32,10 +33,7 @@ public class FlexicoreJwtTokenUtil {
     private static final Logger logger = LoggerFactory.getLogger(FlexicoreJwtTokenUtil.class);
     private static final String ID = "ID";
 
-    @Value("${flexicore.security.jwt.secretLocation:/home/flexicore/jwt.secret}")
-    private String jwtTokenSecretLocation;
-    @Value("${flexicore.security.jwt.secret:#{null}}")
-    private String jwtTokenSecret;
+
     @Value("${flexicore.security.jwt.issuer:FlexiCore}")
     private String jwtIssuer;
     @Value("${flexicore.security.jwt.ttl:7d}")
@@ -48,47 +46,7 @@ public class FlexicoreJwtTokenUtil {
     private JwtParser jwtParser;
 
 
-    @Bean
-    @Scope(value = ConfigurableBeanFactory.SCOPE_SINGLETON)
-    @Qualifier("cachedJWTSecret")
-    public SecretKey cachedJWTSecret() {
-        return getJWTSecret();
-    }
 
-    @Bean
-    public JwtParser jwtParser() {
-        return Jwts.parserBuilder().setSigningKey(cachedJWTSecret).build();
-    }
-
-    private SecretKey getJWTSecret() {
-        if (cachedJWTSecret == null) {
-            if (jwtTokenSecret != null) {
-                return Keys.hmacShaKeyFor(Decoders.BASE64.decode(jwtTokenSecret));
-            }
-            File file = new File(jwtTokenSecretLocation);
-            if (file.exists()) {
-                try {
-                    String cachedJWTSecretStr = FileUtils.readFileToString(file, StandardCharsets.UTF_8);
-                    this.cachedJWTSecret = Keys.hmacShaKeyFor(Decoders.BASE64.decode(cachedJWTSecretStr));
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-            if (cachedJWTSecret == null) {
-                cachedJWTSecret = Keys.secretKeyFor(SignatureAlgorithm.HS512);
-
-                try {
-                    String secret = Encoders.BASE64.encode(cachedJWTSecret.getEncoded());
-                    FileUtils.write(file, secret, StandardCharsets.UTF_8);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-        return cachedJWTSecret;
-
-
-    }
 
 
     public String generateAccessToken(FlexicoreUserDetails user) {
