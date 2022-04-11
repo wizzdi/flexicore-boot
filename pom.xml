@@ -54,7 +54,7 @@
         <resteasy-flexicore-boot-starter.version>1.2.0</resteasy-flexicore-boot-starter.version>
         <flexicore-boot-starter-web.version>1.2.0</flexicore-boot-starter-web.version>
         <flexicore-boot-starter-actuator.version>1.2.0</flexicore-boot-starter-actuator.version>
-        <flexicore-boot-starter-data-jpa.version>1.2.0</flexicore-boot-starter-data-jpa.version>
+        <flexicore-boot-starter-data-jpa.version>1.2.1</flexicore-boot-starter-data-jpa.version>
         <dynamic-properties-converter-postgresql.version>1.2.0</dynamic-properties-converter-postgresql.version>
         <flexicore-boot-starter-data-jpa-eclipselink.version>1.2.0</flexicore-boot-starter-data-jpa-eclipselink.version>
 

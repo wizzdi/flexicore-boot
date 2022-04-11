@@ -14,6 +14,7 @@ import com.flexicore.service.impl.SecurityService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.pf4j.Extension;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 import javax.enterprise.context.RequestScoped;
@@ -32,6 +33,7 @@ import javax.ws.rs.core.MediaType;
 @Extension
 public class SecurityRESTService implements RESTService {
     @Autowired
+    @Lazy
     private SecurityService securityService;
     @Autowired
     private OperationService operationRepository;

@@ -31,6 +31,7 @@ import org.pf4j.Extension;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
@@ -64,6 +65,7 @@ public class SecurityImposer implements AspectPlugin {
 	 */
 	private static final long serialVersionUID = 1L;
 	@Autowired
+	@Lazy
 	private SecurityService securityService;
 	private static final Logger logger = LoggerFactory.getLogger(SecurityImposer.class);
 	private static Method setupTotpMethod;

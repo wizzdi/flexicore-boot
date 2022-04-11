@@ -203,9 +203,9 @@ public class SwaggerAPIRESTService extends BaseOpenApiResource implements RESTSe
 					Set<String> childProps = properties != null ? properties.keySet() : new HashSet<>();
 					Set<String> parentProps = getAllParentsProperties(superName, schemas);
 					childProps.removeAll(parentProps);
-					ComposedSchema composedSchema = new ComposedSchema()
-							.addAllOfItem(new Schema().$ref(superName))
-							.addAllOfItem(value);
+					ComposedSchema composedSchema = new ComposedSchema();
+					composedSchema.addAllOfItem(new Schema().$ref(superName));
+					composedSchema.addAllOfItem(value);
 					schemas.put(entry.getKey(), composedSchema);
 
 				}

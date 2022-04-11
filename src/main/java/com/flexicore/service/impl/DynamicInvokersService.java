@@ -66,6 +66,7 @@ public class DynamicInvokersService implements ServicePlugin {
     private DynamicInvokersRepository dynamicInvokersRepository;
 
     @Autowired
+    @Lazy
     private SecurityService securityService;
 
     @Autowired

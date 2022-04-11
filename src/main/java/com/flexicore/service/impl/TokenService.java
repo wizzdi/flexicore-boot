@@ -37,32 +37,15 @@ import java.util.logging.Logger;
 public class TokenService implements com.flexicore.service.TokenService {
 
 
-    @Value("${flexicore.security.jwt.secretLocation:/home/flexicore/jwt.secret}")
-    private String jwtTokenSecretLocation;
+
 
     @Autowired
     @Qualifier("cachedJWTSecret")
     private String cachedJWTSecret;
 
 
-    @Bean
-    @Scope(value = ConfigurableBeanFactory.SCOPE_SINGLETON)
-    @Qualifier("cachedJWTSecret")
-    public String cachedJWTSecret(){
-        return getJWTSecret();
-    }
-
-
     @Override
-    public String getJwtToken(User user, OffsetDateTime expirationDate){
-        return getJwtToken(user,expirationDate,null,null);
-    }
-    @Override
-    public String getJwtToken(User user, OffsetDateTime expirationDate, String writeTenant, Set<String> readTenants) {
-        return getJwtToken(user, expirationDate, writeTenant, readTenants,false);
-    }
-    @Override
-    public String getJwtToken(User user, OffsetDateTime expirationDate, String writeTenant, Set<String> readTenants,boolean totpVerified) {
+    public String getJwtToken(User user, OffsetDateTime expirationDate, String writeTenant, Set<String> readTenants, boolean totpVerified) {
 
         Map<String, Object> claims=new HashMap<>();
         if(writeTenant!=null){
@@ -79,40 +62,26 @@ public class TokenService implements com.flexicore.service.TokenService {
                 .setIssuer(ISSUER)
                 .setIssuedAt(new Date())
                 .setExpiration(Date.from(expirationDate.toInstant()))
-                .signWith(SignatureAlgorithm.HS512,getJWTSecret())
+                .signWith(SignatureAlgorithm.HS512,cachedJWTSecret)
                 .addClaims(claims)
                 .compact();
     }
 
-    private String getJWTSecret() {
-        if(cachedJWTSecret==null){
-            File file=new File(jwtTokenSecretLocation);
-            if(file.exists()){
-                try {
-                    cachedJWTSecret=FileUtils.readFileToString(file, StandardCharsets.UTF_8);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-            if(cachedJWTSecret==null||cachedJWTSecret.isEmpty()){
-                cachedJWTSecret= Baseclass.getBase64ID();
-                try {
-                    FileUtils.write(file,cachedJWTSecret,StandardCharsets.UTF_8);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-        return cachedJWTSecret;
 
-
+    @Override
+    public String getJwtToken(User user, OffsetDateTime expirationDate){
+        return getJwtToken(user,expirationDate,null,null);
+    }
+    @Override
+    public String getJwtToken(User user, OffsetDateTime expirationDate, String writeTenant, Set<String> readTenants) {
+        return getJwtToken(user, expirationDate, writeTenant, readTenants,false);
     }
 
     @Override
     public JWTClaims parseClaimsAndVerifyClaims(String jwtToken, Logger logger) {
         Claims claims =null;
         try {
-            claims=Jwts.parser().setSigningKey(getJWTSecret()).parseClaimsJws(jwtToken).getBody();
+            claims=Jwts.parser().setSigningKey(cachedJWTSecret).parseClaimsJws(jwtToken).getBody();
         }
         catch (JwtException e){
             logger.log(Level.SEVERE,"invalid token ",e);

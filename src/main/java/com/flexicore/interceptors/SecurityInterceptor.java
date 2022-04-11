@@ -16,6 +16,7 @@ import com.flexicore.service.impl.SecurityService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.core.MethodParameter;
 import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.stereotype.Component;
@@ -52,6 +53,7 @@ public class SecurityInterceptor implements HandlerInterceptor {
 
 
 	@Autowired
+	@Lazy
 	private SecurityService securityService;
 
 

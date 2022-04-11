@@ -78,6 +78,7 @@ public class DefaultObjectsProvider implements FlexiCoreService {
 	private static final Logger logger = LoggerFactory.getLogger(DefaultObjectsProvider.class);
 
 	@Autowired
+	@Lazy
 	private SecurityService securityService;
 
 	@Autowired

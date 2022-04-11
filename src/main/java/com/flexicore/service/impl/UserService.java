@@ -109,6 +109,9 @@ public class UserService implements com.flexicore.service.UserService {
         return "UEKbB6XlQhKOtjziJoUQ8w";
     }
 
+    @Value("${flexicore.loginFailedAttempts:-1}")
+    private int loginFailedAttempts;
+
     @Autowired
     @Qualifier("systemAdminId")
     private String systemAdminId;
@@ -359,16 +362,7 @@ public class UserService implements com.flexicore.service.UserService {
         return user.getDefaultTenant();
     }
 
-    @Value("${flexicore.loginBlacklistRetentionMs:600000}")
-    private long loginBlacklistReturntionMs;
-    @Value("${flexicore.loginFailedAttempts:-1}")
-    private int loginFailedAttempts;
 
-    @Bean
-    @Scope(value = ConfigurableBeanFactory.SCOPE_SINGLETON)
-    public Cache<String, AtomicInteger> loginBlacklistCache(){
-        return CacheBuilder.newBuilder().expireAfterWrite(loginBlacklistReturntionMs,TimeUnit.MILLISECONDS).build();
-    }
 
     @Autowired
     private Cache<String, AtomicInteger> loginBlacklistCache;
