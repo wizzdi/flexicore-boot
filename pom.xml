@@ -26,7 +26,7 @@
         <pf4j-spring.version>0.7.0</pf4j-spring.version>
 
         <spring-boot.version>2.6.6</spring-boot.version>
-        <reflections.version>0.9.12</reflections.version>
+        <reflections.version>0.10.2</reflections.version>
         <flexicore-boot.version>1.3.0</flexicore-boot.version>
         <flexicore-boot-starter-web.version>1.2.0</flexicore-boot-starter-web.version>
         <flexicore-boot-test-helper.version>1.0.0</flexicore-boot-test-helper.version>

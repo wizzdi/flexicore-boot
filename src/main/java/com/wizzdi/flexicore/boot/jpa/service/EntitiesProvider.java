@@ -55,7 +55,7 @@ public class EntitiesProvider {
 		Map<String, Object> beansWithAnnotation = context.getBeansWithAnnotation(SpringBootApplication.class);
 		entitiesJarsUrls.addAll(beansWithAnnotation.values().stream().map(f -> f.getClass().getProtectionDomain().getCodeSource().getLocation()).collect(Collectors.toSet()));
 		ConfigurationBuilder configuration = ConfigurationBuilder.build()
-				.addClassLoader(classLoader)
+				.addClassLoaders(classLoader)
 				.setUrls(entitiesJarsUrls);
 		return new Reflections(configuration);
 	}
