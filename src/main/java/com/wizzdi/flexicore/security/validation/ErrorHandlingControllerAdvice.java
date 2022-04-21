@@ -12,12 +12,12 @@ import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
 
 @ControllerAdvice
-class ErrorHandlingControllerAdvice {
+public class ErrorHandlingControllerAdvice {
 
   @ExceptionHandler(ConstraintViolationException.class)
   @ResponseStatus(HttpStatus.BAD_REQUEST)
   @ResponseBody
-  ValidationErrorResponse onConstraintValidationException(
+  public ValidationErrorResponse onConstraintValidationException(
       ConstraintViolationException e) {
     ValidationErrorResponse error = new ValidationErrorResponse();
     for (ConstraintViolation violation : e.getConstraintViolations()) {
@@ -30,7 +30,7 @@ class ErrorHandlingControllerAdvice {
   @ExceptionHandler(MethodArgumentNotValidException.class)
   @ResponseStatus(HttpStatus.BAD_REQUEST)
   @ResponseBody
-  ValidationErrorResponse onMethodArgumentNotValidException(
+  public ValidationErrorResponse onMethodArgumentNotValidException(
       MethodArgumentNotValidException e) {
     ValidationErrorResponse error = new ValidationErrorResponse();
     for (FieldError fieldError : e.getBindingResult().getFieldErrors()) {
