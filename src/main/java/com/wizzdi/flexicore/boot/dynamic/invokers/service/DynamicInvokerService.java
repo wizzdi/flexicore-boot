@@ -16,6 +16,8 @@ import com.wizzdi.flexicore.security.response.OperationScanContext;
 import com.wizzdi.flexicore.security.response.PaginationResponse;
 import com.wizzdi.flexicore.security.service.OperationValidatorService;
 import com.wizzdi.flexicore.security.service.SecurityOperationService;
+import com.wizzdi.flexicore.security.validation.ValidationErrorResponse;
+import com.wizzdi.flexicore.security.validation.Violation;
 import org.pf4j.Extension;
 import org.pf4j.PluginManager;
 import org.pf4j.PluginWrapper;
@@ -24,12 +26,22 @@ import org.slf4j.LoggerFactory;
 import org.springframework.aop.support.AopUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.core.MethodParameter;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ClassUtils;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.DataBinder;
+import org.springframework.validation.FieldError;
+import org.springframework.validation.Validator;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.server.ResponseStatusException;
 
+import javax.validation.Valid;
 import java.lang.reflect.Method;
+import java.lang.reflect.Parameter;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -53,6 +65,8 @@ public class DynamicInvokerService implements Plugin {
     private OperationsMethodScanner operationsMethodScanner;
     @Autowired
     private SecurityOperationService securityOperationService;
+    @Autowired
+    private Validator validator;
 
 
     public void validate(DynamicInvokerFilter dynamicInvokerFilter, SecurityContextBase securityContext) {
@@ -150,7 +164,9 @@ public class DynamicInvokerService implements Plugin {
 
                     if (method.getName().equals(executeInvokerRequest.getInvokerMethodName())) {
                         int bodyIndex = getParameterIndex(parameterTypes, executeInvokerRequest.getExecutionParametersHolder().getClass());
+
                         if (bodyIndex > -1) {
+
                             OperationScanContext operationScanContext = operationsMethodScanner.scanOperationOnMethod(method);
                             SecurityOperation securityOperation = operationScanContext != null ? securityOperationService.getByIdOrNull(operationScanContext.getSecurityOperationCreate().getIdForCreate(), SecurityOperation.class, null) : null;
                             SecurityOperation original = securityContext.getOperation();
@@ -172,6 +188,8 @@ public class DynamicInvokerService implements Plugin {
                                         parameters[i] = executionContext;
                                     }
                                 }
+                                validateRequestBody(executionParametersHolder, method, bodyIndex);
+
                                 Object ret = AopUtils.isCglibProxy(invoker.getClass()) ? AopUtils.invokeJoinpointUsingReflection(invoker, method, parameters) : method.invoke(invoker, parameters);
                                 ExecuteInvokerResponse<?> e = new ExecuteInvokerResponse<>(invokerName, true, ret);
                                 responses.add(e);
@@ -195,6 +213,24 @@ public class DynamicInvokerService implements Plugin {
         return new ExecuteInvokersResponse(responses);
 
 
+    }
+
+    private void validateRequestBody(Object executionParametersHolder, Method method, int bodyIndex) throws MethodArgumentNotValidException {
+        Parameter parameter = method.getParameters()[bodyIndex];
+        boolean shouldValidate = parameter.isAnnotationPresent(Valid.class);
+        Class<?>[] validationGroups=Optional.ofNullable(parameter.getAnnotation(Validated.class)).map(f->f.value()).orElse(new Class<?>[0]);
+        if(shouldValidate||validationGroups.length>0){
+            DataBinder binder = new DataBinder(executionParametersHolder);
+            binder.addValidators(validator);
+            binder.validate((Object[]) validationGroups);
+            BindingResult br = binder.getBindingResult();
+            if(br.hasErrors()){
+                MethodParameter methodParameter = MethodParameter.forParameter(parameter);
+
+                throw new MethodArgumentNotValidException(methodParameter,br);
+            }
+
+        }
     }
 
     private int getParameterIndex(Class<?>[] parameterTypes, Class<?> aClass) {
