@@ -7,6 +7,7 @@ import com.wizzdi.flexicore.security.service.SecurityOperationService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.web.servlet.error.BasicErrorController;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 import org.springframework.web.method.HandlerMethod;
@@ -38,14 +39,17 @@ public class OperationInterceptor implements HandlerInterceptor {
 			if(handler instanceof HandlerMethod) {
 				HandlerMethod handlerMethod= (HandlerMethod) handler;
 				Method method = handlerMethod.getMethod();
-				String operationId = Baseclass.generateUUIDFromString(method.toString());
-				SecurityOperation securityOperation=securityOperationService.getByIdOrNull(operationId,SecurityOperation.class,null);
-				if(securityOperation==null){
-					logger.error("could not find io operation annotation on method: " + method.getName());
-					response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-					return false;
+				if(!BasicErrorController.class.equals(method.getDeclaringClass())){
+					String operationId = Baseclass.generateUUIDFromString(method.toString());
+					SecurityOperation securityOperation=securityOperationService.getByIdOrNull(operationId,SecurityOperation.class,null);
+					if(securityOperation==null){
+						logger.error("could not find io operation annotation on method: " + method.getName());
+						response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+						return false;
+					}
+					securityContextBase.setOperation(securityOperation);
 				}
-				securityContextBase.setOperation(securityOperation);
+
 
 			}
 		}
