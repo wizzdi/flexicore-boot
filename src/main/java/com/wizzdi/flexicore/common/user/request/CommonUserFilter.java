@@ -3,6 +3,7 @@ package com.wizzdi.flexicore.common.user.request;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.flexicore.model.SecurityTenant;
 import com.wizzdi.flexicore.security.request.SecurityUserFilter;
+import com.wizzdi.flexicore.security.validation.IdValid;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.util.HashSet;
@@ -10,6 +11,7 @@ import java.util.List;
 import java.util.Set;
 
 @Schema(description = "used to receive users filtered by the properties in this object. filtering will be with logical AND")
+@IdValid.List({@IdValid(field ="userSecurityTenantsIds",targetField ="userSecurityTenants",fieldType = SecurityTenant.class)})
 public class CommonUserFilter extends SecurityUserFilter {
 
     private Set<String> emails;

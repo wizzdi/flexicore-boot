@@ -3,14 +3,24 @@ package com.wizzdi.flexicore.common.user.request;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.flexicore.model.User;
 import com.wizzdi.flexicore.security.request.SecurityUserCreate;
+import com.wizzdi.flexicore.security.validation.Create;
+import com.wizzdi.flexicore.security.validation.Update;
 import io.swagger.v3.oas.annotations.media.Schema;
 
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.time.OffsetDateTime;
 
 @Schema(description = "used to create a user")
 public class CommonUserCreate extends SecurityUserCreate {
+    @Email
+    @NotNull(groups = Create.class)
+    @Size(min = 1,max = 255,groups = {Create.class, Update.class})
     private String email;
     private String lastName;
+    @NotNull(groups = Create.class)
+    @Size(min = 1,max = 255,groups = {Create.class, Update.class})
     private String password;
     private String phoneNumber;
     private String uiConfiguration;

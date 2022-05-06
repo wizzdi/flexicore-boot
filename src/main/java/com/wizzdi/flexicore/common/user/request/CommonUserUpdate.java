@@ -2,9 +2,12 @@ package com.wizzdi.flexicore.common.user.request;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.flexicore.model.User;
+import com.wizzdi.flexicore.security.validation.IdValid;
+import com.wizzdi.flexicore.security.validation.Update;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 @Schema(description = "used to update a user ,null/missing properties wont be updated")
+@IdValid.List({@IdValid(fieldType = User.class,field = "id",targetField = "user",groups = Update.class)})
 public class CommonUserUpdate extends CommonUserCreate {
     private String id;
     @JsonIgnore
