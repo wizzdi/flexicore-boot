@@ -60,14 +60,12 @@ public class SecurityOperationRepository implements Plugin {
 
 	@Transactional
 	public <T> T merge(T o){
-		return em.merge(o);
+		return baseclassRepository.merge(o);
 	}
 
 	@Transactional
 	public void massMerge(List<Object> list){
-		for (Object o : list) {
-			em.merge(o);
-		}
+		baseclassRepository.massMerge(list);
 	}
 
 

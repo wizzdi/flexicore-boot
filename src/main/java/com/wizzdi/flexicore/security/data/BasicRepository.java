@@ -134,12 +134,12 @@ public class BasicRepository implements Plugin {
 	}
 
 	@Transactional
-	public void merge(Object base) {
-		merge(base, true);
+	public <T> T merge(T base) {
+		return merge(base, true);
 	}
 
 	@Transactional
-	public void merge(Object base, boolean updateDate) {
+	public <T> T merge(T base, boolean updateDate) {
 		Basic base1 = null;
 		boolean created = false;
 		if (base instanceof Basic) {
@@ -159,7 +159,7 @@ public class BasicRepository implements Plugin {
 
 		}
 
-		em.merge(base);
+		T merged= em.merge(base);
 		if (base1 != null) {
 			if (created) {
 				eventPublisher.publishEvent(new BasicCreated<>(base1));
@@ -168,6 +168,7 @@ public class BasicRepository implements Plugin {
 
 			}
 		}
+		return merged;
 
 	}
 

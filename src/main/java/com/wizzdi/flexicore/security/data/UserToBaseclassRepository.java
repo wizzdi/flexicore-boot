@@ -59,15 +59,13 @@ public class UserToBaseclassRepository implements Plugin {
 	}
 
 	@Transactional
-	public void merge(Object o){
-		em.merge(o);
+	public <T> T merge(T o){
+		return baseclassRepository.merge(o);
 	}
 
 	@Transactional
 	public void massMerge(List<Object> list){
-		for (Object o : list) {
-			em.merge(o);
-		}
+		baseclassRepository.massMerge(list);
 	}
 
 

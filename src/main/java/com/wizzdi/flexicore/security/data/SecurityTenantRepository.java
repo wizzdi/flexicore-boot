@@ -59,14 +59,12 @@ public class SecurityTenantRepository implements Plugin {
 
 	@Transactional
 	public <T> T merge(T o){
-		return em.merge(o);
+		return baseclassRepository.merge(o);
 	}
 
 	@Transactional
 	public void massMerge(List<Object> list){
-		for (Object o : list) {
-			em.merge(o);
-		}
+		baseclassRepository.massMerge(list);
 	}
 
 	public <T extends Baseclass> List<T> listByIds(Class<T> c,Set<String> ids,  SecurityContextBase securityContext) {

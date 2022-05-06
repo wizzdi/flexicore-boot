@@ -484,13 +484,13 @@ public class BaseclassRepository implements Plugin {
 	}
 
 	@Transactional
-	public void merge(Object base) {
-		basicRepository.merge(base);
+	public <T> T merge(T base) {
+		return basicRepository.merge(base);
 	}
 
 	@Transactional
-	public void merge(Object base, boolean updateDate) {
-		basicRepository.merge(base, updateDate);
+	public <T> T merge(T base, boolean updateDate) {
+		return basicRepository.merge(base, updateDate);
 	}
 
 	@Transactional
