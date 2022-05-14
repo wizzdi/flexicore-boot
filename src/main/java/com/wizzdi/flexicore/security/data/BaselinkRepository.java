@@ -43,7 +43,7 @@ public class BaselinkRepository implements Plugin {
 	}
 
 	public <T extends Baselink> void addBaselinkPredicates(BaselinkFilter baselinkFilter, CriteriaBuilder cb, CommonAbstractCriteria q, From<?,T> r, List<Predicate> predicates, SecurityContextBase securityContext) {
-		baseclassRepository.addBaseclassPredicates(cb, q, r, predicates, securityContext);
+		baseclassRepository.addBaseclassPredicates(baselinkFilter.getBasicPropertiesFilter(),cb, q, r, predicates, securityContext);
 		if(baselinkFilter.getLeftside()!=null&&!baselinkFilter.getLeftside().isEmpty()){
 			Set<String> ids=baselinkFilter.getLeftside().stream().map(f->f.getId()).collect(Collectors.toSet());
 			Join<T,Baseclass> join=r.join(Baselink_.leftside);

@@ -6,6 +6,8 @@ import com.flexicore.model.*;
 import com.flexicore.security.SecurityContextBase;
 import com.wizzdi.flexicore.boot.base.interfaces.Plugin;
 import com.wizzdi.flexicore.security.request.BaseclassFilter;
+import com.wizzdi.flexicore.security.request.BasicPropertiesFilter;
+import com.wizzdi.flexicore.security.request.SoftDeleteOption;
 import org.pf4j.Extension;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,6 +45,17 @@ public class BaseclassRepository implements Plugin {
 		return BasicRepository.addPagination(baseclassFilter, q);
 	}
 
+	public <T extends Baseclass> void addBaseclassPredicates(BasicPropertiesFilter basicPropertiesFilter, CriteriaBuilder cb, CommonAbstractCriteria q, From<?, T> r, List<Predicate> predicates, SecurityContextBase securityContextBase) {
+		if(basicPropertiesFilter!=null){
+			BasicRepository.addBasicPropertiesFilter(basicPropertiesFilter,cb,q,r,predicates);
+		}
+		else{
+			BasicRepository.addBasicPropertiesFilter(new BasicPropertiesFilter().setSoftDelete(SoftDeleteOption.DEFAULT),cb,q,r,predicates);
+		}
+		if(securityContextBase!=null){
+			addBaseclassPredicates(cb,q,r,predicates,securityContextBase);
+		}
+	}
 
 	public <T extends Baseclass> void addBaseclassPredicates(CriteriaBuilder cb, CommonAbstractCriteria q, Path<T> r, List<Predicate> predicates, SecurityContextBase securityContext) {
 		if (securityContext == null) {

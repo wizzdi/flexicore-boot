@@ -20,10 +20,7 @@ public class SecurityEntityRepository implements Plugin {
 
 
 	public <T extends Baseclass> void addSecurityEntityPredicates(SecurityEntityFilter securityEntityFilter, CriteriaBuilder cb, CommonAbstractCriteria q, From<?,T> r, List<Predicate> predicates, SecurityContextBase securityContext) {
-		if(securityEntityFilter.getBasicPropertiesFilter()!=null){
-			BasicRepository.addBasicPropertiesFilter(securityEntityFilter.getBasicPropertiesFilter(),cb,q,r,predicates);
-		}
-		baseclassRepository.addBaseclassPredicates(cb,q,r,predicates,securityContext);
+		baseclassRepository.addBaseclassPredicates(securityEntityFilter.getBasicPropertiesFilter(),cb,q,r,predicates,securityContext);
 	}
 
 }

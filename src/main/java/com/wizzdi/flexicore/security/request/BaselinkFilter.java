@@ -18,6 +18,8 @@ import java.util.Set;
 })
 public class BaselinkFilter extends BaseclassFilter {
 
+    private BasicPropertiesFilter basicPropertiesFilter;
+
     @JsonIgnore
     @TypeRetention(Baseclass.class)
     private List<Baseclass> leftside;
@@ -96,6 +98,15 @@ public class BaselinkFilter extends BaseclassFilter {
 
     public <T extends BaselinkFilter> T setValuesIds(Set<String> valuesIds) {
         this.valuesIds = valuesIds;
+        return (T) this;
+    }
+
+    public BasicPropertiesFilter getBasicPropertiesFilter() {
+        return basicPropertiesFilter;
+    }
+
+    public <T extends BaselinkFilter> T setBasicPropertiesFilter(BasicPropertiesFilter basicPropertiesFilter) {
+        this.basicPropertiesFilter = basicPropertiesFilter;
         return (T) this;
     }
 }
