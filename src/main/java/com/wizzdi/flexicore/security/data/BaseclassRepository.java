@@ -502,6 +502,16 @@ public class BaseclassRepository implements Plugin {
 	}
 
 	@Transactional
+	public <T> T merge(T base, boolean updateDate, boolean propagateEvents) {
+		return basicRepository.merge(base, updateDate, propagateEvents);
+	}
+
+	@Transactional
+	public void massMerge(List<?> toMerge, boolean updatedate, boolean propagateEvents) {
+		basicRepository.massMerge(toMerge, updatedate, propagateEvents);
+	}
+
+	@Transactional
 	public <T> T merge(T base, boolean updateDate) {
 		return basicRepository.merge(base, updateDate);
 	}

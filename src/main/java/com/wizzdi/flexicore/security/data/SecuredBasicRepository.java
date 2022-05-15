@@ -54,6 +54,15 @@ public class SecuredBasicRepository implements Plugin {
 		}
 	}
 
+	@Transactional
+	public <T> T merge(T base, boolean updateDate, boolean propagateEvents) {
+		return baseclassRepository.merge(base, updateDate, propagateEvents);
+	}
+
+	@Transactional
+	public void massMerge(List<?> toMerge, boolean updatedate, boolean propagateEvents) {
+		baseclassRepository.massMerge(toMerge, updatedate, propagateEvents);
+	}
 
 	public <T extends Baseclass> List<T> listByIds(Class<T> c, Set<String> ids, SecurityContextBase securityContext) {
 		return baseclassRepository.listByIds(c, ids, securityContext);
