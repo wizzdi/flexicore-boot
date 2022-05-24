@@ -26,6 +26,9 @@ public class SecurityUser extends SecurityEntity {
 	@JsonIgnore
 	@OneToMany(targetEntity = RoleToUser.class,mappedBy = "rightside")
 	private List<RoleToUser> roles=new ArrayList<>();
+	@JsonIgnore
+	@OneToMany(targetEntity = TenantToUser.class,mappedBy = "rightside")
+	private List<TenantToUser> tenants=new ArrayList<>();
 
 	@JsonIgnore
 	@OneToMany(targetEntity = UserToBaseClass.class,mappedBy = "leftside")
@@ -57,6 +60,17 @@ public class SecurityUser extends SecurityEntity {
 
 	public <T extends SecurityUser> T setUserToBaseClasses(List<UserToBaseClass> userToBaseClasses) {
 		this.userToBaseClasses = userToBaseClasses;
+		return (T) this;
+	}
+
+	@JsonIgnore
+	@OneToMany(targetEntity = TenantToUser.class,mappedBy = "rightside")
+	public List<TenantToUser> getTenants() {
+		return tenants;
+	}
+
+	public <T extends SecurityUser> T setTenants(List<TenantToUser> tenants) {
+		this.tenants = tenants;
 		return (T) this;
 	}
 }
