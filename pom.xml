@@ -4,7 +4,7 @@
 
     <groupId>com.wizzdi</groupId>
     <artifactId>flexicore-security-service</artifactId>
-    <version>1.3.4-SNAPSHOT</version>
+    <version>2.0.0-SNAPSHOT</version>
 
     <name>FlexiCore security service</name>
     <description>flexicore security service</description>
@@ -19,22 +19,21 @@
     </licenses>
     <properties>
         <version.compiler.plugin>3.3</version.compiler.plugin>
-        <version.eclipselink>2.7.7</version.eclipselink>
-        <maven.compiler.source>11</maven.compiler.source>
-        <maven.compiler.target>11</maven.compiler.target>
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <pf4j-spring.version>0.7.0</pf4j-spring.version>
-        <swagger.version>2.1.2</swagger.version>
+        <swagger.version>2.2.0</swagger.version>
         <reflections>${project.build.outputDirectory}/META-INF/reflections/${project.artifactId}-reflections.json
         </reflections>
 
-        <spring-boot-dependencies.version>2.6.6</spring-boot-dependencies.version>
-        <flexicore-security-model.version>1.3.1</flexicore-security-model.version>
-        <flexicore-boot.version>1.3.0</flexicore-boot.version>
-        <flexicore-boot-starter-web.version>1.2.0</flexicore-boot-starter-web.version>
-        <flexicore-boot-starter-data-jpa.version>1.2.0</flexicore-boot-starter-data-jpa.version>
-        <flexicore-boot-starter-data-jpa-eclipselink.version>1.2.0</flexicore-boot-starter-data-jpa-eclipselink.version>
-        <flexicore-boot-test-helper.version>1.0.0</flexicore-boot-test-helper.version>
+        <spring-boot-dependencies.version>2.7.0</spring-boot-dependencies.version>
+        <flexicore-security-model.version>2.0.0-SNAPSHOT</flexicore-security-model.version>
+        <flexicore-boot.version>2.0.0-SNAPSHOT</flexicore-boot.version>
+        <flexicore-boot-starter-web.version>2.0.0-SNAPSHOT</flexicore-boot-starter-web.version>
+        <flexicore-boot-starter-data-jpa.version>2.0.0-SNAPSHOT</flexicore-boot-starter-data-jpa.version>
+        <flexicore-boot-starter-data-jpa-eclipselink.version>2.0.0-SNAPSHOT</flexicore-boot-starter-data-jpa-eclipselink.version>
+        <flexicore-boot-test-helper.version>2.0.0-SNAPSHOT</flexicore-boot-test-helper.version>
         <guava.version>31.1-jre</guava.version>
     </properties>
 
