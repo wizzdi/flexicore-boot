@@ -28,6 +28,7 @@
 
         <spring-boot.version>2.7.0</spring-boot.version>
         <flexicore-boot.version>2.0.0-SNAPSHOT</flexicore-boot.version>
+        <flexicore-boot-test-helper.version>2.0.0-SNAPSHOT</flexicore-boot-test-helper.version>
     </properties>
 
     <distributionManagement>
@@ -146,7 +147,7 @@
         <dependency>
             <groupId>com.wizzdi</groupId>
             <artifactId>flexicore-boot-test-helper</artifactId>
-            <version>1.0.0</version>
+            <version>${flexicore-boot-test-helper.version}</version>
             <scope>test</scope>
         </dependency>
 
