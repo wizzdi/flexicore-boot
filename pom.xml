@@ -4,7 +4,7 @@
 
     <groupId>com.wizzdi</groupId>
     <artifactId>dynamic-properties-converter-postgresql</artifactId>
-    <version>1.2.1-SNAPSHOT</version>
+    <version>2.0.0-SNAPSHOT</version>
     <name>Dynamic properties converter postgresql</name>
     <description>Dynamic properties converter postgresql</description>
     <url>https://wizzdi.com</url>
@@ -53,11 +53,11 @@
 
 
     <properties>
-        <maven.compiler.source>11</maven.compiler.source>
-        <maven.compiler.target>11</maven.compiler.target>
-        <spring-boot.version>2.6.6</spring-boot.version>
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
+        <spring-boot.version>2.7.0</spring-boot.version>
 
-        <dynamic-properties-database-converter.version>1.2.0</dynamic-properties-database-converter.version>
+        <dynamic-properties-database-converter.version>2.0.0-SNAPSHOT</dynamic-properties-database-converter.version>
     </properties>
 
     <dependencyManagement>
@@ -102,6 +102,7 @@
             </plugin>
 
             <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>2.22.2</version>
             </plugin>
