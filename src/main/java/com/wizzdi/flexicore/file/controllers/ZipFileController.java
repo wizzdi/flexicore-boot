@@ -6,8 +6,7 @@
  ******************************************************************************/
 package com.wizzdi.flexicore.file.controllers;
 
-import com.flexicore.annotations.IOperation;
-import com.flexicore.annotations.IOperation.Access;
+
 import com.flexicore.annotations.OperationsInside;
 import com.flexicore.security.SecurityContextBase;
 import com.wizzdi.flexicore.boot.base.interfaces.Plugin;
@@ -16,7 +15,6 @@ import com.wizzdi.flexicore.file.request.ZipAndDownloadRequest;
 import com.wizzdi.flexicore.file.service.FileResourceService;
 import com.wizzdi.flexicore.file.service.ZipFileService;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.pf4j.Extension;
 import org.slf4j.Logger;
@@ -25,8 +23,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import javax.servlet.http.HttpServletRequest;
 
 @RestController
 @RequestMapping("/download")
