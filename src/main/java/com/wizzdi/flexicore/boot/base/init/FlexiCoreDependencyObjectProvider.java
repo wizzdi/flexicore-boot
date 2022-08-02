@@ -100,10 +100,13 @@ public class FlexiCoreDependencyObjectProvider implements ObjectProvider<Object>
 		Object result = original.doResolveDependency(descriptor, this.beanName, null, null);
 		if (result == null) {
 			for (DefaultListableBeanFactory defaultListableBeanFactory : getBeanFactories(applicationContexts)) {
-				result = defaultListableBeanFactory.doResolveDependency(descriptor, this.beanName, null, null);
-				if (result != null) {
-					return result;
+				if(original!=defaultListableBeanFactory){
+					result = defaultListableBeanFactory.doResolveDependency(descriptor, this.beanName, null, null);
+					if (result != null) {
+						return result;
+					}
 				}
+
 			}
 			if (throwing) {
 				throw new NoSuchBeanDefinitionException(this.descriptor.getResolvableType());
@@ -198,9 +201,12 @@ public class FlexiCoreDependencyObjectProvider implements ObjectProvider<Object>
 		Object result = original.doResolveDependency(descriptorToUse, this.beanName, null, null);
 		Stream<Object> objectStream = result instanceof Stream ? (Stream<Object>) result : Stream.of(result);
 		for (DefaultListableBeanFactory applicationContext : getBeanFactories(applicationContexts)) {
-			Object resultInner = applicationContext.doResolveDependency(descriptorToUse, this.beanName, null, null);
-			Stream<Object> objectStreamInner = resultInner instanceof Stream ? (Stream<Object>) resultInner : Stream.of(resultInner);
-			objectStream = Stream.concat(objectStream, objectStreamInner);
+			if(original!=applicationContext){
+				Object resultInner = applicationContext.doResolveDependency(descriptorToUse, this.beanName, null, null);
+				Stream<Object> objectStreamInner = resultInner instanceof Stream ? (Stream<Object>) resultInner : Stream.of(resultInner);
+				objectStream = Stream.concat(objectStream, objectStreamInner);
+			}
+
 		}
 		return objectStream;
 	}
@@ -229,11 +235,14 @@ public class FlexiCoreDependencyObjectProvider implements ObjectProvider<Object>
 		Optional<?> o = result instanceof Optional ? (Optional<?>) result : Optional.ofNullable(result);
 		if (o.isEmpty()) {
 			for (DefaultListableBeanFactory applicationContext : getBeanFactories(applicationContexts)) {
-				result = applicationContext.doResolveDependency(descriptorToUse, beanName, null, null);
-				o = result instanceof Optional ? (Optional<?>) result : Optional.ofNullable(result);
-				if (o.isPresent()) {
-					return o;
+				if(original!=applicationContext){
+					result = applicationContext.doResolveDependency(descriptorToUse, beanName, null, null);
+					o = result instanceof Optional ? (Optional<?>) result : Optional.ofNullable(result);
+					if (o.isPresent()) {
+						return o;
+					}
 				}
+
 			}
 		}
 		return o;
