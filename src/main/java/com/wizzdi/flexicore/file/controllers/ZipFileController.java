@@ -54,7 +54,7 @@ public class ZipFileController implements Plugin {
      */
     @PostMapping("zipAndDownload")
     @Operation(summary = "zipAndDownload", description = "Mass Download")
-    public ResponseEntity<Resource> zipAndDownload(ZipAndDownloadRequest zipAndDownload, @RequestAttribute SecurityContextBase securityContext) {
+    public ResponseEntity<Resource> zipAndDownload(@RequestBody ZipAndDownloadRequest zipAndDownload, @RequestAttribute SecurityContextBase securityContext) {
         zipFileService.validate(zipAndDownload, securityContext);
         ZipFile zipFile = zipFileService.zipAndDownload(zipAndDownload, securityContext);
 
@@ -65,7 +65,7 @@ public class ZipFileController implements Plugin {
 
     @PostMapping("getOrCreateZipFile")
     @Operation(summary = "getOrCreateZipFile", description = "getOrCreateZipFile")
-    public ZipFile getOrCreateZipFile(   ZipAndDownloadRequest zipAndDownload, @RequestAttribute SecurityContextBase securityContext) {
+    public ZipFile getOrCreateZipFile(@RequestBody   ZipAndDownloadRequest zipAndDownload, @RequestAttribute SecurityContextBase securityContext) {
         zipFileService.validate(zipAndDownload, securityContext);
         return zipFileService.zipAndDownload(zipAndDownload, securityContext);
     }
