@@ -97,6 +97,9 @@ public class ZipFileService implements Plugin {
 			}
 		}
 		zipAndDownloadRequest.setFileResources(new ArrayList<>(fileResourceMap.values()));
+		if(fileResourceMap.isEmpty()){
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"must contain atleast one file");
+		}
 
 	}
 
