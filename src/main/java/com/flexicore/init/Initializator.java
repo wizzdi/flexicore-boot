@@ -72,15 +72,7 @@ public class Initializator implements ServicePlugin {
     public void getStartingContext(PluginsLoadedEvent pluginsLoadedEvent) throws Exception {
         if(init.compareAndSet(false,true)){
 
-            try {
 
-                defaultObjectsProvider.initializeInvokers();
-
-
-
-            } catch (Exception ex) {
-                logger.error( "Error while initializing the system", ex);
-            }
         }
 
 
@@ -88,20 +80,6 @@ public class Initializator implements ServicePlugin {
     }
 
 
-
-
-    private void createFolderStructure() {
-        for (String path : Arrays.asList(entitiesPath, pluginsPath, uploadPath, usersPath)) {
-            File file = new File(path);
-            if (!file.exists()) {
-                if (!file.mkdirs()) {
-                    logger.warn( "failed creating path: " + file);
-                }
-            }
-        }
-
-
-    }
 
 
 }
