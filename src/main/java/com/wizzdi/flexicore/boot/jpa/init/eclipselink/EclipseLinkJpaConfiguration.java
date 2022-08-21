@@ -53,7 +53,7 @@ public class EclipseLinkJpaConfiguration extends JpaBaseConfiguration {
 
     @Bean
     @Primary
-    public PlatformTransactionManager jpaTransactionManager(ObjectProvider<TransactionManagerCustomizers> transactionManagerCustomizers) {
+    public PlatformTransactionManager transactionManager(ObjectProvider<TransactionManagerCustomizers> transactionManagerCustomizers) {
         JpaTransactionManager transactionManager = new JpaTransactionManager();
         TransactionManagerCustomizers managerCustomizersIfAvailable = transactionManagerCustomizers.getIfAvailable();
         if (managerCustomizersIfAvailable != null) {

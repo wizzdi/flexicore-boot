@@ -13,14 +13,14 @@
     <licenses>
         <license>
             <name>Apache License, Version 2.0</name>
-            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
             <distribution>repo</distribution>
         </license>
     </licenses>
     <properties>
 
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <version.eclipselink>2.7.7</version.eclipselink>
+        <version.eclipselink>2.7.10</version.eclipselink>
 
         <!-- maven-compiler-plugin -->
         <maven.compiler.target>17</maven.compiler.target>
