@@ -56,18 +56,10 @@ import java.util.stream.Collectors;
 @Extension
 public class DynamicInvokersService implements ServicePlugin {
 
-    private static List<InvokerInfo> equipmentHandlersListingCache = null;
-
-    @Lazy
-    @Autowired
-    private PluginManager pluginManager;
 
     @Autowired
     private DynamicInvokersRepository dynamicInvokersRepository;
 
-    @Autowired
-    @Lazy
-    private SecurityService securityService;
 
     @Autowired
     private FileResourceService fileResourceService;

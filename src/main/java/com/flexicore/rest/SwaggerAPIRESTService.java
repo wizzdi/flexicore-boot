@@ -154,9 +154,9 @@ public class SwaggerAPIRESTService extends BaseOpenApiResource implements RESTSe
 
 		SpringDocUtils.getConfig().removeSimpleTypesForParameterObject(SecurityContext.class);
 
-		Method getOpenApi = AbstractOpenApiResource.class.getDeclaredMethod("getOpenApi");
+		Method getOpenApi = AbstractOpenApiResource.class.getDeclaredMethod("getOpenApi",Locale.class);
 		getOpenApi.setAccessible(true);
-		OpenAPI springOpenApi = (OpenAPI) getOpenApi.invoke(openApiResource);
+		OpenAPI springOpenApi = (OpenAPI) getOpenApi.invoke(openApiResource,Locale.getDefault());
 		List<Server> servers = springOpenApi.getServers();
 		if(servers!=null&&!servers.isEmpty()){
 			servers.get(0).setUrl("/");
