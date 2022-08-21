@@ -4,7 +4,7 @@ import com.flexicore.model.Baseclass;
 import com.flexicore.model.Basic;
 import com.flexicore.security.SecurityContextBase;
 import com.wizzdi.flexicore.boot.base.interfaces.Plugin;
-import com.wizzdi.flexicore.file.model.ZipFileToFileResource;
+import com.wizzdi.flexicore.file.model.*;
 import com.wizzdi.flexicore.file.request.ZipFileToFileResourceFilter;
 import com.wizzdi.flexicore.security.data.BaseclassRepository;
 import com.wizzdi.flexicore.security.data.BasicRepository;
@@ -21,6 +21,7 @@ import javax.persistence.metamodel.SingularAttribute;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Component
 @Extension
@@ -48,6 +49,17 @@ public class ZipFileToFileResourceRepository implements Plugin {
 
 		if(zipFileToFileResourceFilter.getBasicPropertiesFilter()!=null){
 			BasicRepository.addBasicPropertiesFilter(zipFileToFileResourceFilter.getBasicPropertiesFilter(),cb,q,r,predicates);
+		}
+		if(zipFileToFileResourceFilter.getZipFiles()!=null&&!zipFileToFileResourceFilter.getZipFiles().isEmpty()){
+			Set<String> ids=zipFileToFileResourceFilter.getZipFiles().stream().map(f->f.getId()).collect(Collectors.toSet());
+			Join<T, ZipFile> join=r.join(ZipFileToFileResource_.zipFile);
+			predicates.add(join.get(ZipFile_.id).in(ids));
+		}
+
+		if(zipFileToFileResourceFilter.getFileResources()!=null&&!zipFileToFileResourceFilter.getFileResources().isEmpty()){
+			Set<String> ids=zipFileToFileResourceFilter.getFileResources().stream().map(f->f.getId()).collect(Collectors.toSet());
+			Join<T, FileResource> join=r.join(ZipFileToFileResource_.zippedFile);
+			predicates.add(join.get(FileResource_.id).in(ids));
 		}
 
 	}

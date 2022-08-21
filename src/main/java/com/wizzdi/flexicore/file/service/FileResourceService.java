@@ -26,9 +26,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.stereotype.Component;
 import org.springframework.util.MimeType;
 import org.springframework.web.server.ResponseStatusException;
@@ -240,11 +238,17 @@ public class FileResourceService implements Plugin {
 					}
 					int available = inputStream.available();
 					long contentLength = size > 0 ? Math.min(available, size) : available;
+					ContentDisposition contentDisposition = ContentDisposition.builder("inline")
+							.filename(name)
+							.build();
+					HttpHeaders httpHeaders=new HttpHeaders();
+					httpHeaders.setContentLength(contentLength);
+					httpHeaders.add("fileName",name);
+					httpHeaders.setContentDisposition(contentDisposition);
+					httpHeaders.setContentType(MediaType.asMediaType(MimeType.valueOf(mimeType)));
 
 					return ResponseEntity.ok()
-							.contentLength(contentLength)
-							.header("fileName", name)
-							.contentType(MediaType.asMediaType(MimeType.valueOf(mimeType)))
+							.headers(httpHeaders)
 							.body(new InputStreamResource(inputStream,name));
 
 				} catch (IOException e) {
