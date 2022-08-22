@@ -11,7 +11,7 @@
     <licenses>
         <license>
             <name>Apache License, Version 2.0</name>
-            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
             <distribution>repo</distribution>
         </license>
     </licenses>
@@ -23,8 +23,6 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <pf4j-spring.version>0.7.0</pf4j-spring.version>
         <swagger.version>2.2.0</swagger.version>
-        <reflections>${project.build.outputDirectory}/META-INF/reflections/${project.artifactId}-reflections.json
-        </reflections>
 
         <spring-boot-dependencies.version>2.7.0</spring-boot-dependencies.version>
         <flexicore-security-model.version>2.0.0-SNAPSHOT</flexicore-security-model.version>
@@ -385,58 +383,12 @@
         </resources>
         <plugins>
             <plugin>
-                <groupId>org.codehaus.gmavenplus</groupId>
-                <artifactId>gmavenplus-plugin</artifactId>
-                <version>1.10.1</version>
-                <executions>
-                    <execution>
-                        <phase>process-classes</phase>
-                        <goals>
-                            <goal>execute</goal>
-                        </goals>
-
-                    </execution>
-                </executions>
-                <configuration>
-                    <scripts>
-
-                        <script><![CDATA[
-                           log.debug("The settings are " + project.properties['reflections'])
-                            if(!new File( project.properties['reflections']).getParentFile().mkdirs()){
-                            log.debug("Failed created dir at "+project.properties['reflections'])
-                            }
-
-                       new org.reflections.Reflections(new org.reflections.util.ConfigurationBuilder().filterInputsBy(new org.reflections.util.FilterBuilder().exclude("^com.flexicore.test.*")).setUrls(org.reflections.util.ClasspathHelper.forPackage("com.flexicore"))
-                    .setScanners(new org.reflections.scanners.TypeAnnotationsScanner(), new org.reflections.scanners.SubTypesScanner(false), new org.reflections.scanners.MethodAnnotationsScanner()))
-                            .save(project.properties['reflections'],new org.reflections.serializers.JsonSerializer())
-
-
-                    ]]></script>
-                    </scripts>
-                </configuration>
-                <dependencies>
-                    <dependency>
-                        <groupId>org.reflections</groupId>
-                        <artifactId>reflections</artifactId>
-                        <!-- use latest version of Reflections -->
-                        <version>${reflections.version}</version>
-                    </dependency>
-                    <!-- https://mvnrepository.com/artifact/org.codehaus.groovy/groovy-all -->
-                    <dependency>
-                        <groupId>org.codehaus.groovy</groupId>
-                        <artifactId>groovy-all</artifactId>
-                        <!-- any version of Groovy \>= 1.5.0 should work here -->
-                        <version>2.4.3</version>
-                        <scope>runtime</scope>
-                    </dependency>
-
-                </dependencies>
-            </plugin>
-            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.8.1</version>
             </plugin>
             <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>2.22.2</version>
             </plugin>
