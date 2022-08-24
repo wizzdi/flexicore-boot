@@ -28,11 +28,11 @@
 
         <spring-boot.version>2.7.0</spring-boot.version>
         <junit-jupiter.version>5.6.2</junit-jupiter.version>
-        <flexicore-boot.version>2.0.0-SNAPSHOT</flexicore-boot.version>
-        <flexicore-boot-starter-actuator.version>2.0.0-SNAPSHOT</flexicore-boot-starter-actuator.version>
-        <flexicore-boot-starter-web.version>2.0.0-SNAPSHOT</flexicore-boot-starter-web.version>
-        <resteasy-flexicore-boot-starter.version>2.0.0-SNAPSHOT</resteasy-flexicore-boot-starter.version>
-        <flexicore-boot-test-helper.version>2.0.0-SNAPSHOT</flexicore-boot-test-helper.version>
+        <flexicore-boot.version>2.0.0</flexicore-boot.version>
+        <flexicore-boot-starter-actuator.version>2.0.0</flexicore-boot-starter-actuator.version>
+        <flexicore-boot-starter-web.version>2.0.0</flexicore-boot-starter-web.version>
+        <resteasy-flexicore-boot-starter.version>2.0.0</resteasy-flexicore-boot-starter.version>
+        <flexicore-boot-test-helper.version>2.0.0</flexicore-boot-test-helper.version>
         <javaee-api.version>8.0</javaee-api.version>
     </properties>
 
@@ -153,7 +153,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.8.1</version>
+                <version>3.10.1</version>
                 <configuration>
                     <forceJavacCompilerUse>true</forceJavacCompilerUse>
 
@@ -182,20 +182,24 @@
                     <dependency>
                         <groupId>org.apache.maven.scm</groupId>
                         <artifactId>maven-scm-provider-gitexe</artifactId>
-                        <version>1.9.5</version>
+                        <version>1.13.0</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.apache.maven.scm</groupId>
+                        <artifactId>maven-scm-api</artifactId>
+                        <version>1.13.0</version>
                     </dependency>
                     <dependency>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-javadoc-plugin</artifactId>
-                        <version>3.2.0</version>
+                        <version>3.4.1</version>
                     </dependency>
-
                 </dependencies>
             </plugin>
             <plugin>
                 <groupId>org.sonatype.plugins</groupId>
                 <artifactId>nexus-staging-maven-plugin</artifactId>
-                <version>1.6.7</version>
+                <version>1.6.13</version>
                 <extensions>true</extensions>
                 <configuration>
                     <serverId>ossrh</serverId>
@@ -220,7 +224,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
-                <version>3.2.0</version>
+                <version>3.4.1</version>
             </plugin>
 
 
