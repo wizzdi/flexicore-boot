@@ -28,7 +28,7 @@
         </reflections>
 
         <spring-boot-dependencies.version>2.7.0</spring-boot-dependencies.version>
-        <flexicore-security-model.version>2.0.0</flexicore-security-model.version>
+        <flexicore-security-model.version>2.0.1</flexicore-security-model.version>
         <flexicore-boot.version>2.0.0</flexicore-boot.version>
         <flexicore-boot-starter-web.version>2.0.0</flexicore-boot-starter-web.version>
         <flexicore-boot-starter-data-jpa.version>2.0.0</flexicore-boot-starter-data-jpa.version>
