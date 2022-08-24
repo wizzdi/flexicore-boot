@@ -22,12 +22,12 @@
 
         <version.eclipselink>2.7.10</version.eclipselink>
         <spring-boot.version>2.7.0</spring-boot.version>
-        <flexicore-security-model.version>2.0.0-SNAPSHOT</flexicore-security-model.version>
-        <flexicore-boot-starter-web.version>2.0.0-SNAPSHOT</flexicore-boot-starter-web.version>
+        <flexicore-security-model.version>2.0.1</flexicore-security-model.version>
+        <flexicore-boot-starter-web.version>2.0.0</flexicore-boot-starter-web.version>
         <swagger-jaxrs2.version>2.2.0</swagger-jaxrs2.version>
-        <flexicore-boot.version>2.0.0-SNAPSHOT</flexicore-boot.version>
-        <dynamic-properties-database-converter.version>2.0.0-SNAPSHOT</dynamic-properties-database-converter.version>
-        <flexicore-boot-starter-data-jpa.version>2.0.0-SNAPSHOT</flexicore-boot-starter-data-jpa.version>
+        <flexicore-boot.version>2.0.0</flexicore-boot.version>
+        <dynamic-properties-database-converter.version>2.0.0</dynamic-properties-database-converter.version>
+        <flexicore-boot-starter-data-jpa.version>2.0.0</flexicore-boot-starter-data-jpa.version>
 
     </properties>
     <distributionManagement>
@@ -115,37 +115,11 @@
     </dependencies>
 
     <build>
-        <resources>
-
-            <resource>
-                <directory>src/main/filtered</directory>
-                <filtering>true</filtering>
-            </resource>
-            <resource>
-                <directory>.</directory>
-                <includes>
-                    <include>pom.xml</include>
-                </includes>
-            </resource>
-            <resource>
-                <directory>src/main/resources</directory>
-            </resource>
-        </resources>
         <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.8.1</version>
-                <configuration>
-                    <source>${maven.compiler.source}</source>
-                    <target>${maven.compiler.target}</target>
-                </configuration>
-            </plugin>
             <plugin>
                 <groupId>org.bsc.maven</groupId>
                 <artifactId>maven-processor-plugin</artifactId>
-                <version>3.3.3</version>
+                <version>4.5</version>
                 <executions>
                     <execution>
                         <id>eclipselink-jpa-metamodel</id>
@@ -166,18 +140,18 @@
                     </execution>
                 </executions>
                 <dependencies>
-
                     <dependency>
                         <groupId>org.eclipse.persistence</groupId>
                         <artifactId>org.eclipse.persistence.jpa.modelgen.processor</artifactId>
                         <version>${version.eclipselink}</version>
                     </dependency>
+
                 </dependencies>
             </plugin>
             <plugin>
                 <groupId>com.wizzdi</groupId>
                 <artifactId>metamodel-inheritence-fix-processor</artifactId>
-                <version>1.0.1</version>
+                <version>2.0.0-SNAPSHOT</version>
                 <executions>
                     <execution>
                         <id>flexicore</id>
@@ -188,6 +162,24 @@
                     </execution>
                 </executions>
             </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.10.1</version>
+                <configuration>
+                    <forceJavacCompilerUse>true</forceJavacCompilerUse>
+
+                    <source>${maven.compiler.source}</source>
+                    <target>${maven.compiler.target}</target>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>2.22.2</version>
+            </plugin>
+
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-release-plugin</artifactId>
@@ -202,19 +194,24 @@
                     <dependency>
                         <groupId>org.apache.maven.scm</groupId>
                         <artifactId>maven-scm-provider-gitexe</artifactId>
-                        <version>1.9.5</version>
+                        <version>1.13.0</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.apache.maven.scm</groupId>
+                        <artifactId>maven-scm-api</artifactId>
+                        <version>1.13.0</version>
                     </dependency>
                     <dependency>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-javadoc-plugin</artifactId>
-                        <version>3.2.0</version>
+                        <version>3.4.1</version>
                     </dependency>
                 </dependencies>
             </plugin>
             <plugin>
                 <groupId>org.sonatype.plugins</groupId>
                 <artifactId>nexus-staging-maven-plugin</artifactId>
-                <version>1.6.7</version>
+                <version>1.6.13</version>
                 <extensions>true</extensions>
                 <configuration>
                     <serverId>ossrh</serverId>
@@ -231,11 +228,33 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
-                <version>3.2.0</version>
+                <version>3.4.1</version>
             </plugin>
 
-        </plugins>
 
+        </plugins>
+        <resources>
+
+            <resource>
+                <directory>src/main/filtered</directory>
+                <filtering>true</filtering>
+
+            </resource>
+
+            <resource>
+                <directory>.</directory>
+                <includes>
+                    <include>pom.xml</include>
+                </includes>
+
+            </resource>
+
+            <resource>
+                <directory>src/main/resources</directory>
+
+            </resource>
+
+        </resources>
     </build>
     <profiles>
         <!-- GPG Signature on release -->
@@ -267,6 +286,7 @@
             </build>
         </profile>
     </profiles>
+
 
 
 </project>

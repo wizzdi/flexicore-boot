@@ -24,6 +24,8 @@ import javax.persistence.Table;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import com.flexicore.model.SecurityUser;
+
 
 //the table name 'user' isn't allowed in Postgresql
 @SuppressWarnings("serial")
