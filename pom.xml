@@ -28,12 +28,12 @@
         </reflections>
 
         <spring-boot-dependencies.version>2.7.0</spring-boot-dependencies.version>
-        <flexicore-security-model.version>2.0.0-SNAPSHOT</flexicore-security-model.version>
-        <flexicore-boot.version>2.0.0-SNAPSHOT</flexicore-boot.version>
-        <flexicore-boot-starter-web.version>2.0.0-SNAPSHOT</flexicore-boot-starter-web.version>
-        <flexicore-boot-starter-data-jpa.version>2.0.0-SNAPSHOT</flexicore-boot-starter-data-jpa.version>
-        <flexicore-boot-starter-data-jpa-eclipselink.version>2.0.0-SNAPSHOT</flexicore-boot-starter-data-jpa-eclipselink.version>
-        <flexicore-boot-test-helper.version>2.0.0-SNAPSHOT</flexicore-boot-test-helper.version>
+        <flexicore-security-model.version>2.0.0</flexicore-security-model.version>
+        <flexicore-boot.version>2.0.0</flexicore-boot.version>
+        <flexicore-boot-starter-web.version>2.0.0</flexicore-boot-starter-web.version>
+        <flexicore-boot-starter-data-jpa.version>2.0.0</flexicore-boot-starter-data-jpa.version>
+        <flexicore-boot-starter-data-jpa-eclipselink.version>2.0.0</flexicore-boot-starter-data-jpa-eclipselink.version>
+        <flexicore-boot-test-helper.version>2.0.0</flexicore-boot-test-helper.version>
         <guava.version>31.1-jre</guava.version>
     </properties>
 
@@ -189,28 +189,19 @@
 
     </dependencies>
     <build>
-        <resources>
-
-            <resource>
-                <directory>src/main/filtered</directory>
-                <filtering>true</filtering>
-            </resource>
-            <resource>
-                <directory>.</directory>
-                <includes>
-                    <include>pom.xml</include>
-                </includes>
-            </resource>
-            <resource>
-                <directory>src/main/resources</directory>
-            </resource>
-        </resources>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.8.1</version>
+                <version>3.10.1</version>
+                <configuration>
+                    <forceJavacCompilerUse>true</forceJavacCompilerUse>
+
+                    <source>${maven.compiler.source}</source>
+                    <target>${maven.compiler.target}</target>
+                </configuration>
             </plugin>
+
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
@@ -225,25 +216,30 @@
                     <localCheckout>true</localCheckout>
                     <pushChanges>false</pushChanges>
                     <mavenExecutorId>forked-path</mavenExecutorId>
-<!--                    <arguments>-Dgpg.passphrase=${gpg.passphrase}</arguments>-->
+                    <arguments>-Dgpg.passphrase=${gpg.passphrase}</arguments>
                 </configuration>
                 <dependencies>
                     <dependency>
                         <groupId>org.apache.maven.scm</groupId>
                         <artifactId>maven-scm-provider-gitexe</artifactId>
-                        <version>1.9.5</version>
+                        <version>1.13.0</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.apache.maven.scm</groupId>
+                        <artifactId>maven-scm-api</artifactId>
+                        <version>1.13.0</version>
                     </dependency>
                     <dependency>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-javadoc-plugin</artifactId>
-                        <version>3.2.0</version>
+                        <version>3.4.1</version>
                     </dependency>
                 </dependencies>
             </plugin>
             <plugin>
                 <groupId>org.sonatype.plugins</groupId>
                 <artifactId>nexus-staging-maven-plugin</artifactId>
-                <version>1.6.7</version>
+                <version>1.6.13</version>
                 <extensions>true</extensions>
                 <configuration>
                     <serverId>ossrh</serverId>
@@ -268,12 +264,34 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
-                <version>3.2.0</version>
+                <version>3.4.1</version>
             </plugin>
 
-        </plugins>
-    </build>
 
+        </plugins>
+        <resources>
+
+            <resource>
+                <directory>src/main/filtered</directory>
+                <filtering>true</filtering>
+
+            </resource>
+
+            <resource>
+                <directory>.</directory>
+                <includes>
+                    <include>pom.xml</include>
+                </includes>
+
+            </resource>
+
+            <resource>
+                <directory>src/main/resources</directory>
+
+            </resource>
+
+        </resources>
+    </build>
     <profiles>
         <!-- GPG Signature on release -->
         <profile>
@@ -304,5 +322,7 @@
             </build>
         </profile>
     </profiles>
+
+
 
 </project>
