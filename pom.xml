@@ -4,7 +4,7 @@
 
     <groupId>com.wizzdi</groupId>
     <artifactId>flexicore-boot</artifactId>
-    <version>2.0.0-SNAPSHOT.TEST</version>
+    <version>2.0.0-SNAPSHOT</version>
     <name>FlexiCore Boot</name>
     <description>flexicore boot</description>
     <url>https://wizzdi.com</url>
@@ -59,7 +59,7 @@
         <connection>scm:git:git://wizzdi/flexicore-boot.git</connection>
         <developerConnection>scm:git:git@github.com:wizzdi/flexicore-boot.git</developerConnection>
         <url>https://github.com/wizzdi/flexicore-boot</url>
-        <tag>FlexiCore-Boot-${version}</tag>
+        <tag>FlexiCore-Boot-${project.version}</tag>
     </scm>
 
     <dependencyManagement>
@@ -78,6 +78,12 @@
     <dependencies>
         <dependency>
             <groupId>org.pf4j</groupId>
+            <artifactId>pf4j</artifactId>
+            <version>3.7.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.pf4j</groupId>
             <artifactId>pf4j-spring</artifactId>
             <version>${pf4j-spring.version}</version>
             <exclusions>
@@ -92,6 +98,10 @@
                 <exclusion>
                     <artifactId>spring-core</artifactId>
                     <groupId>org.springframework</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>pf4j</artifactId>
+                    <groupId>org.pf4j</groupId>
                 </exclusion>
             </exclusions>
         </dependency>
@@ -129,7 +139,7 @@
         <dependency>
             <groupId>com.wizzdi</groupId>
             <artifactId>flexicore-boot-test-helper</artifactId>
-            <version>1.0.0</version>
+            <version>2.0.0-SNAPSHOT</version>
             <scope>test</scope>
         </dependency>
 
@@ -139,7 +149,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.8.1</version>
+                <version>3.10.1</version>
                 <configuration>
                     <forceJavacCompilerUse>true</forceJavacCompilerUse>
 
@@ -168,19 +178,19 @@
                     <dependency>
                         <groupId>org.apache.maven.scm</groupId>
                         <artifactId>maven-scm-provider-gitexe</artifactId>
-                        <version>1.9.5</version>
+                        <version>1.13.0</version>
                     </dependency>
                     <dependency>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-javadoc-plugin</artifactId>
-                        <version>3.2.0</version>
+                        <version>3.4.1</version>
                     </dependency>
                 </dependencies>
             </plugin>
             <plugin>
                 <groupId>org.sonatype.plugins</groupId>
                 <artifactId>nexus-staging-maven-plugin</artifactId>
-                <version>1.6.7</version>
+                <version>1.6.13</version>
                 <extensions>true</extensions>
                 <configuration>
                     <serverId>ossrh</serverId>
@@ -205,7 +215,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
-                <version>3.2.0</version>
+                <version>3.4.1</version>
             </plugin>
 
 
