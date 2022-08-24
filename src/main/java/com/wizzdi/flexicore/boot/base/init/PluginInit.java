@@ -10,6 +10,8 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
+import org.springframework.boot.autoconfigure.AutoConfigureBefore;
+import org.springframework.boot.autoconfigure.AutoConfigureOrder;
 import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationEventPublisher;
@@ -28,6 +30,7 @@ import java.util.stream.Collectors;
 @Configuration
 @ComponentScan(basePackages = "com.wizzdi.flexicore.boot.base")
 @Scope(value = ConfigurableBeanFactory.SCOPE_SINGLETON)
+@AutoConfigureOrder(value =Integer.MIN_VALUE)
 public class PluginInit  {
 
     private static final Logger logger = LoggerFactory.getLogger(PluginInit.class);

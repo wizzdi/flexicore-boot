@@ -20,13 +20,13 @@ public class FlexiCorePluginManager extends SpringPluginManager {
 
 	private static final Logger logger = LoggerFactory.getLogger(FlexiCorePluginManager.class);
 	private static final AtomicBoolean init = new AtomicBoolean(false);
-	private ObjectProvider<ContextCustomizer> applicationCustomizers;
+	private Iterable<ContextCustomizer> applicationCustomizers;
 
 
 	public FlexiCorePluginManager() {
 	}
 
-	public FlexiCorePluginManager(Path pluginsRoot, ObjectProvider<ContextCustomizer> applicationCustomizers) {
+	public FlexiCorePluginManager(Path pluginsRoot, Iterable<ContextCustomizer> applicationCustomizers) {
 		super(pluginsRoot);
 		this.applicationCustomizers = applicationCustomizers;
 	}
@@ -36,7 +36,7 @@ public class FlexiCorePluginManager extends SpringPluginManager {
 		return new FlexiCoreExtensionFactory(this);
 	}
 
-	public ObjectProvider<ContextCustomizer> getApplicationCustomizers() {
+	public Iterable<ContextCustomizer> getApplicationCustomizers() {
 		return applicationCustomizers;
 	}
 
