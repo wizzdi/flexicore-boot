@@ -25,8 +25,8 @@
         <swagger.version>2.2.0</swagger.version>
 
         <spring-boot-dependencies.version>2.7.0</spring-boot-dependencies.version>
-        <flexicore-security-model.version>2.0.0-SNAPSHOT</flexicore-security-model.version>
-        <flexicore-security-service.version>2.0.0-SNAPSHOT</flexicore-security-service.version>
+        <flexicore-security-model.version>2.0.1</flexicore-security-model.version>
+        <flexicore-security-service.version>2.0.1</flexicore-security-service.version>
         <springdoc-openapi-webmvc-core.version>1.6.7</springdoc-openapi-webmvc-core.version>
         <totp-spring-boot-starter.version>1.7.1</totp-spring-boot-starter.version>
         <gson.version>2.9.0</gson.version>
@@ -41,20 +41,20 @@
         <commons-io.version>2.11.0</commons-io.version>
         <commons-csv.version>1.9.0</commons-csv.version>
         <jjwt.version>0.9.1</jjwt.version>
-        <flexicore-boot-dynamic-invokers-model.version>2.0.0-SNAPSHOT</flexicore-boot-dynamic-invokers-model.version>
-        <flexicore-boot-starter-websocket.version>2.0.0-SNAPSHOT</flexicore-boot-starter-websocket.version>
-        <flexicore-boot-dynamic-invokers-service.version>2.0.0-SNAPSHOT</flexicore-boot-dynamic-invokers-service.version>
-        <flexicore-base-model.version>3.0.0-SNAPSHOT</flexicore-base-model.version>
-        <flexicore-file-service.version>2.0.0-SNAPSHOT</flexicore-file-service.version>
+        <flexicore-boot-dynamic-invokers-model.version>2.0.0</flexicore-boot-dynamic-invokers-model.version>
+        <flexicore-boot-starter-websocket.version>2.0.0</flexicore-boot-starter-websocket.version>
+        <flexicore-boot-dynamic-invokers-service.version>2.0.0</flexicore-boot-dynamic-invokers-service.version>
+        <flexicore-base-model.version>3.0.0</flexicore-base-model.version>
+        <flexicore-file-service.version>2.0.0</flexicore-file-service.version>
         <javaee-api.version>8.0</javaee-api.version>
-        <flexicore-boot.version>2.0.0-SNAPSHOT</flexicore-boot.version>
-        <flexicore-boot-vintage.version>2.0.0-SNAPSHOT</flexicore-boot-vintage.version>
-        <resteasy-flexicore-boot-starter.version>2.0.0-SNAPSHOT</resteasy-flexicore-boot-starter.version>
-        <flexicore-boot-starter-web.version>2.0.0-SNAPSHOT</flexicore-boot-starter-web.version>
-        <flexicore-boot-starter-actuator.version>2.0.0-SNAPSHOT</flexicore-boot-starter-actuator.version>
-        <flexicore-boot-starter-data-jpa.version>2.0.0-SNAPSHOT</flexicore-boot-starter-data-jpa.version>
-        <dynamic-properties-converter-postgresql.version>2.0.0-SNAPSHOT</dynamic-properties-converter-postgresql.version>
-        <flexicore-boot-starter-data-jpa-eclipselink.version>2.0.0-SNAPSHOT</flexicore-boot-starter-data-jpa-eclipselink.version>
+        <flexicore-boot.version>2.0.0</flexicore-boot.version>
+        <flexicore-boot-vintage.version>2.0.0</flexicore-boot-vintage.version>
+        <resteasy-flexicore-boot-starter.version>2.0.0</resteasy-flexicore-boot-starter.version>
+        <flexicore-boot-starter-web.version>2.0.0</flexicore-boot-starter-web.version>
+        <flexicore-boot-starter-actuator.version>2.0.0</flexicore-boot-starter-actuator.version>
+        <flexicore-boot-starter-data-jpa.version>2.0.0</flexicore-boot-starter-data-jpa.version>
+        <dynamic-properties-converter-postgresql.version>2.0.0</dynamic-properties-converter-postgresql.version>
+        <flexicore-boot-starter-data-jpa-eclipselink.version>2.0.0</flexicore-boot-starter-data-jpa-eclipselink.version>
 
     </properties>
 
@@ -365,32 +365,28 @@
         </dependency>
     </dependencies>
     <build>
-        <resources>
-
-            <resource>
-                <directory>src/main/filtered</directory>
-                <filtering>true</filtering>
-            </resource>
-            <resource>
-                <directory>.</directory>
-                <includes>
-                    <include>pom.xml</include>
-                </includes>
-            </resource>
-            <resource>
-                <directory>src/main/resources</directory>
-            </resource>
-        </resources>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.8.1</version>
+                <version>3.10.1</version>
+                <configuration>
+                    <forceJavacCompilerUse>true</forceJavacCompilerUse>
+
+                    <source>${maven.compiler.source}</source>
+                    <target>${maven.compiler.target}</target>
+                </configuration>
             </plugin>
+
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>2.22.2</version>
+                <configuration>
+                    <argLine>
+                        --add-opens java.base/java.lang=ALL-UNNAMED --add-opens java.base/java.lang.reflect=ALL-UNNAMED --add-opens java.base/sun.reflect.annotation=ALL-UNNAMED
+                    </argLine>
+                </configuration>
             </plugin>
 
             <plugin>
@@ -407,19 +403,24 @@
                     <dependency>
                         <groupId>org.apache.maven.scm</groupId>
                         <artifactId>maven-scm-provider-gitexe</artifactId>
-                        <version>1.9.5</version>
+                        <version>1.13.0</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.apache.maven.scm</groupId>
+                        <artifactId>maven-scm-api</artifactId>
+                        <version>1.13.0</version>
                     </dependency>
                     <dependency>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-javadoc-plugin</artifactId>
-                        <version>3.2.0</version>
+                        <version>3.4.1</version>
                     </dependency>
                 </dependencies>
             </plugin>
             <plugin>
                 <groupId>org.sonatype.plugins</groupId>
                 <artifactId>nexus-staging-maven-plugin</artifactId>
-                <version>1.6.7</version>
+                <version>1.6.13</version>
                 <extensions>true</extensions>
                 <configuration>
                     <serverId>ossrh</serverId>
@@ -444,12 +445,34 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
-                <version>3.2.0</version>
+                <version>3.4.1</version>
             </plugin>
 
-        </plugins>
-    </build>
 
+        </plugins>
+        <resources>
+
+            <resource>
+                <directory>src/main/filtered</directory>
+                <filtering>true</filtering>
+
+            </resource>
+
+            <resource>
+                <directory>.</directory>
+                <includes>
+                    <include>pom.xml</include>
+                </includes>
+
+            </resource>
+
+            <resource>
+                <directory>src/main/resources</directory>
+
+            </resource>
+
+        </resources>
+    </build>
     <profiles>
         <!-- GPG Signature on release -->
         <profile>
@@ -480,4 +503,6 @@
             </build>
         </profile>
     </profiles>
+
+
 </project>
