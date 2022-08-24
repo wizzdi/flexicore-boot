@@ -4,7 +4,7 @@
 
     <groupId>com.wizzdi</groupId>
     <artifactId>flexicore-boot-test-helper</artifactId>
-    <version>2.0.0</version>
+    <version>2.0.1-SNAPSHOT</version>
 
     <properties>
         <maven.compiler.source>17</maven.compiler.source>
@@ -53,7 +53,7 @@
         <connection>scm:git:git://wizzdi/flexicore-boot-test-helper.git</connection>
         <developerConnection>scm:git:git@github.com:wizzdi/flexicore-boot-test-helper.git</developerConnection>
         <url>https://github.com/wizzdi/flexicore-boot-test-helper</url>
-        <tag>flexicore-boot-test-helper-2.0.0</tag>
+        <tag>flexicore-boot-test-helper-${version}</tag>
     </scm>
     <dependencies>
         <dependency>
