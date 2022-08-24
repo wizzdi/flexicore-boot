@@ -27,7 +27,7 @@
         <pf4j-spring.version>0.7.0</pf4j-spring.version>
 
         <spring-boot.version>2.7.0</spring-boot.version>
-        <flexicore-boot.version>2.0.0-SNAPSHOT</flexicore-boot.version>
+        <flexicore-boot.version>2.0.0-SNAPSHOT.TEST</flexicore-boot.version>
         <flexicore-boot-test-helper.version>2.0.0-SNAPSHOT</flexicore-boot-test-helper.version>
     </properties>
 
