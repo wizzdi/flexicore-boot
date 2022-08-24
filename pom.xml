@@ -4,7 +4,7 @@
 
     <groupId>com.wizzdi</groupId>
     <artifactId>flexicore-security-model</artifactId>
-    <version>2.0.0</version>
+    <version>2.0.1-SNAPSHOT</version>
     <name>FlexiCore security model</name>
     <description>flexicore security model</description>
     <url>https://wizzdi.com</url>
@@ -59,7 +59,7 @@
         <connection>scm:git:git://wizzdi/flexicore-security-model.git</connection>
         <developerConnection>scm:git:git@github.com:wizzdi/flexicore-security-model.git</developerConnection>
         <url>https://github.com/wizzdi/flexicore-security-model</url>
-        <tag>flexicore-security-model-2.0.0</tag>
+        <tag>flexicore-security-model-${version}</tag>
     </scm>
     <dependencyManagement>
         <dependencies>
