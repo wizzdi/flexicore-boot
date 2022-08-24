@@ -26,10 +26,10 @@
         <version.eclipselink>2.7.7</version.eclipselink>
 
 
-        <flexicore-security-service.version>2.0.0-SNAPSHOT</flexicore-security-service.version>
-        <flexicore-security-model.version>2.0.0-SNAPSHOT</flexicore-security-model.version>
-        <flexicore-boot-starter-data-jpa.version>2.0.0-SNAPSHOT</flexicore-boot-starter-data-jpa.version>
-        <flexicore-boot-starter-data-jpa-eclipselink.version>2.0.0-SNAPSHOT</flexicore-boot-starter-data-jpa-eclipselink.version>
+        <flexicore-security-service.version>2.0.0</flexicore-security-service.version>
+        <flexicore-security-model.version>2.0.1</flexicore-security-model.version>
+        <flexicore-boot-starter-data-jpa.version>2.0.0</flexicore-boot-starter-data-jpa.version>
+        <flexicore-boot-starter-data-jpa-eclipselink.version>2.0.0</flexicore-boot-starter-data-jpa-eclipselink.version>
     </properties>
     <distributionManagement>
         <snapshotRepository>
@@ -142,30 +142,20 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
-
     <build>
-        <resources>
-
-            <resource>
-                <directory>src/main/filtered</directory>
-                <filtering>true</filtering>
-            </resource>
-            <resource>
-                <directory>.</directory>
-                <includes>
-                    <include>pom.xml</include>
-                </includes>
-            </resource>
-            <resource>
-                <directory>src/main/resources</directory>
-            </resource>
-        </resources>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.8.1</version>
+                <version>3.10.1</version>
+                <configuration>
+                    <forceJavacCompilerUse>true</forceJavacCompilerUse>
+
+                    <source>${maven.compiler.source}</source>
+                    <target>${maven.compiler.target}</target>
+                </configuration>
             </plugin>
+
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
@@ -186,19 +176,24 @@
                     <dependency>
                         <groupId>org.apache.maven.scm</groupId>
                         <artifactId>maven-scm-provider-gitexe</artifactId>
-                        <version>1.9.5</version>
+                        <version>1.13.0</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.apache.maven.scm</groupId>
+                        <artifactId>maven-scm-api</artifactId>
+                        <version>1.13.0</version>
                     </dependency>
                     <dependency>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-javadoc-plugin</artifactId>
-                        <version>3.2.0</version>
+                        <version>3.4.1</version>
                     </dependency>
                 </dependencies>
             </plugin>
             <plugin>
                 <groupId>org.sonatype.plugins</groupId>
                 <artifactId>nexus-staging-maven-plugin</artifactId>
-                <version>1.6.7</version>
+                <version>1.6.13</version>
                 <extensions>true</extensions>
                 <configuration>
                     <serverId>ossrh</serverId>
@@ -223,12 +218,34 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
-                <version>3.2.0</version>
+                <version>3.4.1</version>
             </plugin>
 
-        </plugins>
-    </build>
 
+        </plugins>
+        <resources>
+
+            <resource>
+                <directory>src/main/filtered</directory>
+                <filtering>true</filtering>
+
+            </resource>
+
+            <resource>
+                <directory>.</directory>
+                <includes>
+                    <include>pom.xml</include>
+                </includes>
+
+            </resource>
+
+            <resource>
+                <directory>src/main/resources</directory>
+
+            </resource>
+
+        </resources>
+    </build>
     <profiles>
         <!-- GPG Signature on release -->
         <profile>
@@ -259,5 +276,6 @@
             </build>
         </profile>
     </profiles>
+
 
 </project>
