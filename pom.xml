@@ -27,14 +27,14 @@
         <pf4j-spring.version>0.7.0</pf4j-spring.version>
 
         <spring-boot.version>2.7.0</spring-boot.version>
-        <flexicore-boot-dynamic-invokers-model.version>2.0.0-SNAPSHOT</flexicore-boot-dynamic-invokers-model.version>
-        <flexicore-boot-starter-data-jpa.version>2.0.0-SNAPSHOT</flexicore-boot-starter-data-jpa.version>
-        <flexicore-boot-starter-web.version>2.0.0-SNAPSHOT</flexicore-boot-starter-web.version>
-        <flexicore-security-model.version>2.0.0-SNAPSHOT</flexicore-security-model.version>
-        <flexicore-security-service.version>2.0.0-SNAPSHOT</flexicore-security-service.version>
-        <flexicore-boot.version>2.0.0-SNAPSHOT</flexicore-boot.version>
-        <flexicore-boot-test-helper.version>2.0.0-SNAPSHOT</flexicore-boot-test-helper.version>
-        <flexicore-boot-starter-data-jpa-eclipselink.version>2.0.0-SNAPSHOT</flexicore-boot-starter-data-jpa-eclipselink.version>
+        <flexicore-boot-dynamic-invokers-model.version>2.0.0</flexicore-boot-dynamic-invokers-model.version>
+        <flexicore-boot-starter-data-jpa.version>2.0.0</flexicore-boot-starter-data-jpa.version>
+        <flexicore-boot-starter-web.version>2.0.0</flexicore-boot-starter-web.version>
+        <flexicore-security-model.version>2.0.1</flexicore-security-model.version>
+        <flexicore-security-service.version>2.0.1</flexicore-security-service.version>
+        <flexicore-boot.version>2.0.0</flexicore-boot.version>
+        <flexicore-boot-test-helper.version>2.0.0</flexicore-boot-test-helper.version>
+        <flexicore-boot-starter-data-jpa-eclipselink.version>2.0.0</flexicore-boot-starter-data-jpa-eclipselink.version>
     </properties>
 
     <distributionManagement>
@@ -188,7 +188,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.8.1</version>
+                <version>3.10.1</version>
                 <configuration>
                     <forceJavacCompilerUse>true</forceJavacCompilerUse>
 
@@ -217,19 +217,24 @@
                     <dependency>
                         <groupId>org.apache.maven.scm</groupId>
                         <artifactId>maven-scm-provider-gitexe</artifactId>
-                        <version>1.9.5</version>
+                        <version>1.13.0</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.apache.maven.scm</groupId>
+                        <artifactId>maven-scm-api</artifactId>
+                        <version>1.13.0</version>
                     </dependency>
                     <dependency>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-javadoc-plugin</artifactId>
-                        <version>3.2.0</version>
+                        <version>3.4.1</version>
                     </dependency>
                 </dependencies>
             </plugin>
             <plugin>
                 <groupId>org.sonatype.plugins</groupId>
                 <artifactId>nexus-staging-maven-plugin</artifactId>
-                <version>1.6.7</version>
+                <version>1.6.13</version>
                 <extensions>true</extensions>
                 <configuration>
                     <serverId>ossrh</serverId>
@@ -254,7 +259,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
-                <version>3.2.0</version>
+                <version>3.4.1</version>
             </plugin>
 
 
@@ -312,5 +317,6 @@
             </build>
         </profile>
     </profiles>
+
 
 </project>
