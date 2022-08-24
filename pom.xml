@@ -25,16 +25,16 @@
    
 
         <spring-boot-dependencies.version>2.7.0</spring-boot-dependencies.version>
-        <flexicore-security-model.version>2.0.0-SNAPSHOT</flexicore-security-model.version>
-        <flexicore-security-service.version>2.0.0-SNAPSHOT</flexicore-security-service.version>
+        <flexicore-security-model.version>2.0.1</flexicore-security-model.version>
+        <flexicore-security-service.version>2.0.1</flexicore-security-service.version>
 
         <scrypt.version>1.4.0</scrypt.version>
 
-        <flexicore-common-user-model.version>2.0.0-SNAPSHOT</flexicore-common-user-model.version>
-        <flexicore-boot.version>2.0.0-SNAPSHOT</flexicore-boot.version>
-        <flexicore-boot-starter-web.version>2.0.0-SNAPSHOT</flexicore-boot-starter-web.version>
-        <flexicore-boot-starter-data-jpa.version>2.0.0-SNAPSHOT</flexicore-boot-starter-data-jpa.version>
-        <flexicore-boot-starter-data-jpa-eclipselink.version>2.0.0-SNAPSHOT</flexicore-boot-starter-data-jpa-eclipselink.version>
+        <flexicore-common-user-model.version>2.0.0</flexicore-common-user-model.version>
+        <flexicore-boot.version>2.0.0</flexicore-boot.version>
+        <flexicore-boot-starter-web.version>2.0.0</flexicore-boot-starter-web.version>
+        <flexicore-boot-starter-data-jpa.version>2.0.0</flexicore-boot-starter-data-jpa.version>
+        <flexicore-boot-starter-data-jpa-eclipselink.version>2.0.0</flexicore-boot-starter-data-jpa-eclipselink.version>
         <tink.version>1.6.1</tink.version>
 
     </properties>
@@ -179,31 +179,21 @@
         </dependency>
     </dependencies>
     <build>
-        <resources>
-
-            <resource>
-                <directory>src/main/filtered</directory>
-                <filtering>true</filtering>
-            </resource>
-            <resource>
-                <directory>.</directory>
-                <includes>
-                    <include>pom.xml</include>
-                </includes>
-            </resource>
-            <resource>
-                <directory>src/main/resources</directory>
-            </resource>
-        </resources>
         <plugins>
-          
             <plugin>
-			    <groupId>org.apache.maven.plugins</groupId>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.8.1</version>
+                <version>3.10.1</version>
+                <configuration>
+                    <forceJavacCompilerUse>true</forceJavacCompilerUse>
+
+                    <source>${maven.compiler.source}</source>
+                    <target>${maven.compiler.target}</target>
+                </configuration>
             </plugin>
+
             <plugin>
-			    <groupId>org.apache.maven.plugins</groupId>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>2.22.2</version>
             </plugin>
@@ -222,19 +212,24 @@
                     <dependency>
                         <groupId>org.apache.maven.scm</groupId>
                         <artifactId>maven-scm-provider-gitexe</artifactId>
-                        <version>1.9.5</version>
+                        <version>1.13.0</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.apache.maven.scm</groupId>
+                        <artifactId>maven-scm-api</artifactId>
+                        <version>1.13.0</version>
                     </dependency>
                     <dependency>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-javadoc-plugin</artifactId>
-                        <version>3.2.0</version>
+                        <version>3.4.1</version>
                     </dependency>
                 </dependencies>
             </plugin>
             <plugin>
                 <groupId>org.sonatype.plugins</groupId>
                 <artifactId>nexus-staging-maven-plugin</artifactId>
-                <version>1.6.7</version>
+                <version>1.6.13</version>
                 <extensions>true</extensions>
                 <configuration>
                     <serverId>ossrh</serverId>
@@ -259,8 +254,9 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
-                <version>3.2.0</version>
+                <version>3.4.1</version>
             </plugin>
+
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
@@ -283,24 +279,44 @@
                                     </manifestEntries>
                                 </transformer>
                             </transformers>
-                                <filters>
-                                    <filter>
-                                        <artifact>*:*</artifact>
-                                        <excludes>
-                                            <exclude>META-INF/*.SF</exclude>
-                                            <exclude>META-INF/*.DSA</exclude>
-                                            <exclude>META-INF/*.RSA</exclude>
-                                        </excludes>
-                                    </filter>
-                                </filters>
+                            <filters>
+                                <filter>
+                                    <artifact>*:*</artifact>
+                                    <excludes>
+                                        <exclude>META-INF/*.SF</exclude>
+                                        <exclude>META-INF/*.DSA</exclude>
+                                        <exclude>META-INF/*.RSA</exclude>
+                                    </excludes>
+                                </filter>
+                            </filters>
                         </configuration>
                     </execution>
                 </executions>
             </plugin>
-
         </plugins>
-    </build>
+        <resources>
 
+            <resource>
+                <directory>src/main/filtered</directory>
+                <filtering>true</filtering>
+
+            </resource>
+
+            <resource>
+                <directory>.</directory>
+                <includes>
+                    <include>pom.xml</include>
+                </includes>
+
+            </resource>
+
+            <resource>
+                <directory>src/main/resources</directory>
+
+            </resource>
+
+        </resources>
+    </build>
     <profiles>
         <!-- GPG Signature on release -->
         <profile>
@@ -331,4 +347,6 @@
             </build>
         </profile>
     </profiles>
+
+
 </project>
