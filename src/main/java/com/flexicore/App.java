@@ -47,7 +47,7 @@ List<String> sourceFolders=project.getCompileSourceRoots();
                         null;
                 try {
                     javaClass = Roaster.parse(jFile);
-                } catch (FileNotFoundException e) {
+                } catch ( IOException e) {
                     e.printStackTrace();
                     continue;
                 }
@@ -71,7 +71,7 @@ List<String> sourceFolders=project.getCompileSourceRoots();
                        null;
                try {
                    javaClass = Roaster.parse(JavaClassSource.class,jFile);
-               } catch (FileNotFoundException e) {
+               } catch (IOException e) {
                    e.printStackTrace();
                    continue;
                }
@@ -85,7 +85,7 @@ List<String> sourceFolders=project.getCompileSourceRoots();
                    jFile= new File(entry.getValue());
                    try {
                        javaClass=Roaster.parse(JavaClassSource.class,jFile);
-                   } catch (FileNotFoundException e) {
+                   } catch (IOException e) {
                        e.printStackTrace();
                        continue;
                    }
