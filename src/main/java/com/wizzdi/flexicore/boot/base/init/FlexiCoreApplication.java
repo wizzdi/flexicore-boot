@@ -7,6 +7,7 @@ public class FlexiCoreApplication extends SpringApplication {
 
     public FlexiCoreApplication(Class<?>... primarySources) {
         super(primarySources);
+        init();
     }
 
     public FlexiCoreApplication(ResourceLoader resourceLoader, Class<?>... primarySources) {

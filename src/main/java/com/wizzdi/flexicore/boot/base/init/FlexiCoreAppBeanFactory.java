@@ -44,7 +44,8 @@ public class FlexiCoreAppBeanFactory extends DefaultListableBeanFactory {
     private void init() {
         if(isConfigurationFrozen()){
             if (init.compareAndSet(false, true)) {
-                flexiCorePluginManager = new FlexiCorePluginManager(Path.of("/home/flexicore/plugins"), Collections.emptyList());
+                String pluginPath = getApplicationContext().getEnvironment().getProperty("flexicore.plugins","/home/flexicore/plugins");
+                flexiCorePluginManager = new FlexiCorePluginManager(Path.of(pluginPath), Collections.emptyList());
                 flexiCorePluginManager.setApplicationContext(this.applicationContext);
                 flexiCorePluginManager.init();
                 logger.info("plugins init complete");
