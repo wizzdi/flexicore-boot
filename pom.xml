@@ -28,7 +28,7 @@
         <flexicore-security-model.version>2.0.1</flexicore-security-model.version>
         <resteasy-flexicore-boot-starter.version>2.0.0</resteasy-flexicore-boot-starter.version>
         <flexicore-boot-starter-web.version>2.0.0</flexicore-boot-starter-web.version>
-        <flexicore-file-model.version>2.0.0</flexicore-file-model.version>
+        <flexicore-file-model.version>2.0.1-SNAPSHOT</flexicore-file-model.version>
         <commons-codec.version>1.15</commons-codec.version>
         <swagger-jaxrs2.version>2.2.0</swagger-jaxrs2.version>
         <flexicore-boot.version>2.0.0</flexicore-boot.version>
