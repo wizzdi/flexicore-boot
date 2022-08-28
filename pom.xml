@@ -4,7 +4,7 @@
 
     <groupId>com.wizzdi</groupId>
     <artifactId>flexicore-boot</artifactId>
-    <version>2.0.1</version>
+    <version>2.0.2-SNAPSHOT</version>
     <name>FlexiCore Boot</name>
     <description>flexicore boot</description>
     <url>https://wizzdi.com</url>
@@ -59,7 +59,7 @@
         <connection>scm:git:git://wizzdi/flexicore-boot.git</connection>
         <developerConnection>scm:git:git@github.com:wizzdi/flexicore-boot.git</developerConnection>
         <url>https://github.com/wizzdi/flexicore-boot</url>
-        <tag>flexicore-boot-2.0.1</tag>
+        <tag>FlexiCore-Boot-${project.version}</tag>
     </scm>
 
     <dependencyManagement>
