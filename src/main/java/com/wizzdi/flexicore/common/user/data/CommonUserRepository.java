@@ -82,7 +82,7 @@ public class CommonUserRepository implements Plugin {
         return query.getSingleResult();
     }
 
-    public <T extends User> void addUserFiltering(CommonUserFilter commonUserFilter,CommonAbstractCriteria q, CriteriaBuilder cb, Root<T> r, List<Predicate> preds,SecurityContextBase securityContextBase) {
+    public <T extends User> void addUserFiltering(CommonUserFilter commonUserFilter,CommonAbstractCriteria q, CriteriaBuilder cb, From<?,T> r, List<Predicate> preds,SecurityContextBase securityContextBase) {
         securityUserRepository.addSecurityUserPredicates(commonUserFilter,cb,q,r,preds,securityContextBase);
         if (commonUserFilter.getEmails() != null && !commonUserFilter.getEmails().isEmpty()) {
             preds.add(r.get(User_.email).in( commonUserFilter.getEmails()));
