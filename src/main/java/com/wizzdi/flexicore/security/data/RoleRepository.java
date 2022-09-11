@@ -35,7 +35,7 @@ public class RoleRepository implements Plugin {
 		Root<Role> r=q.from(Role.class);
 		List<Predicate> predicates=new ArrayList<>();
 		addRolePredicates(roleFilter,cb,q,r,predicates,securityContext);
-		q.select(r).where(predicates.toArray(Predicate[]::new));
+		q.select(r).where(predicates.toArray(Predicate[]::new)).orderBy(cb.asc(r.get(Role_.name)));
 		TypedQuery<Role> query = em.createQuery(q);
 		BaseclassRepository.addPagination(roleFilter,query);
 		return query.getResultList();

@@ -1,8 +1,6 @@
 package com.wizzdi.flexicore.security.data;
 
-import com.flexicore.model.Baseclass;
-import com.flexicore.model.Baseclass_;
-import com.flexicore.model.SecurityUser;
+import com.flexicore.model.*;
 import com.wizzdi.flexicore.boot.base.interfaces.Plugin;
 import com.flexicore.security.SecurityContextBase;
 import com.wizzdi.flexicore.security.request.SecurityUserFilter;
@@ -35,7 +33,7 @@ public class SecurityUserRepository implements Plugin {
 		Root<SecurityUser> r=q.from(SecurityUser.class);
 		List<Predicate> predicates=new ArrayList<>();
 		addSecurityUserPredicates(securityUserFilter,cb,q,r,predicates,securityContext);
-		q.select(r).where(predicates.toArray(Predicate[]::new));
+		q.select(r).where(predicates.toArray(Predicate[]::new)).orderBy(cb.asc(r.get(SecurityUser_.name)));
 		TypedQuery<SecurityUser> query = em.createQuery(q);
 		BaseclassRepository.addPagination(securityUserFilter,query);
 		return query.getResultList();

@@ -2,6 +2,7 @@ package com.wizzdi.flexicore.security.data;
 
 import com.flexicore.model.Baseclass;
 import com.flexicore.model.SecurityTenant;
+import com.flexicore.model.SecurityTenant_;
 import com.wizzdi.flexicore.boot.base.interfaces.Plugin;
 import com.flexicore.security.SecurityContextBase;
 import com.wizzdi.flexicore.security.request.SecurityTenantFilter;
@@ -34,7 +35,7 @@ public class SecurityTenantRepository implements Plugin {
 		Root<SecurityTenant> r=q.from(SecurityTenant.class);
 		List<Predicate> predicates=new ArrayList<>();
 		addTenantPredicates(tenantFilter,cb,q,r,predicates,securityContext);
-		q.select(r).where(predicates.toArray(Predicate[]::new));
+		q.select(r).where(predicates.toArray(Predicate[]::new)).orderBy(cb.asc(r.get(SecurityTenant_.name)));
 		TypedQuery<SecurityTenant> query = em.createQuery(q);
 		BaseclassRepository.addPagination(tenantFilter,query);
 		return query.getResultList();
