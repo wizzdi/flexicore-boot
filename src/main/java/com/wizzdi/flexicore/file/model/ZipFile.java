@@ -11,6 +11,7 @@ import java.util.List;
 public class ZipFile extends FileResource {
 
 
+    private String uniqueFilesMd5;
 
     public ZipFile() {
     }
@@ -27,6 +28,15 @@ public class ZipFile extends FileResource {
 
     public <T extends ZipFile> T setZippedFilesToFileResourceList(List<ZipFileToFileResource> zippedFilesToFileResourceList) {
         this.zippedFilesToFileResourceList = zippedFilesToFileResourceList;
+        return (T) this;
+    }
+
+    public String getUniqueFilesMd5() {
+        return uniqueFilesMd5;
+    }
+
+    public <T extends ZipFile> T setUniqueFilesMd5(String uniqueFilesMd5) {
+        this.uniqueFilesMd5 = uniqueFilesMd5;
         return (T) this;
     }
 }
