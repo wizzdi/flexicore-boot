@@ -26,7 +26,7 @@
         <maven.compiler.source>17</maven.compiler.source>
         <pf4j-spring.version>0.7.0</pf4j-spring.version>
 
-        <spring-boot.version>2.7.0</spring-boot.version>
+        <spring-boot.version>2.7.1</spring-boot.version>
     </properties>
 
     <distributionManagement>
