@@ -12,24 +12,19 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.annotation.web.configurers.ExpressionUrlAuthorizationConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import javax.servlet.http.HttpServletResponse;
 
+import static org.springframework.security.config.Customizer.withDefaults;
+
 @Configuration
-public class FlexicoreSpringSecurityConfig extends WebSecurityConfigurerAdapter {
-    private final ObjectProvider<FlexiCoreSecurityFilter> flexiCoreSecurityFilters;
-    private final ObjectProvider<SecurityPathConfigurator> securityPathConfigurators;
-    private final UserDetailsService userDetailsService;
+public class FlexicoreSpringSecurityConfig {
 
-    public FlexicoreSpringSecurityConfig(ObjectProvider<FlexiCoreSecurityFilter> flexiCoreSecurityFilters, @Lazy UserDetailsService userDetailsService, ObjectProvider<SecurityPathConfigurator> securityPathConfigurators) {
-        this.flexiCoreSecurityFilters = flexiCoreSecurityFilters;
-        this.userDetailsService = userDetailsService;
-        this.securityPathConfigurators=securityPathConfigurators;
-    }
 
-    @Override
-    protected void configure(HttpSecurity http) throws Exception {
+    @Bean
+    public SecurityFilterChain filterChain(HttpSecurity http,ObjectProvider<FlexiCoreSecurityFilter> flexiCoreSecurityFilters,ObjectProvider<SecurityPathConfigurator> securityPathConfigurators) throws Exception {
         // Enable CORS and disable CSRF
         http = http.cors().and().csrf().disable();
 
@@ -65,20 +60,17 @@ public class FlexicoreSpringSecurityConfig extends WebSecurityConfigurerAdapter 
                     UsernamePasswordAuthenticationFilter.class
             );
         }
-
-    }
-
-    @Override
-    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.userDetailsService(userDetailsService);
-
+        return http.build();
     }
 
 
-    @Override
+
+
     @Bean
-    public AuthenticationManager authenticationManagerBean() throws Exception {
-        return super.authenticationManagerBean();
+    public AuthenticationManager authenticationManager(HttpSecurity http,UserDetailsService userDetailsService) throws Exception {
+        AuthenticationManagerBuilder authenticationManagerBuilder = http.getSharedObject(AuthenticationManagerBuilder.class);
+        authenticationManagerBuilder.userDetailsService(userDetailsService);
+        return authenticationManagerBuilder.build();
     }
 
 }
