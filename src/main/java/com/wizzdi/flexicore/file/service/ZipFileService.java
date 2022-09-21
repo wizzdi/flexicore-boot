@@ -24,6 +24,7 @@ import org.zeroturnaround.zip.ZipUtil;
 
 import javax.persistence.metamodel.SingularAttribute;
 import java.io.File;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -73,6 +74,10 @@ public class ZipFileService implements Plugin {
 
 	public boolean updateZipFileNoMerge(ZipFileCreate zipFileCreate, ZipFile zipFile) {
 		boolean update = fileResourceService.updateFileResourceNoMerge(zipFileCreate, zipFile);
+		if(zipFileCreate.getUniqueFilesMd5()!=null&&!zipFileCreate.getUniqueFilesMd5().equals(zipFile.getUniqueFilesMd5())){
+			zipFile.setUniqueFilesMd5(zipFileCreate.getUniqueFilesMd5());
+			update=true;
+		}
 		return update;
 	}
 
@@ -82,6 +87,12 @@ public class ZipFileService implements Plugin {
 			zipFileRepository.merge(ZipFile);
 		}
 		return ZipFile;
+	}
+
+	public String calculateUniqueFilesMd5(List<FileResource> files){
+		Map<String,FileResource> map=files.stream().collect(Collectors.toMap(f->f.getId(),f->f,(a,b)->a));
+		String raw=map.values().stream().map(f->f.getId()).sorted().collect(Collectors.joining(","));
+		return md5Service.generateMD5(raw.getBytes(StandardCharsets.UTF_8));
 	}
 
 	public void validate(ZipAndDownloadRequest zipAndDownloadRequest, SecurityContextBase securityContext) {
@@ -153,8 +164,8 @@ public class ZipFileService implements Plugin {
 
 
 	public ZipFile zipAndDownload(ZipAndDownloadRequest zipAndDownload, SecurityContextBase securityContext) {
-
-		ZipFile existing = getExistingZipFile(zipAndDownload.getFileResources(), securityContext);
+		String filesMd5 = calculateUniqueFilesMd5(zipAndDownload.getFileResources());
+		ZipFile existing = getExistingZipFile(filesMd5, securityContext);
 		if (existing == null) {
 			List<Object> toMerge = new ArrayList<>();
 			List<File> files = zipAndDownload.getFileResources().parallelStream().map(f -> new File(f.getFullPath())).collect(Collectors.toList());
@@ -162,7 +173,9 @@ public class ZipFileService implements Plugin {
 			files.toArray(arr);
 			File zip = new File(fileResourceService.generateNewPathForFileResource("zip", securityContext.getUser()) + ".zip");
 			ZipUtil.packEntries(arr, zip);
-			ZipFileCreate zipFileCreate = new ZipFileCreate().setOriginalFilename(zip.getName())
+			ZipFileCreate zipFileCreate = new ZipFileCreate()
+					.setUniqueFilesMd5(filesMd5)
+					.setOriginalFilename(zip.getName())
 					.setFullPath(zip.getAbsolutePath())
 					.setMd5(md5Service.generateMD5(zip))
 					.setOffset(zip.length());
@@ -178,17 +191,22 @@ public class ZipFileService implements Plugin {
 
 	}
 
-	private ZipFile getExistingZipFile(List<FileResource> fileResources, SecurityContextBase securityContext) {
-		Set<String> requiredIds = fileResources.parallelStream().map(f -> f.getId()).collect(Collectors.toSet());
-		List<ZipFileToFileResource> links = zipFileToFileResourceService.listAllZipFileToFileResources(new ZipFileToFileResourceFilter().setFileResources(fileResources), securityContext);
-		Map<String, ZipFile> zipFileMap = links.parallelStream().map(f -> f.getZipFile()).filter(f -> f.getFullPath() != null && new File(f.getFullPath()).exists()).collect(Collectors.toMap(f -> f.getId(), f -> f, (a, b) -> a));
-		Map<String, Set<String>> zipFileToFileResource = links.parallelStream().collect(Collectors.groupingBy(f -> f.getZipFile().getId(), Collectors.mapping(f -> f.getZippedFile().getId(), Collectors.toSet())));
-		for (Map.Entry<String, Set<String>> stringSetEntry : zipFileToFileResource.entrySet()) {
-			if (stringSetEntry.getValue().containsAll(requiredIds) && requiredIds.containsAll(stringSetEntry.getValue())) {
-				return zipFileMap.get(stringSetEntry.getKey());
-			}
-		}
-		return null;
+	private ZipFile getExistingZipFile(String md5, SecurityContextBase securityContext) {
+		return listAllZipFiles(new ZipFileFilter().setUniqueFilesMd5(md5),securityContext).stream().filter(f -> f.getFullPath() != null && new File(f.getFullPath()).exists()).findFirst().orElse(null);
+
 	}
 
+	public void calculateZipsMd5(ZipFileFilter zipFileFilter, SecurityContextBase securityContext) {
+		List<ZipFile> zipFiles = listAllZipFiles(zipFileFilter, securityContext);
+		Map<String,List<ZipFileToFileResource>> map=zipFiles.isEmpty()?new HashMap<>():zipFileToFileResourceService.listAllZipFileToFileResources(new ZipFileToFileResourceFilter().setZipFiles(zipFiles),null).stream().collect(Collectors.groupingBy(f->f.getZipFile().getId()));
+		for (ZipFile zipFile : zipFiles) {
+			List<ZipFileToFileResource> zipFileToFileResources=map.get(zipFile.getId());
+			if(zipFileToFileResources==null){
+				continue;
+			}
+			List<FileResource> files=zipFileToFileResources.stream().map(f->f.getZippedFile()).collect(Collectors.toList());
+			String md5=calculateUniqueFilesMd5(files);
+			updateZipFile(new ZipFileUpdate().setZipFile(zipFile).setUniqueFilesMd5(md5),securityContext);
+		}
+	}
 }

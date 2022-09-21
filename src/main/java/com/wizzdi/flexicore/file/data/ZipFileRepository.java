@@ -5,6 +5,7 @@ import com.flexicore.model.Basic;
 import com.flexicore.security.SecurityContextBase;
 import com.wizzdi.flexicore.boot.base.interfaces.Plugin;
 import com.wizzdi.flexicore.file.model.ZipFile;
+import com.wizzdi.flexicore.file.model.ZipFile_;
 import com.wizzdi.flexicore.file.request.ZipFileFilter;
 import com.wizzdi.flexicore.security.data.BasicRepository;
 import org.pf4j.Extension;
@@ -45,6 +46,9 @@ public class ZipFileRepository implements Plugin {
 
 	public <T extends ZipFile> void addZipFilePredicates(ZipFileFilter zipFileFilter, CriteriaBuilder cb, CommonAbstractCriteria q, From<?, T> r, List<Predicate> predicates, SecurityContextBase securityContextBase) {
 		fileResourceRepository.addFileResourcePredicates(zipFileFilter,cb,q,r,predicates,securityContextBase);
+		if(zipFileFilter.getUniqueFilesMd5()!=null){
+			predicates.add(cb.equal(r.get(ZipFile_.uniqueFilesMd5),zipFileFilter.getUniqueFilesMd5()));
+		}
 
 	}
 

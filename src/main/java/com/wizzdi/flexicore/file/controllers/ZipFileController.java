@@ -12,6 +12,7 @@ import com.flexicore.security.SecurityContextBase;
 import com.wizzdi.flexicore.boot.base.interfaces.Plugin;
 import com.wizzdi.flexicore.file.model.ZipFile;
 import com.wizzdi.flexicore.file.request.ZipAndDownloadRequest;
+import com.wizzdi.flexicore.file.request.ZipFileFilter;
 import com.wizzdi.flexicore.file.service.FileResourceService;
 import com.wizzdi.flexicore.file.service.ZipFileService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -64,6 +65,14 @@ public class ZipFileController implements Plugin {
     public ZipFile getOrCreateZipFile(@RequestBody   ZipAndDownloadRequest zipAndDownload, @RequestAttribute SecurityContextBase securityContext) {
         zipFileService.validate(zipAndDownload, securityContext);
         return zipFileService.zipAndDownload(zipAndDownload, securityContext);
+    }
+
+
+    @PostMapping("calculateZipsMd5")
+    @Operation(summary = "calculateZipsMd5", description = "calculateZipsMd5")
+    public void calculateZipsMd5(@RequestBody ZipFileFilter zipFileFilter, @RequestAttribute SecurityContextBase securityContext) {
+        zipFileService.validate(zipFileFilter, securityContext);
+        zipFileService.calculateZipsMd5(zipFileFilter, securityContext);
     }
 
 

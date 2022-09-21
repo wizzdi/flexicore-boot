@@ -24,7 +24,7 @@
         <spring-boot-dependencies.version>2.7.0</spring-boot-dependencies.version>
         <flexicore-boot-dependencies.version>2.2.4</flexicore-boot-dependencies.version>
         <zt-zip.version>1.15</zt-zip.version>
-        <flexicore-file-model.version>2.0.0</flexicore-file-model.version>
+        <flexicore-file-model.version>2.0.1-SNAPSHOT</flexicore-file-model.version>
         <swagger-jaxrs2.version>2.2.0</swagger-jaxrs2.version>
         <flexicore-boot-starter-web.version>2.0.0</flexicore-boot-starter-web.version>
         <flexicore-security-model.version>2.0.1</flexicore-security-model.version>

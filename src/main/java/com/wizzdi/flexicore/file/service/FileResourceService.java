@@ -333,7 +333,7 @@ public class FileResourceService implements Plugin {
 		if (fileResource == null) {
 			String ext = filename.endsWith("tar.gz") ? "tar.gz" : FilenameUtils.getExtension(filename);
 			String actualFilename = !ext.isEmpty() ? UUID.randomUUID().toString() + "." + ext : UUID.randomUUID().toString();
-			String fullPath = new File(uploadPath,actualFilename).getAbsolutePath();
+			String fullPath = new File(uploadPath,actualFilename).getAbsol	utePath();
 			FileResourceCreate fileResourceCreate = new FileResourceCreate()
 					.setActualFilename(actualFilename)
 					.setFullPath(fullPath)
