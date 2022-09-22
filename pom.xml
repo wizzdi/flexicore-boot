@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.wizzdi</groupId>
     <artifactId>flexicore-file-service</artifactId>
-    <version>2.0.1-SNAPSHOT</version>
+    <version>2.0.1</version>
     <name>FlexiCore File service</name>
     <description>flexicore File service</description>
     <url>https://wizzdi.com</url>
@@ -62,7 +62,7 @@
         <connection>scm:git:git://wizzdi/flexicore-file-service.git</connection>
         <developerConnection>scm:git:git@github.com:wizzdi/flexicore-file-service.git</developerConnection>
         <url>https://github.com/wizzdi/flexicore-file-service</url>
-        <tag>flexicore-file-service-${version}</tag>
+        <tag>flexicore-file-service-2.0.1</tag>
     </scm>
     <dependencyManagement>
         <dependencies>
