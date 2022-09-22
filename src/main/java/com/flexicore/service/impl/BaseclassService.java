@@ -386,7 +386,7 @@ public class BaseclassService implements com.flexicore.service.BaseclassService 
             throw new BadRequestException("No Classname " + getDisconnected.getWantedClassName());
         }
         try {
-            Class<? extends Baseclass> wantedClass = (Class<? extends Baseclass>) Class.forName(getDisconnected.getWantedClassName());
+            Class<?> wantedClass = Class.forName(getDisconnected.getWantedClassName());
             getDisconnected.setWantedClass(wantedClass);
         } catch (ClassNotFoundException e) {
             throw new BadRequestException("No Class with name " + getDisconnected.getWantedClassName());

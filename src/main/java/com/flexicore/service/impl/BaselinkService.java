@@ -206,14 +206,22 @@ public class BaselinkService implements com.flexicore.service.BaselinkService {
         createBaselinkRequest.setLinkClass(clazz);
         String rightsideClassName = createBaselinkRequest.getRightsideTypeClassName();
         try {
-            createBaselinkRequest.setRightsideType(rightsideClassName != null ?  Class.forName(rightsideClassName) : getLinkSideClass(true,clazz));
+            Class<?> rawType = rightsideClassName != null ? Class.forName(rightsideClassName) : getLinkSideClass(true, clazz);
+            if(!(Baseclass.class.isAssignableFrom(rawType))){
+                rawType=Baseclass.class;
+            }
+            createBaselinkRequest.setRightsideType(rawType);
         } catch (ClassNotFoundException e) {
             throw new BadRequestException("no class with name:" + linkClazzName);
         }
 
         String leftsideClassName = createBaselinkRequest.getLeftsideTypeClassName();
         try {
-            createBaselinkRequest.setLeftsideType(leftsideClassName != null ?  Class.forName(leftsideClassName) : getLinkSideClass(false,clazz));
+            Class<?> rawType = leftsideClassName != null ? Class.forName(leftsideClassName) : getLinkSideClass(false, clazz);
+            if(!(Baseclass.class.isAssignableFrom(rawType))){
+                rawType=Baseclass.class;
+            }
+            createBaselinkRequest.setLeftsideType(rawType);
         } catch (ClassNotFoundException e) {
             throw new BadRequestException("no class with name:" + linkClazzName);
         }
