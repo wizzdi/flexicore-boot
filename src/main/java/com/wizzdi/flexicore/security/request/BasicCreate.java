@@ -3,6 +3,7 @@ package com.wizzdi.flexicore.security.request;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import java.time.OffsetDateTime;
+import java.util.Set;
 
 public class BasicCreate {
 
@@ -14,6 +15,7 @@ public class BasicCreate {
     private Boolean softDelete;
     @JsonIgnore
     private String idForCreate;
+    private Set<String> unsetProperties;
 
     public BasicCreate(BasicCreate other) {
         this.name = other.name;
@@ -21,6 +23,7 @@ public class BasicCreate {
         this.updateDate = other.updateDate;
         this.softDelete = other.softDelete;
         this.idForCreate = other.idForCreate;
+        this.unsetProperties =other.unsetProperties;
     }
 
     public BasicCreate() {
@@ -75,4 +78,12 @@ public class BasicCreate {
         return (T) this;
     }
 
+    public Set<String> getUnsetProperties() {
+        return unsetProperties;
+    }
+
+    public <T extends BasicCreate> T setUnsetProperties(Set<String> unsetProperties) {
+        this.unsetProperties = unsetProperties;
+        return (T) this;
+    }
 }
