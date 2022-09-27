@@ -715,7 +715,7 @@ public class BaseclassService implements com.flexicore.service.BaseclassService 
                         ListingInvoker<T, E> invoker = (ListingInvoker<T, E>) plugin;
                         return invoker.listAll(filteringInformationHolder, securityContext);
                     } else {
-                        throw new NotAuthorizedException("user is not authorized for this resource");
+                        throw new ClientErrorException("user is not authorized for this resource", Response.Status.UNAUTHORIZED);
                     }
 
 

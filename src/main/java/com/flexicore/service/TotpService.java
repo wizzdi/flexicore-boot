@@ -26,8 +26,10 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
 
 import javax.ws.rs.BadRequestException;
+import javax.ws.rs.ClientErrorException;
 import javax.ws.rs.InternalServerErrorException;
 import javax.ws.rs.NotAuthorizedException;
+import javax.ws.rs.core.Response;
 import java.security.GeneralSecurityException;
 import java.time.OffsetDateTime;
 import java.util.Base64;
@@ -243,6 +245,6 @@ public class TotpService implements FlexiCoreService {
             applicationEventPublisher.publishEvent(new LoginEvent(user));
             return getTotpAuthenticationResponse(securityContext,user);
         }
-        throw new NotAuthorizedException("recovery code is invalid");
+        throw new ClientErrorException("recovery code is invalid", Response.Status.UNAUTHORIZED);
     }
 }

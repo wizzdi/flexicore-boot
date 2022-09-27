@@ -758,7 +758,7 @@ public class UserService implements com.flexicore.service.UserService {
 
         List<User> user = listAllUsers(userFiltering, securityContext);
         if (user.isEmpty()) {
-            throw new NotAuthorizedException("User Not Authorized");
+            throw new CheckYourCredentialsException("Please check your credentials");
         }
         authenticationRequest.setUser(user.get(0));
     }
