@@ -52,7 +52,7 @@ public class ParameterInfo {
             this.defaultValue = fieldInfo.defaultValue();
             this.regexValidation = fieldInfo.regexValidation();
             this.actionIdHolder = fieldInfo.actionIdHolder();
-            this.ignoreSubParameters=fieldInfo.ignoreSubParameters();
+            this.ignoreSubParameters = fieldInfo.ignoreSubParameters();
             if (fieldInfo.rangeEnabled()) {
                 this.rangeMin = fieldInfo.rangeMin();
                 this.rangeMax = fieldInfo.rangeMax();
@@ -62,15 +62,19 @@ public class ParameterInfo {
         }
 
 
-        iterationType= parameter.getType();
-        if (iterationType.isEnum()) {
+        iterationType = parameter.getType();
+        populatePossibleValues();
+
+
+    }
+
+    private void populatePossibleValues() {
+        if (iterationType != null && iterationType.isEnum()) {
             Class<? extends Enum> enumType = (Class<? extends Enum>) iterationType;
             EnumSet enumSet = EnumSet.allOf(enumType);
             Stream<Enum<?>> stream = enumSet.stream();
             possibleValues = stream.map(f -> f.name()).collect(Collectors.toSet());
         }
-
-
     }
 
     public ParameterInfo(Field parameter, ListFieldInfo fieldInfo) {
@@ -79,16 +83,15 @@ public class ParameterInfo {
         this.description = "No Description";
         this.list = true;
 
-        if(fieldInfo!=null){
+        if (fieldInfo != null) {
             this.displayName = !fieldInfo.displayName().isEmpty() ? fieldInfo.displayName() : name;
             this.description = !fieldInfo.description().isEmpty() ? fieldInfo.description() : "No Description";
             this.mandatory = fieldInfo.mandatory();
             iterationType = fieldInfo.listType();
             this.type = iterationType.getCanonicalName();
-            this.ignoreSubParameters=fieldInfo.ignoreSubParameters();
+            this.ignoreSubParameters = fieldInfo.ignoreSubParameters();
         }
-
-
+        populatePossibleValues();
 
 
     }
@@ -101,7 +104,7 @@ public class ParameterInfo {
         this.list = true;
         this.type = "com.flexicore.model.BaseclassIdFiltering";
         idRef = true;
-        if(fieldInfo!=null){
+        if (fieldInfo != null) {
             this.displayName = !fieldInfo.displayName().isEmpty() ? fieldInfo.displayName() : name;
             this.description = !fieldInfo.description().isEmpty() ? fieldInfo.description() : description;
             this.list = fieldInfo.list();
@@ -110,7 +113,6 @@ public class ParameterInfo {
             this.actionId = fieldInfo.actionId();
 
         }
-
 
 
     }
@@ -123,7 +125,7 @@ public class ParameterInfo {
         this.displayName = displayName;
         this.name = c.getCanonicalName();
         this.type = c.getCanonicalName();
-        this.iterationType=c;
+        this.iterationType = c;
 
     }
 
