@@ -10,13 +10,13 @@ public class ExportDynamicExecution extends ExecuteDynamicExecution {
 
 
     private CSVFormat csvFormat;
-    private Map<String, String> fieldToName;
+    private Map<String, FieldProperties> fieldToName;
 
-    public Map<String, String> getFieldToName() {
+    public Map<String, FieldProperties> getFieldToName() {
         return fieldToName;
     }
 
-    public <T extends ExportDynamicExecution> T setFieldToName(Map<String, String> fieldToName) {
+    public <T extends ExportDynamicExecution> T setFieldToName(Map<String, FieldProperties> fieldToName) {
         this.fieldToName = fieldToName;
         return (T) this;
     }

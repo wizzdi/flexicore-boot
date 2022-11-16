@@ -9,19 +9,14 @@ package com.flexicore.service.impl;
 import com.flexicore.data.DynamicInvokersRepository;
 import com.flexicore.data.jsoncontainers.PaginationResponse;
 import com.flexicore.interfaces.ServicePlugin;
-import com.flexicore.interfaces.Syncable;
-import com.flexicore.interfaces.dynamic.Invoker;
 import com.flexicore.model.Baseclass;
 import com.wizzdi.flexicore.file.model.FileResource;
 import com.flexicore.model.Operation;
 import com.flexicore.model.SecuredBasic_;
 import com.flexicore.model.dynamic.*;
 import com.flexicore.request.*;
-import com.flexicore.response.*;
 import com.flexicore.security.SecurityContext;
 import com.flexicore.security.SecurityContextBase;
-import com.flexicore.utils.InheritanceUtils;
-import com.wizzdi.flexicore.boot.dynamic.invokers.interfaces.ExecutionContext;
 import com.wizzdi.flexicore.boot.dynamic.invokers.model.DynamicExecution;
 import com.wizzdi.flexicore.boot.dynamic.invokers.request.*;
 import com.wizzdi.flexicore.boot.dynamic.invokers.response.InvokerInfo;
@@ -32,24 +27,20 @@ import org.apache.commons.csv.CSVPrinter;
 import org.apache.commons.io.ByteOrderMark;
 import org.apache.commons.lang3.StringUtils;
 import org.pf4j.Extension;
-import org.pf4j.PluginManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.ws.rs.BadRequestException;
-import javax.ws.rs.NotAuthorizedException;
 import java.io.*;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.nio.charset.StandardCharsets;
 import java.time.OffsetDateTime;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Primary
 @Component
@@ -72,7 +63,7 @@ public class DynamicInvokersService implements ServicePlugin {
 
     private static final Logger logger = LoggerFactory.getLogger(DynamicInvokersService.class);
 
-    
+
     public <T extends Baseclass> T getByIdOrNull(String id, Class<T> c, List<String> batchString, SecurityContext securityContext) {
         return dynamicInvokersRepository.getByIdOrNull(id, c, batchString, securityContext);
     }
@@ -81,17 +72,17 @@ public class DynamicInvokersService implements ServicePlugin {
         return dynamicExecutionService.getByIdOrNull(id, c, SecuredBasic_.security, securityContext);
     }
 
-    
+
     public <T extends Baseclass> List<T> listByIds(Class<T> c, Set<String> ids, SecurityContext securityContext) {
         return dynamicInvokersRepository.listByIds(c, ids, securityContext);
     }
 
-    
+
     public PaginationResponse<InvokerInfo> getAllInvokersInfo(DynamicInvokerFilter dynamicInvokerFilter, SecurityContext securityContext) {
-       return new PaginationResponse<>(dynamicInvokerService.getAllDynamicInvokers(dynamicInvokerFilter,securityContext));
+        return new PaginationResponse<>(dynamicInvokerService.getAllDynamicInvokers(dynamicInvokerFilter, securityContext));
     }
 
-    
+
     public PaginationResponse<DynamicInvoker> getAllInvokers(InvokersFilter invokersFilter, SecurityContext securityContext) {
         List<DynamicInvoker> list = dynamicInvokersRepository.getAllInvokers(invokersFilter, securityContext);
         long count = dynamicInvokersRepository.countAllInvokers(invokersFilter, securityContext);
@@ -113,20 +104,19 @@ public class DynamicInvokersService implements ServicePlugin {
     }
 
     public List<InvokerInfo> getInvokers(Set<String> allowedOps) {
-       return dynamicInvokerService.listAllDynamicInvokers(new DynamicInvokerFilter(),null);
+        return dynamicInvokerService.listAllDynamicInvokers(new DynamicInvokerFilter(), null);
 
 
     }
-
 
 
     public ExecuteInvokersResponse executeInvoker(ExecuteInvokerRequest executeInvokerRequest, SecurityContext securityContext) {
-        return dynamicInvokerService.executeInvoker(executeInvokerRequest,securityContext);
+        return dynamicInvokerService.executeInvoker(executeInvokerRequest, securityContext);
 
 
     }
 
-    
+
     @Transactional
     public void massMerge(List<?> toMerge) {
         dynamicInvokersRepository.massMerge(toMerge);
@@ -143,25 +133,24 @@ public class DynamicInvokersService implements ServicePlugin {
     }
 
 
-    
     public DynamicExecution createDynamicExecution(CreateDynamicExecution createInvokerRequest, SecurityContext securityContext) {
-        return dynamicExecutionService.createDynamicExecution(createInvokerRequest,securityContext);
+        return dynamicExecutionService.createDynamicExecution(createInvokerRequest, securityContext);
     }
 
-    
+
     public DynamicExecution updateDynamicExecution(UpdateDynamicExecution updateDynamicExecution, SecurityContext securityContext) {
         DynamicExecution dynamicExecution = updateDynamicExecution.getDynamicExecution();
         List<Object> toMerge = new ArrayList<>();
-        if (dynamicExecutionService.updateDynamicExecutionNoMerge(updateDynamicExecution,toMerge, dynamicExecution )) {
+        if (dynamicExecutionService.updateDynamicExecutionNoMerge(updateDynamicExecution, toMerge, dynamicExecution)) {
             toMerge.add(dynamicExecution);
             dynamicExecutionService.massMerge(toMerge);
         }
         return dynamicExecution;
     }
 
-    
+
     public boolean updateDynamicExecutionNoMerge(CreateDynamicExecution createDynamicExecution, DynamicExecution dynamicExecution, List<Object> toMerge) {
-        return dynamicExecutionService.updateDynamicExecutionNoMerge(createDynamicExecution,toMerge,dynamicExecution);
+        return dynamicExecutionService.updateDynamicExecutionNoMerge(createDynamicExecution, toMerge, dynamicExecution);
     }
 
     private String getDynamicInvokerId(String canonicalName) {
@@ -199,9 +188,9 @@ public class DynamicInvokersService implements ServicePlugin {
         return update;
     }
 
-    
+
     public void validate(DynamicExecutionFilter dynamicExecutionFilter, SecurityContext securityContext) {
-       dynamicExecutionService.validate(dynamicExecutionFilter,securityContext);
+        dynamicExecutionService.validate(dynamicExecutionFilter, securityContext);
 
     }
 
@@ -214,27 +203,42 @@ public class DynamicInvokersService implements ServicePlugin {
     }
 
     public PaginationResponse<DynamicExecution> getAllDynamicExecutions(DynamicExecutionFilter dynamicExecutionFilter, SecurityContext securityContext) {
-     return new PaginationResponse<>(dynamicExecutionService.getAllDynamicExecutions(dynamicExecutionFilter,securityContext));
+        return new PaginationResponse<>(dynamicExecutionService.getAllDynamicExecutions(dynamicExecutionFilter, securityContext));
     }
-
 
 
     public FileResource exportDynamicExecutionResultToCSV(ExportDynamicExecution exportDynamicExecution, SecurityContext securityContext) {
         ExecuteInvokersResponse executeInvokersResponse = executeDynamicExecution(exportDynamicExecution, securityContext);
+        Map<String, FieldProperties> fieldToName = exportDynamicExecution.getFieldToName();
+        CSVFormat csvFormat = exportDynamicExecution.getCsvFormat();
 
+        return invokerResponseToCSV(securityContext, executeInvokersResponse, fieldToName, csvFormat);
+
+
+    }
+
+    public FileResource exportDynamicInvokerToCSV(ExportDynamicInvoker exportDynamicExecution, SecurityContext securityContext) {
+        ExecuteInvokersResponse executeInvokersResponse = executeInvoker(exportDynamicExecution, securityContext);
+        Map<String, FieldProperties> fieldToName = exportDynamicExecution.getFieldProperties();
+        CSVFormat csvFormat = exportDynamicExecution.getCsvFormat();
+
+        return invokerResponseToCSV(securityContext, executeInvokersResponse, fieldToName, csvFormat);
+
+
+    }
+
+    private FileResource invokerResponseToCSV(SecurityContext securityContext, ExecuteInvokersResponse executeInvokersResponse, Map<String, FieldProperties> fieldToName, CSVFormat csvFormat) {
         File file = new File(com.flexicore.service.FileResourceService.generateNewPathForFileResource("dynamic-execution-csv", securityContext.getUser()) + ".csv");
-        Map<String, String> fieldToName = exportDynamicExecution.getFieldToName();
-        Collection<String> headers = fieldToName.values();
-        String[] headersArr = new String[headers.size()];
-        headers.toArray(headersArr);
-        CSVFormat format = exportDynamicExecution.getCsvFormat().withHeader(headersArr);
+        String[] headersArr = fieldToName.values().stream().sorted(Comparator.comparing(FieldProperties::getOrdinal)).map(FieldProperties::getName).toArray(String[]::new);
+
+        CSVFormat format = csvFormat.withHeader(headersArr);
         Map<String, Method> fieldNameToMethod = new HashMap<>();
         if (CSVFormat.EXCEL.equals(format)) {
             try (Writer out = new OutputStreamWriter(new FileOutputStream(file, true))) {
                 out.write(ByteOrderMark.UTF_BOM);
 
             } catch (Exception e) {
-                logger.error( "failed writing UTF-8 BOM", e);
+                logger.error("failed writing UTF-8 BOM", e);
             }
 
 
@@ -244,10 +248,11 @@ public class DynamicInvokersService implements ServicePlugin {
 
             for (ExecuteInvokerResponse<?> respons : executeInvokersResponse.getResponses()) {
                 Object response = respons.getResponse();
-                if(response!=null){
-                    Collection<?> collection=getCollection(response);
-                    if (collection!=null) {
-                        exportCollection(fieldToName, fieldNameToMethod, csvPrinter, collection);
+                if (response != null) {
+                    Collection<?> collection = getCollection(response);
+                    if (collection != null) {
+                        List<List<Object>> expendedRecordSet = toExpendedRecordSet(fieldToName, fieldNameToMethod, collection);
+                        csvPrinter.printRecords(expendedRecordSet);
 
                     }
                 }
@@ -255,85 +260,112 @@ public class DynamicInvokersService implements ServicePlugin {
             }
             csvPrinter.flush();
         } catch (Exception e) {
-            logger.error( "unable to create csv");
+            logger.error("unable to create csv");
         }
         FileResource fileResource = fileResourceService.createDontPersist(file.getAbsolutePath(), securityContext);
         fileResource.setKeepUntil(OffsetDateTime.now().plusMinutes(30));
         fileResourceService.merge(fileResource);
         return fileResource;
-
-
     }
 
     private Collection<?> getCollection(Object response) {
-        if(response instanceof Collection){
+        if (response instanceof Collection) {
             return (Collection<?>) response;
         }
-        if(response instanceof PaginationResponse){
+        if (response instanceof PaginationResponse) {
             return ((PaginationResponse<?>) response).getList();
         }
-        if(response instanceof com.wizzdi.flexicore.security.response.PaginationResponse){
+        if (response instanceof com.wizzdi.flexicore.security.response.PaginationResponse) {
             return ((com.wizzdi.flexicore.security.response.PaginationResponse<?>) response).getList();
         }
         return null;
     }
 
-    public static void exportCollection(Map<String, String> fieldToName, Map<String, Method> fieldNameToMethod, CSVPrinter csvPrinter, Collection<?> collection) throws IllegalAccessException, InvocationTargetException, IOException {
-        if (!collection.isEmpty()) {
-            Class<?> c = collection.iterator().next().getClass();
-            List<Object> list = new ArrayList<>();
-            Set<String> failed = new HashSet<>();
-
-            for (Object o : collection) {
-                for (String field : fieldToName.keySet()) {
-                    String[] split = field.split("\\.");
-                    String canonical = "";
-                    Object current = o;
-                    Class<?> currentClass = c;
-                    for (String s : split) {
-                        if (failed.contains(s)) {
-                            list.add("");
-                            continue;
-                        }
-                        canonical += s;
-                        Method method = fieldNameToMethod.get(canonical);
-                        if (method == null) {
-                            try {
-                                method = currentClass.getMethod("get" + StringUtils.capitalize(s));
-                            } catch (Exception ignored) {
-                            }
-                            if (method == null) {
-                                try {
-                                    method = currentClass.getMethod("is" + StringUtils.capitalize(s));
-                                } catch (Exception ignored) {
-                                    failed.add(s);
-                                    list.add("");
-                                    continue;
-                                }
-                            }
-
-                            fieldNameToMethod.put(canonical, method);
-                        }
-                        Object data = method.invoke(current);
-                        if (data == null) {
-                            current = null;
-                            break;
-                        }
-                        current = data;
-                        currentClass = current.getClass();
-                    }
-                    list.add(current);
+    public static List<List<Object>> toExpendedRecordSet(Map<String, FieldProperties> fieldToName, Map<String, Method> methodCache, Collection<?> collection){
+        Set<String> failedMethodsCache = new HashSet<>();
+        List<String> fieldsSorted = fieldToName.entrySet().stream().sorted(Comparator.comparing(f -> f.getValue().getOrdinal())).map(f -> f.getKey()).toList();
+        return collection.parallelStream().map(f -> toExpendedRecord(methodCache, failedMethodsCache, fieldsSorted, f)).toList();
 
 
-                }
-                csvPrinter.printRecord(list);
-                list.clear();
+    }
 
+    private static List<Object> toExpendedRecord(Map<String, Method> methodCache, Set<String> failedMethodsCache, List<String> fieldsSorted, Object collectionEntry)  {
+        List<Object> recordAsList = new ArrayList<>();
+        for (String fieldPath : fieldsSorted) {
+            Object current = getValueFromFieldPath(methodCache, failedMethodsCache, collectionEntry, fieldPath);
+            if (current == null) {
+                recordAsList.add("");
+                continue;
             }
+            recordAsList.add(current);
+        }
+        return recordAsList;
+    }
+
+
+    private static Object getValueFromFieldPath(Map<String, Method> methodCache, Set<String> failedCache, Object currentCollectionItem, String fieldPath) {
+        Class<?> collectionItemType = currentCollectionItem.getClass();
+        String[] split = fieldPath.split("\\.");
+        String fullPathSoFar = "";
+        Object current = currentCollectionItem;
+        Class<?> currentClass = collectionItemType;
+        //for object A containing nested object B ... with fieldPath Z
+        //fieldPath = b.c.....z
+        for (String currentPathComponent : split) {
+            fullPathSoFar += currentPathComponent;
+            if (failedCache.contains(fullPathSoFar)) {
+                //failed in the past
+                current = null;
+            }
+            Method method = getGetter(methodCache, fullPathSoFar, currentClass, currentPathComponent);
+            if (method == null) {
+                failedCache.add(fullPathSoFar);
+                current = null;
+                break;
+            }
+            Object data = invokeMethodProtected(current, method);
+            if (data == null) {
+                current = null;
+                break;
+            }
+            current = data;
+            currentClass = current.getClass();
+        }
+        return current;
+    }
+
+    private static Object invokeMethodProtected(Object current, Method method){
+        try {
+            return method.invoke(current);
+        }
+        catch (Throwable e){
+            logger.debug("failed invoking method "+method.getName() +" on object",e);
+            return null;
         }
     }
 
-    
+    private static Method getGetter(Map<String, Method> fieldNameToMethod, String fullPathSoFar, Class<?> currentClass, String currentName) {
+        Method method = fieldNameToMethod.get(fullPathSoFar);
+        if (method == null) {
+            try {
+                method = currentClass.getMethod("get" + StringUtils.capitalize(currentName));
+            } catch (Exception ignored) {
+            }
+            if (method == null) {
+                try {
+                    method = currentClass.getMethod("is" + StringUtils.capitalize(currentName));
+                } catch (Exception ignored) {
+
+                    return null;
+                }
+            }
+
+            fieldNameToMethod.put(fullPathSoFar, method);
+        }
+        return method;
+    }
+
+
     public void validateExportDynamicExecution(ExportDynamicExecution exportDynamicExecution, SecurityContext securityContext) {
         validate(exportDynamicExecution, securityContext);
         if (exportDynamicExecution.getFieldToName() == null || exportDynamicExecution.getFieldToName().isEmpty()) {
@@ -344,9 +376,18 @@ public class DynamicInvokersService implements ServicePlugin {
         }
     }
 
-    
+    public void validateExportDynamicInvoker(ExportDynamicInvoker exportDynamicInvoker, SecurityContext securityContext) {
+        if (exportDynamicInvoker.getFieldProperties() == null || exportDynamicInvoker.getFieldProperties().isEmpty()) {
+            throw new BadRequestException("fieldProperties map must be non null and not empty");
+        }
+        if (exportDynamicInvoker.getCsvFormat() == null) {
+            exportDynamicInvoker.setCsvFormat(CSVFormat.EXCEL);
+        }
+    }
+
+
     public void validate(DynamicExecutionExampleRequest dynamicExecutionExampleRequest, SecurityContext securityContext) {
-     dynamicExecutionService.validate(dynamicExecutionExampleRequest,securityContext);
+        dynamicExecutionService.validate(dynamicExecutionExampleRequest, securityContext);
 
     }
 }

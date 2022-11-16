@@ -135,6 +135,20 @@ public class DynamicInvokersRESTService implements RESTService {
 
 	@POST
 	@Produces("application/json")
+	@Operation(summary = "exportDynamicInvokerToCSV", description = "exportDynamicInvokerToCSV")
+	@Path("exportDynamicInvokerToCSV")
+	public FileResource exportDynamicInvokerToCSV(
+			@HeaderParam("authenticationKey") String authenticationKey,
+			ExportDynamicInvoker exportDynamicInvoker,
+			@Context SecurityContext securityContext) {
+		service.validateExportDynamicInvoker(exportDynamicInvoker,securityContext);
+
+		return service.exportDynamicInvokerToCSV(exportDynamicInvoker, securityContext);
+	}
+
+
+	@POST
+	@Produces("application/json")
 	@Operation(summary = "createDynamicExecution", description = "createDynamicExecution")
 	@Path("createDynamicExecution")
 	public DynamicExecution createDynamicExecution(

@@ -3,10 +3,9 @@ package com.test.rest;
 import com.flexicore.data.jsoncontainers.PaginationResponse;
 import com.flexicore.model.Role;
 import com.flexicore.request.AuthenticationRequest;
-import com.flexicore.request.RoleCreate;
-import com.flexicore.request.RoleFilter;
-import com.flexicore.request.RoleUpdate;
 import com.flexicore.response.AuthenticationResponse;
+import com.flexicore.security.SecurityContext;
+import com.flexicore.service.impl.DynamicInvokersService;
 import com.test.init.FlexiCoreApplication;
 import com.wizzdi.flexicore.boot.dynamic.invokers.request.DynamicInvokerFilter;
 import com.wizzdi.flexicore.boot.dynamic.invokers.response.InvokerInfo;
@@ -15,6 +14,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
@@ -24,7 +24,6 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.UUID;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = FlexiCoreApplication.class)
@@ -37,6 +36,12 @@ public class DynamicInvokersRESTServiceTest {
     private Role role;
     @Autowired
     private TestRestTemplate restTemplate;
+    @Autowired
+    private DynamicInvokersService dynamicInvokersService;
+
+    @Autowired
+    @Lazy
+    private SecurityContext adminSecurityContext;
 
     @BeforeAll
     private void init() {
@@ -54,18 +59,20 @@ public class DynamicInvokersRESTServiceTest {
     @Test
     @Order(2)
     public void testGetAllInvokers() {
-        DynamicInvokerFilter request=new DynamicInvokerFilter()
+        DynamicInvokerFilter request = new DynamicInvokerFilter()
                 .setPageSize(10).setCurrentPage(0);
-        ParameterizedTypeReference<PaginationResponse<InvokerInfo>> t= new ParameterizedTypeReference<>() {};
+        ParameterizedTypeReference<PaginationResponse<InvokerInfo>> t = new ParameterizedTypeReference<>() {
+        };
 
         ResponseEntity<PaginationResponse<InvokerInfo>> roleResponse = this.restTemplate.exchange("/FlexiCore/rest/dynamicInvokers/getAllInvokers", HttpMethod.POST, new HttpEntity<>(request), t);
         Assertions.assertEquals(200, roleResponse.getStatusCodeValue());
         PaginationResponse<InvokerInfo> body = roleResponse.getBody();
         Assertions.assertNotNull(body);
         List<InvokerInfo> roles = body.getList();
-        Assertions.assertNotEquals(0,roles.size());
+        Assertions.assertNotEquals(0, roles.size());
 
 
     }
+
 
 }

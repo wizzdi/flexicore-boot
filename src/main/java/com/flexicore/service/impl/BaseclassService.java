@@ -6,35 +6,28 @@
  ******************************************************************************/
 package com.flexicore.service.impl;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.flexicore.annotations.Baseclassroot;
 import com.flexicore.data.BaseclassRepository;
 import com.flexicore.data.BaselinkRepository;
-import com.flexicore.data.jsoncontainers.CrossLoaderResolver;
 import com.flexicore.data.jsoncontainers.PaginationResponse;
 import com.flexicore.data.jsoncontainers.SetBaseclassTenantRequest;
 import com.flexicore.data.jsoncontainers.Views;
-import com.flexicore.interfaces.dynamic.ListFieldInfo;
 import com.flexicore.interfaces.dynamic.ListingInvoker;
 import com.flexicore.model.*;
 import com.flexicore.request.*;
 import com.flexicore.response.BaseclassCount;
 import com.flexicore.security.SecurityContext;
-import com.google.common.cache.Cache;
-import com.google.common.cache.CacheBuilder;
 import com.wizzdi.flexicore.boot.dynamic.invokers.request.DynamicExecutionExampleRequest;
 import com.wizzdi.flexicore.boot.dynamic.invokers.response.ParameterInfo;
 import com.wizzdi.flexicore.boot.dynamic.invokers.service.DynamicExecutionService;
-import com.wizzdi.flexicore.boot.dynamic.invokers.service.DynamicInvokerService;
 import com.wizzdi.flexicore.file.model.FileResource;
 import com.wizzdi.flexicore.security.data.BasicRepository;
 import com.wizzdi.flexicore.security.data.SecuredBasicRepository;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 import org.apache.commons.io.ByteOrderMark;
-import org.apache.commons.lang3.ClassUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.pf4j.Extension;
 import org.pf4j.PluginManager;
@@ -48,18 +41,11 @@ import org.springframework.stereotype.Component;
 import javax.persistence.OneToMany;
 import javax.ws.rs.BadRequestException;
 import javax.ws.rs.ClientErrorException;
-import javax.ws.rs.NotAuthorizedException;
-import javax.ws.rs.ServiceUnavailableException;
 import javax.ws.rs.core.Response;
-import java.beans.BeanInfo;
-import java.beans.Introspector;
-import java.beans.PropertyDescriptor;
 import java.io.*;
-import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.nio.charset.StandardCharsets;
-import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.time.ZonedDateTime;
@@ -260,13 +246,11 @@ public class BaseclassService implements com.flexicore.service.BaseclassService 
     @Override
     public <T, E extends FilteringInformationHolder> FileResource exportBaseclassGeneric(ExportBaseclassGeneric<E> baseclassGeneric, SecurityContext securityContext) {
         FilteringInformationHolder filteringInformationHolder = baseclassGeneric.getFilter();
-        Map<String, String> fieldToName = baseclassGeneric.getFieldToName();
+        Map<String, FieldProperties> fieldToName = baseclassGeneric.getFieldToName();
         Map<String, Method> fieldNameToMethod = new HashMap<>();
         PaginationResponse<T> paginationResponse = listAllBaseclassGeneric(filteringInformationHolder, securityContext);
         List<T> collection = paginationResponse.getList();
-        Collection<String> headers = fieldToName.values();
-        String[] headersArr = new String[headers.size()];
-        headers.toArray(headersArr);
+        String[] headersArr  = fieldToName.values().stream().sorted(Comparator.comparing(FieldProperties::getOrdinal)).map(FieldProperties::getName).toArray(String[]::new);
         CSVFormat format = baseclassGeneric.getCsvFormat();
         File file = new File(com.flexicore.service.FileResourceService.generateNewPathForFileResource("dynamic-execution-csv", securityContext.getUser()) + ".csv");
 
@@ -283,7 +267,8 @@ public class BaseclassService implements com.flexicore.service.BaseclassService 
         format = format.withHeader(headersArr);
         try (Writer out = new OutputStreamWriter(new FileOutputStream(file, true), StandardCharsets.UTF_8);
              CSVPrinter csvPrinter = new CSVPrinter(out, format)) {
-            DynamicInvokersService.exportCollection(fieldToName, fieldNameToMethod, csvPrinter, collection);
+            List<List<Object>> expendedRecordSet = DynamicInvokersService.toExpendedRecordSet(fieldToName, fieldNameToMethod, collection);
+            csvPrinter.printRecords(expendedRecordSet);
         } catch (Exception e) {
             logger.error( "failed exporting data", e);
         }

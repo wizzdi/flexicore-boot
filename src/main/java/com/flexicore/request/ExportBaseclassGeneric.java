@@ -8,7 +8,7 @@ import java.util.Map;
 public class ExportBaseclassGeneric<E extends FilteringInformationHolder> {
 
     private E filter;
-    private Map<String, String> fieldToName;
+    private Map<String, FieldProperties> fieldToName;
     private CSVFormat csvFormat;
 
     public E getFilter() {
@@ -20,11 +20,11 @@ public class ExportBaseclassGeneric<E extends FilteringInformationHolder> {
         return (T) this;
     }
 
-    public Map<String, String> getFieldToName() {
+    public Map<String, FieldProperties> getFieldToName() {
         return fieldToName;
     }
 
-    public <T extends ExportBaseclassGeneric<E>> T setFieldToName(Map<String, String> fieldToName) {
+    public <T extends ExportBaseclassGeneric<E>> T setFieldToName(Map<String, FieldProperties> fieldToName) {
         this.fieldToName = fieldToName;
         return (T) this;
     }
