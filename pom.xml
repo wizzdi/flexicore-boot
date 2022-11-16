@@ -4,7 +4,7 @@
 
     <groupId>com.wizzdi</groupId>
     <artifactId>flexicore-security-service</artifactId>
-    <version>2.0.2-SNAPSHOT</version>
+    <version>2.0.2</version>
 
     <name>FlexiCore security service</name>
     <description>flexicore security service</description>
@@ -67,7 +67,7 @@
         <connection>scm:git:git://wizzdi/flexicore-security-service.git</connection>
         <developerConnection>scm:git:git@github.com:wizzdi/flexicore-security-service.git</developerConnection>
         <url>https://github.com/wizzdi/flexicore-security-service</url>
-        <tag>flexicore-security-service-${version}</tag>
+        <tag>flexicore-security-service-2.0.2</tag>
     </scm>
     <dependencyManagement>
         <dependencies>
