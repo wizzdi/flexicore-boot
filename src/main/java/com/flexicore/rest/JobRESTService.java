@@ -19,6 +19,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.pf4j.Extension;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 import javax.enterprise.context.RequestScoped;
@@ -37,6 +38,7 @@ import javax.ws.rs.core.MediaType;
 public class JobRESTService implements RESTService {
 
 	@Autowired
+	@Lazy
 	private JobService jobService;
 
 	/**
