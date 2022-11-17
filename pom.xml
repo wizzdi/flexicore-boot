@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.wizzdi</groupId>
     <artifactId>flexicore-base-service</artifactId>
-    <version>3.0.3</version>
+    <version>3.0.4-SNAPSHOT</version>
     <name>FlexiCore base service</name>
     <description>flexicore base service</description>
     <url>https://wizzdi.com</url>
@@ -88,7 +88,7 @@
         <connection>scm:git:git://wizzdi/flexicore-base-service.git</connection>
         <developerConnection>scm:git:git@github.com:wizzdi/flexicore-base-service.git</developerConnection>
         <url>https://github.com/wizzdi/flexicore-base-service</url>
-        <tag>flexicore-base-service-3.0.3</tag>
+        <tag>flexicore-base-service-${version}</tag>
     </scm>
     <dependencyManagement>
         <dependencies>
