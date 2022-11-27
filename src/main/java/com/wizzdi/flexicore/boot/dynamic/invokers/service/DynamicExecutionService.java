@@ -1,6 +1,5 @@
 package com.wizzdi.flexicore.boot.dynamic.invokers.service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.flexicore.model.Baseclass;
 import com.flexicore.model.Basic;
 import com.flexicore.model.SecuredBasic_;
@@ -9,7 +8,6 @@ import com.wizzdi.flexicore.boot.base.interfaces.Plugin;
 import com.wizzdi.flexicore.boot.dynamic.invokers.data.DynamicExecutionRepository;
 import com.wizzdi.flexicore.boot.dynamic.invokers.interfaces.ExecutionContext;
 import com.wizzdi.flexicore.boot.dynamic.invokers.model.DynamicExecution;
-import com.wizzdi.flexicore.boot.dynamic.invokers.model.DynamicExecution_;
 import com.wizzdi.flexicore.boot.dynamic.invokers.model.ServiceCanonicalName;
 import com.wizzdi.flexicore.boot.dynamic.invokers.request.*;
 import com.wizzdi.flexicore.boot.dynamic.invokers.response.InvokerInfo;
@@ -43,8 +41,6 @@ public class DynamicExecutionService implements Plugin {
 	private DynamicInvokerService dynamicInvokerService;
 	@Autowired
 	private ExampleService exampleService;
-	@Autowired
-	private ObjectMapper objectMapper;
 	@Autowired
 	private BasicService basicService;
 
