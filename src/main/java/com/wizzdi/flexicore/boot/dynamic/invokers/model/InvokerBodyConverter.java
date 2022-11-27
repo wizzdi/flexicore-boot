@@ -1,7 +1,10 @@
 package com.wizzdi.flexicore.boot.dynamic.invokers.model;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
@@ -18,7 +21,10 @@ import java.io.IOException;
 @Converter
 public class InvokerBodyConverter implements ApplicationContextAware , AttributeConverter<Object,byte[]>{
 	private static final Logger logger= LoggerFactory.getLogger(InvokerBodyConverter.class);
-	private static ObjectMapper objectMapper;
+	private static final ObjectMapper objectMapper=new ObjectMapper()
+			.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES,false)
+			.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
+			.registerModule(new JavaTimeModule());
 	@Override
 	public byte[] convertToDatabaseColumn(Object invokerBody) {
 		try {
@@ -41,6 +47,5 @@ public class InvokerBodyConverter implements ApplicationContextAware , Attribute
 
 	@Override
 	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-		objectMapper=applicationContext.getBean(ObjectMapper.class);
 	}
 }
