@@ -260,8 +260,11 @@ public class FileResourceService implements Plugin {
 		throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
 	}
 
-
 	public boolean saveFile(byte[] data, long offsetInFile, FileResource file) {
+		return saveFile(data,offsetInFile,file,true);
+	}
+
+	public boolean saveFile(byte[] data, long offsetInFile, FileResource file,boolean updateOffset) {
 		File f = new File(file.getFullPath());
 		File parentFile = f.getParentFile();
 		if (parentFile == null) {
@@ -280,18 +283,26 @@ public class FileResourceService implements Plugin {
 			fos.seek(offsetInFile);
 			fos.write(data);
 			written = data.length;
-			file.setOffset(offsetInFile + written);
+			if(updateOffset){
+				file.setOffset(offsetInFile + written);
+
+			}
 
 
 		} catch (IOException e) {
 			logger.error("unable to upload , truncating file to last known good location", e);
 			long orig = file.getOffset();
 			long fileOffset = trimToSize(f, orig);
-			file.setOffset(fileOffset);
+			if(updateOffset){
+				file.setOffset(fileOffset);
+			}
+
 
 
 		} finally {
-			fileResourceRepository.merge(file);
+			if(updateOffset){
+				fileResourceRepository.merge(file);
+			}
 		}
 		return true;
 
