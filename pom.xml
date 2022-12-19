@@ -45,7 +45,7 @@
         <flexicore-boot-starter-websocket.version>2.0.0</flexicore-boot-starter-websocket.version>
         <flexicore-boot-dynamic-invokers-service.version>2.0.0</flexicore-boot-dynamic-invokers-service.version>
         <flexicore-base-model.version>3.0.1</flexicore-base-model.version>
-        <flexicore-file-service.version>2.0.1</flexicore-file-service.version>
+        <flexicore-file-service.version>2.0.2</flexicore-file-service.version>
         <javaee-api.version>8.0</javaee-api.version>
         <flexicore-boot.version>2.0.0</flexicore-boot.version>
         <flexicore-boot-vintage.version>2.0.0</flexicore-boot-vintage.version>
