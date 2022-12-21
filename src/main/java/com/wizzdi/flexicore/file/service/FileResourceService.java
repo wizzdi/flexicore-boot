@@ -383,7 +383,7 @@ public class FileResourceService implements Plugin {
 
 	public byte[] readFilePart(File file, long offset) {
 		byte[] data = new byte[MAX_FILE_PART_SIZE];
-		try (RandomAccessFile randomAccessFile = new RandomAccessFile(file, "rw")) {
+		try (RandomAccessFile randomAccessFile = new RandomAccessFile(file, "r")) {
 			randomAccessFile.seek(offset);
 			int read = randomAccessFile.read(data, 0, MAX_FILE_PART_SIZE);
 			if (read < MAX_FILE_PART_SIZE) {
