@@ -4,7 +4,7 @@
 
     <groupId>com.wizzdi</groupId>
     <artifactId>flexicore-file-model</artifactId>
-    <version>2.0.2-SNAPSHOT</version>
+    <version>3.0.0-SNAPSHOT</version>
     <name>FlexiCore File model</name>
     <description>flexicore File model</description>
     <url>https://wizzdi.com</url>
@@ -19,13 +19,13 @@
     <properties>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
-        <spring-boot.version>2.7.0</spring-boot.version>
-        <version.eclipselink>2.7.10</version.eclipselink>
+        <spring-boot.version>3.0.0</spring-boot.version>
+        <version.eclipselink>4.0.0</version.eclipselink>
 
 
-        <flexicore-security-model.version>2.0.1</flexicore-security-model.version>
-        <flexicore-boot-starter-web.version>2.0.0</flexicore-boot-starter-web.version>
-        <flexicore-boot-starter-data-jpa.version>2.0.0</flexicore-boot-starter-data-jpa.version>
+        <flexicore-security-model.version>3.0.0-SNAPSHOT</flexicore-security-model.version>
+        <flexicore-boot-starter-web.version>3.0.0-SNAPSHOT</flexicore-boot-starter-web.version>
+        <flexicore-boot-starter-data-jpa.version>3.0.0-SNAPSHOT</flexicore-boot-starter-data-jpa.version>
     </properties>
     <distributionManagement>
         <snapshotRepository>

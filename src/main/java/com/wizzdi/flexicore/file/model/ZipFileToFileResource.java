@@ -2,8 +2,8 @@ package com.wizzdi.flexicore.file.model;
 
 import com.flexicore.model.Basic;
 
-import javax.persistence.Entity;
-import javax.persistence.ManyToOne;
+import jakarta.persistence.Entity;
+import jakarta.persistence.ManyToOne;
 
 @Entity
 public class ZipFileToFileResource extends Basic {

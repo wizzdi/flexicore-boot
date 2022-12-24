@@ -14,7 +14,7 @@ import com.flexicore.model.Basic;
 import com.flexicore.model.SecuredBasic;
 import com.wizzdi.flexicore.boot.rest.views.Views;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
