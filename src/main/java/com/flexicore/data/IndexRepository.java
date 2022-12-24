@@ -8,10 +8,10 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.EntityManager;
-import javax.persistence.Index;
-import javax.persistence.PersistenceContext;
-import javax.persistence.Query;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.Index;
+import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.Query;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;

@@ -17,7 +17,7 @@ import com.flexicore.request.InvokersFilter;
 import com.flexicore.request.InvokersOperationFilter;
 import com.flexicore.security.SecurityContext;
 
-import javax.persistence.criteria.*;
+import jakarta.persistence.criteria.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;

@@ -31,8 +31,8 @@ import com.flexicore.request.TenantToUserFilter;
 import com.flexicore.request.UserFiltering;
 import com.flexicore.security.SecurityContext;
 
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.*;
+import jakarta.persistence.TypedQuery;
+import jakarta.persistence.criteria.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;

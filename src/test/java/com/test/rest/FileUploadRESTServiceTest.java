@@ -19,7 +19,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.util.StreamUtils;
 import org.springframework.web.client.ResponseExtractor;
 
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.core.Response;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.util.Arrays;
@@ -43,7 +43,7 @@ public class FileUploadRESTServiceTest {
     private ObjectMapper objectMapper;
 
     @BeforeAll
-    private void init() {
+    public void init() {
         ResponseEntity<AuthenticationResponse> authenticationResponse = this.restTemplate.postForEntity("/FlexiCore/rest/authenticationNew/login", new AuthenticationRequest().setEmail("admin@flexicore.com").setPassword("admin"), AuthenticationResponse.class);
         String authenticationKey = authenticationResponse.getBody().getAuthenticationKey();
         restTemplate.getRestTemplate().setInterceptors(

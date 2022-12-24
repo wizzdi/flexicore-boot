@@ -14,7 +14,7 @@ import com.flexicore.request.SecurityLinkFilter;
 import com.flexicore.security.SecurityContext;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import javax.persistence.criteria.*;
+import jakarta.persistence.criteria.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;

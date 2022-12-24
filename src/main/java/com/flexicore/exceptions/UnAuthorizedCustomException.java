@@ -3,9 +3,9 @@ package com.flexicore.exceptions;
 import com.flexicore.interfaces.ErrorCodeException;
 import org.jboss.resteasy.spi.HttpResponseCodes;
 
-import javax.ws.rs.ClientErrorException;
-import javax.ws.rs.NotAuthorizedException;
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.ClientErrorException;
+import jakarta.ws.rs.NotAuthorizedException;
+import jakarta.ws.rs.core.Response;
 
 public class UnAuthorizedCustomException extends ClientErrorException  implements ErrorCodeException {
 

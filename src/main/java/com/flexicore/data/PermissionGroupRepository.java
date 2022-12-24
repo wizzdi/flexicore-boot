@@ -13,8 +13,8 @@ import com.flexicore.model.*;
 import com.flexicore.request.PermissionGroupsFilter;
 import com.flexicore.security.SecurityContext;
 
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.*;
+import jakarta.persistence.TypedQuery;
+import jakarta.persistence.criteria.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;

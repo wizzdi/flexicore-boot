@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.wizzdi</groupId>
     <artifactId>flexicore-base-service</artifactId>
-    <version>3.0.4-SNAPSHOT</version>
+    <version>4.0.0-SNAPSHOT</version>
     <name>FlexiCore base service</name>
     <description>flexicore base service</description>
     <url>https://wizzdi.com</url>
@@ -17,17 +17,16 @@
     </licenses>
     <properties>
         <version.compiler.plugin>3.3</version.compiler.plugin>
-        <version.eclipselink>2.7.10</version.eclipselink>
+        <version.eclipselink>4.0.0</version.eclipselink>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <pf4j-spring.version>0.7.0</pf4j-spring.version>
-        <swagger.version>2.2.0</swagger.version>
+        <swagger.version>2.2.7</swagger.version>
 
-        <spring-boot-dependencies.version>2.7.0</spring-boot-dependencies.version>
-        <flexicore-security-model.version>2.0.1</flexicore-security-model.version>
-        <flexicore-security-service.version>2.0.1</flexicore-security-service.version>
-        <springdoc-openapi-webmvc-core.version>1.6.7</springdoc-openapi-webmvc-core.version>
+        <spring-boot-dependencies.version>3.0.0</spring-boot-dependencies.version>
+        <flexicore-security-model.version>3.0.0-SNAPSHOT</flexicore-security-model.version>
+        <flexicore-security-service.version>3.0.0-SNAPSHOT</flexicore-security-service.version>
         <totp-spring-boot-starter.version>1.7.1</totp-spring-boot-starter.version>
         <gson.version>2.9.0</gson.version>
         <commons-codec.version>1.15</commons-codec.version>
@@ -40,22 +39,22 @@
         <tink.version>1.6.1</tink.version>
         <commons-io.version>2.11.0</commons-io.version>
         <commons-csv.version>1.9.0</commons-csv.version>
-        <jjwt.version>0.9.1</jjwt.version>
-        <flexicore-boot-dynamic-invokers-model.version>2.0.0</flexicore-boot-dynamic-invokers-model.version>
-        <flexicore-boot-starter-websocket.version>2.0.0</flexicore-boot-starter-websocket.version>
-        <flexicore-boot-dynamic-invokers-service.version>2.0.0</flexicore-boot-dynamic-invokers-service.version>
-        <flexicore-base-model.version>3.0.1</flexicore-base-model.version>
-        <flexicore-file-service.version>2.0.3</flexicore-file-service.version>
-        <javaee-api.version>8.0</javaee-api.version>
-        <flexicore-boot.version>2.0.0</flexicore-boot.version>
-        <flexicore-boot-vintage.version>2.0.0</flexicore-boot-vintage.version>
-        <resteasy-flexicore-boot-starter.version>2.0.0</resteasy-flexicore-boot-starter.version>
-        <flexicore-boot-starter-web.version>2.0.0</flexicore-boot-starter-web.version>
-        <flexicore-boot-starter-actuator.version>2.0.0</flexicore-boot-starter-actuator.version>
-        <flexicore-boot-starter-data-jpa.version>2.0.0</flexicore-boot-starter-data-jpa.version>
-        <dynamic-properties-converter-postgresql.version>2.0.0</dynamic-properties-converter-postgresql.version>
-        <flexicore-boot-starter-data-jpa-eclipselink.version>2.0.0</flexicore-boot-starter-data-jpa-eclipselink.version>
+        <jjwt-api.version>0.11.5</jjwt-api.version>
+        <flexicore-boot-dynamic-invokers-model.version>3.0.0-SNAPSHOT</flexicore-boot-dynamic-invokers-model.version>
+        <flexicore-boot-starter-websocket.version>3.0.0-SNAPSHOT</flexicore-boot-starter-websocket.version>
+        <flexicore-boot-dynamic-invokers-service.version>3.0.0-SNAPSHOT</flexicore-boot-dynamic-invokers-service.version>
+        <flexicore-base-model.version>4.0.0-SNAPSHOT</flexicore-base-model.version>
+        <flexicore-file-service.version>3.0.0-SNAPSHOT</flexicore-file-service.version>
+        <flexicore-boot.version>3.0.0-SNAPSHOT</flexicore-boot.version>
+        <flexicore-boot-vintage.version>3.0.0-SNAPSHOT</flexicore-boot-vintage.version>
+        <resteasy-flexicore-boot-starter.version>3.0.0-SNAPSHOT</resteasy-flexicore-boot-starter.version>
+        <flexicore-boot-starter-web.version>3.0.0-SNAPSHOT</flexicore-boot-starter-web.version>
+        <flexicore-boot-starter-actuator.version>3.0.0-SNAPSHOT</flexicore-boot-starter-actuator.version>
+        <flexicore-boot-starter-data-jpa.version>3.0.0-SNAPSHOT</flexicore-boot-starter-data-jpa.version>
+        <dynamic-properties-converter-postgresql.version>3.0.0-SNAPSHOT</dynamic-properties-converter-postgresql.version>
+        <flexicore-boot-starter-data-jpa-eclipselink.version>3.0.0-SNAPSHOT</flexicore-boot-starter-data-jpa-eclipselink.version>
 
+        <springdoc-openapi-starter-webmvc-api.version>2.0.2</springdoc-openapi-starter-webmvc-api.version>
     </properties>
 
     <distributionManagement>
@@ -102,6 +101,13 @@
         </dependencies>
     </dependencyManagement>
     <dependencies>
+        <!-- https://mvnrepository.com/artifact/jakarta.batch/jakarta.batch-api -->
+        <dependency>
+            <groupId>jakarta.batch</groupId>
+            <artifactId>jakarta.batch-api</artifactId>
+            <version>2.1.1</version>
+        </dependency>
+
         <dependency>
             <groupId>com.wizzdi</groupId>
             <artifactId>flexicore-security-model</artifactId>
@@ -112,12 +118,13 @@
             <artifactId>flexicore-security-service</artifactId>
             <version>${flexicore-security-service.version}</version>
         </dependency>
-        <!-- https://mvnrepository.com/artifact/org.springdoc/springdoc-openapi-webmvc-core -->
+        <!-- https://mvnrepository.com/artifact/org.springdoc/springdoc-openapi-starter-webmvc-api -->
         <dependency>
             <groupId>org.springdoc</groupId>
-            <artifactId>springdoc-openapi-webmvc-core</artifactId>
-            <version>${springdoc-openapi-webmvc-core.version}</version>
+            <artifactId>springdoc-openapi-starter-webmvc-api</artifactId>
+            <version>${springdoc-openapi-starter-webmvc-api.version}</version>
         </dependency>
+
 
 
         <dependency>
@@ -169,12 +176,12 @@
         </dependency>
 
 
-        <!-- https://mvnrepository.com/artifact/javax.enterprise/cdi-api -->
+        <!-- https://mvnrepository.com/artifact/jakarta.enterprise/cdi-api -->
 
 
         <dependency>
             <groupId>io.swagger.core.v3</groupId>
-            <artifactId>swagger-jaxrs2</artifactId>
+            <artifactId>swagger-jaxrs2-jakarta</artifactId>
             <version>${swagger.version}</version>
         </dependency>
 
@@ -182,7 +189,7 @@
 
         <dependency>
             <groupId>io.swagger.core.v3</groupId>
-            <artifactId>swagger-jaxrs2-servlet-initializer</artifactId>
+            <artifactId>swagger-jaxrs2-servlet-initializer-jakarta</artifactId>
             <version>${swagger.version}</version>
         </dependency>
 
@@ -237,14 +244,20 @@
         </dependency>
         <dependency>
             <groupId>io.jsonwebtoken</groupId>
-            <artifactId>jjwt</artifactId>
-            <version>${jjwt.version}</version>
-            <exclusions>
-                <exclusion>
-                    <artifactId>jackson-databind</artifactId>
-                    <groupId>com.fasterxml.jackson.core</groupId>
-                </exclusion>
-            </exclusions>
+            <artifactId>jjwt-api</artifactId>
+            <version>${jjwt-api.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt-impl</artifactId>
+            <version>${jjwt-api.version}</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt-jackson</artifactId> <!-- or jjwt-gson if Gson is preferred -->
+            <version>${jjwt-api.version}</version>
+            <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>com.wizzdi</groupId>
@@ -279,11 +292,7 @@
             <scope>provided</scope>
         </dependency>
 
-        <dependency>
-            <groupId>javax</groupId>
-            <artifactId>javaee-api</artifactId>
-            <version>${javaee-api.version}</version>
-        </dependency>
+
         <dependency>
             <groupId>org.eclipse.persistence</groupId>
             <artifactId>org.eclipse.persistence.jpa</artifactId>

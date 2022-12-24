@@ -13,8 +13,8 @@ import com.flexicore.security.SecurityContext;
 import org.pf4j.Extension;
 import org.springframework.stereotype.Component;
 
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.*;
+import jakarta.persistence.TypedQuery;
+import jakarta.persistence.criteria.*;
 import java.util.ArrayList;
 import java.util.List;
 

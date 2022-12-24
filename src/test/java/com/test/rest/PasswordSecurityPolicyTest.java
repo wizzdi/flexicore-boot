@@ -36,7 +36,7 @@ public class PasswordSecurityPolicyTest {
     private TestRestTemplate restTemplate;
 
     @BeforeAll
-    private void init() {
+    public void init() {
         ResponseEntity<AuthenticationResponse> authenticationResponse = this.restTemplate.postForEntity("/FlexiCore/rest/authenticationNew/login", new AuthenticationRequest().setEmail("admin@flexicore.com").setPassword("admin"), AuthenticationResponse.class);
         String authenticationKey = authenticationResponse.getBody().getAuthenticationKey();
         restTemplate.getRestTemplate().setInterceptors(

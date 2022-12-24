@@ -6,7 +6,7 @@ import com.flexicore.model.Job;
 import com.flexicore.request.RegisterForJobUpdates;
 import com.flexicore.security.SecurityContext;
 
-import javax.websocket.Session;
+import jakarta.websocket.Session;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;

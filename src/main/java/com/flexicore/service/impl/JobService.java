@@ -25,13 +25,14 @@ import org.springframework.batch.core.JobParametersBuilder;
 import org.springframework.batch.core.explore.JobExplorer;
 import org.springframework.batch.core.launch.JobLauncher;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Component;
 
-import javax.batch.operations.JobOperator;
-import javax.batch.runtime.BatchRuntime;
-import javax.websocket.Session;
-import javax.ws.rs.BadRequestException;
+import jakarta.batch.operations.JobOperator;
+import jakarta.batch.runtime.BatchRuntime;
+import jakarta.websocket.Session;
+import jakarta.ws.rs.BadRequestException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -48,13 +49,16 @@ public class JobService implements com.flexicore.service.JobService {
     private static final Cache<String, Job> startedJobs = CacheBuilder.newBuilder().maximumSize(1000).expireAfterAccess(2, TimeUnit.HOURS).build();
 
 
-    @Autowired
+    @Autowired(required = false)
+    @Lazy
     private JobLauncher jobLauncher;
 
-    @Autowired
+    @Autowired(required = false)
+    @Lazy
     private JobExplorer jobExplorer;
 
-    @Autowired
+    @Autowired(required = false)
+    @Lazy
     private org.springframework.batch.core.Job job;
     private static final Logger logger = LoggerFactory.getLogger(JobService.class);
 

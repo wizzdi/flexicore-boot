@@ -9,7 +9,7 @@ package com.flexicore.exceptions;
 
 import org.jboss.resteasy.spi.HttpResponseCodes;
 
-import javax.ws.rs.ClientErrorException;
+import jakarta.ws.rs.ClientErrorException;
 
 public class UserNotFoundException extends ClientErrorException {
 	private static final int  status= HttpResponseCodes.SC_BAD_REQUEST;

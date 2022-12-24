@@ -5,8 +5,8 @@ import com.flexicore.data.jsoncontainers.ObjectMapperContextResolver;
 import com.flexicore.data.jsoncontainers.Views;
 import com.flexicore.response.JobStatusResponse;
 
-import javax.websocket.Encoder;
-import javax.websocket.EndpointConfig;
+import jakarta.websocket.Encoder;
+import jakarta.websocket.EndpointConfig;
 import java.io.IOException;
 import java.io.Writer;
 

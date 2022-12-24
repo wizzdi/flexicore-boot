@@ -15,7 +15,7 @@ import com.flexicore.security.SecurityContext;
 import org.springframework.context.annotation.Primary;
 import org.pf4j.Extension;
 
-import javax.persistence.criteria.*;
+import jakarta.persistence.criteria.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;

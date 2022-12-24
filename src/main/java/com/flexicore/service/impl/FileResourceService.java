@@ -37,12 +37,11 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Component;
 import org.springframework.web.server.ResponseStatusException;
 
-import javax.activation.MimetypesFileTypeMap;
-import javax.batch.runtime.BatchRuntime;
-import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.BadRequestException;
-import javax.ws.rs.ClientErrorException;
-import javax.ws.rs.core.Response;
+import jakarta.activation.MimetypesFileTypeMap;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.ws.rs.BadRequestException;
+import jakarta.ws.rs.ClientErrorException;
+import jakarta.ws.rs.core.Response;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -84,7 +83,7 @@ public class FileResourceService implements com.flexicore.service.FileResourceSe
 	@Autowired
 	private BaselinkRepository baselinkRepository;
 
-	@Autowired
+	@Autowired(required = false)
 	@Lazy
 	private JobService jobService;
 
@@ -102,7 +101,7 @@ public class FileResourceService implements com.flexicore.service.FileResourceSe
 			return fileResource;
 		}
 		catch (ResponseStatusException responseStatusException){
-			throw new ClientErrorException(responseStatusException.getReason(),Response.Status.fromStatusCode(responseStatusException.getStatus().value()));
+			throw new ClientErrorException(responseStatusException.getReason(),Response.Status.fromStatusCode(responseStatusException.getStatusCode().value()));
 		}
 
 

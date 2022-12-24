@@ -13,8 +13,8 @@ import com.flexicore.service.impl.OperationService;
 import org.pf4j.Extension;
 import org.springframework.stereotype.Component;
 
-import javax.inject.Inject;
-import javax.ws.rs.BadRequestException;
+import jakarta.inject.Inject;
+import jakarta.ws.rs.BadRequestException;
 
 @PluginInfo(version = 1)
 @InvokerInfo

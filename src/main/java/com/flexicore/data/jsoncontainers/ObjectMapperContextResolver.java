@@ -17,8 +17,8 @@ import com.flexicore.data.jsoncontainers.Views.Unrefined;
 import com.flexicore.interfaces.JaxRSProviderPlugin;
 import org.pf4j.Extension;
 
-import javax.ws.rs.ext.ContextResolver;
-import javax.ws.rs.ext.Provider;
+import jakarta.ws.rs.ext.ContextResolver;
+import jakarta.ws.rs.ext.Provider;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Map;

@@ -24,7 +24,7 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Component;
 
-import javax.ws.rs.BadRequestException;
+import jakarta.ws.rs.BadRequestException;
 import java.lang.reflect.Constructor;
 import java.util.*;
 import java.util.stream.Collectors;

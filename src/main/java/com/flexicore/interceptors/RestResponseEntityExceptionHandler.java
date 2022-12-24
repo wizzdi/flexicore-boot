@@ -11,7 +11,7 @@ import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
-import javax.ws.rs.WebApplicationException;
+import jakarta.ws.rs.WebApplicationException;
 
 @ControllerAdvice
 public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionHandler {
@@ -33,7 +33,7 @@ public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionH
 		}
 		if(ex instanceof ResponseStatusException){
 			ResponseStatusException responseStatusException= (ResponseStatusException) ex;
-			status= responseStatusException.getStatus();
+			status= HttpStatus.valueOf(responseStatusException.getStatusCode().value());
 			body=new ExceptionHolder(status.value(),-1,responseStatusException.getReason());
 		}
 		if(body==null){

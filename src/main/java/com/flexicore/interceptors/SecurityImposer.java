@@ -36,8 +36,8 @@ import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
-import javax.websocket.CloseReason;
-import javax.websocket.Session;
+import jakarta.websocket.CloseReason;
+import jakarta.websocket.Session;
 import java.lang.reflect.Method;
 import java.time.OffsetDateTime;
 import java.time.temporal.ChronoUnit;

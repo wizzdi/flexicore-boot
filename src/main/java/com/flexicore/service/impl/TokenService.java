@@ -4,6 +4,7 @@ import com.flexicore.model.Baseclass;
 import com.flexicore.model.User;
 import com.flexicore.response.JWTClaims;
 import com.flexicore.response.impl.JWTClaimsImpl;
+
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
@@ -81,7 +82,7 @@ public class TokenService implements com.flexicore.service.TokenService {
     public JWTClaims parseClaimsAndVerifyClaims(String jwtToken, Logger logger) {
         Claims claims =null;
         try {
-            claims=Jwts.parser().setSigningKey(cachedJWTSecret).parseClaimsJws(jwtToken).getBody();
+            claims=Jwts.parserBuilder().setSigningKey(cachedJWTSecret).build().parseClaimsJws(jwtToken).getBody();
         }
         catch (JwtException e){
             logger.log(Level.SEVERE,"invalid token ",e);

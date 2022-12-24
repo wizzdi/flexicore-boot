@@ -24,9 +24,9 @@ import org.springframework.web.bind.annotation.RequestAttribute;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.websocket.Session;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.websocket.Session;
 import java.lang.reflect.Method;
 import java.time.OffsetDateTime;
 import java.time.temporal.ChronoUnit;

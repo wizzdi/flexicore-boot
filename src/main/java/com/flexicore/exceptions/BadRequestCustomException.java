@@ -2,7 +2,7 @@ package com.flexicore.exceptions;
 
 import com.flexicore.interfaces.ErrorCodeException;
 
-import javax.ws.rs.BadRequestException;
+import jakarta.ws.rs.BadRequestException;
 
 public class BadRequestCustomException extends BadRequestException implements ErrorCodeException {
     private int errorCode;
