@@ -15,8 +15,8 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.wizzdi.flexicore.boot.rest.views.Views;
 
 
-import javax.ws.rs.ext.ContextResolver;
-import javax.ws.rs.ext.Provider;
+import jakarta.ws.rs.ext.ContextResolver;
+import jakarta.ws.rs.ext.Provider;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Map;

@@ -4,7 +4,7 @@
 
     <groupId>com.wizzdi</groupId>
     <artifactId>resteasy-flexicore-boot-starter</artifactId>
-    <version>2.0.1-SNAPSHOT</version>
+    <version>3.0.0-SNAPSHOT</version>
     <name>FlexiCore Boot JaxRS</name>
     <description>flexicore boot JaxRS</description>
     <url>https://wizzdi.com</url>
@@ -19,17 +19,16 @@
     <properties>
 
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <version.eclipselink>2.7.10</version.eclipselink>
 
         <!-- maven-compiler-plugin -->
         <maven.compiler.target>17</maven.compiler.target>
         <maven.compiler.source>17</maven.compiler.source>
-        <pf4j-spring.version>0.7.0</pf4j-spring.version>
+        <pf4j-spring.version>0.8.0</pf4j-spring.version>
 
-        <spring-boot.version>2.7.0</spring-boot.version>
-        <flexicore-boot.version>2.0.0</flexicore-boot.version>
-        <flexicore-boot-starter-web.version>2.0.0</flexicore-boot-starter-web.version>
-        <resteasy-spring-boot-starter.version>5.0.0.Final</resteasy-spring-boot-starter.version>
+        <spring-boot.version>3.0.0</spring-boot.version>
+        <flexicore-boot.version>3.0.0-SNAPSHOT</flexicore-boot.version>
+        <flexicore-boot-starter-web.version>3.0.0-SNAPSHOT</flexicore-boot-starter-web.version>
+        <resteasy-spring-boot-starter.version>6.0.0.Final</resteasy-spring-boot-starter.version>
         <flexicore-boot-test-helper.version>2.0.0</flexicore-boot-test-helper.version>
     </properties>
 
@@ -97,7 +96,7 @@
         </dependency>
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
-            <artifactId>resteasy-spring-boot-starter</artifactId>
+            <artifactId>resteasy-servlet-spring-boot-starter</artifactId>
             <version>${resteasy-spring-boot-starter.version}</version>
         </dependency>
         <dependency>
