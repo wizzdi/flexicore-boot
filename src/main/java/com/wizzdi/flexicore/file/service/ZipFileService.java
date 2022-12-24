@@ -22,7 +22,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.server.ResponseStatusException;
 import org.zeroturnaround.zip.ZipUtil;
 
-import javax.persistence.metamodel.SingularAttribute;
+import jakarta.persistence.metamodel.SingularAttribute;
 import java.io.File;
 import java.nio.charset.StandardCharsets;
 import java.util.*;

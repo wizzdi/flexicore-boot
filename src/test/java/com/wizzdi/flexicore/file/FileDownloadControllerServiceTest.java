@@ -49,7 +49,7 @@ public class FileDownloadControllerServiceTest {
     private FileResource fileResource;
     private String md5;
     @BeforeAll
-    private void init() throws IOException {
+    public void init() throws IOException {
 
         restTemplate.getRestTemplate().setInterceptors(
                 Collections.singletonList((request, body, execution) -> {

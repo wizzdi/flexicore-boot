@@ -15,11 +15,9 @@ import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.*;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.util.MimeType;
 import org.springframework.util.StreamUtils;
 import org.springframework.web.client.ResponseExtractor;
 
-import javax.ws.rs.core.Response;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.util.Arrays;
@@ -45,7 +43,7 @@ public class FileUploadControllerServiceTest {
     private static final int CHUNK_SIZE = 2000000;
 
     @BeforeAll
-    private void init() {
+    public void init() {
 
         restTemplate.getRestTemplate().setInterceptors(
                 Collections.singletonList((request, body, execution) -> {
@@ -135,7 +133,7 @@ public class FileUploadControllerServiceTest {
 
             ResponseEntity<String> response=this.restTemplate.exchange("/upload", HttpMethod.POST, requestEntity, String.class);
             if(error){
-                Assertions.assertEquals(Response.Status.PRECONDITION_FAILED.getStatusCode(),response.getStatusCodeValue());
+                Assertions.assertEquals(HttpStatus.PRECONDITION_FAILED.value(),response.getStatusCodeValue());
                 i-=chunk.length;
                 error=false;
                 continue;
@@ -181,7 +179,7 @@ public class FileUploadControllerServiceTest {
 
             ResponseEntity<String> response=this.restTemplate.exchange("/upload", HttpMethod.POST, requestEntity, String.class);
             if(lastChunk){
-                Assertions.assertEquals(Response.Status.EXPECTATION_FAILED.getStatusCode(), response.getStatusCodeValue());
+                Assertions.assertEquals(HttpStatus.EXPECTATION_FAILED.value(), response.getStatusCodeValue());
                 break;
 
             }

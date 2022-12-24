@@ -31,8 +31,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.MimeType;
 import org.springframework.web.server.ResponseStatusException;
 
-import javax.activation.MimetypesFileTypeMap;
-import javax.persistence.metamodel.SingularAttribute;
+import jakarta.activation.MimetypesFileTypeMap;
+import jakarta.persistence.metamodel.SingularAttribute;
 import java.io.*;
 import java.nio.channels.FileChannel;
 import java.util.*;

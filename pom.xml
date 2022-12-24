@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.wizzdi</groupId>
     <artifactId>flexicore-file-service</artifactId>
-    <version>2.0.4-SNAPSHOT</version>
+    <version>3.0.0-SNAPSHOT</version>
     <name>FlexiCore File service</name>
     <description>flexicore File service</description>
     <url>https://wizzdi.com</url>
@@ -19,18 +19,17 @@
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
         <version.compiler.plugin>3.3</version.compiler.plugin>
-        <version.eclipselink>2.7.10</version.eclipselink>
-        <pf4j-spring.version>0.7.0</pf4j-spring.version>
-        <spring-boot-dependencies.version>2.7.0</spring-boot-dependencies.version>
-        <flexicore-boot-dependencies.version>2.2.4</flexicore-boot-dependencies.version>
+        <version.eclipselink>4.0.0</version.eclipselink>
+        <pf4j-spring.version>0.8.0</pf4j-spring.version>
+        <spring-boot-dependencies.version>3.0.0</spring-boot-dependencies.version>
         <zt-zip.version>1.15</zt-zip.version>
-        <flexicore-file-model.version>2.0.1</flexicore-file-model.version>
+        <flexicore-file-model.version>3.0.0-SNAPSHOT</flexicore-file-model.version>
         <swagger-jaxrs2.version>2.2.0</swagger-jaxrs2.version>
-        <flexicore-boot-starter-web.version>2.0.0</flexicore-boot-starter-web.version>
-        <flexicore-security-model.version>2.0.1</flexicore-security-model.version>
-        <flexicore-security-service.version>2.0.1</flexicore-security-service.version>
-        <flexicore-boot-starter-data-jpa.version>2.0.0</flexicore-boot-starter-data-jpa.version>
-        <flexicore-boot-starter-data-jpa-eclipselink.version>2.0.0</flexicore-boot-starter-data-jpa-eclipselink.version>
+        <flexicore-boot-starter-web.version>3.0.0-SNAPSHOT</flexicore-boot-starter-web.version>
+        <flexicore-security-model.version>3.0.0-SNAPSHOT</flexicore-security-model.version>
+        <flexicore-security-service.version>3.0.0-SNAPSHOT</flexicore-security-service.version>
+        <flexicore-boot-starter-data-jpa.version>3.0.0-SNAPSHOT</flexicore-boot-starter-data-jpa.version>
+        <flexicore-boot-starter-data-jpa-eclipselink.version>3.0.0-SNAPSHOT</flexicore-boot-starter-data-jpa-eclipselink.version>
     </properties>
     <distributionManagement>
         <snapshotRepository>
@@ -123,12 +122,6 @@
             <groupId>io.swagger.core.v3</groupId>
             <artifactId>swagger-core</artifactId>
             <version>${swagger-jaxrs2.version}</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>javax</groupId>
-            <artifactId>javaee-api</artifactId>
-            <version>8.0</version>
             <scope>provided</scope>
         </dependency>
 
