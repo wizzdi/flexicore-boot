@@ -4,7 +4,7 @@
 
     <groupId>com.wizzdi</groupId>
     <artifactId>dynamic-properties-database-converter</artifactId>
-    <version>2.0.1-SNAPSHOT</version>
+    <version>3.0.0-SNAPSHOT</version>
     <name>Dynamic properties database converter</name>
     <description>Dynamic properties database converter</description>
     <url>https://wizzdi.com</url>
@@ -55,10 +55,10 @@
     <properties>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
-        <spring-boot.version>2.7.0</spring-boot.version>
+        <spring-boot.version>3.0.0</spring-boot.version>
 
-        <flexicore-boot-starter-data-jpa.version>2.0.0</flexicore-boot-starter-data-jpa.version>
-        <dynamic-annoatations-service.version>2.0.0</dynamic-annoatations-service.version>
+        <flexicore-boot-starter-data-jpa.version>3.0.0-SNAPSHOT</flexicore-boot-starter-data-jpa.version>
+        <dynamic-annoatations-service.version>3.0.0-SNAPSHOT</dynamic-annoatations-service.version>
     </properties>
 
     <dependencyManagement>
