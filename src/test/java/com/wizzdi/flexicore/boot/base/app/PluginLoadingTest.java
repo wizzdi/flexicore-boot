@@ -95,7 +95,7 @@ public class PluginLoadingTest {
 	}
 
 	@AfterAll
-	private void finish(){
+	public void finish(){
 		File pluginsDir=new File(this.pluginsDir);
 		if(!pluginsDir.delete()){
 			logger.error("failed deleting plugins dir");
