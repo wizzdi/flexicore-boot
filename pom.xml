@@ -4,7 +4,7 @@
 
     <groupId>com.wizzdi</groupId>
     <artifactId>flexicore-boot-starter-actuator</artifactId>
-    <version>2.0.1-SNAPSHOT</version>
+    <version>3.0.0-SNAPSHOT</version>
     <name>FlexiCore Boot Actuator</name>
     <description>FlexiCore Boot Actuator</description>
     <url>https://wizzdi.com</url>
@@ -19,15 +19,14 @@
     <properties>
 
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <version.eclipselink>2.7.7</version.eclipselink>
 
         <!-- maven-compiler-plugin -->
         <maven.compiler.target>17</maven.compiler.target>
         <maven.compiler.source>17</maven.compiler.source>
-        <pf4j-spring.version>0.7.0</pf4j-spring.version>
+        <pf4j-spring.version>0.8.0</pf4j-spring.version>
 
-        <spring-boot.version>2.7.0</spring-boot.version>
-        <flexicore-boot.version>2.0.0</flexicore-boot.version>
+        <spring-boot.version>3.0.0</spring-boot.version>
+        <flexicore-boot.version>3.0.0-SNAPSHOT</flexicore-boot.version>
         <flexicore-boot-test-helper.version>2.0.0</flexicore-boot-test-helper.version>
     </properties>
 
