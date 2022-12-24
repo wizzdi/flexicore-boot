@@ -1,9 +1,9 @@
 package com.wizzdi.flexicore.boot.jpa.hibernate.app;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Lob;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Lob;
 
 @Entity
 public class TestEntity extends BaseEntity{

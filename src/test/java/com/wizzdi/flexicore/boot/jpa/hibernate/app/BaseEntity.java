@@ -1,7 +1,7 @@
 package com.wizzdi.flexicore.boot.jpa.hibernate.app;
 
-import javax.persistence.Id;
-import javax.persistence.MappedSuperclass;
+import jakarta.persistence.Id;
+import jakarta.persistence.MappedSuperclass;
 
 @MappedSuperclass
 public class BaseEntity {
