@@ -4,7 +4,7 @@
 
     <groupId>com.wizzdi</groupId>
     <artifactId>dynamic-annoatations-service</artifactId>
-    <version>2.0.1-SNAPSHOT</version>
+    <version>3.0.0-SNAPSHOT</version>
     <name>Dynamic annotations service</name>
     <description>Dynamic annotations service</description>
     <url>https://wizzdi.com</url>
@@ -12,7 +12,7 @@
     <properties>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
-        <spring-boot-dependencies.version>2.7.0</spring-boot-dependencies.version>
+        <spring-boot-dependencies.version>3.0.0</spring-boot-dependencies.version>
     </properties>
     <licenses>
         <license>
