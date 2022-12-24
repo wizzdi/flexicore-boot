@@ -1,7 +1,7 @@
 package com.wizzdi.flexicore.boot.jpa.eclipselink.app;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
 
 @Entity
 public class TestEntity {
