@@ -4,7 +4,7 @@
 
     <groupId>com.wizzdi</groupId>
     <artifactId>flexicore-boot-vintage</artifactId>
-    <version>2.0.1-SNAPSHOT</version>
+    <version>3.0.0-SNAPSHOT</version>
     <name>FlexiCore Boot vintage</name>
     <description>flexicore boot vintage provides backwards compatibility with pre-boot FlexiCore versions</description>
     <url>https://wizzdi.com</url>
@@ -19,21 +19,18 @@
     <properties>
 
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <version.eclipselink>2.7.7</version.eclipselink>
 
         <!-- maven-compiler-plugin -->
         <maven.compiler.target>17</maven.compiler.target>
         <maven.compiler.source>17</maven.compiler.source>
-        <pf4j-spring.version>0.7.0</pf4j-spring.version>
+        <pf4j-spring.version>0.8.0</pf4j-spring.version>
 
-        <spring-boot.version>2.7.0</spring-boot.version>
-        <junit-jupiter.version>5.6.2</junit-jupiter.version>
+        <spring-boot.version>3.0.0</spring-boot.version>
         <flexicore-boot.version>2.0.0</flexicore-boot.version>
-        <flexicore-boot-starter-actuator.version>2.0.0</flexicore-boot-starter-actuator.version>
-        <flexicore-boot-starter-web.version>2.0.0</flexicore-boot-starter-web.version>
-        <resteasy-flexicore-boot-starter.version>2.0.0</resteasy-flexicore-boot-starter.version>
+        <flexicore-boot-starter-actuator.version>3.0.0-SNAPSHOT</flexicore-boot-starter-actuator.version>
+        <flexicore-boot-starter-web.version>3.0.0-SNAPSHOT</flexicore-boot-starter-web.version>
+        <resteasy-flexicore-boot-starter.version>3.0.0-SNAPSHOT</resteasy-flexicore-boot-starter.version>
         <flexicore-boot-test-helper.version>2.0.0</flexicore-boot-test-helper.version>
-        <javaee-api.version>8.0</javaee-api.version>
     </properties>
 
     <distributionManagement>
@@ -83,13 +80,7 @@
 
     </dependencyManagement>
     <dependencies>
-        <!-- https://mvnrepository.com/artifact/javax/javaee-api -->
-        <dependency>
-            <groupId>javax</groupId>
-            <artifactId>javaee-api</artifactId>
-            <version>${javaee-api.version}</version>
-            <scope>provided</scope>
-        </dependency>
+
 
         <dependency>
             <groupId>com.wizzdi</groupId>
