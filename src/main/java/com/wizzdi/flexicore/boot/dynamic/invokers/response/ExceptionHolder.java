@@ -22,7 +22,7 @@ public class ExceptionHolder {
         this.message=exception.getMessage();
         if(exception instanceof ResponseStatusException){
             ResponseStatusException responseStatusException= (ResponseStatusException) exception;
-            this.status= responseStatusException.getRawStatusCode();
+            this.status= responseStatusException.getBody().getStatus();
             this.reason=responseStatusException.getReason();
         }
         else{

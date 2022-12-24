@@ -39,7 +39,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.server.ResponseStatusException;
 
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.util.*;
