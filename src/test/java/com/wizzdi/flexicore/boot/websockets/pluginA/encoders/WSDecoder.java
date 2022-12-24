@@ -8,9 +8,11 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import com.wizzdi.flexicore.boot.websockets.pluginA.messages.WSEvent;
 
-import javax.websocket.DecodeException;
-import javax.websocket.Decoder;
-import javax.websocket.EndpointConfig;
+import jakarta.websocket.DecodeException;
+import jakarta.websocket.Decoder;
+import jakarta.websocket.EndpointConfig;
+import org.springframework.stereotype.Component;
+
 import java.io.IOException;
 import java.io.Reader;
 
@@ -18,6 +20,7 @@ import java.io.Reader;
  * Created by Asaf on 12/02/2017.
  */
 @Extension
+@Component
 public class WSDecoder implements Decoder.TextStream<WSEvent>, Plugin, ApplicationContextAware {
 
 	private static ObjectMapper objectMapper;

@@ -11,8 +11,8 @@ import org.springframework.stereotype.Component;
 import com.wizzdi.flexicore.boot.websockets.pluginA.messages.WSEvent;
 
 import javax.annotation.Priority;
-import javax.websocket.EncodeException;
-import javax.websocket.Session;
+import jakarta.websocket.EncodeException;
+import jakarta.websocket.Session;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;

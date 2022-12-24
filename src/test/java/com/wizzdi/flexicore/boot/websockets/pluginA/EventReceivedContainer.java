@@ -3,7 +3,7 @@ package com.wizzdi.flexicore.boot.websockets.pluginA;
 
 import com.wizzdi.flexicore.boot.websockets.pluginA.messages.WSEvent;
 
-import javax.websocket.Session;
+import jakarta.websocket.Session;
 
 public class EventReceivedContainer {
 

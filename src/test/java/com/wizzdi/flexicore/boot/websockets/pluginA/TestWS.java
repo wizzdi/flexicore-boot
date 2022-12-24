@@ -14,9 +14,9 @@ import com.wizzdi.flexicore.boot.websockets.pluginA.encoders.WSEncoder;
 import com.wizzdi.flexicore.boot.websockets.pluginA.messages.TestMessage;
 import com.wizzdi.flexicore.boot.websockets.pluginA.messages.WSEvent;
 
-import javax.websocket.*;
-import javax.websocket.server.PathParam;
-import javax.websocket.server.ServerEndpoint;
+import jakarta.websocket.*;
+import jakarta.websocket.server.PathParam;
+import jakarta.websocket.server.ServerEndpoint;
 
 /**
  * Created by Asaf on 31/08/2016.
@@ -47,7 +47,7 @@ public class TestWS implements Plugin {
 			session.getBasicRemote().sendObject(new TestMessage().setTest("test: " + session.getId()));
 		}
 		catch (Exception e){
-			logger.error("failed sending hello message");
+			logger.error("failed sending hello message",e);
 		}
 		UiEventSender.registerUISession(session);
 	}

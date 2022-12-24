@@ -8,8 +8,10 @@ import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 
-import javax.websocket.Encoder;
-import javax.websocket.EndpointConfig;
+import jakarta.websocket.Encoder;
+import jakarta.websocket.EndpointConfig;
+import org.springframework.stereotype.Component;
+
 import java.io.IOException;
 import java.io.Writer;
 
@@ -17,6 +19,7 @@ import java.io.Writer;
  * Created by Asaf on 12/02/2017.
  */
 @Extension
+@Component
 public class WSEncoder implements Encoder.TextStream<WSEvent>, Plugin, ApplicationContextAware {
 
 	private static ObjectMapper objectMapper;
