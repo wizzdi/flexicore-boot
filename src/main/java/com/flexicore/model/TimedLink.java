@@ -8,8 +8,8 @@ package com.flexicore.model;
 
 import com.flexicore.security.SecurityContext;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
 import java.time.OffsetDateTime;
 
 @SuppressWarnings("serial")

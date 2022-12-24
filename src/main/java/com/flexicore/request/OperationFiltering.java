@@ -9,9 +9,9 @@ import com.flexicore.model.DynamicInvokerRef;
 import com.flexicore.model.FilteringInformationHolder;
 import com.flexicore.model.dynamic.DynamicInvoker;
 
-import javax.persistence.Entity;
-import javax.persistence.OneToMany;
-import javax.persistence.Transient;
+import jakarta.persistence.Entity;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Transient;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;

@@ -1,6 +1,6 @@
 package com.flexicore.annotations;
 
-import javax.interceptor.InterceptorBinding;
+import jakarta.interceptor.InterceptorBinding;
 import java.lang.annotation.*;
 
 /**

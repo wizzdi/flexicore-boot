@@ -11,9 +11,9 @@ import com.flexicore.data.jsoncontainers.FCTypeResolver;
 import com.flexicore.model.Baseclass;
 import com.flexicore.security.SecurityContext;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Transient;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Transient;
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS,property = "type" )
 @JsonTypeIdResolver(CrossLoaderResolver.class)

@@ -19,10 +19,10 @@ import com.wizzdi.dynamic.properties.converter.DynamicColumnDefinition;
 import com.wizzdi.dynamic.properties.converter.JsonConverter;
 import io.swagger.v3.oas.annotations.media.Schema;
 
-import javax.persistence.Column;
-import javax.persistence.Convert;
-import javax.persistence.Entity;
-import javax.persistence.OneToMany;
+import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
+import jakarta.persistence.Entity;
+import jakarta.persistence.OneToMany;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;

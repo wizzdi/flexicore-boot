@@ -14,9 +14,9 @@ import com.flexicore.security.SecurityContext;
 import com.wizzdi.flexicore.file.model.FileResource;
 
 
-import javax.persistence.Entity;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
+import jakarta.persistence.Entity;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.List;
 

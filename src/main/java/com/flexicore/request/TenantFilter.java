@@ -3,7 +3,7 @@ package com.flexicore.request;
 import com.flexicore.interfaces.dynamic.FieldInfo;
 import com.flexicore.model.FilteringInformationHolder;
 
-import javax.persistence.Entity;
+import jakarta.persistence.Entity;
 
 @Entity
 public class TenantFilter extends FilteringInformationHolder {

@@ -6,9 +6,9 @@ import com.flexicore.interfaces.dynamic.FieldInfo;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.ManyToOne;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.ManyToOne;
 
 @Entity
 @Schema(description = "Use for sorting, includes field name and the direction of sorting")

@@ -5,8 +5,8 @@ import com.flexicore.model.Baseclass;
 import com.flexicore.model.Operation;
 import com.flexicore.security.SecurityContext;
 
-import javax.persistence.Entity;
-import javax.persistence.OneToMany;
+import jakarta.persistence.Entity;
+import jakarta.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.List;
 

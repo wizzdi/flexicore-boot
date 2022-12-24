@@ -1,6 +1,6 @@
 package com.flexicore.model.security;
 
-import javax.persistence.Entity;
+import jakarta.persistence.Entity;
 
 @Entity
 public class PasswordSecurityPolicy extends SecurityPolicy{

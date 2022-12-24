@@ -13,8 +13,8 @@ import com.flexicore.model.dynamic.DynamicInvoker;
 import com.flexicore.security.SecurityContext;
 
 
-import javax.persistence.Entity;
-import javax.persistence.ManyToOne;
+import jakarta.persistence.Entity;
+import jakarta.persistence.ManyToOne;
 
 /**
  * Entity implementation class for Entity: Operation

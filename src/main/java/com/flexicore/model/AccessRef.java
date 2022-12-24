@@ -5,9 +5,9 @@ import com.flexicore.annotations.IOperation;
 import com.flexicore.interfaces.dynamic.FieldInfo;
 
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.ManyToOne;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.ManyToOne;
 
 //import io.swagger.annotations.ApiModelProperty;
 
