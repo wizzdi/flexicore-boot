@@ -8,8 +8,8 @@ import com.wizzdi.dynamic.properties.converter.JsonConverterImplementation;
 import org.postgresql.util.PGobject;
 import org.springframework.stereotype.Component;
 
-import javax.persistence.AttributeConverter;
-import javax.persistence.Converter;
+import jakarta.persistence.AttributeConverter;
+import jakarta.persistence.Converter;
 import java.io.IOException;
 import java.util.Map;
 

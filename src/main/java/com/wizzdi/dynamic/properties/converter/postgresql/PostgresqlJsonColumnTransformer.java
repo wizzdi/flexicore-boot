@@ -6,7 +6,7 @@ import com.wizzdi.dynamic.annotations.service.cn.xdean.jex.ReflectUtil;
 import com.wizzdi.dynamic.properties.converter.DynamicColumnDefinition;
 import org.springframework.stereotype.Component;
 
-import javax.persistence.Column;
+import jakarta.persistence.Column;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 
