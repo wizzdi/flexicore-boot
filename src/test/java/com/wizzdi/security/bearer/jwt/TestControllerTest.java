@@ -32,7 +32,7 @@ public class TestControllerTest {
     private TestRestTemplate restTemplate;
 
     @BeforeAll
-    private void init() {
+    public void init() {
         ResponseEntity<String> stringResponseEntity = restTemplate.postForEntity("/api/public/login", new AuthRequest().setPassword("admin").setUsername("admin"), String.class);
         Assertions.assertEquals(200,stringResponseEntity.getStatusCodeValue());
         String body1 = stringResponseEntity.getBody();

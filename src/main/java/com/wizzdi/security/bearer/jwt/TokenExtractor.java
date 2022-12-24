@@ -1,6 +1,6 @@
 package com.wizzdi.security.bearer.jwt;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 public interface TokenExtractor {
 

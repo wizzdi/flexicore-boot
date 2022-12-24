@@ -15,6 +15,6 @@ public class LoginSecurityConfig {
    @Bean
    @Order(99)
     public SecurityPathConfigurator loginPath(){
-        return expressionInterceptUrlRegistry -> expressionInterceptUrlRegistry.antMatchers("/api/public/**").permitAll();
+        return expressionInterceptUrlRegistry -> expressionInterceptUrlRegistry.requestMatchers("/api/public/**").permitAll();
     }
 }

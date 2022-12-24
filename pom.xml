@@ -4,7 +4,7 @@
 
     <groupId>com.wizzdi</groupId>
     <artifactId>flexicore-boot-security-bearer-jwt</artifactId>
-    <version>2.0.2-SNAPSHOT</version>
+    <version>3.0.0-SNAPSHOT</version>
     <name>FlexiCore Boot Security Bearer JWT</name>
     <description>FlexiCore Boot Security Bearer JWT</description>
     <url>https://wizzdi.com</url>
@@ -21,18 +21,18 @@
     <properties>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
-        <spring-boot.version>2.7.0</spring-boot.version>
-        <version.eclipselink>2.7.7</version.eclipselink>
+        <spring-boot.version>3.0.0</spring-boot.version>
+        <version.eclipselink>4.0.0</version.eclipselink>
 
 
         <swagger-annotations.version>2.2.0</swagger-annotations.version>
-        <flexicore-boot-security-adapter.version>2.0.0</flexicore-boot-security-adapter.version>
-        <flexicore-security-model.version>2.0.1</flexicore-security-model.version>
-        <flexicore-boot-starter-data-jpa.version>2.0.0</flexicore-boot-starter-data-jpa.version>
-        <flexicore-security-service.version>2.0.1</flexicore-security-service.version>
-        <jjwt-api.version>0.11.2</jjwt-api.version>
-        <flexicore-boot-starter-web.version>2.0.0</flexicore-boot-starter-web.version>
-        <flexicore-boot-starter-data-jpa-eclipselink.version>2.0.0</flexicore-boot-starter-data-jpa-eclipselink.version>
+        <flexicore-boot-security-adapter.version>3.0.0-SNAPSHOT</flexicore-boot-security-adapter.version>
+        <flexicore-security-model.version>3.0.0-SNAPSHOT</flexicore-security-model.version>
+        <flexicore-boot-starter-data-jpa.version>3.0.0-SNAPSHOT</flexicore-boot-starter-data-jpa.version>
+        <flexicore-security-service.version>3.0.0-SNAPSHOT</flexicore-security-service.version>
+        <jjwt-api.version>0.11.5</jjwt-api.version>
+        <flexicore-boot-starter-web.version>3.0.0-SNAPSHOT</flexicore-boot-starter-web.version>
+        <flexicore-boot-starter-data-jpa-eclipselink.version>3.0.0-SNAPSHOT</flexicore-boot-starter-data-jpa-eclipselink.version>
     </properties>
     <distributionManagement>
         <snapshotRepository>

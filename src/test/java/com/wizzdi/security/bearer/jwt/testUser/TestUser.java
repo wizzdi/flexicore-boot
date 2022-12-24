@@ -3,7 +3,7 @@ package com.wizzdi.security.bearer.jwt.testUser;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.flexicore.model.SecurityUser;
 
-import javax.persistence.Entity;
+import jakarta.persistence.Entity;
 
 @Entity
 public class TestUser extends SecurityUser {
