@@ -1,6 +1,6 @@
 package com.wizzdi.security.adapter;
 
-import javax.servlet.Filter;
+import jakarta.servlet.Filter;
 
 public interface FlexiCoreSecurityFilter extends Filter {
 }
