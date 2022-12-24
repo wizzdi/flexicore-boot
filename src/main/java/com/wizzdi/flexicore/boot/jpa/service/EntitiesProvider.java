@@ -15,8 +15,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Scope;
 
-import javax.persistence.Converter;
-import javax.persistence.Entity;
+import jakarta.persistence.Converter;
+import jakarta.persistence.Entity;
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URI;
