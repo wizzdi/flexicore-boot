@@ -37,9 +37,9 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ClassUtils;
 
-import javax.persistence.EntityManager;
-import javax.persistence.ManyToOne;
-import javax.persistence.PersistenceContext;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.PersistenceContext;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.*;

@@ -1,6 +1,6 @@
 package com.wizzdi.flexicore.security.request;
 
-import javax.validation.constraints.Min;
+import jakarta.validation.constraints.Min;
 
 public class PaginationFilter {
     @Min(value = 1)

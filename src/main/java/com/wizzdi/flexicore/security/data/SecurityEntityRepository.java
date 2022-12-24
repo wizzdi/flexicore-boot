@@ -8,7 +8,7 @@ import org.pf4j.Extension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import javax.persistence.criteria.*;
+import jakarta.persistence.criteria.*;
 import java.util.List;
 
 @Extension

@@ -5,7 +5,7 @@ import com.flexicore.model.TenantToUser;
 import com.wizzdi.flexicore.security.validation.IdValid;
 import com.wizzdi.flexicore.security.validation.Update;
 
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 
 @IdValid.List({
         @IdValid(targetField = "tenantToUser", fieldType = TenantToUser.class, field = "id", groups = {Update.class}),

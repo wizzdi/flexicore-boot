@@ -5,7 +5,7 @@ import com.flexicore.model.Baselink;
 import com.wizzdi.flexicore.security.validation.IdValid;
 import com.wizzdi.flexicore.security.validation.Update;
 
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 
 @IdValid.List({
         @IdValid(targetField = "baselink", fieldType = Baselink.class, field = "id", groups = {Update.class})

@@ -5,7 +5,7 @@ import com.flexicore.model.Clazz;
 import com.wizzdi.flexicore.security.validation.IdValid;
 import com.wizzdi.flexicore.security.validation.Update;
 
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 
 @IdValid.List({
         @IdValid(targetField = "Clazz", fieldType = Clazz.class, field = "id", groups = {Update.class})
