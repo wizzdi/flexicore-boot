@@ -7,10 +7,10 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.fasterxml.jackson.databind.annotation.JsonTypeIdResolver;
 import com.wizzdi.flexicore.boot.rest.resolvers.CrossLoaderResolver;
 
-import javax.persistence.Column;
-import javax.persistence.Id;
-import javax.persistence.MappedSuperclass;
-import javax.persistence.Transient;
+import jakarta.persistence.Column;
+import jakarta.persistence.Id;
+import jakarta.persistence.MappedSuperclass;
+import jakarta.persistence.Transient;
 import java.time.OffsetDateTime;
 
 @JsonIdentityInfo(generator = ObjectIdGenerators.UUIDGenerator.class, property = "json-id")

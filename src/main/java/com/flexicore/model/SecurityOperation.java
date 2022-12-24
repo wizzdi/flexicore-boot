@@ -10,7 +10,7 @@ import com.flexicore.annotations.AnnotatedClazz;
 import com.flexicore.annotations.IOperation;
 import com.flexicore.security.SecurityContextBase;
 
-import javax.persistence.Entity;
+import jakarta.persistence.Entity;
 
 /**
  * Entity implementation class for Entity: Operation

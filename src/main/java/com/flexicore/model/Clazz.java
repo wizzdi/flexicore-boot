@@ -10,7 +10,7 @@ import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.flexicore.annotations.AnnotatedClazz;
 import com.flexicore.security.SecurityContextBase;
 
-import javax.persistence.Entity;
+import jakarta.persistence.Entity;
 
 @SuppressWarnings("serial")
 @AnnotatedClazz(Category="core", Name="Clazz", Description="Describes all other classes in the system")

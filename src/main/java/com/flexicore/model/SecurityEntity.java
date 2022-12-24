@@ -8,7 +8,7 @@ package com.flexicore.model;
 
 import com.flexicore.security.SecurityContextBase;
 
-import javax.persistence.Entity;
+import jakarta.persistence.Entity;
 
 
 @SuppressWarnings("serial")

@@ -9,8 +9,8 @@ package com.flexicore.model;
 import com.flexicore.annotations.AnnotatedClazz;
 import com.flexicore.security.SecurityContextBase;
 
-import javax.persistence.Entity;
-import javax.persistence.ManyToOne;
+import jakarta.persistence.Entity;
+import jakarta.persistence.ManyToOne;
 
 @SuppressWarnings("serial")
 @AnnotatedClazz(Category="core",  Name="ClazzLink",Description="Describes all other Link classes in the system")

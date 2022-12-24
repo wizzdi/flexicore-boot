@@ -10,8 +10,8 @@ import com.flexicore.annotations.AnnotatedClazz;
 import com.flexicore.security.SecurityContextBase;
 
 
-import javax.persistence.Entity;
-import javax.persistence.ManyToOne;
+import jakarta.persistence.Entity;
+import jakarta.persistence.ManyToOne;
 
 @SuppressWarnings("serial")
 @AnnotatedClazz(Category="Premissions", Name="RoleToBaseClass", Description="User Premission on Baseclass")

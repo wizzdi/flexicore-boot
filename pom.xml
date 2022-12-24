@@ -4,7 +4,7 @@
 
     <groupId>com.wizzdi</groupId>
     <artifactId>flexicore-security-model</artifactId>
-    <version>2.0.2-SNAPSHOT</version>
+    <version>3.0.0-SNAPSHOT</version>
     <name>FlexiCore security model</name>
     <description>flexicore security model</description>
     <url>https://wizzdi.com</url>
@@ -19,14 +19,14 @@
     <properties>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
-        <version.eclipselink>2.7.7</version.eclipselink>
-        <pf4j-spring.version>0.7.0</pf4j-spring.version>
-        <spring-boot.version>2.7.0</spring-boot.version>
+        <version.eclipselink>4.0.0</version.eclipselink>
+        <pf4j-spring.version>0.8.0</pf4j-spring.version>
+        <spring-boot.version>3.0.0</spring-boot.version>
         <commons-io.version>2.11.0</commons-io.version>
         <commons-codec.version>1.15</commons-codec.version>
-        <flexicore-boot-starter-web.version>2.0.0</flexicore-boot-starter-web.version>
-        <flexicore-boot.version>2.0.0</flexicore-boot.version>
-        <flexicore-boot-starter-data-jpa.version>2.0.0</flexicore-boot-starter-data-jpa.version>
+        <flexicore-boot-starter-web.version>3.0.0-SNAPSHOT</flexicore-boot-starter-web.version>
+        <flexicore-boot.version>3.0.0-SNAPSHOT</flexicore-boot.version>
+        <flexicore-boot-starter-data-jpa.version>3.0.0-SNAPSHOT</flexicore-boot-starter-data-jpa.version>
         <flexicore-boot-test-helper.version>2.0.0</flexicore-boot-test-helper.version>
     </properties>
     <distributionManagement>
@@ -185,18 +185,9 @@
                     <dependency>
                         <groupId>com.wizzdi</groupId>
                         <artifactId>flexicore-boot</artifactId>
-                        <version>1.0.0</version>
+                        <version>${flexicore-boot.version}</version>
                     </dependency>
-                    <dependency>
-                        <groupId>io.swagger.core.v3</groupId>
-                        <artifactId>swagger-jaxrs2</artifactId>
-                        <version>2.1.2</version>
-                    </dependency>
-                    <dependency>
-                        <groupId>org.springframework.boot</groupId>
-                        <artifactId>spring-boot-starter-data-mongodb</artifactId>
-                        <version>${spring-boot.version}</version>
-                    </dependency>
+
 
                     <dependency>
                         <groupId>org.eclipse.persistence</groupId>

@@ -9,10 +9,10 @@ package com.flexicore.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.flexicore.security.SecurityContextBase;
 
-import javax.persistence.Entity;
-import javax.persistence.Index;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Index;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
 import java.util.ArrayList;
 import java.util.List;
 
