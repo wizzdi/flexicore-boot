@@ -4,7 +4,7 @@
 
     <groupId>com.wizzdi</groupId>
     <artifactId>flexicore-common-user-model</artifactId>
-    <version>3.0.0</version>
+    <version>3.0.1-SNAPSHOT</version>
     <name>FlexiCore common user model</name>
     <description>flexicore common user model</description>
     <url>https://wizzdi.com</url>
@@ -60,7 +60,7 @@
         <connection>scm:git:git://wizzdi/flexicore-common-user-model.git</connection>
         <developerConnection>scm:git:git@github.com:wizzdi/flexicore-common-user-model.git</developerConnection>
         <url>https://github.com/wizzdi/flexicore-common-user-model</url>
-        <tag>flexicore-common-user-model-3.0.0</tag>
+        <tag>flexicore-common-user-model-${version}</tag>
     </scm>
     <dependencyManagement>
         <dependencies>
