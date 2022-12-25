@@ -23,9 +23,9 @@
         <version.eclipselink>4.0.0</version.eclipselink>
 
 
-        <flexicore-security-model.version>3.0.0-SNAPSHOT</flexicore-security-model.version>
-        <flexicore-boot-starter-web.version>3.0.0-SNAPSHOT</flexicore-boot-starter-web.version>
-        <flexicore-boot-starter-data-jpa.version>3.0.0-SNAPSHOT</flexicore-boot-starter-data-jpa.version>
+        <flexicore-security-model.version>3.0.0</flexicore-security-model.version>
+        <flexicore-boot-starter-web.version>3.0.0</flexicore-boot-starter-web.version>
+        <flexicore-boot-starter-data-jpa.version>3.0.0</flexicore-boot-starter-data-jpa.version>
     </properties>
     <distributionManagement>
         <snapshotRepository>
@@ -201,7 +201,7 @@
             <plugin>
                 <groupId>com.wizzdi</groupId>
                 <artifactId>metamodel-inheritence-fix-processor</artifactId>
-                <version>2.0.0</version>
+                <version>3.0.0-SNAPSHOT</version>
                 <executions>
                     <execution>
                         <id>flexicore</id>
