@@ -23,13 +23,13 @@
         <pf4j-spring.version>0.8.0</pf4j-spring.version>
         <spring-boot-dependencies.version>3.0.0</spring-boot-dependencies.version>
         <zt-zip.version>1.15</zt-zip.version>
-        <flexicore-file-model.version>3.0.0-SNAPSHOT</flexicore-file-model.version>
+        <flexicore-file-model.version>3.0.0</flexicore-file-model.version>
         <swagger-jaxrs2.version>2.2.0</swagger-jaxrs2.version>
-        <flexicore-boot-starter-web.version>3.0.0-SNAPSHOT</flexicore-boot-starter-web.version>
-        <flexicore-security-model.version>3.0.0-SNAPSHOT</flexicore-security-model.version>
-        <flexicore-security-service.version>3.0.0-SNAPSHOT</flexicore-security-service.version>
-        <flexicore-boot-starter-data-jpa.version>3.0.0-SNAPSHOT</flexicore-boot-starter-data-jpa.version>
-        <flexicore-boot-starter-data-jpa-eclipselink.version>3.0.0-SNAPSHOT</flexicore-boot-starter-data-jpa-eclipselink.version>
+        <flexicore-boot-starter-web.version>3.0.0</flexicore-boot-starter-web.version>
+        <flexicore-security-model.version>3.0.0</flexicore-security-model.version>
+        <flexicore-security-service.version>3.0.0</flexicore-security-service.version>
+        <flexicore-boot-starter-data-jpa.version>3.0.0</flexicore-boot-starter-data-jpa.version>
+        <flexicore-boot-starter-data-jpa-eclipselink.version>3.0.0</flexicore-boot-starter-data-jpa-eclipselink.version>
     </properties>
     <distributionManagement>
         <snapshotRepository>
