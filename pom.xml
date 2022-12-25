@@ -27,9 +27,9 @@
         <pf4j-spring.version>0.8.0</pf4j-spring.version>
 
         <spring-boot.version>3.0.0</spring-boot.version>
-        <dynamic-annoatations-service.version>3.0.0-SNAPSHOT</dynamic-annoatations-service.version>
-        <flexicore-boot-starter-data-jpa.version>3.0.0-SNAPSHOT</flexicore-boot-starter-data-jpa.version>
-        <flexicore-boot-starter-web.version>3.0.0-SNAPSHOT</flexicore-boot-starter-web.version>
+        <dynamic-annoatations-service.version>3.0.0</dynamic-annoatations-service.version>
+        <flexicore-boot-starter-data-jpa.version>3.0.0</flexicore-boot-starter-data-jpa.version>
+        <flexicore-boot-starter-web.version>3.0.0</flexicore-boot-starter-web.version>
         <flexicore-boot-test-helper.version>2.0.0</flexicore-boot-test-helper.version>
     </properties>
 
