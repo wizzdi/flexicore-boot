@@ -395,16 +395,16 @@
                 </configuration>
             </plugin>
 
-          <!--  <plugin>
+            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>2.22.2</version>
                 <configuration>
                     <argLine>
-                        &#45;&#45;add-opens java.base/java.lang=ALL-UNNAMED &#45;&#45;add-opens java.base/java.lang.reflect=ALL-UNNAMED &#45;&#45;add-opens java.base/sun.reflect.annotation=ALL-UNNAMED
+                        --add-opens java.base/java.lang=ALL-UNNAMED --add-opens java.base/java.lang.reflect=ALL-UNNAMED --add-opens java.base/sun.reflect.annotation=ALL-UNNAMED
                     </argLine>
                 </configuration>
-            </plugin>-->
+            </plugin>
 
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
