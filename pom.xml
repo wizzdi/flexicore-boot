@@ -4,7 +4,7 @@
 
     <groupId>com.wizzdi</groupId>
     <artifactId>flexicore-boot-dynamic-invokers-model</artifactId>
-    <version>3.0.0</version>
+    <version>3.0.1-SNAPSHOT</version>
     <name>FlexiCore dynamic invokers model</name>
     <description>flexicore dynamic invokers model</description>
     <url>https://wizzdi.com</url>
@@ -58,7 +58,7 @@
         <connection>scm:git:git://wizzdi/flexicore-dynamic-invokers-model.git</connection>
         <developerConnection>scm:git:git@github.com:wizzdi/flexicore-dynamic-invokers-model.git</developerConnection>
         <url>https://github.com/wizzdi/flexicore-security-model</url>
-        <tag>flexicore-boot-dynamic-invokers-model-3.0.0</tag>
+        <tag>flexicore-dynamic-invokers-model-${version}</tag>
     </scm>
     <dependencyManagement>
         <dependencies>
