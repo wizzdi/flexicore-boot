@@ -1,28 +1,19 @@
 package com.flexicore.service.impl;
 
-import com.flexicore.model.Baseclass;
 import com.flexicore.model.User;
 import com.flexicore.response.JWTClaims;
 import com.flexicore.response.impl.JWTClaimsImpl;
-
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
+import io.jsonwebtoken.JwtParser;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
-import org.apache.commons.io.FileUtils;
 import org.pf4j.Extension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.beans.factory.config.ConfigurableBeanFactory;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Primary;
-import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
+import javax.crypto.SecretKey;
 import java.time.OffsetDateTime;
 import java.util.Date;
 import java.util.HashMap;
@@ -42,7 +33,9 @@ public class TokenService implements com.flexicore.service.TokenService {
 
     @Autowired
     @Qualifier("cachedJWTSecret")
-    private String cachedJWTSecret;
+    private SecretKey cachedJWTSecret;
+    @Autowired
+    private JwtParser jwtParser;
 
 
     @Override
@@ -63,7 +56,7 @@ public class TokenService implements com.flexicore.service.TokenService {
                 .setIssuer(ISSUER)
                 .setIssuedAt(new Date())
                 .setExpiration(Date.from(expirationDate.toInstant()))
-                .signWith(SignatureAlgorithm.HS512,cachedJWTSecret)
+                .signWith(cachedJWTSecret)
                 .addClaims(claims)
                 .compact();
     }
@@ -82,7 +75,7 @@ public class TokenService implements com.flexicore.service.TokenService {
     public JWTClaims parseClaimsAndVerifyClaims(String jwtToken, Logger logger) {
         Claims claims =null;
         try {
-            claims=Jwts.parserBuilder().setSigningKey(cachedJWTSecret).build().parseClaimsJws(jwtToken).getBody();
+            claims=jwtParser.parseClaimsJws(jwtToken).getBody();
         }
         catch (JwtException e){
             logger.log(Level.SEVERE,"invalid token ",e);
