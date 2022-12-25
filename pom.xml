@@ -25,10 +25,10 @@
         <spring-boot.version>3.0.0</spring-boot.version>
 
 
-        <flexicore-security-service.version>3.0.0-SNAPSHOT</flexicore-security-service.version>
-        <flexicore-security-model.version>3.0.0-SNAPSHOT</flexicore-security-model.version>
-        <flexicore-boot-starter-data-jpa.version>3.0.0-SNAPSHOT</flexicore-boot-starter-data-jpa.version>
-        <flexicore-boot-starter-data-jpa-eclipselink.version>3.0.0-SNAPSHOT</flexicore-boot-starter-data-jpa-eclipselink.version>
+        <flexicore-security-service.version>3.0.0</flexicore-security-service.version>
+        <flexicore-security-model.version>3.0.0</flexicore-security-model.version>
+        <flexicore-boot-starter-data-jpa.version>3.0.0</flexicore-boot-starter-data-jpa.version>
+        <flexicore-boot-starter-data-jpa-eclipselink.version>3.0.0</flexicore-boot-starter-data-jpa-eclipselink.version>
     </properties>
     <distributionManagement>
         <snapshotRepository>
