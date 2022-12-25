@@ -57,8 +57,8 @@
         <maven.compiler.target>17</maven.compiler.target>
         <spring-boot.version>3.0.0</spring-boot.version>
 
-        <flexicore-boot-starter-data-jpa.version>3.0.0-SNAPSHOT</flexicore-boot-starter-data-jpa.version>
-        <dynamic-annoatations-service.version>3.0.0-SNAPSHOT</dynamic-annoatations-service.version>
+        <flexicore-boot-starter-data-jpa.version>3.0.0</flexicore-boot-starter-data-jpa.version>
+        <dynamic-annoatations-service.version>3.0.0</dynamic-annoatations-service.version>
     </properties>
 
     <dependencyManagement>
