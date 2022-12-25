@@ -113,7 +113,7 @@ public class FileResourceService implements com.flexicore.service.FileResourceSe
 	}
 
 	/**
-	 * finalize upload, starts a new FC Job which invokes a {@link BatchRuntime}
+	 * finalize upload, starts a new FC Job which invokes a BatchRuntime
 	 * Job. The created FC Job allows for a client tracking on {@link Job}
 	 * progress.
 	 *
