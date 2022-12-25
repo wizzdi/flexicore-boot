@@ -101,6 +101,8 @@
         </dependencies>
     </dependencyManagement>
     <dependencies>
+
+
         <!-- https://mvnrepository.com/artifact/jakarta.batch/jakarta.batch-api -->
         <dependency>
             <groupId>jakarta.batch</groupId>
@@ -327,6 +329,12 @@
             <groupId>com.wizzdi</groupId>
             <artifactId>flexicore-boot-starter-data-jpa</artifactId>
             <version>${flexicore-boot-starter-data-jpa.version}</version>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/org.apache.httpcomponents.client5/httpclient5 -->
+        <dependency>
+            <groupId>org.apache.httpcomponents.client5</groupId>
+            <artifactId>httpclient5</artifactId>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.postgresql</groupId>

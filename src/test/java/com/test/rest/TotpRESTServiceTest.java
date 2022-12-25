@@ -15,13 +15,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
+import org.springframework.http.client.ClientHttpResponse;
+import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.web.client.DefaultResponseErrorHandler;
+import org.springframework.web.client.RestTemplate;
 
+import java.io.IOException;
 import java.time.Instant;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -48,15 +50,23 @@ public class TotpRESTServiceTest {
 
 
 	@BeforeAll
-	private void init() {
+	public void init() {
 		ResponseEntity<AuthenticationResponse> authenticationResponse = this.restTemplate.postForEntity("/FlexiCore/rest/authenticationNew/login", new AuthenticationRequest().setEmail("admin@flexicore.com").setPassword("admin"), AuthenticationResponse.class);
 		this.authenticationKey= authenticationResponse.getBody().getAuthenticationKey();
-		restTemplate.getRestTemplate().setInterceptors(
+		RestTemplate template = restTemplate.getRestTemplate();
+		template.setInterceptors(
 				Collections.singletonList((request, body, execution) -> {
 					request.getHeaders()
 							.add("authenticationKey", authenticationKey);
 					return execution.execute(request, body);
 				}));
+		template.setRequestFactory(new HttpComponentsClientHttpRequestFactory());
+		template.setErrorHandler(new DefaultResponseErrorHandler() {
+			public boolean hasError(ClientHttpResponse response) throws IOException {
+				HttpStatusCode statusCode = response.getStatusCode();
+				return statusCode.is5xxServerError();
+			}
+		});
 	}
 
 
@@ -86,8 +96,10 @@ public class TotpRESTServiceTest {
 	public void testSetupTotp() {
 		userCreate();
 		ParameterizedTypeReference<SetupTotpResponse> t=new ParameterizedTypeReference<>() {};
-
-		ResponseEntity<SetupTotpResponse> userResponse = this.restTemplate.exchange("/FlexiCore/rest/totp/setupTotp", HttpMethod.POST, new HttpEntity<>(null), t);
+		HttpHeaders httpHeaders=new HttpHeaders();
+		httpHeaders.setContentType(MediaType.APPLICATION_JSON);
+		httpHeaders.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
+		ResponseEntity<SetupTotpResponse> userResponse = this.restTemplate.exchange("/FlexiCore/rest/totp/setupTotp", HttpMethod.POST, new HttpEntity<>(httpHeaders), t);
 		Assertions.assertEquals(200, userResponse.getStatusCodeValue());
 		SetupTotpResponse body = userResponse.getBody();
 		Assertions.assertNotNull(body);

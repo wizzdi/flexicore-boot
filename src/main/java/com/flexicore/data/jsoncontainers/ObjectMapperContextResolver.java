@@ -19,12 +19,15 @@ import org.pf4j.Extension;
 
 import jakarta.ws.rs.ext.ContextResolver;
 import jakarta.ws.rs.ext.Provider;
+import org.springframework.stereotype.Component;
+
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Provider
+@Component
 @Extension
 public class ObjectMapperContextResolver implements ContextResolver<ObjectMapper>, JaxRSProviderPlugin {
 

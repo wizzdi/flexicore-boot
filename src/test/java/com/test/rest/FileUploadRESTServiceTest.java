@@ -45,6 +45,7 @@ public class FileUploadRESTServiceTest {
     @BeforeAll
     public void init() {
         ResponseEntity<AuthenticationResponse> authenticationResponse = this.restTemplate.postForEntity("/FlexiCore/rest/authenticationNew/login", new AuthenticationRequest().setEmail("admin@flexicore.com").setPassword("admin"), AuthenticationResponse.class);
+        Assertions.assertEquals(200,authenticationResponse.getStatusCode().value());
         String authenticationKey = authenticationResponse.getBody().getAuthenticationKey();
         restTemplate.getRestTemplate().setInterceptors(
                 Collections.singletonList((request, body, execution) -> {
