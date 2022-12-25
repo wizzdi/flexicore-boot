@@ -22,12 +22,12 @@
 
         <version.eclipselink>4.0.0</version.eclipselink>
         <spring-boot.version>3.0.0</spring-boot.version>
-        <flexicore-security-model.version>3.0.0-SNAPSHOT</flexicore-security-model.version>
-        <flexicore-boot-starter-web.version>3.0.0-SNAPSHOT</flexicore-boot-starter-web.version>
+        <flexicore-security-model.version>3.0.0</flexicore-security-model.version>
+        <flexicore-boot-starter-web.version>3.0.0</flexicore-boot-starter-web.version>
         <swagger-jaxrs2.version>2.2.0</swagger-jaxrs2.version>
-        <flexicore-boot.version>3.0.0-SNAPSHOT</flexicore-boot.version>
-        <dynamic-properties-database-converter.version>3.0.0-SNAPSHOT</dynamic-properties-database-converter.version>
-        <flexicore-boot-starter-data-jpa.version>3.0.0-SNAPSHOT</flexicore-boot-starter-data-jpa.version>
+        <flexicore-boot.version>3.0.0</flexicore-boot.version>
+        <dynamic-properties-database-converter.version>3.0.0</dynamic-properties-database-converter.version>
+        <flexicore-boot-starter-data-jpa.version>3.0.0</flexicore-boot-starter-data-jpa.version>
 
     </properties>
     <distributionManagement>
