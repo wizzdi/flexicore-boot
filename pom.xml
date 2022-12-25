@@ -26,13 +26,13 @@
 
 
         <swagger-annotations.version>2.2.0</swagger-annotations.version>
-        <flexicore-boot-security-adapter.version>3.0.0-SNAPSHOT</flexicore-boot-security-adapter.version>
-        <flexicore-security-model.version>3.0.0-SNAPSHOT</flexicore-security-model.version>
-        <flexicore-boot-starter-data-jpa.version>3.0.0-SNAPSHOT</flexicore-boot-starter-data-jpa.version>
-        <flexicore-security-service.version>3.0.0-SNAPSHOT</flexicore-security-service.version>
+        <flexicore-boot-security-adapter.version>3.0.0</flexicore-boot-security-adapter.version>
+        <flexicore-security-model.version>3.0.0</flexicore-security-model.version>
+        <flexicore-boot-starter-data-jpa.version>3.0.0</flexicore-boot-starter-data-jpa.version>
+        <flexicore-security-service.version>3.0.0</flexicore-security-service.version>
         <jjwt-api.version>0.11.5</jjwt-api.version>
-        <flexicore-boot-starter-web.version>3.0.0-SNAPSHOT</flexicore-boot-starter-web.version>
-        <flexicore-boot-starter-data-jpa-eclipselink.version>3.0.0-SNAPSHOT</flexicore-boot-starter-data-jpa-eclipselink.version>
+        <flexicore-boot-starter-web.version>3.0.0</flexicore-boot-starter-web.version>
+        <flexicore-boot-starter-data-jpa-eclipselink.version>3.0.0</flexicore-boot-starter-data-jpa-eclipselink.version>
     </properties>
     <distributionManagement>
         <snapshotRepository>
