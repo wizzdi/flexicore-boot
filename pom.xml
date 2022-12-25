@@ -25,16 +25,16 @@
    
 
         <spring-boot-dependencies.version>3.0.0</spring-boot-dependencies.version>
-        <flexicore-security-model.version>3.0.0-SNAPSHOT</flexicore-security-model.version>
-        <flexicore-security-service.version>3.0.0-SNAPSHOT</flexicore-security-service.version>
+        <flexicore-security-model.version>3.0.0</flexicore-security-model.version>
+        <flexicore-security-service.version>3.0.0</flexicore-security-service.version>
 
         <scrypt.version>1.4.0</scrypt.version>
 
-        <flexicore-common-user-model.version>3.0.0-SNAPSHOT</flexicore-common-user-model.version>
-        <flexicore-boot.version>3.0.0-SNAPSHOT</flexicore-boot.version>
-        <flexicore-boot-starter-web.version>3.0.0-SNAPSHOT</flexicore-boot-starter-web.version>
-        <flexicore-boot-starter-data-jpa.version>3.0.0-SNAPSHOT</flexicore-boot-starter-data-jpa.version>
-        <flexicore-boot-starter-data-jpa-eclipselink.version>3.0.0-SNAPSHOT</flexicore-boot-starter-data-jpa-eclipselink.version>
+        <flexicore-common-user-model.version>3.0.0</flexicore-common-user-model.version>
+        <flexicore-boot.version>3.0.0</flexicore-boot.version>
+        <flexicore-boot-starter-web.version>3.0.0</flexicore-boot-starter-web.version>
+        <flexicore-boot-starter-data-jpa.version>3.0.0</flexicore-boot-starter-data-jpa.version>
+        <flexicore-boot-starter-data-jpa-eclipselink.version>3.0.0</flexicore-boot-starter-data-jpa-eclipselink.version>
 
     </properties>
 
