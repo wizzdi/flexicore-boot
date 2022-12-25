@@ -29,10 +29,10 @@
         <spring-boot.version>3.0.0</spring-boot.version>
         <swagger.version>2.2.7</swagger.version>
 
-        <flexicore-boot.version>3.0.0-SNAPSHOT</flexicore-boot.version>
+        <flexicore-boot.version>3.0.0</flexicore-boot.version>
         <springdoc-openapi-starter-webmvc-api.version>2.0.2</springdoc-openapi-starter-webmvc-api.version>
         <flexicore-boot-test-helper.version>2.0.0</flexicore-boot-test-helper.version>
-        <flexicore-boot-starter-web.version>3.0.0-SNAPSHOT</flexicore-boot-starter-web.version>
+        <flexicore-boot-starter-web.version>3.0.0</flexicore-boot-starter-web.version>
     </properties>
 
     <distributionManagement>
