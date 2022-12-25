@@ -26,7 +26,7 @@
         <pf4j-spring.version>0.8.0</pf4j-spring.version>
 
         <spring-boot.version>3.0.0</spring-boot.version>
-        <flexicore-boot.version>2.0.0</flexicore-boot.version>
+        <flexicore-boot.version>3.0.0-SNAPSHOT</flexicore-boot.version>
         <flexicore-boot-starter-actuator.version>3.0.0-SNAPSHOT</flexicore-boot-starter-actuator.version>
         <flexicore-boot-starter-web.version>3.0.0-SNAPSHOT</flexicore-boot-starter-web.version>
         <resteasy-flexicore-boot-starter.version>3.0.0-SNAPSHOT</resteasy-flexicore-boot-starter.version>
