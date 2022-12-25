@@ -28,11 +28,11 @@
         </reflections>
 
         <spring-boot-dependencies.version>3.0.0</spring-boot-dependencies.version>
-        <flexicore-security-model.version>3.0.0-SNAPSHOT</flexicore-security-model.version>
-        <flexicore-boot.version>3.0.0-SNAPSHOT</flexicore-boot.version>
-        <flexicore-boot-starter-web.version>3.0.0-SNAPSHOT</flexicore-boot-starter-web.version>
-        <flexicore-boot-starter-data-jpa.version>3.0.0-SNAPSHOT</flexicore-boot-starter-data-jpa.version>
-        <flexicore-boot-starter-data-jpa-eclipselink.version>3.0.0-SNAPSHOT</flexicore-boot-starter-data-jpa-eclipselink.version>
+        <flexicore-security-model.version>3.0.0</flexicore-security-model.version>
+        <flexicore-boot.version>3.0.0</flexicore-boot.version>
+        <flexicore-boot-starter-web.version>3.0.0</flexicore-boot-starter-web.version>
+        <flexicore-boot-starter-data-jpa.version>3.0.0</flexicore-boot-starter-data-jpa.version>
+        <flexicore-boot-starter-data-jpa-eclipselink.version>3.0.0</flexicore-boot-starter-data-jpa-eclipselink.version>
         <flexicore-boot-test-helper.version>2.0.0</flexicore-boot-test-helper.version>
         <guava.version>31.1-jre</guava.version>
     </properties>
