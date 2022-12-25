@@ -24,16 +24,16 @@
 
 
         <spring-boot.version>3.0.0</spring-boot.version>
-        <flexicore-boot-dynamic-invokers-model.version>3.0.0-SNAPSHOT</flexicore-boot-dynamic-invokers-model.version>
-        <flexicore-security-model.version>3.0.0-SNAPSHOT</flexicore-security-model.version>
-        <resteasy-flexicore-boot-starter.version>3.0.0-SNAPSHOT</resteasy-flexicore-boot-starter.version>
-        <flexicore-boot-starter-web.version>3.0.0-SNAPSHOT</flexicore-boot-starter-web.version>
-        <flexicore-file-model.version>3.0.0-SNAPSHOT</flexicore-file-model.version>
+        <flexicore-boot-dynamic-invokers-model.version>3.0.0</flexicore-boot-dynamic-invokers-model.version>
+        <flexicore-security-model.version>3.0.0</flexicore-security-model.version>
+        <resteasy-flexicore-boot-starter.version>3.0.0</resteasy-flexicore-boot-starter.version>
+        <flexicore-boot-starter-web.version>3.0.0</flexicore-boot-starter-web.version>
+        <flexicore-file-model.version>3.0.0</flexicore-file-model.version>
         <commons-codec.version>1.15</commons-codec.version>
         <swagger-jaxrs2.version>2.2.0</swagger-jaxrs2.version>
-        <flexicore-boot.version>3.0.0-SNAPSHOT</flexicore-boot.version>
-        <dynamic-properties-database-converter.version>3.0.0-SNAPSHOT</dynamic-properties-database-converter.version>
-        <flexicore-common-user-model.version>3.0.0-SNAPSHOT</flexicore-common-user-model.version>
+        <flexicore-boot.version>3.0.0</flexicore-boot.version>
+        <dynamic-properties-database-converter.version>3.0.0</dynamic-properties-database-converter.version>
+        <flexicore-common-user-model.version>3.0.0</flexicore-common-user-model.version>
 
         <jakarta.interceptor-api.version>2.1.0</jakarta.interceptor-api.version>
         <jakarta.enterprise.cdi-api.version>4.0.1</jakarta.enterprise.cdi-api.version>
@@ -257,7 +257,7 @@
             <plugin>
                 <groupId>com.wizzdi</groupId>
                 <artifactId>metamodel-inheritence-fix-processor</artifactId>
-                <version>3.0.0-SNAPSHOT</version>
+                <version>3.0.0</version>
                 <executions>
                     <execution>
                         <id>flexicore</id>
