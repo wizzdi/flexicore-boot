@@ -176,7 +176,7 @@ public class BaseclassRepository implements Plugin {
 		Root<UserToBaseClass> r = q.from(UserToBaseClass.class);
 
 		Predicate p1 = cb.and(
-				cb.or(cb.isFalse(r.get(SecurityLink_.softDelete)), r.get(SecurityLink_.softDelete).isNull()),
+				cb.isFalse(r.get(SecurityLink_.softDelete)),
 				cb.equal(r.get(UserToBaseClass_.leftside), securityUser),
 				cb.equal(r.get(UserToBaseClass_.value), op),
 				cb.equal(r.get(UserToBaseClass_.simplevalue), IOperation.Access.deny.name())
@@ -195,7 +195,7 @@ public class BaseclassRepository implements Plugin {
 		Join<Role, RoleToUser> j2 = j1.join(Role_.roleToUser, JoinType.INNER);
 
 		Predicate p2 = cb.and(
-				cb.or(cb.isFalse(r1.get(SecurityLink_.softDelete)), r1.get(SecurityLink_.softDelete).isNull()),
+				cb.isFalse(r1.get(SecurityLink_.softDelete)),
 
 				cb.equal(j2.get(RoleToUser_.rightside), securityUser),
 				cb.equal(r1.get(RoleToBaseclass_.value), op),
@@ -285,7 +285,7 @@ public class BaseclassRepository implements Plugin {
 		}
 
 		return cb.and(
-				cb.or(cb.isFalse(securityLinkRoot.get(SecurityLink_.softDelete)), securityLinkRoot.get(SecurityLink_.softDelete).isNull()),
+				cb.isFalse(securityLinkRoot.get(SecurityLink_.softDelete)),
 				cb.or(cb.equal(securityLinkRoot.get(SecurityLink_.value), op), cb.equal(securityLinkRoot.get(SecurityLink_.value), allOpId)),
 				//cb.or(cb.equal(securityLinkRoot.get(SecurityLink_.rightside).get(Baseclass_.clazz),clazz)),
 				cb.equal(securityLinkRoot.get(SecurityLink_.simplevalue), IOperation.Access.allow.name()),
