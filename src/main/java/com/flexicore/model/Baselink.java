@@ -29,7 +29,8 @@ import jakarta.persistence.Table;
         @Index(name = "baselink_value_idx", columnList = "value_id"),
         @Index(name = "baselink_simplevalue_idx", columnList = "simplevalue"),
         @Index(name = "baselink_cvalue_idx", columnList = "leftside_id,rightside_id,value_id"),
-        @Index(name = "baselink_cvaluef_idx", columnList = "leftside_id,rightside_id,value_id,simplevalue")})
+        @Index(name = "baselink_cvaluef_idx", columnList = "leftside_id,rightside_id,value_id,simplevalue"),
+        @Index(name = "permission_idx", columnList = "id, dtype, softdelete, leftside_id, rightside_id, value_id, simplevalue, clazz_id, creator_id, tenant_id")})
 @Entity
 public class Baselink extends Baseclass {
 
@@ -87,7 +88,6 @@ public class Baselink extends Baseclass {
     public void setValue(Baseclass value) {
         this.value = value;
     }
-
 
 
 }
