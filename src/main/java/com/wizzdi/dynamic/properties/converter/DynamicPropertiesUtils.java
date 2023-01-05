@@ -24,7 +24,7 @@ public class DynamicPropertiesUtils {
                     String key = entry.getKey();
                     Object newVal = entry.getValue();
                     Object val = current.get(key);
-                    if (newVal != null && !newVal.equals(val)) {
+                    if ((newVal==null&&val!=null)|| (newVal!=null&&!newVal.equals(val))) {
                         copy.put(key, newVal);
                         update = true;
                     }
