@@ -13,8 +13,8 @@ import java.util.List;
 import java.util.Set;
 
 @IdValid.List({
-        @IdValid(targetField = "securityUsers", fieldType = SecurityUser.class, field = "usersIds", groups = {Update.class, Create.class}),
-        @IdValid(targetField = "securityTenants", fieldType = SecurityTenant.class, field = "tenantsIds", groups = {Update.class, Create.class}),
+        @IdValid(targetField = "securityUsers", fieldType = SecurityUser.class, field = "usersIds"),
+        @IdValid(targetField = "securityTenants", fieldType = SecurityTenant.class, field = "tenantsIds"),
 
 })
 public class TenantToUserFilter extends BaselinkFilter {

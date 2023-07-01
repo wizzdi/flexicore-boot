@@ -10,6 +10,8 @@ import org.springframework.beans.BeanWrapperImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
+import org.springframework.web.context.request.RequestAttributes;
+import org.springframework.web.context.request.RequestContextHolder;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintValidator;
@@ -23,14 +25,14 @@ import java.util.stream.Collectors;
 @Component
 public class IdValidator implements ConstraintValidator<IdValid, Object> {
 
+    public static final String SECURITY_CONTEXT_ATTRIBUTE_NAME = "securityContext";
     private String field;
     private Class<?> fieldType;
     private String targetField;
     @Autowired
     @Lazy
     private SecuredBasicRepository securedBasicRepository;
-    @Autowired
-    private HttpServletRequest httpServletRequest;
+
 
     @Override
     public void initialize(IdValid constraintAnnotation) {
@@ -41,7 +43,7 @@ public class IdValidator implements ConstraintValidator<IdValid, Object> {
 
     @Override
     public boolean isValid(Object value, ConstraintValidatorContext constraintValidatorContext) {
-        SecurityContextBase securityContext = (SecurityContextBase) httpServletRequest.getAttribute("securityContext");
+        SecurityContextBase securityContext = (SecurityContextBase) RequestContextHolder.getRequestAttributes().getAttribute(SECURITY_CONTEXT_ATTRIBUTE_NAME, RequestAttributes.SCOPE_REQUEST);
         BeanWrapperImpl objectWrapper = new BeanWrapperImpl(value);
         Object fieldValue = objectWrapper
                 .getPropertyValue(field);
