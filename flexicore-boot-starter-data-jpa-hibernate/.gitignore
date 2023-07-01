@@ -1,0 +1,5 @@
+/target/
+/.idea/
+/flexicore-boot-starter-data-jpa-hibernate.iml
+/tmlog.lck
+/tmlog3.log
