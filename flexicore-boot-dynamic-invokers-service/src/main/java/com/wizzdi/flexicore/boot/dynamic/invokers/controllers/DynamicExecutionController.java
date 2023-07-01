@@ -1,0 +1,74 @@
+package com.wizzdi.flexicore.boot.dynamic.invokers.controllers;
+
+import com.flexicore.annotations.IOperation;
+import com.flexicore.annotations.OperationsInside;
+import com.flexicore.model.SecuredBasic;
+import com.flexicore.model.SecuredBasic_;
+import com.flexicore.security.SecurityContextBase;
+import com.wizzdi.flexicore.boot.base.interfaces.Plugin;
+import com.wizzdi.flexicore.boot.dynamic.invokers.model.DynamicExecution;
+import com.wizzdi.flexicore.boot.dynamic.invokers.model.DynamicExecution_;
+import com.wizzdi.flexicore.boot.dynamic.invokers.request.*;
+import com.wizzdi.flexicore.boot.dynamic.invokers.service.DynamicExecutionService;
+import com.wizzdi.flexicore.security.response.PaginationResponse;
+import org.pf4j.Extension;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
+
+@RestController
+@OperationsInside
+@RequestMapping("/dynamicExecution")
+@Extension
+public class DynamicExecutionController implements Plugin {
+
+	@Autowired
+	private DynamicExecutionService dynamicExecutionService;
+
+	@IOperation(Name = "creates dynamicExecution",Description = "creates dynamicExecution")
+	@PostMapping("/create")
+	public DynamicExecution create(@RequestHeader("authenticationKey") String authenticationKey,
+			@RequestBody DynamicExecutionCreate dynamicExecutionCreate, @RequestAttribute SecurityContextBase securityContext){
+		dynamicExecutionService.validateCreate(dynamicExecutionCreate,securityContext);
+		return dynamicExecutionService.createDynamicExecution(dynamicExecutionCreate,securityContext);
+	}
+
+	@IOperation(Name = "returns dynamicExecution",Description = "returns dynamicExecution")
+	@PostMapping("/getAll")
+	public PaginationResponse<DynamicExecution> getAll(@RequestHeader("authenticationKey") String authenticationKey,
+			@RequestBody DynamicExecutionFilter dynamicExecutionFilter, @RequestAttribute SecurityContextBase securityContext){
+		dynamicExecutionService.validate(dynamicExecutionFilter,securityContext);
+		return dynamicExecutionService.getAllDynamicExecutions(dynamicExecutionFilter,securityContext);
+	}
+
+	@IOperation(Name = "returns example for the dynamic execution",Description = "returns example for the dynamic execution")
+	@PostMapping("/getDynamicExecutionReturnExample")
+	public Object getDynamicExecutionReturnExample(@RequestHeader("authenticationKey") String authenticationKey,
+			@RequestBody DynamicExecutionExampleRequest dynamicExecutionExampleRequest, @RequestAttribute SecurityContextBase securityContext){
+		dynamicExecutionService.validate(dynamicExecutionExampleRequest,securityContext);
+		return dynamicExecutionService.getExample(dynamicExecutionExampleRequest.getClazz());
+	}
+
+	@IOperation(Name = "updates dynamicExecution",Description = "updates dynamicExecution")
+	@PutMapping("/update")
+	public DynamicExecution update(@RequestHeader("authenticationKey") String authenticationKey,
+			@RequestBody DynamicExecutionUpdate dynamicExecutionUpdate, @RequestAttribute SecurityContextBase securityContext){
+		String id=dynamicExecutionUpdate.getId();
+		DynamicExecution dynamicExecution=id!=null?dynamicExecutionService.getByIdOrNull(id,DynamicExecution.class, SecuredBasic_.security,securityContext):null;
+		if(dynamicExecution==null){
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"no Dynamic Execution with id "+id);
+		}
+		dynamicExecutionUpdate.setDynamicExecution(dynamicExecution);
+		dynamicExecutionService.validate(dynamicExecutionUpdate,securityContext);
+		return dynamicExecutionService.updateDynamicExecution(dynamicExecutionUpdate,securityContext);
+	}
+
+	@IOperation(Name = "executes DynamicExecution",Description = "executes DynamicExecution")
+	@PostMapping("/executeDynamicExecution")
+	public ExecuteInvokersResponse executeDynamicExecution(@RequestHeader("authenticationKey") String authenticationKey,
+			@RequestBody ExecuteDynamicExecution executeDynamicExecution, @RequestAttribute SecurityContextBase securityContext){
+		dynamicExecutionService.validate(executeDynamicExecution,securityContext);
+		return dynamicExecutionService.executeDynamicExecution(executeDynamicExecution,securityContext);
+	}
+}
