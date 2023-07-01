@@ -6,6 +6,8 @@ import com.flexicore.model.SecuredBasic;
 import com.flexicore.model.SecuredBasic_;
 import com.flexicore.security.SecurityContextBase;
 import com.wizzdi.flexicore.security.data.SecuredBasicRepository;
+import jakarta.validation.ConstraintValidator;
+import jakarta.validation.ConstraintValidatorContext;
 import org.springframework.beans.BeanWrapperImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
@@ -13,9 +15,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
 
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.validation.ConstraintValidator;
-import jakarta.validation.ConstraintValidatorContext;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
