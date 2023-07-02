@@ -33,8 +33,8 @@ jobs:
       - name: Build and Deploy
         run: mvn clean deploy -DskipTests -DperformRelease=true -Drevision=${{ steps.get_version.outputs.VERSION }}
         env:
-          MAVEN_USERNAME: ${{ secrets.MVN_USERNAME }} 
-          MAVEN_CENTRAL_TOKEN: ${{ secrets.MVN_PASSWORD }}
+          MVN_USERNAME: ${{ secrets.MVN_USERNAME }} 
+          MVN_PASSWORD: ${{ secrets.MVN_PASSWORD }}
           GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
       - name: Tag the current commit
         run: |
