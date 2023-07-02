@@ -28,7 +28,7 @@ jobs:
           GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
       - name: Configure Maven
         run: |
-          echo "<settings><servers><server><id>ossrh</id><username>${{ secrets.MVN_USERNAME }}</username><password>${{ secrets.MVN_PASSWORD }}</password><configuration><passphrase>${{ secrets.GPG_PASSPHRASE }}</passphrase></configuration></server></servers></settings>" > settings.xml
+          echo "<settings><servers><server><id>osshra</id><username><![CDATA[${{ secrets.MVN_USERNAME }}]]></username><password><![CDATA[${{ secrets.MVN_PASSWORD }}]]></password><configuration><passphrase><![CDATA[${{ secrets.GPG_PASSPHRASE }}]]></passphrase></configuration></server></servers></settings>" > settings.xml
       - name: Extract latest git tag, increment it and write to revision.txt
         run: mvn ci-friendly-flatten:version --settings settings.xml
       
