@@ -22,7 +22,7 @@ jobs:
           server-username: ${{ secrets.MVN_USERNAME }} 
           server-password: ${{ secrets.MVN_PASSWORD }}
           gpg-private-key: ${{ secrets.GPG_PRIVATE_KEY }} 
-          gpg-passphrase: MAVEN_GPG_PASSPHRASE
+          gpg-passphrase: GPG_PASSPHRASE
       - name: Extract latest git tag, increment it and write to revision.txt
         run: mvn ci-friendly-flatten:version
       
@@ -35,7 +35,7 @@ jobs:
         env:
           MAVEN_USERNAME: ${{ secrets.MVN_USERNAME }} 
           MAVEN_CENTRAL_TOKEN: ${{ secrets.MVN_PASSWORD }}
-          MAVEN_GPG_PASSPHRASE: ${{ secrets.MAVEN_GPG_PASSPHRASE }}
+          GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
       - name: Tag the current commit
         run: |
           git config --global user.name '${{ secrets.GIT_USER_NAME }}'
