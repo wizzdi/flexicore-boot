@@ -51,7 +51,7 @@
     </modules>
 
     <properties>
-        <revision>4.0.4</revision>
+        <revision>0.0.0-dev</revision> <!-- version is set during CI , 99.99.9 is a placeholder for local builds-->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
@@ -620,7 +620,6 @@
                             <goal>clean</goal>
                             <!-- Enable ci-friendly version resolution. Will run on process-resources phase-->
                             <goal>flatten</goal>
-                            <goal>version</goal>
                         </goals>
                     </execution>
                 </executions>
