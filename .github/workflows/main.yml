@@ -19,8 +19,8 @@ jobs:
           java-version: '17'
           distribution: 'adopt'
           server-id: ossrh  # the id from your distributionManagement in pom.xml
-          server-username: ${{ secrets.MVN_USERNAME }} 
-          server-password: ${{ secrets.MVN_PASSWORD }}
+          server-username: MVN_USERNAME
+          server-password: MVN_PASSWORD
           gpg-private-key: ${{ secrets.GPG_PRIVATE_KEY }} 
           gpg-passphrase: GPG_PASSPHRASE
       - name: Extract latest git tag, increment it and write to revision.txt
