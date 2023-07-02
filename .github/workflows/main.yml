@@ -25,14 +25,14 @@ jobs:
           gpg-private-key: ${{ secrets.GPG_PRIVATE_KEY }} 
           gpg-passphrase: ${{ secrets.GPG_PASSPHRASE }}
       - name: Extract latest git tag, increment it and write to revision.txt
-        run: mvn ci-friendly-flatten:version --setings settings.xml
+        run: mvn ci-friendly-flatten:version --settings settings.xml
       
       - name: Read the version
         id: get_version
         run: echo "::set-output name=VERSION::$(cat revision.txt)"
 
       - name: Build and Deploy
-        run: mvn clean deploy -DskipTests -DperformRelease=true -Drevision=${{ steps.get_version.outputs.VERSION }} --setings settings.xml
+        run: mvn clean deploy -DskipTests -DperformRelease=true -Drevision=${{ steps.get_version.outputs.VERSION }} --settings settings.xml
       
       - name: Tag the current commit
         run: |
