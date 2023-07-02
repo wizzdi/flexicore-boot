@@ -22,7 +22,10 @@ jobs:
           settings-path: ${{ github.workspace }} 
           gpg-private-key: ${{ secrets.GPG_PRIVATE_KEY}} # Decode the base64-encoded GPG key
           gpg-passphrase: gpg_passphrase_secret_name # Create a secret named gpg_passphrase_secret_name and store your GPG passphrase
-
+        env:
+          MAVEN_USERNAME: ${{ secrets.MVN_USERNAME }}
+          MAVEN_PASSWORD: ${{ secrets.MVN_PASSWORD }}
+          GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
       - name: Configure Maven
         run: |
           echo "<settings><servers><server><id>github</id><username><![CDATA[${{ secrets.MVN_USERNAME }}]]></username><password><![CDATA[${{ secrets.MVN_PASSWORD }}]]></password></server></servers></settings>" > settings.xml
