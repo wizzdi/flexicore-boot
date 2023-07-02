@@ -18,26 +18,20 @@ jobs:
         with:
           java-version: '17'
           distribution: 'adopt'
-          server-id: github 
-          settings-path: ${{ github.workspace }} 
-          gpg-private-key: ${{ secrets.GPG_PRIVATE_KEY}} # Decode the base64-encoded GPG key
-          gpg-passphrase: gpg_passphrase_secret_name # Create a secret named gpg_passphrase_secret_name and store your GPG passphrase
-        env:
-          MAVEN_USERNAME: ${{ secrets.MVN_USERNAME }}
-          MAVEN_PASSWORD: ${{ secrets.MVN_PASSWORD }}
-          GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
-      - name: Configure Maven
-        run: |
-          echo "<settings><servers><server><id>osshra</id><username><![CDATA[${{ secrets.MVN_USERNAME }}]]></username><password><![CDATA[${{ secrets.MVN_PASSWORD }}]]></password><configuration><passphrase><![CDATA[${{ secrets.GPG_PASSPHRASE }}]]></passphrase></configuration></server></servers></settings>" > settings.xml
+          server-id: ossrh  # the id from your distributionManagement in pom.xml
+          server-username: ${{ secrets.MVN_USERNAME }} 
+          server-password: ${{ secrets.MVN_PASSWORD }}
+          gpg-private-key: ${{ secrets.GPG_PRIVATE_KEY }} 
+          gpg-passphrase: ${{ secrets.GPG_PASSPHRASE }}
       - name: Extract latest git tag, increment it and write to revision.txt
-        run: mvn ci-friendly-flatten:version --settings settings.xml
+        run: mvn ci-friendly-flatten:version
       
       - name: Read the version
         id: get_version
         run: echo "::set-output name=VERSION::$(cat revision.txt)"
 
       - name: Build and Deploy
-        run: mvn clean deploy -DskipTests -DperformRelease=true -Drevision=${{ steps.get_version.outputs.VERSION }} --settings settings.xml
+        run: mvn clean deploy -DskipTests -DperformRelease=true -Drevision=${{ steps.get_version.outputs.VERSION }}
       
       - name: Tag the current commit
         run: |
