@@ -709,15 +709,7 @@
                                 </goals>
                             </execution>
                         </executions>
-                        <configuration>
-                            <gpgArguments>
-                                <arg>--pinentry-mode</arg>
-                                <arg>loopback</arg>
-                                <arg>--batch</arg>
-                                <arg>--yes</arg>
-                                <arg>--no-tty</arg>
-                            </gpgArguments>
-                        </configuration>
+
                     </plugin>
 
                 </plugins>
