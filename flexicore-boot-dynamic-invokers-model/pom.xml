@@ -8,7 +8,7 @@
     <parent>
         <groupId>com.wizzdi</groupId>
         <artifactId>flexicore-boot-dependencies</artifactId>
-        <version>4.0.3-SNAPSHOT</version>
+        <version>${revision}</version>
     </parent>
 
     <dependencies>

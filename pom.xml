@@ -5,7 +5,7 @@
 
     <groupId>com.wizzdi</groupId>
     <artifactId>flexicore-boot-dependencies</artifactId>
-    <version>4.0.3-SNAPSHOT</version>
+    <version>${revision}</version>
     <packaging>pom</packaging>
     <name>FlexiCore Boot Dependencies</name>
     <description>flexicore Boot Dependencies</description>
@@ -51,6 +51,7 @@
     </modules>
 
     <properties>
+        <revision>4.0.4-SNAPSHOT</revision>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
@@ -139,6 +140,7 @@
         <maven-scm-api.version>2.0.1</maven-scm-api.version>
         <maven-scm-provider-gitexe.version>2.0.1</maven-scm-provider-gitexe.version>
         <maven-processor-plugin.version>4.5</maven-processor-plugin.version>
+        <ci-friendly-flatten-maven-plugin.version>1.0.17</ci-friendly-flatten-maven-plugin.version>
     </properties>
     <distributionManagement>
         <snapshotRepository>
@@ -167,10 +169,10 @@
         </developer>
     </developers>
     <scm>
-        <connection>scm:git:git://wizzdi/flexicore-boot-dependencies.git</connection>
-        <developerConnection>scm:git:git@github.com:wizzdi/flexicore-boot-dependencies.git</developerConnection>
-        <url>https://github.com/wizzdi/flexicore-boot-dependencies</url>
-        <tag>flexicore-boot-dependencies-${project.version}</tag>
+        <connection>scm:git:git://wizzdi/flexicore-boot.git</connection>
+        <developerConnection>scm:git:git@github.com:wizzdi/flexicore-boot.git</developerConnection>
+        <url>https://github.com/wizzdi/flexicore-boot</url>
+        <tag>flexicore-boot-${project.version}</tag>
     </scm>
 
     <dependencyManagement>
@@ -608,33 +610,20 @@
             </plugin>
 
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-release-plugin</artifactId>
-                <version>${maven-release-plugin.version}</version>
-                <configuration>
-                    <autoVersionSubmodules>true</autoVersionSubmodules>
-                    <localCheckout>true</localCheckout>
-                    <pushChanges>false</pushChanges>
-                    <mavenExecutorId>forked-path</mavenExecutorId>
-                    <arguments>-Dgpg.passphrase=${gpg.passphrase}</arguments>
-                </configuration>
-                <dependencies>
-                    <dependency>
-                        <groupId>org.apache.maven.scm</groupId>
-                        <artifactId>maven-scm-provider-gitexe</artifactId>
-                        <version>${maven-scm-provider-gitexe.version}</version>
-                    </dependency>
-                    <dependency>
-                        <groupId>org.apache.maven.scm</groupId>
-                        <artifactId>maven-scm-api</artifactId>
-                        <version>${maven-scm-api.version}</version>
-                    </dependency>
-                    <dependency>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-javadoc-plugin</artifactId>
-                        <version>${maven-javadoc-plugin.version}</version>
-                    </dependency>
-                </dependencies>
+                <groupId>com.outbrain.swinfra</groupId>
+                <artifactId>ci-friendly-flatten-maven-plugin</artifactId>
+                <version>${ci-friendly-flatten-maven-plugin.version}</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <!-- Ensure proper cleanup. Will run on clean phase-->
+                            <goal>clean</goal>
+                            <!-- Enable ci-friendly version resolution. Will run on process-resources phase-->
+                            <goal>flatten</goal>
+                        </goals>
+                    </execution>
+                </executions>
+
             </plugin>
             <plugin>
                 <groupId>org.sonatype.plugins</groupId>
