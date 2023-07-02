@@ -20,7 +20,7 @@ jobs:
           distribution: 'adopt'
           server-id: github 
           settings-path: ${{ github.workspace }} 
-          gpg-private-key: ${{ secrets.GPG_PRIVATE_KEY | base64decode }} # Decode the base64-encoded GPG key
+          gpg-private-key: ${{ secrets.GPG_PRIVATE_KEY}} # Decode the base64-encoded GPG key
           gpg-passphrase: gpg_passphrase_secret_name # Create a secret named gpg_passphrase_secret_name and store your GPG passphrase
 
       - name: Configure Maven
