@@ -1,29 +1,47 @@
-name: Release
+name: CI/CD Pipeline
 
 on:
   push:
-    branches:
-      - main  # Trigger the workflow on push to main branch
+    branches: 
+      - master
 
 jobs:
-  release:
+  build:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
+      - name: Checkout Code
+        uses: actions/checkout@v3
 
       - name: Set up JDK 17
-        uses: actions/setup-java@v2
+        uses: actions/setup-java@v3
         with:
           java-version: '17'
           distribution: 'adopt'
-          cache: 'maven'
+          server-id: github 
+          settings-path: ${{ github.workspace }} 
+          gpg-private-key: ${{ secrets.GPG_PRIVATE_KEY }} # Assuming you have added GPG_PRIVATE_KEY to your secrets
+          gpg-passphrase: gpg_passphrase_secret_name # Create a secret named gpg_passphrase_secret_name and store your GPG passphrase
 
-      - name: Configure git user
+      - name: Configure Maven
         run: |
-          git config --global user.name "${{ secrets.GIT_USER_NAME }}"
-          git config --global user.email "${{ secrets.GIT_USER_EMAIL }}"
+          echo "<settings><servers><server><id>github</id><username>${{ secrets.MVN_USERNAME }}</username><password>${{ secrets.MVN_PASSWORD }}</password></server></servers></settings>" > settings.xml
 
-      - name: Release
-        run: mvn --batch-mode release:prepare release:perform -DskipTests -Dusername=${{ secrets.MVN_USERNAME }} -Dpassword=${{ secrets.MVN_PASSWORD }} -Dgpg.passphrase=${{ secrets.GPG_PASSPHRASE }}
+      - name: Extract latest git tag, increment it and write to revision.txt
+        run: mvn ci-friendly-flatten:version --settings settings.xml
+      
+      - name: Read the version
+        id: get_version
+        run: echo "::set-output name=VERSION::$(cat revision.txt)"
+
+      - name: Build and Deploy
+        run: mvn clean deploy -DskipTests -DperformRelease=true -Drevision=${{ steps.get_version.outputs.VERSION }} --settings settings.xml
+      
+      - name: Tag the current commit
+        run: |
+          git config --global user.name '${{ secrets.GIT_USER_NAME }}'
+          git config --global user.email '${{ secrets.GIT_USER_EMAIL }}'
+          git tag -a ${{ steps.get_version.outputs.VERSION }} -m "Release ${{ steps.get_version.outputs.VERSION }}"
+          git push origin ${{ steps.get_version.outputs.VERSION }}
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
