@@ -1,3 +1,6 @@
 /flexicore-boot-dependencies.iml
 /.idea/
 /target/
+/**/.ci-friendly-pom.xml
+/**/pom.xml.releaseBackup
+/**/target/

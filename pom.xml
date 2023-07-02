@@ -51,7 +51,7 @@
     </modules>
 
     <properties>
-        <revision>4.0.4-SNAPSHOT</revision>
+        <revision>4.0.4</revision>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
@@ -169,7 +169,7 @@
         </developer>
     </developers>
     <scm>
-        <connection>scm:git:git://wizzdi/flexicore-boot.git</connection>
+        <connection>scm:git:git@github.com:wizzdi/flexicore-boot.git</connection>
         <developerConnection>scm:git:git@github.com:wizzdi/flexicore-boot.git</developerConnection>
         <url>https://github.com/wizzdi/flexicore-boot</url>
         <tag>flexicore-boot-${project.version}</tag>
@@ -620,9 +620,11 @@
                             <goal>clean</goal>
                             <!-- Enable ci-friendly version resolution. Will run on process-resources phase-->
                             <goal>flatten</goal>
+                            <goal>version</goal>
                         </goals>
                     </execution>
                 </executions>
+
 
             </plugin>
             <plugin>
@@ -644,6 +646,7 @@
                 <executions>
                     <execution>
                         <id>attach-sources</id>
+                        <phase>package</phase>
                         <goals>
                             <goal>jar</goal>
                         </goals>
@@ -707,6 +710,7 @@
                             </execution>
                         </executions>
                     </plugin>
+
                 </plugins>
             </build>
         </profile>
