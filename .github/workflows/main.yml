@@ -31,7 +31,7 @@ jobs:
         run:  echo "VERSION=$(cat revision.txt)" >> $GITHUB_ENV
 
       - name: Build and Deploy
-        run: mvn clean deploy -DskipTests -DperformRelease=true -Drevision=${{ steps.get_version.outputs.VERSION }}
+        run: mvn clean deploy -DskipTests -DperformRelease=true -Drevision=${{ env.VERSION }}
         env:
           MVN_USERNAME: ${{ secrets.MVN_USERNAME }} 
           MVN_PASSWORD: ${{ secrets.MVN_PASSWORD }}
@@ -40,7 +40,7 @@ jobs:
         run: |
           git config --global user.name '${{ secrets.GIT_USER_NAME }}'
           git config --global user.email '${{ secrets.GIT_USER_EMAIL }}'
-          git tag -a ${{ steps.get_version.outputs.VERSION }} -m "Release ${{ steps.get_version.outputs.VERSION }}"
+          git tag -a ${{ steps.get_version.outputs.VERSION }} -m "Release ${{ env.VERSION }}"
           git push origin ${{ steps.get_version.outputs.VERSION }}
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
