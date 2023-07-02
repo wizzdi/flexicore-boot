@@ -28,7 +28,7 @@ jobs:
       
       - name: Read the version
         id: get_version
-        run: echo "::set-output name=VERSION::$(cat revision.txt)"
+        run:  echo "VERSION=$(cat revision.txt)" >> $GITHUB_ENV
 
       - name: Build and Deploy
         run: mvn clean deploy -DskipTests -DperformRelease=true -Drevision=${{ steps.get_version.outputs.VERSION }}
