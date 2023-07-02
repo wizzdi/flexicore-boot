@@ -25,6 +25,12 @@ jobs:
           server-password: MVN_PASSWORD
           gpg-private-key: ${{ secrets.GPG_PRIVATE_KEY }} 
           gpg-passphrase: GPG_PASSPHRASE
+      - name: Cache Maven packages
+        uses: actions/cache@v3
+        with:
+          path: ~/.m2
+          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+          restore-keys: ${{ runner.os }}-m2
       - name: Extract latest git tag, increment it and write to revision.txt
         run: mvn ci-friendly-flatten:version
       
