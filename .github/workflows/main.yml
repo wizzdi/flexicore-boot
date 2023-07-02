@@ -18,22 +18,24 @@ jobs:
         with:
           java-version: '17'
           distribution: 'adopt'
-          settings-path: ${{ github.workspace }}
           server-id: ossrh  # the id from your distributionManagement in pom.xml
           server-username: ${{ secrets.MVN_USERNAME }} 
           server-password: ${{ secrets.MVN_PASSWORD }}
           gpg-private-key: ${{ secrets.GPG_PRIVATE_KEY }} 
-          gpg-passphrase: ${{ secrets.GPG_PASSPHRASE }}
+          gpg-passphrase: MAVEN_GPG_PASSPHRASE
       - name: Extract latest git tag, increment it and write to revision.txt
-        run: mvn ci-friendly-flatten:version --settings settings.xml
+        run: mvn ci-friendly-flatten:version
       
       - name: Read the version
         id: get_version
         run: echo "::set-output name=VERSION::$(cat revision.txt)"
 
       - name: Build and Deploy
-        run: mvn clean deploy -DskipTests -DperformRelease=true -Drevision=${{ steps.get_version.outputs.VERSION }} --settings settings.xml
-      
+        run: mvn clean deploy -DskipTests -DperformRelease=true -Drevision=${{ steps.get_version.outputs.VERSION }}
+        env:
+          MAVEN_USERNAME: ${{ secrets.MVN_USERNAME }} 
+          MAVEN_CENTRAL_TOKEN: ${{ secrets.MVN_PASSWORD }}
+          MAVEN_GPG_PASSPHRASE: ${{ secrets.MAVEN_GPG_PASSPHRASE }}
       - name: Tag the current commit
         run: |
           git config --global user.name '${{ secrets.GIT_USER_NAME }}'
