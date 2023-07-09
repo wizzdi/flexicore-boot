@@ -39,7 +39,7 @@ jobs:
         run:  echo "VERSION=$(cat revision.txt)" >> $GITHUB_ENV
 
       - name: Build and Deploy
-        run: mvn clean deploy -DskipTests -DperformRelease=true -Drevision=${{ env.VERSION }}
+        run: mvn clean deploy -DperformRelease=true -Drevision=${{ env.VERSION }}
         env:
           MVN_USERNAME: ${{ secrets.MVN_USERNAME }} 
           MVN_PASSWORD: ${{ secrets.MVN_PASSWORD }}
