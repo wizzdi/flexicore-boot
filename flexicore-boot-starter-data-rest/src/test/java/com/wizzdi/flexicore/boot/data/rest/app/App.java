@@ -1,6 +1,7 @@
 package com.wizzdi.flexicore.boot.data.rest.app;
 
 import com.wizzdi.flexicore.boot.base.annotations.plugins.EnableFlexiCorePlugins;
+import com.wizzdi.flexicore.boot.base.init.FlexiCoreApplication;
 import com.wizzdi.flexicore.boot.data.rest.annotations.EnableFlexiCoreDataRESTPlugins;
 import com.wizzdi.flexicore.boot.jpa.annotations.EnableFlexiCoreJPAPlugins;
 import org.springframework.beans.factory.ObjectProvider;
@@ -18,9 +19,9 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import java.util.Arrays;
 
+@EnableFlexiCoreDataRESTPlugins
 @EnableFlexiCorePlugins
 @EnableFlexiCoreJPAPlugins
-@EnableFlexiCoreDataRESTPlugins
 @SpringBootApplication
 @EnableTransactionManagement(proxyTargetClass = true)
 public class App {
@@ -31,17 +32,12 @@ public class App {
 	public static void main(String[] args) {
 
 
-		SpringApplication app = new SpringApplication(App.class);
+		FlexiCoreApplication app = new FlexiCoreApplication(App.class);
 		app.addListeners(new ApplicationPidFileWriter());
 		ConfigurableApplicationContext context=app.run(args);
 
 	}
 
-	@Bean
-	@Primary
-	public PlatformTransactionManager transactionManager(PlatformTransactionManager jpaTransactionManager) {
-		return jpaTransactionManager;
-	}
 
 
 	@Bean

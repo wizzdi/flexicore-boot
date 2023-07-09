@@ -20,7 +20,6 @@
     </licenses>
 
     <modules>
-        <module>dynamic-annoatations-service</module>
         <module>dynamic-properties-converter-postgresql</module>
         <module>dynamic-properties-database-converter</module>
         <module>flexicore-base-model</module>
@@ -56,7 +55,7 @@
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
 
-        <spring-boot.version>3.0.0</spring-boot.version>
+        <spring-boot.version>3.1.1</spring-boot.version>
         <pf4j-spring.version>0.8.0</pf4j-spring.version>
 
         <flexicore-boot.version>${project.version}</flexicore-boot.version>
@@ -105,15 +104,12 @@
         <pf4j.version>3.8.0</pf4j.version>
         <reflections.version>0.10.2</reflections.version>
         <org.eclipse.persistence.jpa.version>4.0.2</org.eclipse.persistence.jpa.version>
-        <swagger-annotations.version>2.2.0</swagger-annotations.version>
         <jjwt-api.version>0.11.5</jjwt-api.version>
-        <swagger.version>2.2.7</swagger.version>
-        <springdoc-openapi-starter-webmvc-api.version>2.0.2</springdoc-openapi-starter-webmvc-api.version>
+        <swagger.version>2.2.14</swagger.version>
+        <springdoc-openapi-starter-webmvc-api.version>2.1.0</springdoc-openapi-starter-webmvc-api.version>
 
         <commons-io.version>2.13.0</commons-io.version>
         <commons-codec.version>1.16.0</commons-codec.version>
-        <spring-boot-starter-jta-atomikos.version>2.7.13</spring-boot-starter-jta-atomikos.version>
-        <guava.version>31.1-jre</guava.version>
 
         <metamodel-inheritence-fix-processor.version>${project.version}</metamodel-inheritence-fix-processor.version>
         <scrypt.version>1.4.0</scrypt.version>
@@ -133,9 +129,8 @@
 
         <mongodb-crypt.version>1.8.0</mongodb-crypt.version>
         <javassist.version>3.29.2-GA</javassist.version>
-        <tink.version>1.9.0</tink.version>
         <commons-csv.version>1.10.0</commons-csv.version>
-        <resteasy-spring-boot-starter.version>6.0.0.Final</resteasy-spring-boot-starter.version>
+        <resteasy-spring-boot-starter.version>6.0.3.Final</resteasy-spring-boot-starter.version>
 
         <maven-scm-api.version>2.0.1</maven-scm-api.version>
         <maven-scm-provider-gitexe.version>2.0.1</maven-scm-provider-gitexe.version>
@@ -200,11 +195,7 @@
                 <artifactId>commons-csv</artifactId>
                 <version>${commons-csv.version}</version>
             </dependency>
-            <dependency>
-                <groupId>com.google.crypto.tink</groupId>
-                <artifactId>tink</artifactId>
-                <version>${tink.version}</version>
-            </dependency>
+
             <dependency>
                 <groupId>org.javassist</groupId>
                 <artifactId>javassist</artifactId>
@@ -280,20 +271,9 @@
                 <version>${scrypt.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.google.guava</groupId>
-                <artifactId>guava</artifactId>
-                <version>${guava.version}</version>
-            </dependency>
-            <dependency>
                 <groupId>org.eclipse.persistence</groupId>
                 <artifactId>org.eclipse.persistence.jpa.modelgen.processor</artifactId>
                 <version>${org.eclipse.persistence.jpa.version}</version>
-            </dependency>
-            <!-- https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-jta-atomikos -->
-            <dependency>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-starter-jta-atomikos</artifactId>
-                <version>${spring-boot-starter-jta-atomikos.version}</version>
             </dependency>
 
             <!-- https://mvnrepository.com/artifact/commons-io/commons-io -->
@@ -332,8 +312,8 @@
 
             <dependency>
                 <groupId>io.swagger.core.v3</groupId>
-                <artifactId>swagger-annotations</artifactId>
-                <version>${swagger-annotations.version}</version>
+                <artifactId>swagger-annotations-jakarta</artifactId>
+                <version>${swagger.version}</version>
             </dependency>
             <dependency>
                 <groupId>io.jsonwebtoken</groupId>

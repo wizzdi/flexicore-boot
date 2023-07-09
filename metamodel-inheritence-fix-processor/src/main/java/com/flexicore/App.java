@@ -21,7 +21,7 @@ import java.util.*;
 public class App extends AbstractMojo
 {
 
-    @Component
+    @Parameter( defaultValue = "${project}", readonly = true )
     protected MavenProject project;
 
     @Parameter( defaultValue="${project.build.directory}/generated-sources/apt", required = true)

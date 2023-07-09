@@ -8,6 +8,8 @@ package com.flexicore.data;
 
 import com.flexicore.annotations.IOperation;
 import org.pf4j.Extension;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
 import com.flexicore.data.impl.BaseclassRepository;
 import com.flexicore.model.*;
@@ -15,8 +17,7 @@ import com.flexicore.model.dynamic.DynamicInvoker;
 import com.flexicore.model.dynamic.DynamicInvoker_;
 import com.flexicore.request.OperationFiltering;
 import com.flexicore.security.SecurityContext;
-import com.google.common.cache.Cache;
-import com.google.common.cache.CacheBuilder;
+
 
 import jakarta.persistence.TypedQuery;
 import jakarta.persistence.criteria.*;
@@ -32,24 +33,17 @@ import java.util.stream.Collectors;
 public class OperationRepository extends BaseclassRepository {
 
 
-    private static Cache<String, Operation> operationCache = CacheBuilder.newBuilder().maximumSize(50).build();
 
 
     @SuppressWarnings({"unchecked"})
+    @Cacheable(value = "operations", key = "#id",cacheManager = "operationCacheManager",unless = "#result == null")
     public Operation findById(String id) {
-        Operation op = operationCache.getIfPresent(id);
-        if (op == null) {
-            op = findByIdOrNull(Operation.class, id);
-            if (op != null) {
-                operationCache.put(id, op);
-
-            }
-        }
-        return op;
+        return findByIdOrNull(Operation.class, id);
     }
 
-    public void updateCahce(Operation operation) {
-        operationCache.put(operation.getId(), operation);
+    @CachePut(value = "operations", key = "#operation.id",cacheManager = "operationCacheManager",unless = "#result == null")
+    public Operation updateCache(Operation operation) {
+        return operation;
     }
 
 

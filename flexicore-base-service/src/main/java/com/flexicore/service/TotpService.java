@@ -9,7 +9,6 @@ import com.flexicore.response.FinishTotpSetupResponse;
 import com.flexicore.response.SetupTotpResponse;
 import com.flexicore.response.TotpAuthenticationResponse;
 import com.flexicore.security.SecurityContext;
-import com.flexicore.service.impl.EncryptionService;
 import com.lambdaworks.crypto.SCryptUtil;
 import dev.samstevens.totp.code.CodeVerifier;
 import dev.samstevens.totp.qr.QrData;
@@ -17,22 +16,24 @@ import dev.samstevens.totp.qr.QrDataFactory;
 import dev.samstevens.totp.qr.QrGenerator;
 import dev.samstevens.totp.recovery.RecoveryCodeGenerator;
 import dev.samstevens.totp.secret.SecretGenerator;
+import jakarta.ws.rs.BadRequestException;
+import jakarta.ws.rs.ClientErrorException;
+import jakarta.ws.rs.InternalServerErrorException;
+import jakarta.ws.rs.core.Response;
 import org.pf4j.Extension;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.security.crypto.encrypt.Encryptors;
+import org.springframework.security.crypto.encrypt.TextEncryptor;
+import org.springframework.security.crypto.keygen.KeyGenerators;
 import org.springframework.stereotype.Component;
 
-import jakarta.ws.rs.BadRequestException;
-import jakarta.ws.rs.ClientErrorException;
-import jakarta.ws.rs.InternalServerErrorException;
-import jakarta.ws.rs.NotAuthorizedException;
-import jakarta.ws.rs.core.Response;
+import javax.crypto.KeyGenerator;
 import java.security.GeneralSecurityException;
 import java.time.OffsetDateTime;
-import java.util.Base64;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -55,6 +56,8 @@ public class TotpService implements FlexiCoreService {
     private int scryptR;
     @Value("${flexicore.security.totp.recovery.scryptP:1}")
     private int scryptP;
+    @Value("${flexicore.totp.encryption.secret:flexicore-secret}")
+    private String encryptionSecret;
     @Autowired
     private SecretGenerator secretGenerator;
 
@@ -63,9 +66,6 @@ public class TotpService implements FlexiCoreService {
 
     @Autowired
     private QrGenerator qrGenerator;
-
-    @Autowired
-    private EncryptionService encryptionService;
 
     @Autowired
     private UserRepository userrepository;
@@ -89,8 +89,11 @@ public class TotpService implements FlexiCoreService {
         SetupTotpResponse setupTotpResponse = new SetupTotpResponse();
         try {
             String secret = secretGenerator.generate();
-            String encrypt = Base64.getEncoder().encodeToString(encryptionService.encrypt(secret.getBytes(), user.getId().getBytes()));
+            String salt = KeyGenerators.string().generateKey();
+            TextEncryptor delux = Encryptors.delux(encryptionSecret, salt);
+            String encrypt = delux.encrypt(secret);
             user.setTotpSecret(encrypt);
+            user.setTotpSalt(salt);
             userrepository.merge(user);
             setupTotpResponse.setSecret(secret);
 
@@ -144,7 +147,8 @@ public class TotpService implements FlexiCoreService {
             throw new BadRequestException("user already finished totp setup");
         }
         try {
-            byte[] salt = user.getId().getBytes();
+            String salt = user.getTotpSalt();
+
             String secret = getDecryptedSecret(totpSecret, salt);
             if (!verifier.isValidCode(secret, finishSetupTotp.getCode())) {
                 throw new BadRequestException("given code does not match the one setup");
@@ -159,8 +163,9 @@ public class TotpService implements FlexiCoreService {
 
     }
 
-    private String getDecryptedSecret(String encryptedSecret, byte[] salt) throws GeneralSecurityException {
-        return new String(encryptionService.decrypt(Base64.getDecoder().decode(encryptedSecret), salt));
+    private String getDecryptedSecret(String encryptedSecret, String salt) throws GeneralSecurityException {
+        TextEncryptor delux = Encryptors.delux(encryptionSecret, salt);
+        return delux.decrypt(encryptedSecret);
     }
 
     public FinishTotpSetupResponse finishSetupTotp(FinishTotpSetupRequest finishSetupTotp, SecurityContext securityContext) {
@@ -174,7 +179,6 @@ public class TotpService implements FlexiCoreService {
     }
 
 
-
     private String hashRecoveryCode(String plain) {
         return SCryptUtil.scrypt(plain, scryptN, scryptR, scryptP);
     }
@@ -182,7 +186,7 @@ public class TotpService implements FlexiCoreService {
     public TotpAuthenticationResponse authenticateTotp(TotpAuthenticationRequest totpAuthenticationRequest, SecurityContext securityContext) {
         User user = securityContext.getUser();
         try {
-            String secret = getDecryptedSecret(user.getTotpSecret(), user.getId().getBytes());
+            String secret = getDecryptedSecret(user.getTotpSecret(), user.getTotpSalt());
             if (verifier.isValidCode(secret, totpAuthenticationRequest.getCode())) {
                 applicationEventPublisher.publishEvent(new LoginEvent(user));
                 return getTotpAuthenticationResponse(securityContext, user);
@@ -204,10 +208,10 @@ public class TotpService implements FlexiCoreService {
     }
 
     public void validate(DisableTotpRequest disableTotpRequest, SecurityContext securityContext) {
-        if(disableTotpRequest.getUser()==null){
+        if (disableTotpRequest.getUser() == null) {
             disableTotpRequest.setUser(securityContext.getUser());
         }
-        if(!disableTotpRequest.getUser().isTotpEnabled()){
+        if (!disableTotpRequest.getUser().isTotpEnabled()) {
             throw new BadRequestException("totp is not enabled for user");
         }
 
@@ -222,28 +226,28 @@ public class TotpService implements FlexiCoreService {
     }
 
     public void validate(RecoverTotpRequest recoverTotpRequest, SecurityContext securityContext) {
-        User user=securityContext.getUser();
-        if(!user.isTotpEnabled()){
+        User user = securityContext.getUser();
+        if (!user.isTotpEnabled()) {
             throw new BadRequestException("User does not have totp enabled");
         }
-        if(user.getTotpRecoveryCodes()==null){
+        if (user.getTotpRecoveryCodes() == null) {
             throw new BadRequestException("user has no recovery codes");
         }
 
     }
 
     public TotpAuthenticationResponse recoverTotp(RecoverTotpRequest recoverTotpRequest, SecurityContext securityContext) {
-        String code=recoverTotpRequest.getRecoveryCode();
+        String code = recoverTotpRequest.getRecoveryCode();
         User user = securityContext.getUser();
         Set<String> totpCodes = Stream.of(user.getTotpRecoveryCodes().split("\\|")).collect(Collectors.toSet());
-        Optional<String> hashedCode= totpCodes.stream().filter(f->SCryptUtil.check(code,f)).findFirst();
-        if(hashedCode.isPresent()){
+        Optional<String> hashedCode = totpCodes.stream().filter(f -> SCryptUtil.check(code, f)).findFirst();
+        if (hashedCode.isPresent()) {
             totpCodes.remove(hashedCode.get());
-            String unusedCodes= String.join("|", totpCodes);
+            String unusedCodes = String.join("|", totpCodes);
             user.setTotpRecoveryCodes(unusedCodes);
             userrepository.merge(user);
             applicationEventPublisher.publishEvent(new LoginEvent(user));
-            return getTotpAuthenticationResponse(securityContext,user);
+            return getTotpAuthenticationResponse(securityContext, user);
         }
         throw new ClientErrorException("recovery code is invalid", Response.Status.UNAUTHORIZED);
     }

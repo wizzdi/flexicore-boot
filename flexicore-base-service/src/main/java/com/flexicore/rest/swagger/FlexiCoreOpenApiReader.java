@@ -1201,7 +1201,7 @@ public class FlexiCoreOpenApiReader extends Reader {
         }
     }
 
-    private void setOperationObjectFromApiOperationAnnotation(
+    protected void setOperationObjectFromApiOperationAnnotation(
             Operation operation,
             io.swagger.v3.oas.annotations.Operation apiOperation,
             Produces methodProduces,

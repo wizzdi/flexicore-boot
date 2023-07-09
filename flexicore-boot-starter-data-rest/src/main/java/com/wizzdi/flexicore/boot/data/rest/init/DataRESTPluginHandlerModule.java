@@ -1,16 +1,15 @@
 package com.wizzdi.flexicore.boot.data.rest.init;
 
-import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
-import org.springframework.boot.autoconfigure.data.rest.RepositoryRestMvcAutoConfiguration;
-import org.springframework.boot.autoconfigure.http.HttpMessageConvertersAutoConfiguration;
-import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.rest.webmvc.config.RepositoryRestMvcConfiguration;
 
 @Configuration
 @ComponentScan(basePackages = "com.wizzdi.flexicore.boot.data.rest")
+@AutoConfigureBefore(RepositoryRestMvcConfiguration.class)
 public class DataRESTPluginHandlerModule {
+
 
 
 

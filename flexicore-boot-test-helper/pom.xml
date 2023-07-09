@@ -13,8 +13,12 @@
     <dependencies>
         <dependency>
             <groupId>org.pf4j</groupId>
-            <artifactId>pf4j-spring</artifactId>
+            <artifactId>pf4j</artifactId>
             <exclusions>
+                <exclusion>
+                    <artifactId>log4j</artifactId>
+                    <groupId>log4j</groupId>
+                </exclusion>
                 <exclusion>
                     <artifactId>slf4j-log4j12</artifactId>
                     <groupId>org.slf4j</groupId>
@@ -22,5 +26,6 @@
             </exclusions>
         </dependency>
     </dependencies>
+
 
 </project>

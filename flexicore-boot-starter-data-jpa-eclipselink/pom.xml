@@ -21,11 +21,6 @@
 
         <dependency>
             <groupId>com.wizzdi</groupId>
-            <artifactId>dynamic-annoatations-service</artifactId>
-
-        </dependency>
-        <dependency>
-            <groupId>com.wizzdi</groupId>
             <artifactId>flexicore-boot-starter-data-jpa</artifactId>
             <exclusions>
                 <exclusion>

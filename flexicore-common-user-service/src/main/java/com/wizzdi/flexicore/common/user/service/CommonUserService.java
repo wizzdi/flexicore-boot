@@ -147,6 +147,10 @@ public class CommonUserService implements Plugin {
             user.setPhoneNumber(createUser.getPhoneNumber());
             update = true;
         }
+        if (createUser.getTotpSalt() != null && !createUser.getTotpSalt().equals(user.getTotpSalt())) {
+            user.setTotpSalt(createUser.getTotpSalt());
+            update = true;
+        }
 
         if (createUser.getUiConfiguration() != null && !createUser.getUiConfiguration().equals(user.getUiConfiguration())) {
             user.setUiConfiguration(createUser.getUiConfiguration());

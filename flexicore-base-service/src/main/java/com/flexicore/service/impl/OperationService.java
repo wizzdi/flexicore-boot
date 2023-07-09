@@ -17,13 +17,14 @@ import com.flexicore.request.OperationFiltering;
 import com.flexicore.request.OperationUpdate;
 import com.flexicore.security.SecurityContext;
 import com.flexicore.service.BaseclassNewService;
-import com.google.common.cache.Cache;
-import com.google.common.cache.CacheBuilder;
+
 import com.wizzdi.flexicore.security.service.SecurityOperationService;
 import org.pf4j.Extension;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -51,7 +52,6 @@ public class OperationService implements com.flexicore.service.OperationService 
 	@Autowired
 	private BaseclassNewService baseclassNewService;
 
-	private static Cache<String,Boolean> accessControlCache=CacheBuilder.newBuilder().maximumSize(100).expireAfterWrite(15, TimeUnit.MINUTES).build();
 
 
 
@@ -99,13 +99,22 @@ public class OperationService implements com.flexicore.service.OperationService 
 	public boolean tennantAllowed(Operation operation, Tenant tenant) {
 		IOperation.Access access=IOperation.Access.allow;
 		String cacheKey= com.flexicore.service.OperationService.getAccessControlKey(TENANT_TYPE,operation.getId(),tenant.getId(),access);
-		Boolean val=accessControlCache.getIfPresent(cacheKey);
+		Boolean val=getIfPresent(cacheKey);
 		if(val!=null){
 			return val;
 		}
 		Baselink link = baselinkService.findBySidesAndValue(tenant, operation,access.name() );
 		val= link != null;
-		accessControlCache.put(cacheKey,val);
+		put(cacheKey,val);
+		return val;
+	}
+
+	@Cacheable(value = "accessControlCache", key = "#cacheKey", unless = "#result == null",cacheManager = "accessControlCacheManager")
+	public Boolean getIfPresent(String cacheKey) {
+		return null;
+	}
+	@CachePut(value = "accessControlCache", key = "#cacheKey",cacheManager = "accessControlCacheManager",unless = "#result == null")
+	public Boolean put(String cacheKey,Boolean val) {
 		return val;
 	}
 
@@ -113,13 +122,13 @@ public class OperationService implements com.flexicore.service.OperationService 
 	public boolean tennantDenied(Operation operation, Tenant tenant) {
 		IOperation.Access access=IOperation.Access.deny;
 		String cacheKey= com.flexicore.service.OperationService.getAccessControlKey(TENANT_TYPE,operation.getId(),tenant.getId(),access);
-		Boolean val=accessControlCache.getIfPresent(cacheKey);
+		Boolean val=getIfPresent(cacheKey);
 		if(val!=null){
 			return val;
 		}
 		Baselink link = baselinkService.findBySidesAndValue(tenant, operation, access.name());
 		val= link != null;
-		accessControlCache.put(cacheKey,val);
+		put(cacheKey,val);
 		return val;
 	}
 
@@ -145,12 +154,12 @@ public class OperationService implements com.flexicore.service.OperationService 
 	public boolean roleAllowed(Operation operation, User user) {
 		IOperation.Access access = IOperation.Access.allow;
 		String cacheKey= com.flexicore.service.OperationService.getAccessControlKey(ROLE_TYPE,operation.getId(),user.getId(),access);
-		Boolean val=accessControlCache.getIfPresent(cacheKey);
+		Boolean val=getIfPresent(cacheKey);
 		if(val!=null){
 			return val;
 		}
 		val = operationRepository.checkRole(operation, user, access);
-		accessControlCache.put(cacheKey,val);
+		put(cacheKey,val);
 
 		return val;
 
@@ -161,12 +170,12 @@ public class OperationService implements com.flexicore.service.OperationService 
 		IOperation.Access access = IOperation.Access.deny;
 
 		String cacheKey= com.flexicore.service.OperationService.getAccessControlKey(ROLE_TYPE,operation.getId(),user.getId(),access);
-		Boolean val=accessControlCache.getIfPresent(cacheKey);
+		Boolean val=getIfPresent(cacheKey);
 		if(val!=null){
 			return val;
 		}
 		val = operationRepository.checkRole(operation, user, access);
-		accessControlCache.put(cacheKey,val);
+		put(cacheKey,val);
 		return val;
 	}
 
@@ -174,12 +183,12 @@ public class OperationService implements com.flexicore.service.OperationService 
 	@Override
 	public boolean checkUser(Operation operation, User user, IOperation.Access access) {
 		String cacheKey= com.flexicore.service.OperationService.getAccessControlKey(USER_TYPE,operation.getId(),user.getId(),access);
-		Boolean val=accessControlCache.getIfPresent(cacheKey);
+		Boolean val=getIfPresent(cacheKey);
 		if(val!=null){
 			return val;
 		}
 		 val = operationRepository.checkUser(operation, user, access);
-		accessControlCache.put(cacheKey,val);
+		put(cacheKey,val);
 		return val;
 	}
 
@@ -190,7 +199,7 @@ public class OperationService implements com.flexicore.service.OperationService 
 
 	@Override
 	public void updateCahce(Operation operation) {
-		operationRepository.updateCahce(operation);
+		operationRepository.updateCache(operation);
 	}
 
 	@Override

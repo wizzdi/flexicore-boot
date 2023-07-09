@@ -1,7 +1,5 @@
 package com.wizzdi.flexicore.boot.jpa.init.eclipselink;
 
-import com.wizzdi.dynamic.annotations.service.AnnotationTransformer;
-import com.wizzdi.dynamic.annotations.service.TransformAnnotations;
 import com.wizzdi.flexicore.boot.jpa.service.EntitiesHolder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -70,15 +68,11 @@ public class EclipseLinkJpaConfiguration extends JpaBaseConfiguration {
 
     @Bean
     @Primary
-    public LocalContainerEntityManagerFactoryBean entityManagerFactory(final EntityManagerFactoryBuilder builder, @Autowired DataSource dataSource, @Autowired List<EntitiesHolder> entitiesHolder,@Autowired ObjectProvider<AnnotationTransformer<?>> annotationTransformers) throws ClassNotFoundException, MalformedURLException {
+    public LocalContainerEntityManagerFactoryBean entityManagerFactory(final EntityManagerFactoryBuilder builder, @Autowired DataSource dataSource, @Autowired List<EntitiesHolder> entitiesHolder) throws ClassNotFoundException, MalformedURLException {
 
         Set<Class<?>> entities = entitiesHolder.stream().map(f->f.getEntities()).flatMap(Set::stream).collect(Collectors.toSet());
         logger.debug("Discovered Entities: " + entities.stream().map(f -> f.getCanonicalName()).collect(Collectors.joining(System.lineSeparator())));
-        for (Class<?> entity : entities) {
-            if(entity.isAnnotationPresent(TransformAnnotations.class)){
-                annotationTransformers.forEach(f->f.applyTransformation(entity));
-            }
-        }
+
         Class<?>[] entitiesArr = new Class<?>[entities.size()];
         entities.toArray(entitiesArr);
         EntityManagerFactoryBuilder.Builder primary = builder.dataSource(dataSource)

@@ -31,10 +31,7 @@
             <artifactId>org.eclipse.persistence.jpa.modelgen.processor</artifactId>
             <scope>runtime</scope>
         </dependency>
-        <dependency>
-            <groupId>org.pf4j</groupId>
-            <artifactId>pf4j-spring</artifactId>
-        </dependency>
+
 
         <dependency>
             <groupId>com.wizzdi</groupId>

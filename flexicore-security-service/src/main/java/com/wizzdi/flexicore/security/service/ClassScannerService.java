@@ -6,7 +6,6 @@ import com.flexicore.annotations.OperationsInside;
 import com.flexicore.annotations.rest.*;
 import com.flexicore.model.*;
 import com.flexicore.security.SecurityContextBase;
-import com.google.common.collect.Lists;
 import com.wizzdi.flexicore.boot.base.init.FlexiCorePluginManager;
 import com.wizzdi.flexicore.boot.base.init.PluginInit;
 import com.wizzdi.flexicore.boot.base.interfaces.Plugin;
@@ -44,6 +43,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 @Primary
@@ -357,7 +357,7 @@ public class ClassScannerService implements Plugin {
         ids.add(Baseclass.generateUUIDFromString(Clazz.class.getCanonicalName()));
         ids.add(Baseclass.generateUUIDFromString(ClazzLink.class.getCanonicalName()));
         Map<String, Clazz> existing = new HashMap<>();
-        for (List<String> part : Lists.partition(new ArrayList<>(ids), 50)) {
+        for (List<String> part : partition(new ArrayList<>(ids), 50)) {
             if (!part.isEmpty()) {
                 existing.putAll(clazzService.findByIds(Clazz.class, ids).parallelStream().collect(Collectors.toMap(f -> f.getId(), f -> f)));
             }
@@ -461,7 +461,7 @@ public class ClassScannerService implements Plugin {
 
             }
         } catch (Exception e) {
-            logger.error("failed setting clazzlink properties", e);
+            logger.debug("failed setting clazzlink properties", e);
         }
         return clazzLink;
     }
@@ -503,5 +503,14 @@ public class ClassScannerService implements Plugin {
         return Acd;
     }
 
+    public static <T> List<List<T>> partition(List<T> list, int size) {
+        if (size <= 0) {
+            throw new IllegalArgumentException("The size must be greater than 0");
+        }
+        return new ArrayList<>(IntStream.iterate(0, i -> i + size)
+                .limit((long) Math.ceil((double) list.size() / size))
+                .mapToObj(cur -> list.subList(cur, Math.min(cur + size, list.size())))
+                .collect(Collectors.toList()));
+    }
 
 }

@@ -10,27 +10,17 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Primary;
 import org.springframework.data.repository.support.Repositories;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Configuration
 public class RepositoriesProvider {
 
-	@Lazy
-	@Autowired
-	private FlexiCorePluginManager pluginManager;
+    @Bean
+    @Primary
+    public Repositories repositories2(FlexiCorePluginManager pluginManager, ApplicationContext applicationContext){
+         List<Repositories> repositories = pluginManager.getPluginApplicationContexts().stream().map(f -> new Repositories(f)).collect(Collectors.toList());
+        return new CombinedRepositories(applicationContext,repositories);
+    }
 
-	@Autowired
-	private ApplicationContext applicationContext;
-
-
-
-	@Lazy
-	@Bean
-	@Primary
-	public Repositories repositories(){
-		List<Repositories> repositories = pluginManager.getPluginApplicationContexts().stream().map(f -> new Repositories(f)).collect(Collectors.toList());
-		return new CombinedRepositories(applicationContext,repositories);
-	}
 }

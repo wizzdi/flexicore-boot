@@ -33,6 +33,9 @@ public class CommonUserCreate extends SecurityUserCreate {
     @JsonIgnore
     private String homeDir;
 
+    @JsonIgnore
+    private String totpSalt;
+
     public CommonUserCreate(SecurityUserCreate other) {
         super(other);
     }
@@ -122,6 +125,16 @@ public class CommonUserCreate extends SecurityUserCreate {
 
     public <T extends CommonUserCreate> T setHomeDir(String homeDir) {
         this.homeDir = homeDir;
+        return (T) this;
+    }
+
+    @JsonIgnore
+    public String getTotpSalt() {
+        return totpSalt;
+    }
+
+    public <T extends CommonUserCreate> T setTotpSalt(String totpSalt) {
+        this.totpSalt = totpSalt;
         return (T) this;
     }
 }

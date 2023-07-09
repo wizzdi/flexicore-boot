@@ -20,10 +20,8 @@ import com.flexicore.rest.swagger.TagFilter;
 import com.flexicore.security.MD5Calculator;
 import com.flexicore.security.SecurityContext;
 import com.flexicore.service.impl.BaseclassService;
-import com.google.common.cache.Cache;
-import com.google.common.cache.CacheBuilder;
+
 import com.wizzdi.flexicore.boot.base.init.FlexiCorePluginManager;
-import com.wizzdi.flexicore.boot.jaxrs.service.JaxRsActivator;
 import com.wizzdi.flexicore.boot.jaxrs.service.JaxRsPluginHandlerService;
 import io.swagger.v3.core.converter.ModelConverters;
 import io.swagger.v3.core.filter.OpenAPISpecFilter;
@@ -51,6 +49,7 @@ import org.springdoc.core.service.OpenAPIService;
 import org.springdoc.core.utils.SpringDocUtils;
 import org.springdoc.webmvc.api.OpenApiResource;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
@@ -94,8 +93,7 @@ public class SwaggerAPIRESTService extends BaseOpenApiResource implements RESTSe
 
 	private static final Logger logger = LoggerFactory.getLogger(SwaggerAPIRESTService.class);
 
-	private static AtomicBoolean init = new AtomicBoolean(false);
-	private static Cache<String, String> swaggerCache = CacheBuilder.newBuilder().maximumSize(5).build();
+	private static final AtomicBoolean init = new AtomicBoolean(false);
 
 	@GET
 	@Path("{authenticationkey}")
@@ -116,13 +114,23 @@ public class SwaggerAPIRESTService extends BaseOpenApiResource implements RESTSe
 		start = System.currentTimeMillis();
 		String tagNamesConcat = tags.stream().collect(Collectors.joining(","));
 		String md5 = tagNamesConcat.isEmpty() ? "all" : MD5Calculator.getMD5(tagNamesConcat);
-		String openApiString = swaggerCache.get(md5, () -> getSecureOpenApi(headers, config, app, uriInfo, tags));
+		String openApiString = getOpenApiString(headers, uriInfo, tags, md5);
 		logger.info("time taken to get openapi json " + (System.currentTimeMillis() - start));
 
 		if (openApiString != null) {
 			return buildOpenApiResponse(openApiString);
 		}
 		return Response.status(404).build();
+	}
+
+	@Cacheable(value = "swaggerCache", key = "#md5", unless = "#result == null",cacheManager = "swaggerCacheManager")
+	public String getOpenApiString(HttpHeaders headers, UriInfo uriInfo, Set<String> tags, String md5) {
+		try {
+			return getSecureOpenApi(headers, config, app, uriInfo, tags);
+		} catch (Exception e) {
+			logger.error("failed getting open api", e);
+			return null;
+		}
 	}
 
 	protected String getSecureOpenApi(HttpHeaders headers,

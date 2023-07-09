@@ -14,8 +14,7 @@ import com.flexicore.interfaces.dynamic.FieldInfo;
 import com.flexicore.interfaces.dynamic.IdRefFieldInfo;
 import com.flexicore.interfaces.dynamic.ListFieldInfo;
 import com.flexicore.model.dynamic.ExecutionParametersHolder;
-import com.wizzdi.dynamic.annotations.service.TransformAnnotations;
-import com.wizzdi.dynamic.properties.converter.DynamicColumnDefinition;
+
 import com.wizzdi.dynamic.properties.converter.JsonConverter;
 import io.swagger.v3.oas.annotations.media.Schema;
 
@@ -38,7 +37,6 @@ import java.util.Map;
  */
 @Entity
 @Schema(description = "This class is used to filter a list. There are many extenders of this class adding information pertinent to some class, for example the EquipmentShort class has an extender that includes additional information such as location area on the map, street etc.")
-@TransformAnnotations
 public class FilteringInformationHolder extends ExecutionParametersHolder  {
 
 
@@ -98,7 +96,6 @@ public class FilteringInformationHolder extends ExecutionParametersHolder  {
     @JsonIgnore
     private Map<String, Object> genericPredicates=new HashMap<>();
 
-    @DynamicColumnDefinition
     @Convert(converter = JsonConverter.class)
     @JsonIgnore
     public Map<String, Object> getGenericPredicates() {

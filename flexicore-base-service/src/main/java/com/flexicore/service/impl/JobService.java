@@ -14,8 +14,6 @@ import com.flexicore.model.JobInformation;
 import com.flexicore.model.User;
 import com.flexicore.request.RegisterForJobUpdates;
 import com.flexicore.security.SecurityContext;
-import com.google.common.cache.Cache;
-import com.google.common.cache.CacheBuilder;
 import org.pf4j.Extension;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,6 +23,8 @@ import org.springframework.batch.core.JobParametersBuilder;
 import org.springframework.batch.core.explore.JobExplorer;
 import org.springframework.batch.core.launch.JobLauncher;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Component;
@@ -45,9 +45,6 @@ import java.util.concurrent.TimeUnit;
 @Extension
 public class JobService implements com.flexicore.service.JobService {
     private static Map<String, Map<String, Session>> jobListeners = new ConcurrentHashMap<>();
-    private static final Cache<String, Job> jobs = CacheBuilder.newBuilder().maximumSize(1000).expireAfterAccess(2, TimeUnit.HOURS).build();
-    private static final Cache<String, Job> startedJobs = CacheBuilder.newBuilder().maximumSize(1000).expireAfterAccess(2, TimeUnit.HOURS).build();
-
 
     @Autowired(required = false)
     @Lazy
@@ -144,25 +141,20 @@ public class JobService implements com.flexicore.service.JobService {
     public void putFileProcessJob(Job job) {
         put(job);
     }
+    @CachePut(value = "jobCache", key = "#job.id",cacheManager = "jobCacheManager",unless = "#result == null")
+    public Job putInCache(Job job) {
+        return job;
+    }
 
     @Override
     public void put(Job job) {
-        jobs.put(job.getId(), job);
+        putInCache(job);
     }
 
     @Override
+    @Cacheable(value = "jobCache", key = "#id",cacheManager = "jobCacheManager",unless = "#result==null")
     public Job get(String id) {
-        return jobs.getIfPresent(id);
-    }
-
-    public synchronized static Job readJob(String id) {
-        Job job= jobs.getIfPresent(id);
-        if(job!=null&&startedJobs.getIfPresent(id)==null){
-            startedJobs.put(id,job);
-            return job;
-        }
         return null;
-
     }
 
 

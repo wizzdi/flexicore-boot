@@ -40,6 +40,8 @@ public class User extends SecurityUser {
     private String email;
     private String homeDir;
     private String surName;
+    @JsonView(Views.Full.class)
+    private String totpSalt;
 
     private boolean disabled;
     @Column(columnDefinition = "timestamp with time zone")
@@ -269,6 +271,16 @@ public class User extends SecurityUser {
 
     public <T extends User> T setTotpRecoveryCodes(String totpRecoveryCodes) {
         this.totpRecoveryCodes = totpRecoveryCodes;
+        return (T) this;
+    }
+
+    @JsonView(Views.Full.class)
+    public String getTotpSalt() {
+        return totpSalt;
+    }
+
+    public <T extends User> T setTotpSalt(String totpSalt) {
+        this.totpSalt = totpSalt;
         return (T) this;
     }
 }

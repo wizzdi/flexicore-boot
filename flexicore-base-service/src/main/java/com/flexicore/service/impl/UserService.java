@@ -40,8 +40,7 @@ import com.flexicore.security.RunningUser;
 import com.flexicore.security.SecurityContext;
 import com.flexicore.service.PasswordSecurityPolicyService;
 import com.flexicore.service.TokenService;
-import com.google.common.cache.Cache;
-import com.google.common.cache.CacheBuilder;
+
 import com.lambdaworks.crypto.SCryptUtil;
 import com.wizzdi.flexicore.security.service.SecurityPolicyService;
 import com.wizzdi.flexicore.security.service.SecurityUserService;
@@ -52,6 +51,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Primary;
@@ -60,8 +62,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import jakarta.ws.rs.BadRequestException;
-import jakarta.ws.rs.NotAuthorizedException;
 import jakarta.ws.rs.core.Response;
+
 import java.io.File;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
@@ -105,12 +107,12 @@ public class UserService implements com.flexicore.service.UserService {
     @Bean
     @Scope(value = ConfigurableBeanFactory.SCOPE_SINGLETON)
     @Qualifier("systemAdminId")
-    public static String systemAdminId(){
+    public static String systemAdminId() {
         return "UEKbB6XlQhKOtjziJoUQ8w";
     }
 
-    @Value("${flexicore.loginFailedAttempts:-1}")
-    private int loginFailedAttempts;
+    @Value("${flexicore.login.maxFailedAttempts:-1}")
+    private int maxFailedAttemptsAllowed;
 
     @Autowired
     @Qualifier("systemAdminId")
@@ -155,17 +157,10 @@ public class UserService implements com.flexicore.service.UserService {
      */
 
 
-    private Cache<String, RunningUser> loggedusers = CacheBuilder.newBuilder().expireAfterAccess(6, TimeUnit.MINUTES).maximumSize(usersMaxCacheSize).build();
-    private Cache<String, String> blacklist = CacheBuilder.newBuilder().expireAfterAccess(6, TimeUnit.HOURS).maximumSize(10000).build();
-
-
-
-
     @Override
     public void massMerge(List<?> toMerge) {
         userrepository.massMerge(toMerge);
     }
-
 
 
     @Override
@@ -223,7 +218,7 @@ public class UserService implements com.flexicore.service.UserService {
     @Override
     public boolean updateUserNoMerge(User user, UserCreate createUser) {
         boolean update = securityUserService.updateSecurityUserNoMerge(createUser, user);
-        if(user.getHomeDir()==null && createUser.getHomeDir()==null){
+        if (user.getHomeDir() == null && createUser.getHomeDir() == null) {
             createUser.setHomeDir(generateUserHomeDir(user));
         }
 
@@ -286,13 +281,13 @@ public class UserService implements com.flexicore.service.UserService {
 
     @Override
     public RunningUser getRunningUser(String authenticationKey) {
-        if (blacklist.getIfPresent(authenticationKey) != null) {
+        if (getBlackListedToken(authenticationKey) != null) {
             return null;
         }
-        RunningUser runningUser = loggedusers.getIfPresent(authenticationKey);
+        RunningUser runningUser = getLoggedInUser(authenticationKey);
         if (runningUser != null) {
             if (runningUser.getExpiresDate() != null && OffsetDateTime.now().isAfter(runningUser.getExpiresDate())) {
-                loggedusers.invalidate(authenticationKey);
+                removeLoggedUser(authenticationKey);
                 return null;
             }
             return runningUser;
@@ -305,7 +300,7 @@ public class UserService implements com.flexicore.service.UserService {
             runningUser.setExpiresDate(claims.getExpiration() != null ? claims.getExpiration().toInstant().atZone(ZoneId.of("UTC")).toOffsetDateTime() : null);
             Collection<String> readTenantsRaw = (Collection<String>) claims.get(tokenService.READ_TENANTS);
             String writeTenant = (String) claims.get(tokenService.WRITE_TENANT);
-            Boolean totpVerified=(Boolean)claims.get(tokenService.TOTP_VERIFIED);
+            Boolean totpVerified = (Boolean) claims.get(tokenService.TOTP_VERIFIED);
             Set<String> tenantIds = runningUser.getTenants().parallelStream().map(f -> f.getId()).collect(Collectors.toSet());
             if (writeTenant != null && tenantIds.contains(writeTenant)) {
                 Tenant tenant = userrepository.findByIdOrNull(Tenant.class, writeTenant);
@@ -318,15 +313,20 @@ public class UserService implements com.flexicore.service.UserService {
                 runningUser.setTenants(tenants);
                 runningUser.setImpersonated(true);
             }
-            if(totpVerified!=null){
+            if (totpVerified != null) {
                 runningUser.setTotpVerified(totpVerified);
             }
 
-            loggedusers.put(authenticationKey, runningUser);
+            putLoggedInUser(authenticationKey, runningUser);
             return runningUser;
         }
 
 
+        return null;
+    }
+
+    @Cacheable(cacheNames = "blacklistedTokens", key = "#authenticationKey", unless = "#result==null", cacheManager = "blacklistedTokensCacheManager")
+    public String getBlackListedToken(String authenticationKey) {
         return null;
     }
 
@@ -363,26 +363,30 @@ public class UserService implements com.flexicore.service.UserService {
     }
 
 
+    @Cacheable(value = "loginAttempts", key = "#ip", cacheManager = "loginAttemptsCacheManager")
+    public int getFailedLoginAttempts(String ip) {
+        return 0;
+    }
 
-    @Autowired
-    private Cache<String, AtomicInteger> loginBlacklistCache;
+    @CachePut(value = "loginAttempts", key = "#ip", cacheManager = "loginAttemptsCacheManager")
+    public int incrementFailedLoginAttempts(String ip, int failedAttempts) {
+        return failedAttempts + 1;
+    }
 
     /**
      * log into the system, if user!=null will not search for it.
      *
      * @param bundle bundle
-     * @param user user
+     * @param user   user
      * @return logged in user
      */
     @Override
     public RunningUser login(AuthenticationRequestHolder bundle, User user)
             throws UserNotFoundException, CheckYourCredentialsException {
         boolean ok = false;
-        AtomicInteger failedAttempts=null;
-        if(loginFailedAttempts>0 ){
-            failedAttempts = loginBlacklistCache.asMap().computeIfAbsent(bundle.getIp(), f -> new AtomicInteger(0));
-            int failedAttemptsCounter= failedAttempts.get();
-            if(failedAttemptsCounter >loginFailedAttempts ){
+        int failedAttempts = maxFailedAttemptsAllowed > 0 ? getFailedLoginAttempts(bundle.getIp()) : 0;
+        if (maxFailedAttemptsAllowed > 0) {
+            if (failedAttempts > maxFailedAttemptsAllowed) {
                 throw new BadRequestCustomException("Too Many Failed Login Attempts", LoginErrors.TOO_MANY_FAILED_ATTEMPTS.getCode());
             }
         }
@@ -390,8 +394,8 @@ public class UserService implements com.flexicore.service.UserService {
             user = authenticate(bundle, user);
             ok = true;
         } finally {
-            if (loginFailedAttempts > 0&&!ok&&failedAttempts!=null) {
-                failedAttempts.incrementAndGet();
+            if (maxFailedAttemptsAllowed > 0 && !ok) {
+                incrementFailedLoginAttempts(bundle.getIp(), failedAttempts);
             }
         }
         return registerUserIntoSystem(user);
@@ -410,7 +414,7 @@ public class UserService implements com.flexicore.service.UserService {
         String jwtToken = tokenService.getJwtToken(user, expirationDate);
         RunningUser runningUser = createRunningUser(user, jwtToken);
         runningUser.setExpiresDate(expirationDate);
-        loggedusers.put(jwtToken, runningUser);
+        putLoggedInUser(jwtToken, runningUser);
         return runningUser;
 
     }
@@ -419,7 +423,7 @@ public class UserService implements com.flexicore.service.UserService {
      * authenticates a user by email and password or by phonenumber and password or by facebook user id and facebook token
      *
      * @param bundle bundle
-     * @param user user
+     * @param user   user
      * @return user
      */
     @Override
@@ -461,10 +465,10 @@ public class UserService implements com.flexicore.service.UserService {
         List<TenantToUser> tenantToUsers = tenantRepository.getAllTenants(user);
         List<RoleToUser> roleToUsers = listAllRoleToUsers(new RoleToUserFilter().setUsers(Collections.singletonList(user)), null);
         List<Role> allRoles = roleToUsers.stream().map(f -> f.getLeftside()).filter(distinctByKey(Role::getId)).collect(Collectors.toList());
-        Map<String,List<Role>> roles= allRoles.stream().collect(Collectors.groupingBy(f->f.getTenant().getId()));
+        Map<String, List<Role>> roles = allRoles.stream().collect(Collectors.groupingBy(f -> f.getTenant().getId()));
         List<Tenant> tenants = tenantToUsers.parallelStream().map(f -> (Tenant) f.getLeftside()).collect(Collectors.toList());
         running.setTenants(tenants);
-        running.setDefaultTenant(tenantToUsers.parallelStream().filter(f -> f.isDefualtTennant()).map(f -> (Tenant)f.getLeftside()).findFirst().orElse(null));
+        running.setDefaultTenant(tenantToUsers.parallelStream().filter(f -> f.isDefualtTennant()).map(f -> (Tenant) f.getLeftside()).findFirst().orElse(null));
         running.setRoles(roles);
         running.setLoggedin(true);
         List<SecurityPolicy> securityPolicies = securityPolicyService.listAllSecurityPolicies(new PasswordSecurityPolicyFilter().setStartTime(OffsetDateTime.now()).setEnabled(true).setSecurityTenants(tenants.stream().map(f -> (SecurityTenant) f).collect(Collectors.toList())).setRoles(allRoles).setIncludeNoRole(true), null);
@@ -478,20 +482,37 @@ public class UserService implements com.flexicore.service.UserService {
         return t -> seen.add(keyExtractor.apply(t));
     }
 
+    @Cacheable(value = "loggedUsers", key = "#authenticationkey", cacheManager = "loggedUsersCacheManager", unless = "#result == null")
+    public RunningUser getLoggedInUser(String authenticationkey) {
+        return null;
+    }
+    @CachePut(value = "loggedUsers", key = "#authenticationkey", cacheManager = "loggedUsersCacheManager", unless = "#result == null")
+    public RunningUser putLoggedInUser(String authenticationkey,RunningUser runningUser) {
+        return runningUser;
+    }
+    @CacheEvict(value = "loggedUsers", key = "#authenticationkey", cacheManager = "loggedUsersCacheManager")
+    public void removeLoggedUser(String authenticationkey) {
+
+    }
+
+    @CachePut(value = "loggedUsers", key = "#authenticationkey", cacheManager = "loggedUsersCacheManager", unless = "#result == null")
+    public String updateBlackList(String authenticationkey) {
+        return authenticationkey;
+    }
 
     @Override
     public boolean logOut(String authenticationkey) {
-        RunningUser runningUser = loggedusers.getIfPresent(authenticationkey);
+        RunningUser runningUser = getLoggedInUser(authenticationkey);
         if (runningUser != null) {
             if (runningUser.getExpiresDate() == null && OffsetDateTime.now().isBefore(runningUser.getExpiresDate())) {
-                blacklist.put(authenticationkey, authenticationkey);
+                updateBlackList( authenticationkey);
                 return true;
             }
 
         } else {
             JWTClaims claims = tokenService.parseClaimsAndVerifyClaims(authenticationkey, utilLogger);
             if (claims != null && (claims.getExpiration() == null || OffsetDateTime.now().isBefore(claims.getExpiration().toInstant().atZone(ZoneId.of("UTC")).toOffsetDateTime()))) {
-                blacklist.put(authenticationkey, authenticationkey);
+                updateBlackList( authenticationkey);
                 return true;
             }
         }
@@ -502,10 +523,10 @@ public class UserService implements com.flexicore.service.UserService {
 
     public ResetPasswordResponse resetUserPassword(ResetUserPasswordRequest resetUserPasswordRequest, SecurityContext securityContext) {
         User user = resetUserPasswordRequest.getUser();
-        UserUpdate userUpdate=new UserUpdate()
+        UserUpdate userUpdate = new UserUpdate()
                 .setUser(user)
                 .setPassword(resetUserPasswordRequest.getPassword());
-        updateUser(userUpdate,securityContext);
+        updateUser(userUpdate, securityContext);
         return new ResetPasswordResponse();
 
     }
@@ -590,7 +611,6 @@ public class UserService implements com.flexicore.service.UserService {
     }
 
 
-
     @Override
     public void validateUserForCreate(UserCreate userCreate, SecurityContext securityContext) {
         validateUser(userCreate, securityContext);
@@ -615,9 +635,9 @@ public class UserService implements com.flexicore.service.UserService {
             String cause = userUpdate.getEmail() != null ? "Email" : "PhoneNumber";
             throw new BadRequestException("Cannot Update User " + cause + " is not unique");
         }
-        if(userUpdate.getPassword()!=null){
-            List<SecurityTenant> userTenants=getAllTenantToUsers(new TenantToUserFilter().setUsers(Collections.singletonList(user)),null).stream().map(f->f.getLeftside()).collect(Collectors.toList());
-            List<Role> userRoles=listAllRoleToUsers(new RoleToUserFilter().setUsers(Collections.singletonList(user)),null).stream().map(f->f.getLeftside()).collect(Collectors.toList());
+        if (userUpdate.getPassword() != null) {
+            List<SecurityTenant> userTenants = getAllTenantToUsers(new TenantToUserFilter().setUsers(Collections.singletonList(user)), null).stream().map(f -> f.getLeftside()).collect(Collectors.toList());
+            List<Role> userRoles = listAllRoleToUsers(new RoleToUserFilter().setUsers(Collections.singletonList(user)), null).stream().map(f -> f.getLeftside()).collect(Collectors.toList());
             List<PasswordSecurityPolicy> passwordSecurityPolicies = passwordSecurityPolicyService.listAllSecurityPolicies(new PasswordSecurityPolicyFilter().setSecurityTenants(userTenants).setRoles(userRoles), securityContext);
             validatePasswordPolicies(userUpdate, passwordSecurityPolicies);
 
@@ -641,19 +661,18 @@ public class UserService implements com.flexicore.service.UserService {
             throw new BadRequestException("Phone Number or Email Must Be Provided");
         }
 
-        if(userCreate.getPassword()!=null){
+        if (userCreate.getPassword() != null) {
             List<PasswordSecurityPolicy> passwordSecurityPolicies = passwordSecurityPolicyService.listAllSecurityPolicies(new PasswordSecurityPolicyFilter().setEnabled(true).setStartTime(OffsetDateTime.now()).setIncludeNoRole(true).setSecurityTenants(Collections.singletonList(tenant)), securityContext);
             validatePasswordPolicies(userCreate, passwordSecurityPolicies);
         }
-
 
 
     }
 
     private void validatePasswordPolicies(UserCreate userCreate, List<PasswordSecurityPolicy> passwordSecurityPolicies) {
         for (PasswordSecurityPolicy passwordSecurityPolicy : passwordSecurityPolicies) {
-            List<PasswordPolicyError> policyErrors=passwordSecurityPolicyService.enforcePolicy(passwordSecurityPolicy, userCreate.getPassword());
-            if(!policyErrors.isEmpty()){
+            List<PasswordPolicyError> policyErrors = passwordSecurityPolicyService.enforcePolicy(passwordSecurityPolicy, userCreate.getPassword());
+            if (!policyErrors.isEmpty()) {
                 PasswordSecurityPolicyErrorBody entity1 = new PasswordSecurityPolicyErrorBody(400, 0, "user password does not meet the security policy " + passwordSecurityPolicy.getName() + " errors: " + policyErrors);
                 entity1.setErrorSet(policyErrors.stream().collect(Collectors.toSet()));
                 entity1.setPasswordRequiredLength(passwordSecurityPolicy.getMinLength());
@@ -691,9 +710,9 @@ public class UserService implements com.flexicore.service.UserService {
     }
 
     public PaginationResponse<TenantToUser> listAllTenantToUsers(TenantToUserFilter tenantToUserFilter, SecurityContext securityContext) {
-        List<TenantToUser> tenantToUsers=getAllTenantToUsers(tenantToUserFilter, securityContext);
-        long count=userrepository.countAllTenantToUsers(tenantToUserFilter,securityContext);
-        return new PaginationResponse<>(tenantToUsers,tenantToUserFilter,count);
+        List<TenantToUser> tenantToUsers = getAllTenantToUsers(tenantToUserFilter, securityContext);
+        long count = userrepository.countAllTenantToUsers(tenantToUserFilter, securityContext);
+        return new PaginationResponse<>(tenantToUsers, tenantToUserFilter, count);
     }
 
     @Override
@@ -771,7 +790,7 @@ public class UserService implements com.flexicore.service.UserService {
         }
         OffsetDateTime expirationDate = OffsetDateTime.now().plusSeconds(authenticationRequest.getSecondsValid() != 0 ? authenticationRequest.getSecondsValid() : jwtSecondsValid);
         String jwtToken = tokenService.getJwtToken(user, expirationDate);
-        if(!user.isTotpEnabled()){
+        if (!user.isTotpEnabled()) {
             applicationEventPublisher.publishEvent(new LoginEvent(user));
         }
         return new AuthenticationResponse()
@@ -787,14 +806,14 @@ public class UserService implements com.flexicore.service.UserService {
     public void validate(ImpersonateRequest impersonateRequest, SecurityContext securityContext) {
 
         String creationTenantId = impersonateRequest.getCreationTenantId();
-        Tenant creationTenant = securityContext.getTenants().stream().filter(f->f.getId().equals(creationTenantId)).findFirst().orElseThrow(()->new BadRequestException("no tenant with id " + creationTenantId));
+        Tenant creationTenant = securityContext.getTenants().stream().filter(f -> f.getId().equals(creationTenantId)).findFirst().orElseThrow(() -> new BadRequestException("no tenant with id " + creationTenantId));
         if (creationTenant == null) {
             throw new BadRequestException("no tenant with id " + creationTenantId);
         }
         impersonateRequest.setCreationTenant(creationTenant);
 
         Set<String> readTenantIds = impersonateRequest.getReadTenantsIds();
-        Map<String, Tenant> tenantMap =securityContext.getTenants().stream().filter(f->readTenantIds.contains(f.getId())).collect(Collectors.toMap(f -> f.getId(), f -> f));
+        Map<String, Tenant> tenantMap = securityContext.getTenants().stream().filter(f -> readTenantIds.contains(f.getId())).collect(Collectors.toMap(f -> f.getId(), f -> f));
         readTenantIds.removeAll(tenantMap.keySet());
         if (!readTenantIds.isEmpty()) {
             throw new BadRequestException("No Tenants with ids " + readTenantIds);
@@ -809,7 +828,7 @@ public class UserService implements com.flexicore.service.UserService {
         OffsetDateTime expirationDate = OffsetDateTime.now().plusSeconds(jwtSecondsValid);
         String writeTenant = impersonateRequest.getCreationTenant().getId();
         Set<String> readTenants = impersonateRequest.getReadTenants().parallelStream().map(f -> f.getId()).collect(Collectors.toSet());
-        String jwtToken = tokenService.getJwtToken(user, expirationDate, writeTenant, readTenants,totpVerified);
+        String jwtToken = tokenService.getJwtToken(user, expirationDate, writeTenant, readTenants, totpVerified);
         return new ImpersonateResponse().setAuthenticationKey(jwtToken);
 
     }
@@ -820,17 +839,17 @@ public class UserService implements com.flexicore.service.UserService {
     }
 
     public void validate(TenantToUserCreate tenantToUserCreate, SecurityContext securityContext) {
-        String tenantId=tenantToUserCreate.getTenantId();
-        Tenant tenant=tenantId!=null?tenantRepository.getByIdOrNull(tenantId,Tenant.class,null,securityContext):null;
-        if (tenantId!=null&&tenant==null){
-            throw new BadRequestException("No Tenant With Id "+tenantId);
+        String tenantId = tenantToUserCreate.getTenantId();
+        Tenant tenant = tenantId != null ? tenantRepository.getByIdOrNull(tenantId, Tenant.class, null, securityContext) : null;
+        if (tenantId != null && tenant == null) {
+            throw new BadRequestException("No Tenant With Id " + tenantId);
         }
         tenantToUserCreate.setTenant(tenant);
 
-        String userId=tenantToUserCreate.getUserId();
-        User user=userId!=null?tenantRepository.getByIdOrNull(userId,User.class,null,securityContext):null;
-        if (userId!=null&&user==null){
-            throw new BadRequestException("No User With Id "+userId);
+        String userId = tenantToUserCreate.getUserId();
+        User user = userId != null ? tenantRepository.getByIdOrNull(userId, User.class, null, securityContext) : null;
+        if (userId != null && user == null) {
+            throw new BadRequestException("No User With Id " + userId);
         }
         tenantToUserCreate.setUser(user);
     }
@@ -840,14 +859,14 @@ public class UserService implements com.flexicore.service.UserService {
     }
 
     public TenantToUser createTenantToUser(TenantToUserCreate tenantToUserCreate, SecurityContext securityContext) {
-        TenantToUser tenantToUser=createTenantToUserNoMerge(tenantToUserCreate,securityContext);
+        TenantToUser tenantToUser = createTenantToUserNoMerge(tenantToUserCreate, securityContext);
         tenantRepository.merge(tenantToUser);
         return tenantToUser;
     }
 
     public TenantToUser updateTenantToUser(TenantToUserUpdate tenantToUserUpdate, SecurityContext securityContext) {
-        TenantToUser tenantToUser=tenantToUserUpdate.getTenantToUser();
-        if(updateTenantToUserNoMerge(tenantToUserUpdate,tenantToUser)){
+        TenantToUser tenantToUser = tenantToUserUpdate.getTenantToUser();
+        if (updateTenantToUserNoMerge(tenantToUserUpdate, tenantToUser)) {
             tenantRepository.merge(tenantToUser);
         }
         return tenantToUser;

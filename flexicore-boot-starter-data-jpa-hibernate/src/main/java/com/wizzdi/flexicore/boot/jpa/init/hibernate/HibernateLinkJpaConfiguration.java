@@ -1,8 +1,6 @@
 package com.wizzdi.flexicore.boot.jpa.init.hibernate;
 
-import com.wizzdi.dynamic.annotations.service.AnnotationTransformer;
-import com.wizzdi.dynamic.annotations.service.TransformAnnotations;
-import com.wizzdi.dynamic.annotations.service.cn.xdean.jex.AnnotationUtil;
+
 import com.wizzdi.flexicore.boot.jpa.service.EntitiesHolder;
 import org.hibernate.annotations.ColumnTransformer;
 import org.hibernate.boot.model.naming.ImplicitNamingStrategy;
@@ -106,16 +104,11 @@ public class HibernateLinkJpaConfiguration extends JpaBaseConfiguration {
 
     @Bean
     @Primary
-    public LocalContainerEntityManagerFactoryBean entityManagerFactory(final EntityManagerFactoryBuilder builder, @Autowired DataSource dataSource, @Autowired List<EntitiesHolder> entitiesHolder,@Autowired ObjectProvider<EncryptionConfigurations> encryptionConfigurations,@Autowired ObjectProvider<AnnotationTransformer<?>> annotationTransformers) {
-        encryptionConfigurations.stream().map(f->f.getEncryptionConfigurations()).flatMap(List::stream).forEach(this::applyEncryption);
+    public LocalContainerEntityManagerFactoryBean entityManagerFactory(final EntityManagerFactoryBuilder builder, @Autowired DataSource dataSource, @Autowired List<EntitiesHolder> entitiesHolder) {
         Map<String, Object> vendorProperties = getVendorProperties();
         customizeVendorProperties(vendorProperties);
         Set<Class<?>> entities = entitiesHolder.stream().map(f->f.getEntities()).flatMap(Set::stream).collect(Collectors.toSet());
-        for (Class<?> entity : entities) {
-            if(entity.isAnnotationPresent(TransformAnnotations.class)){
-                annotationTransformers.forEach(f->f.applyTransformation(entity));
-            }
-        }
+
         logger.debug("Discovered Entities: " + entities.stream().map(f -> f.getCanonicalName()).collect(Collectors.joining(System.lineSeparator())));
         Class<?>[] entitiesArr = new Class<?>[entities.size()];
         entities.toArray(entitiesArr);
@@ -129,47 +122,7 @@ public class HibernateLinkJpaConfiguration extends JpaBaseConfiguration {
         return ret;
     }
 
-    private Class<?> encryptFields(Class<?> clazz, Map<String, List<EncryptionConfiguration>> encryptionConfig) {
-        List<EncryptionConfiguration> encryptionConfigurations = encryptionConfig.get(clazz.getCanonicalName());
-        if(encryptionConfigurations!=null){
-            for (EncryptionConfiguration encryptionConfiguration : encryptionConfigurations) {
-                applyEncryption(encryptionConfiguration);
-            }
-        }
-        return clazz;
-    }
 
-    private void applyEncryption(EncryptionConfiguration encryptionConfiguration) {
-        Method getter = encryptionConfiguration.getGetter();
-        ColumnTransformer columnTransformer=getColumnTransformer(encryptionConfiguration);
-        AnnotationUtil.addAnnotation(getter, columnTransformer);
-        logger.info("changed method "+getter.getName()+"("+System.identityHashCode(getter) +")"+" on class "+encryptionConfiguration.getClazz().getName() +"("+System.identityHashCode(encryptionConfiguration.getClazz())+")");
-
-    }
-
-    private ColumnTransformer getColumnTransformer(EncryptionConfiguration encryptionConfiguration) {
-        return new ColumnTransformer(){
-            @Override
-            public String forColumn() {
-                return encryptionConfiguration.getForColumn();
-            }
-
-            @Override
-            public String read() {
-                return encryptionConfiguration.getRead();
-            }
-
-            @Override
-            public String write() {
-                return encryptionConfiguration.getWrite();
-            }
-
-            @Override
-            public Class<? extends Annotation> annotationType() {
-                return ColumnTransformer.class;
-            }
-        };
-    }
 
 
     @Override

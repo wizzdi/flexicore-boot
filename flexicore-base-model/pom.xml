@@ -51,11 +51,7 @@
             <groupId>com.wizzdi</groupId>
             <artifactId>flexicore-file-model</artifactId>
         </dependency>
-        <dependency>
-            <groupId>org.pf4j</groupId>
-            <artifactId>pf4j-spring</artifactId>
-            <scope>provided</scope>
-        </dependency>
+
 
         <!-- https://mvnrepository.com/artifact/org.postgresql/postgresql -->
         <dependency>

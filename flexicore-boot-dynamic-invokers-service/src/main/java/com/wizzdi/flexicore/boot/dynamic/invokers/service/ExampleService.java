@@ -1,13 +1,13 @@
 package com.wizzdi.flexicore.boot.dynamic.invokers.service;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.google.common.cache.Cache;
-import com.google.common.cache.CacheBuilder;
 import com.wizzdi.flexicore.boot.base.interfaces.Plugin;
 import com.wizzdi.flexicore.boot.dynamic.invokers.annotations.ListFieldInfo;
 import org.pf4j.Extension;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.http.HttpStatus;
@@ -43,12 +43,14 @@ public class ExampleService implements Plugin {
 
 	}
 
-	private Object getExampleCached(Class<?> c) {
-		Object existing = exampleCache.getIfPresent(c.getCanonicalName());
-		if (existing == null) {
-			existing = generateExample(c);
-		}
-		return existing;
+	@Cacheable(value = "exampleCache", key = "#c.getCanonicalName()", unless = "#result==null",cacheManager = "exampleCacheManager")
+	public Object getExampleCached(Class<?> c) {
+		return generateExample(c);
+	}
+
+	@CachePut(value = "exampleCache", key = "#c.getCanonicalName()", unless = "#result==null",cacheManager = "exampleCacheManager")
+	public Object updateExampleCache(Class<?> c,Object value){
+		return value;
 	}
 
 	private String getSetterName(String name) {
@@ -78,7 +80,7 @@ public class ExampleService implements Plugin {
 		Object example = null;
 		try {
 			example = c.getConstructor().newInstance();
-			exampleCache.put(c.getCanonicalName(), example);
+			updateExampleCache(c, example);
 			BeanInfo beanInfo = Introspector.getBeanInfo(c, Object.class);
 			for (PropertyDescriptor propertyDescriptor : beanInfo.getPropertyDescriptors()) {
 				try {
@@ -87,9 +89,8 @@ public class ExampleService implements Plugin {
 						if (AnnotatedElementUtils.findMergedAnnotation(getter,JsonIgnore.class) == null) {
 							String setterName = getSetterName(getter.getName());
 							if (setterName != null) {
-								Method setter = c.getMethod(setterName, propertyDescriptor.getPropertyType());
-								if (setter != null) {
-
+								try{
+									Method setter = c.getMethod(setterName, propertyDescriptor.getPropertyType());
 									Class<?> toRet = getter.getReturnType();
 									if (Collection.class.isAssignableFrom(toRet)) {
 										ListFieldInfo listFieldInfo = AnnotatedElementUtils.findMergedAnnotation(getter,ListFieldInfo.class);
@@ -104,8 +105,11 @@ public class ExampleService implements Plugin {
 									} else {
 										setter.invoke(example, getExampleCached(toRet));
 									}
-
 								}
+								catch (NoSuchMethodException e){
+									logger.debug("failed setting example value for " + propertyDescriptor.getName());
+								}
+
 							}
 						}
 					}
@@ -139,8 +143,6 @@ public class ExampleService implements Plugin {
 	private boolean isKnownType(Class<?> c) {
 		return knownTypes.contains(c.getCanonicalName());
 	}
-
-	private static Cache<String, Object> exampleCache = CacheBuilder.newBuilder().maximumSize(200).build();
 
 	private Object getPrimitiveValue(Class<?> c) {
 		if (c.equals(String.class)) return "string";
