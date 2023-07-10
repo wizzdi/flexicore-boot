@@ -7,7 +7,7 @@ import java.util.Random;
  * Created by Asaf on 15/01/2017.
  */
 public class PasswordGenerator {
-    private static Random random = new SecureRandom();
+    private static final Random random = new SecureRandom();
     private static final String characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
         public static String generateRandom(int length) {

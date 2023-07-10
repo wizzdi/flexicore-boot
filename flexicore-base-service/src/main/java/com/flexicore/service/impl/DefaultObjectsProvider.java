@@ -90,14 +90,16 @@ public class DefaultObjectsProvider implements FlexiCoreService {
 	private DynamicInvokersService dynamicInvokersService;
 
 	private Reflections reflections;
-	@Value("${flexicore.users.firstRunPath:/home/flexicore/firstRun.txt}")
-	private String firstRunFilePath;
-	@Value("${flexicore.users.adminEmail:admin@flexicore.com}")
-	private String adminEmail;
 
+	@Value("${flexicore.users.admin.email:admin@flexicore.com}")
+	private String adminEmail;
+	@Value("${flexicore.users.admin.firstRunPassword:#{T(com.flexicore.service.PasswordGenerator).generateRandom(8)}}")
+	private String adminPassword;
+	@Value("${flexicore.users.admin.logFirstRunPassword:true}")
+	private boolean logFirstRunPassword;
 	@Autowired
-    @Lazy
-    private FlexiCorePluginManager pluginManager;
+	@Lazy
+	private FlexiCorePluginManager pluginManager;
 
 
 	@Bean
@@ -110,40 +112,6 @@ public class DefaultObjectsProvider implements FlexiCoreService {
 
 	}
 
-	private String readFromFirstRunFile() {
-		File file = new File(firstRunFilePath);
-		if (!file.getParentFile().exists()) {
-			if (!file.getParentFile().mkdirs()) {
-				System.out.println("cannot create first run file parent dir");
-			}
-
-		}
-		List<String> lines = null;
-		try {
-			lines = FileUtils.readLines(file);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		return lines != null && !lines.isEmpty() ? lines.get(0).trim() : null;
-
-	}
-
-	private void writeToFirstRunFile(String pass) {
-		File file = new File(firstRunFilePath);
-		if (!file.getParentFile().exists()) {
-			if (!file.getParentFile().mkdirs()) {
-				System.out.println("cannot create first run file parent dir");
-			}
-
-		}
-		List<String> lines = new ArrayList<>();
-		lines.add(pass);
-		try {
-			FileUtils.writeLines(file, lines);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
 
 
 	@Bean
@@ -250,15 +218,13 @@ public class DefaultObjectsProvider implements FlexiCoreService {
 	@Bean
 	public DefaultUserProvider<User> defaultUserProvider(){
 		return securityUserCreate -> {
-			String pass = readFromFirstRunFile();
-			if (pass == null) {
-				pass = PasswordGenerator.generateRandom(8);
-				writeToFirstRunFile(pass);
+			if(logFirstRunPassword){
+				logger.info("Admin First Run Credentials: Username: {} Password: {}",adminEmail, adminPassword);
 			}
-			UserCreate userCreate=new UserCreate(securityUserCreate)
+			UserCreate userCreate = new UserCreate(securityUserCreate)
 					.setEmail(adminEmail)
-					.setPassword(pass);
-			return userService.createUser(userCreate,null);
+					.setPassword(adminPassword);
+			return userService.createUser(userCreate, null);
 		};
 	}
 
