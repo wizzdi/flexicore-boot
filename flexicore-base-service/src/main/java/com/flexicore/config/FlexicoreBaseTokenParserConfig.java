@@ -17,7 +17,7 @@ import javax.crypto.SecretKey;
 public class FlexicoreBaseTokenParserConfig {
 
 
-    @Value("${flexicore.security.jwt.secret:jwt-secret}")
+    @Value("${flexicore.security.jwt.secret:jwt-secret-for-our-application-ABCDEFGHJKL1234567890101112131415}")
     private String jwtTokenSecret;
     @Bean
     @Scope(value = ConfigurableBeanFactory.SCOPE_SINGLETON)
@@ -34,7 +34,7 @@ public class FlexicoreBaseTokenParserConfig {
 
 
     private SecretKey getJWTSecret() {
-        return Keys.hmacShaKeyFor(Decoders.BASE64.decode(jwtTokenSecret));
+        return Keys.hmacShaKeyFor(jwtTokenSecret.getBytes());
     }
 
 }
