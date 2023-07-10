@@ -260,7 +260,7 @@ public class DynamicInvokersService implements ServicePlugin {
             }
             csvPrinter.flush();
         } catch (Exception e) {
-            logger.error("unable to create csv");
+            logger.error("unable to create csv",e);
         }
         FileResource fileResource = fileResourceService.createDontPersist(file.getAbsolutePath(), securityContext);
         fileResource.setKeepUntil(OffsetDateTime.now().plusMinutes(30));
