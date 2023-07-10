@@ -41,7 +41,7 @@ public class FlexicoreJwtTokenUtil {
 
     @Autowired
     @Qualifier("cachedJWTSecret")
-    private SecretKey cachedJWTSecret;
+    private SecretKeyHolder cachedJWTSecret;
     @Autowired
     private JwtParser jwtParser;
 
@@ -67,7 +67,7 @@ public class FlexicoreJwtTokenUtil {
                 .setIssuedAt(new Date())
                 .setExpiration(Date.from(expirationDate.toInstant())) // 1 week
                 .claim(ID, id)
-                .signWith(cachedJWTSecret);
+                .signWith(cachedJWTSecret.secretKey());
         JwtBuilder jwtBuilderCustomized=tokenCustomizer.map(f->f.customizeToken(jwtBuilder)).orElse(jwtBuilder);
         return jwtBuilderCustomized.compact();
     }

@@ -23,45 +23,25 @@ import java.nio.charset.StandardCharsets;
 public class JwtParserConfig {
 
 
-    @Value("${flexicore.security.jwt.secretLocation:/home/flexicore/jwt.secret}")
-    private String jwtTokenSecretLocation;
-    @Value("${flexicore.security.jwt.secret:#{null}}")
+    @Value("${flexicore.security.jwt.secret:jwt-secret}")
     private String jwtTokenSecret;
     @Bean
     @Scope(value = ConfigurableBeanFactory.SCOPE_SINGLETON)
     @Qualifier("cachedJWTSecret")
-    public SecretKey cachedJWTSecret() {
-        return getJWTSecret();
+    public SecretKeyHolder cachedJWTSecret() {
+        return new SecretKeyHolder(getJWTSecret());
     }
 
     @Bean
-    public JwtParser jwtParser(SecretKey cachedJWTSecret) {
-        return Jwts.parserBuilder().setSigningKey(cachedJWTSecret).build();
+    public JwtParser jwtParser(SecretKeyHolder cachedJWTSecret) {
+        return Jwts.parserBuilder().setSigningKey(cachedJWTSecret.secretKey()).build();
     }
 
     private SecretKey getJWTSecret() {
-        SecretKey cachedJWTSecret;
-        if (jwtTokenSecret != null) {
-            return Keys.hmacShaKeyFor(Decoders.BASE64.decode(jwtTokenSecret));
-        }
-        File file = new File(jwtTokenSecretLocation);
-        if (file.exists()) {
-            try {
-                String cachedJWTSecretStr = FileUtils.readFileToString(file, StandardCharsets.UTF_8);
-                return Keys.hmacShaKeyFor(Decoders.BASE64.decode(cachedJWTSecretStr));
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-        cachedJWTSecret = Keys.secretKeyFor(SignatureAlgorithm.HS512);
 
-        try {
-            String secret = Encoders.BASE64.encode(cachedJWTSecret.getEncoded());
-            FileUtils.write(file, secret, StandardCharsets.UTF_8);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return cachedJWTSecret;
+            return Keys.hmacShaKeyFor(Decoders.BASE64.decode(jwtTokenSecret));
+
+
 
 
     }

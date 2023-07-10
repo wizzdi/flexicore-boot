@@ -1,5 +1,6 @@
 package com.flexicore.service.impl;
 
+import com.flexicore.config.SecretKeyHolder;
 import com.flexicore.model.User;
 import com.flexicore.response.JWTClaims;
 import com.flexicore.response.impl.JWTClaimsImpl;
@@ -33,7 +34,7 @@ public class TokenService implements com.flexicore.service.TokenService {
 
     @Autowired
     @Qualifier("cachedJWTSecret")
-    private SecretKey cachedJWTSecret;
+    private SecretKeyHolder cachedJWTSecret;
     @Autowired
     private JwtParser jwtParser;
 
@@ -56,7 +57,7 @@ public class TokenService implements com.flexicore.service.TokenService {
                 .setIssuer(ISSUER)
                 .setIssuedAt(new Date())
                 .setExpiration(Date.from(expirationDate.toInstant()))
-                .signWith(cachedJWTSecret)
+                .signWith(cachedJWTSecret.secretKey())
                 .addClaims(claims)
                 .compact();
     }
