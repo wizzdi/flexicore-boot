@@ -18,6 +18,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.core.ParameterizedTypeReference;
@@ -28,6 +30,9 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.testcontainers.containers.PostgreSQLContainer;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.io.File;
 import java.io.IOException;
@@ -39,12 +44,24 @@ import java.util.stream.Collectors;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = App.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+@Testcontainers
 @ActiveProfiles("test")
+@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE) // deactivate the default behaviour
+
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 
 public class PluginLoadingTest {
+private final static PostgreSQLContainer postgresqlContainer = new PostgreSQLContainer("postgres:15")
 
-	private static final Logger logger= LoggerFactory.getLogger(PluginLoadingTest.class);
+			.withDatabaseName("flexicore-test")
+			.withUsername("flexicore")
+			.withPassword("flexicore");
+	
+	static{
+		postgresqlContainer.start();
+	}
+
+	private static final Logger logger = LoggerFactory.getLogger(PluginLoadingTest.class);
 
 	private static final String pluginsPath;
 	private static final String entitiesPath;

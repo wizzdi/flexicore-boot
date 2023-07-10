@@ -1,17 +1,22 @@
 package com.test.rest;
-import com.flexicore.annotations.IOperation;
-import com.flexicore.annotations.rest.All;
+
 import com.flexicore.data.jsoncontainers.PaginationResponse;
-import com.test.init.FlexiCoreApplication;
-import com.flexicore.model.*;
+import com.flexicore.model.PermissionGroup;
+import com.flexicore.model.User;
 import com.flexicore.request.*;
-import com.flexicore.response.*;
+import com.flexicore.response.AuthenticationResponse;
+import com.flexicore.response.FinishTotpSetupResponse;
+import com.flexicore.response.SetupTotpResponse;
+import com.flexicore.response.TotpAuthenticationResponse;
+import com.test.init.FlexiCoreApplication;
 import dev.samstevens.totp.code.CodeGenerator;
 import dev.samstevens.totp.exceptions.CodeGenerationException;
 import dev.samstevens.totp.time.TimeProvider;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.core.ParameterizedTypeReference;
@@ -19,21 +24,38 @@ import org.springframework.http.*;
 import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.DynamicPropertyRegistry;
+import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.web.client.DefaultResponseErrorHandler;
 import org.springframework.web.client.RestTemplate;
+import org.testcontainers.containers.PostgreSQLContainer;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.io.IOException;
-import java.time.Instant;
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.Collections;
+import java.util.List;
+import java.util.UUID;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = FlexiCoreApplication.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+@Testcontainers
 @ActiveProfiles("test")
+@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE) // deactivate the default behaviour
+
 public class TotpRESTServiceTest {
+private final static PostgreSQLContainer postgresqlContainer = new PostgreSQLContainer("postgres:15")
+
+			.withDatabaseName("flexicore-test")
+			.withUsername("flexicore")
+			.withPassword("flexicore");
+	
+	static{
+		postgresqlContainer.start();
+	}
 
 	private String password;
 	private User user;
