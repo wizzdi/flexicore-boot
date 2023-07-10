@@ -30,7 +30,7 @@ import java.util.Collections;
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE) // deactivate the default behaviour
 
 public class AuthenticationNewRESTServiceTest {
-	private final static PostgreSQLContainer postgresqlContainer = new PostgreSQLContainer("postgres:15")
+	    private final static PostgreSQLContainer postgresqlContainer = new PostgreSQLContainer("postgres:15")
 
 			.withDatabaseName("flexicore-test")
 			.withUsername("flexicore")
@@ -39,8 +39,7 @@ public class AuthenticationNewRESTServiceTest {
 	static{
 		postgresqlContainer.start();
 	}
-
-    @DynamicPropertySource
+@DynamicPropertySource
     static void setProperties(DynamicPropertyRegistry registry) {
         registry.add("spring.datasource.url", postgresqlContainer::getJdbcUrl);
         registry.add("spring.datasource.username", postgresqlContainer::getUsername);

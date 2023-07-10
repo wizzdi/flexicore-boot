@@ -40,7 +40,7 @@ import java.util.List;
 
 
 public class DynamicInvokerControllerTest {
-	private final static PostgreSQLContainer postgresqlContainer = new PostgreSQLContainer("postgres:15")
+	    private final static PostgreSQLContainer postgresqlContainer = new PostgreSQLContainer("postgres:15")
 
 			.withDatabaseName("flexicore-test")
 			.withUsername("flexicore")
@@ -49,8 +49,7 @@ public class DynamicInvokerControllerTest {
 	static{
 		postgresqlContainer.start();
 	}
-
-    @DynamicPropertySource
+@DynamicPropertySource
     static void setProperties(DynamicPropertyRegistry registry) {
         registry.add("spring.datasource.url", postgresqlContainer::getJdbcUrl);
         registry.add("spring.datasource.username", postgresqlContainer::getUsername);

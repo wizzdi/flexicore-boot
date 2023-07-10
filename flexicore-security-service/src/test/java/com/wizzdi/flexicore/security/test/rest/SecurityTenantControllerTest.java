@@ -39,15 +39,16 @@ import java.util.UUID;
 
 
 public class SecurityTenantControllerTest {
-	private final static PostgreSQLContainer postgresqlContainer = new PostgreSQLContainer("postgres:15")
 
-			.withDatabaseName("flexicore-test")
-			.withUsername("flexicore")
-			.withPassword("flexicore");
-	
-	static{
-		postgresqlContainer.start();
-	}
+    private final static PostgreSQLContainer postgresqlContainer = new PostgreSQLContainer("postgres:15")
+
+            .withDatabaseName("flexicore-test")
+            .withUsername("flexicore")
+            .withPassword("flexicore");
+
+    static{
+        postgresqlContainer.start();
+    }
 
     @DynamicPropertySource
     static void setProperties(DynamicPropertyRegistry registry) {

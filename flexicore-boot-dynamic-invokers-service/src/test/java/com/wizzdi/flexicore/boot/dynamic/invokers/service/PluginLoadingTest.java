@@ -51,7 +51,7 @@ import java.util.stream.Collectors;
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 
 public class PluginLoadingTest {
-private final static PostgreSQLContainer postgresqlContainer = new PostgreSQLContainer("postgres:15")
+    private final static PostgreSQLContainer postgresqlContainer = new PostgreSQLContainer("postgres:15")
 
 			.withDatabaseName("flexicore-test")
 			.withUsername("flexicore")
@@ -60,6 +60,12 @@ private final static PostgreSQLContainer postgresqlContainer = new PostgreSQLCon
 	static{
 		postgresqlContainer.start();
 	}
+@DynamicPropertySource
+    static void setProperties(DynamicPropertyRegistry registry) {
+        registry.add("spring.datasource.url", postgresqlContainer::getJdbcUrl);
+        registry.add("spring.datasource.username", postgresqlContainer::getUsername);
+        registry.add("spring.datasource.password", postgresqlContainer::getPassword);
+    }
 
 	private static final Logger logger = LoggerFactory.getLogger(PluginLoadingTest.class);
 

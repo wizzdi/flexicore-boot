@@ -27,7 +27,7 @@ import java.util.Map;
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE) // deactivate the default behaviour
 
 public class DynamicFilterTest {
-private final static PostgreSQLContainer postgresqlContainer = new PostgreSQLContainer("postgres:15")
+    private final static PostgreSQLContainer postgresqlContainer = new PostgreSQLContainer("postgres:15")
 
 			.withDatabaseName("flexicore-test")
 			.withUsername("flexicore")
@@ -36,6 +36,12 @@ private final static PostgreSQLContainer postgresqlContainer = new PostgreSQLCon
 	static{
 		postgresqlContainer.start();
 	}
+@DynamicPropertySource
+    static void setProperties(DynamicPropertyRegistry registry) {
+        registry.add("spring.datasource.url", postgresqlContainer::getJdbcUrl);
+        registry.add("spring.datasource.username", postgresqlContainer::getUsername);
+        registry.add("spring.datasource.password", postgresqlContainer::getPassword);
+    }
 
 	@Autowired
 	private AuthorService authorService;

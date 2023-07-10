@@ -40,7 +40,7 @@ import java.util.Set;
 
 
 public class CSVExportTest {
-	private final static PostgreSQLContainer postgresqlContainer = new PostgreSQLContainer("postgres:15")
+	    private final static PostgreSQLContainer postgresqlContainer = new PostgreSQLContainer("postgres:15")
 
 			.withDatabaseName("flexicore-test")
 			.withUsername("flexicore")
@@ -49,8 +49,7 @@ public class CSVExportTest {
 	static{
 		postgresqlContainer.start();
 	}
-
-    @DynamicPropertySource
+@DynamicPropertySource
     static void setProperties(DynamicPropertyRegistry registry) {
         registry.add("spring.datasource.url", postgresqlContainer::getJdbcUrl);
         registry.add("spring.datasource.username", postgresqlContainer::getUsername);
