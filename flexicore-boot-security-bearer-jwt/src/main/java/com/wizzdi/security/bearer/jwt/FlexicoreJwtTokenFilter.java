@@ -6,6 +6,7 @@ import com.wizzdi.security.adapter.FlexiCoreSecurityFilter;
 import com.wizzdi.security.adapter.OperationInterceptor;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
+import org.springframework.security.web.context.RequestAttributeSecurityContextRepository;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -22,11 +23,13 @@ public class FlexicoreJwtTokenFilter extends OncePerRequestFilter implements Fle
 
     private final JWTSecurityContextCreator JWTSecurityContextCreator;
     private final TokenExtractor tokenExtractor;
+    private final RequestAttributeSecurityContextRepository requestAttributeSecurityContextRepository=new RequestAttributeSecurityContextRepository();
 
 
     public FlexicoreJwtTokenFilter(JWTSecurityContextCreator JWTSecurityContextCreator, TokenExtractor tokenExtractor) {
         this.JWTSecurityContextCreator = JWTSecurityContextCreator;
         this.tokenExtractor=tokenExtractor;
+
     }
 
     @Override
@@ -53,6 +56,7 @@ public class FlexicoreJwtTokenFilter extends OncePerRequestFilter implements Fle
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
         request.setAttribute(OperationInterceptor.SECURITY_CONTEXT,securityContext);
+        this.requestAttributeSecurityContextRepository.saveContext(SecurityContextHolder.getContext(),request,response);
         chain.doFilter(request, response);
     }
 
