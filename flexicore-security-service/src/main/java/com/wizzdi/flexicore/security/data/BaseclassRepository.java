@@ -202,8 +202,8 @@ public class BaseclassRepository implements Plugin {
 				cb.equal(r1.get(RoleToBaseclass_.simplevalue), IOperation.Access.deny.name())
 		);
 		List<Predicate> preds1 = new ArrayList<>();
-		preds.add(p2);
-		q1.select(r1).where(preds.toArray(Predicate[]::new));
+		preds1.add(p2);
+		q1.select(r1).where(preds1.toArray(Predicate[]::new));
 		TypedQuery<RoleToBaseclass> query1 = em.createQuery(q1);
 		List<RoleToBaseclass> deniedRoles = query1.getResultList();
 		List<Baseclass> deniedUsersBase = new ArrayList<>();
