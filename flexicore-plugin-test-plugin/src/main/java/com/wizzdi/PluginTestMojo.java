@@ -29,12 +29,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 
-/**
- * Goal which touches a timestamp file.
- *
- * @goal touch
- * @phase process-sources
- */
+
 @Mojo(name = "extract-plugins", defaultPhase = LifecyclePhase.PROCESS_TEST_SOURCES)
 
 public class PluginTestMojo extends AbstractMojo {
