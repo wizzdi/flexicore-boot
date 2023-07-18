@@ -56,7 +56,7 @@ public class PluginLoadingTest {
 				}
 			}
 			PluginJar pluginZip = new PluginJar.Builder(pluginsDir.toPath().resolve("my-plugin-1.2.3.zip"), PLUGIN_ID)
-					.extension("com.wizzdi.flexicore.boot.health.pluginA.TestHealth")
+					.extension("plugins.TestHealth")
 					.pluginVersion("1.2.3")
 					.build();
 		}

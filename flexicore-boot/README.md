@@ -6,7 +6,7 @@ For comprehensive information about FlexiCore Boot please visit our [site](http:
 
 ## What it does?
 
-FlexiCore Boot enables plugin loading support for your spring boot app it is built on [pf4j](https://pf4j.org/) and depends only on it.
+FlexiCore Boot enables plugins loading support for your spring boot app it is built on [pf4j](https://pf4j.org/) and depends only on it.
 
 FlexiCore allows full multi-layer dependency between Spring enabled plugins.
 ## How to use?
@@ -24,7 +24,7 @@ FlexiCore will automatically load jars and create beans for them.
 FlexiCore Boot Plugins allow composing a full spring boot application from plugins by using additional FlexiCore Boot modules such as [flexicore-boot-starter-web](https://github.com/wizzdi/flexicore-boot-starter-web)[,flexicore-boot-starter-actuator](https://github.com/wizzdi/flexicore-boot-starter-actuator),[resteasy-flexicore-boot-starter](https://github.com/wizzdi/resteasy-flexicore-boot-starter) and more.
 ## Creating Plugins
 creating plugins is as simple as creating regular spring beans the only difference is that the bean should be annotated with `@Extension` and implement the empty interface `Plugin` .
-the jar containing the class should be packaged using pf4j plugin instructions so it contains a MANIFEST.MF describing it, more on that [here.](https://pf4j.org/doc/packaging.html)
+the jar containing the class should be packaged using pf4j plugins instructions so it contains a MANIFEST.MF describing it, more on that [here.](https://pf4j.org/doc/packaging.html)
 ## Example
 your application class:
 
@@ -40,7 +40,7 @@ your application class:
       
       }
     }
-a bean inside a plugin:
+a bean inside a plugins:
 
     @Extension  
     @Component  

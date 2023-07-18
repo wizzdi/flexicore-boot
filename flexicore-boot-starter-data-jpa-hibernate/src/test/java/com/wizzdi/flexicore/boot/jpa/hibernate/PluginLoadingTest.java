@@ -78,10 +78,10 @@ public class PluginLoadingTest {
 				}
 			}
 			PluginJar pluginZip = new PluginJar.Builder(pluginsDir.toPath().resolve("my-plugin-1.2.3.zip"), PLUGIN_ID)
-					.extension("com.wizzdi.flexicore.boot.jpa.hibernate.pluginA.PluginAService")
-					.extension("com.wizzdi.flexicore.boot.jpa.hibernate.pluginA.PluginARepository")
-					.extension("com.wizzdi.flexicore.boot.jpa.hibernate.pluginA.PluginAController")
-					.extension("com.wizzdi.flexicore.boot.jpa.hibernate.pluginA.Config")
+					.extension("plugins.PluginAService")
+					.extension("plugins.PluginARepository")
+					.extension("plugins.PluginAController")
+					.extension("plugins.Config")
 
 					.pluginVersion("1.2.3")
 					.build();

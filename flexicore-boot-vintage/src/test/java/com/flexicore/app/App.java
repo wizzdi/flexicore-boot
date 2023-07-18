@@ -1,6 +1,6 @@
 package com.flexicore.app;
 
-import com.flexicore.pluginA.PluginAREST;
+import plugins.PluginAREST;
 import com.wizzdi.flexicore.boot.base.annotations.plugins.EnableFlexiCorePlugins;
 import com.wizzdi.flexicore.boot.jaxrs.annotations.EnableFlexiCoreJAXRSPlugins;
 import org.springframework.boot.CommandLineRunner;

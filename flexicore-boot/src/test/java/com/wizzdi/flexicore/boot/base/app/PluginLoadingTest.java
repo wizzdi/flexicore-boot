@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.ApplicationContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
@@ -37,12 +38,19 @@ public class PluginLoadingTest {
 	private static final String entitiesPath;
 	private static final String PLUGIN_A_ID = "plugin-a";
 	private static final String PLUGIN_B_ID = "plugin-b";
+	private static final String PLUGIN_C_ID = "plugin-c";
+	private static final String PLUGIN_D_ID = "plugin-d";
+	private static final String PLUGIN_E_ID = "plugin-e";
+	private static final String PLUGIN_F_ID = "plugin-f";
+
 
 	@Value("${flexicore.plugins}")
 	private String pluginsDir;
 
 	@Autowired
 	private FlexiCorePluginManager flexiCorePluginManager;
+	@Autowired
+	private ApplicationContext applicationContext;
 
 	static{
 		pluginsPath=getPluginsDir("plugins");
@@ -54,17 +62,39 @@ public class PluginLoadingTest {
 					logger.error("failed creating plugins dir");
 				}
 			}
-			PluginJar pluginAZip = new PluginJar.Builder(pluginsDir.toPath().resolve("plugin-A-1.0.0.zip"), PLUGIN_A_ID)
-					.extension("com.flexicore.boot.test.pluginA.PluginAService")
-					.extension("com.flexicore.boot.test.pluginA.SomeInterface")
-					.extension("com.flexicore.boot.test.pluginA.SomeInterfaceUser")
+			PluginJar pluginAZip = new PluginJar.Builder(pluginsDir.toPath().resolve("plugin-A-1.0.0.jar"), PLUGIN_A_ID)
+					.extension("plugins.test.pluginA.PluginAService")
+					.extension("plugins.test.pluginA.SomeInterface")
+					.extension("plugins.test.pluginA.SomeInterfaceUser")
 					.pluginVersion("1.0.0")
 					.build();
 
-			PluginJar pluginBZip = new PluginJar.Builder(pluginsDir.toPath().resolve("plugin-B-1.0.0.zip"), PLUGIN_B_ID)
-					.extension("com.flexicore.boot.test.pluginB.PluginBService")
+			PluginJar pluginBZip = new PluginJar.Builder(pluginsDir.toPath().resolve("plugin-B-1.0.0.jar"), PLUGIN_B_ID)
+					.extension("plugins.test.pluginB.PluginBService")
 					.pluginVersion("1.0.0")
 					.manifestAttribute("Plugin-Dependencies",PLUGIN_A_ID+"@>=1.0.0")
+					.build();
+
+			PluginJar pluginCZip = new PluginJar.Builder(pluginsDir.toPath().resolve("plugin-C-1.0.0.jar"), PLUGIN_C_ID)
+					.extension("plugins.test.pluginC.PluginCService")
+					.pluginVersion("1.0.0")
+					.manifestAttribute("Plugin-Dependencies",PLUGIN_B_ID+"@>=1.0.0,"+PLUGIN_A_ID+"@>=1.0.0")
+					.build();
+			PluginJar pluginDZip = new PluginJar.Builder(pluginsDir.toPath().resolve("plugin-D-1.0.0.jar"), PLUGIN_D_ID)
+					.extension("plugins.test.pluginD.PluginDService")
+					.pluginVersion("1.0.0")
+					.manifestAttribute("Plugin-Dependencies",PLUGIN_A_ID+"@>=1.0.0")
+					.build();
+
+			PluginJar pluginEZip = new PluginJar.Builder(pluginsDir.toPath().resolve("plugin-E-1.0.0.jar"), PLUGIN_E_ID)
+					.extension("plugins.test.pluginE.PluginEService")
+					.pluginVersion("1.0.0")
+					.manifestAttribute("Plugin-Dependencies",PLUGIN_D_ID+"@>=1.0.0,"+PLUGIN_A_ID+"@>=1.0.0,"+PLUGIN_C_ID+"@>=1.0.0,"+PLUGIN_B_ID+"@>=1.0.0")
+					.build();
+			PluginJar pluginFZip = new PluginJar.Builder(pluginsDir.toPath().resolve("plugin-F-1.0.0.jar"), PLUGIN_F_ID)
+					.extension("plugins.test.pluginF.PluginFService")
+					.pluginVersion("1.0.0")
+					.manifestAttribute("Plugin-Dependencies",PLUGIN_D_ID+"@>=1.0.0,"+PLUGIN_A_ID+"@>=1.0.0,"+PLUGIN_C_ID+"@>=1.0.0,"+PLUGIN_B_ID+"@>=1.0.0,"+PLUGIN_E_ID+"@>=1.0.0")
 					.build();
 
 		}

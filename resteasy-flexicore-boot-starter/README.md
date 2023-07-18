@@ -36,7 +36,7 @@ your application class:
       
       }
     }
-a JAX-RS annotated bean inside a plugin:
+a JAX-RS annotated bean inside a plugins:
 
     @Path("/testEntity")  
     @RequestScoped  

@@ -56,8 +56,8 @@ public class PluginLoadingTest {
 				}
 			}
 			PluginJar pluginZip = new PluginJar.Builder(pluginsDir.toPath().resolve("my-plugin-1.2.3.zip"), PLUGIN_ID)
-					.extension("com.flexicore.pluginA.PluginAService")
-					.extension("com.flexicore.pluginA.PluginAREST")
+					.extension("plugins.PluginAService")
+					.extension("plugins.PluginAREST")
 
 					.pluginVersion("1.2.3")
 					.build();

@@ -5,7 +5,7 @@
     <packaging>maven-plugin</packaging>
 
     <name>metamodel-inheritence-fix-processor</name>
-    <description>plugin for fixing canonical generation of inherited classes between projects</description>
+    <description>plugins for fixing canonical generation of inherited classes between projects</description>
     <parent>
         <groupId>com.wizzdi</groupId>
         <artifactId>flexicore-boot-dependencies</artifactId>

@@ -17,7 +17,6 @@
 		<class>com.flexicore.model.Baseclass</class>
 		<class>com.flexicore.model.Baselink</class>
 		<class>com.flexicore.model.Clazz</class>
-		<class>com.flexicore.model.ClazzLink</class>
 		<class>com.flexicore.model.SecurityTenant</class>
 		<class>com.flexicore.model.SecurityUser</class>
 		<class>com.flexicore.model.DocumentationTag</class>

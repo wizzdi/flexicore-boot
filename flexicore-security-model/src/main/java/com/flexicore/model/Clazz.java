@@ -15,9 +15,6 @@ import jakarta.persistence.Entity;
 @SuppressWarnings("serial")
 @AnnotatedClazz(Category="core", Name="Clazz", Description="Describes all other classes in the system")
 @Entity
-@JsonSubTypes({
-    @JsonSubTypes.Type(value=ClazzLink.class, name="ClazzLink")
-})
 public class Clazz extends Baseclass {
 
 	public Clazz() {

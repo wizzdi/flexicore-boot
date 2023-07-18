@@ -1,6 +1,7 @@
 package com.wizzdi.flexicore.boot.base.app;
 
 import com.wizzdi.flexicore.boot.base.annotations.plugins.EnableFlexiCorePlugins;
+import com.wizzdi.flexicore.boot.base.init.FlexiCoreApplication;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -22,7 +23,7 @@ public class App {
 	public static void main(String[] args) {
 
 
-		SpringApplication app = new SpringApplication(App.class);
+		SpringApplication app = new FlexiCoreApplication(App.class);
 		app.addListeners(new ApplicationPidFileWriter());
 		ConfigurableApplicationContext context=app.run(args);
 

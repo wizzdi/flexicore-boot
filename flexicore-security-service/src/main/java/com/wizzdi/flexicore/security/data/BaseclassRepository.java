@@ -326,7 +326,7 @@ public class BaseclassRepository implements Plugin {
 		Predicate premissive = cb.and(
 				cb.isFalse(securityLinkRootPremissive.get(SecurityLink_.softDelete)),
 				cb.or(cb.equal(securityLinkRootPremissive.get(SecurityLink_.value), op), cb.equal(securityLinkRootPremissive.get(SecurityLink_.value), allOpId)),
-				cb.or(cb.equal(securityLinkRootPremissive.get(SecurityLink_.rightside).type(), Clazz.class), cb.equal(securityLinkRootPremissive.get(SecurityLink_.rightside).type(), ClazzLink.class)),
+				cb.equal(securityLinkRootPremissive.get(SecurityLink_.rightside).type(), Clazz.class),
 				cb.equal(securityLinkRootPremissive.get(SecurityLink_.simplevalue), IOperation.Access.allow.name()),
 				rolesPredicatePremissive
 
@@ -355,7 +355,7 @@ public class BaseclassRepository implements Plugin {
 		Predicate premissive = cb.and(
 				cb.isFalse(securityLinkRootPremissive.get(SecurityLink_.softDelete)),
 				cb.or(cb.equal(securityLinkRootPremissive.get(SecurityLink_.value), op), cb.equal(securityLinkRootPremissive.get(SecurityLink_.value), allOpId)),
-				cb.or(cb.equal(securityLinkRootPremissive.get(SecurityLink_.rightside).type(), Clazz.class), cb.equal(securityLinkRootPremissive.get(SecurityLink_.rightside).type(), ClazzLink.class)),
+				cb.equal(securityLinkRootPremissive.get(SecurityLink_.rightside).type(), Clazz.class),
 				cb.equal(securityLinkRootPremissive.get(SecurityLink_.simplevalue), IOperation.Access.allow.name()),
 				cb.or(
 						userPredicatePremissive,

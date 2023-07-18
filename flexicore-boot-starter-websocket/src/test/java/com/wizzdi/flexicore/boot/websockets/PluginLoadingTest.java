@@ -66,13 +66,13 @@ public class PluginLoadingTest {
 				}
 			}
 			PluginJar pluginZip = new PluginJar.Builder(pluginsDir.toPath().resolve("my-plugin-1.2.3.zip"), PLUGIN_ID)
-					.extension("com.wizzdi.flexicore.boot.websockets.pluginA.encoders.WSDecoder")
-					.extension("com.wizzdi.flexicore.boot.websockets.pluginA.encoders.WSEncoder")
-					.extension("com.wizzdi.flexicore.boot.websockets.pluginA.messages.TestMessage")
-					.extension("com.wizzdi.flexicore.boot.websockets.pluginA.messages.WSEvent")
-					.extension("com.wizzdi.flexicore.boot.websockets.pluginA.EventReceivedContainer")
-					.extension("com.wizzdi.flexicore.boot.websockets.pluginA.TestWS")
-					.extension("com.wizzdi.flexicore.boot.websockets.pluginA.UiEventSender")
+					.extension("plugins.encoders.WSDecoder")
+					.extension("plugins.encoders.WSEncoder")
+					.extension("plugins.messages.TestMessage")
+					.extension("plugins.messages.WSEvent")
+					.extension("plugins.EventReceivedContainer")
+					.extension("plugins.TestWS")
+					.extension("plugins.UiEventSender")
 					.pluginVersion("1.2.3")
 					.build();
 		}

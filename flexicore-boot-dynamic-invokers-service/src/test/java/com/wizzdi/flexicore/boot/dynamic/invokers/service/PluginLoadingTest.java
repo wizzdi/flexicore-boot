@@ -7,9 +7,9 @@ import com.wizzdi.flexicore.boot.dynamic.invokers.model.DynamicExecution;
 import com.wizzdi.flexicore.boot.dynamic.invokers.request.*;
 import com.wizzdi.flexicore.boot.dynamic.invokers.response.InvokerInfo;
 import com.wizzdi.flexicore.boot.dynamic.invokers.service.app.App;
-import com.wizzdi.flexicore.boot.dynamic.invokers.service.plugin.TestEntity;
-import com.wizzdi.flexicore.boot.dynamic.invokers.service.plugin.TestFilter;
-import com.wizzdi.flexicore.boot.dynamic.invokers.service.plugin.TestInvoker;
+import plugins.TestEntity;
+import plugins.TestFilter;
+import plugins.TestInvoker;
 import com.wizzdi.flexicore.boot.test.helper.PluginJar;
 import com.wizzdi.flexicore.security.response.PaginationResponse;
 import org.junit.jupiter.api.*;
@@ -19,7 +19,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.core.ParameterizedTypeReference;
@@ -31,7 +30,6 @@ import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.testcontainers.containers.PostgreSQLContainer;
-import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.io.File;
@@ -93,9 +91,9 @@ public class PluginLoadingTest {
 				}
 			}
 			PluginJar pluginZip = new PluginJar.Builder(pluginsDir.toPath().resolve("my-plugin-1.2.3.zip"), PLUGIN_ID)
-					.extension("com.wizzdi.flexicore.boot.dynamic.invokers.service.plugin.TestEntity")
-					.extension("com.wizzdi.flexicore.boot.dynamic.invokers.service.plugin.TestFilter")
-					.extension("com.wizzdi.flexicore.boot.dynamic.invokers.service.plugin.TestInvoker")
+					.extension("plugins.TestEntity")
+					.extension("plugins.TestFilter")
+					.extension("plugins.TestInvoker")
 					.pluginVersion("1.2.3")
 					.build();
 		}

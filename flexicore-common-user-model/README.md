@@ -73,7 +73,7 @@ FlexiCore boosts [Spring Boot](https://github.com/spring-projects/spring-boot) a
       updateAuthorNoMerge(author, authorCreate);  
      return author;  
       }
-The first code snippet shows a **PersonService** plugin managing a person CRUD (only create is shown) . the second code sinppet shows an **AuthorService** plugin managing authors which is dependent on **PersonService** . both plugins are compiled separately. use by placing both of them in the FlexiCore plugin directory 
+The first code snippet shows a **PersonService** plugins managing a person CRUD (only create is shown) . the second code sinppet shows an **AuthorService** plugins managing authors which is dependent on **PersonService** . both plugins are compiled separately. use by placing both of them in the FlexiCore plugins directory 
 
 ## Debugging Plugins
 add the relevant debuggin line to your java properties

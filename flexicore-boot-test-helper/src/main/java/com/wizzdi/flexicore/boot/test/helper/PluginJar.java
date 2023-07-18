@@ -88,7 +88,7 @@ public class PluginJar {
 		private String pluginVersion;
 		private Map<String, String> manifestAttributes = new LinkedHashMap<>();
 		private Set<String> extensions = new LinkedHashSet<>();
-		private ClassDataProvider classDataProvider = new DefaultClassDataProvider();
+		private ClassDataProvider classDataProvider = new PluginizedClassDataProvider();
 
 		public Builder(Path path, String pluginId) {
 			this.path = path;

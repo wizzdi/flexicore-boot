@@ -36,7 +36,7 @@ your application class:
       
       }
     }
-a Websocket Server Endpoint inside a plugin:
+a Websocket Server Endpoint inside a plugins:
 
     @ServerEndpoint(value = "/wsTest/{authenticationKey}", encoders = {WSEncoder.class}, decoders = {WSDecoder.class})  
     @PluginInfo(version = 1)  

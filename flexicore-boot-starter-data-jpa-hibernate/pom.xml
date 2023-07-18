@@ -20,6 +20,7 @@
         </dependency>
 
 
+
         <dependency>
             <groupId>com.wizzdi</groupId>
             <artifactId>flexicore-boot-starter-data-jpa</artifactId>
@@ -96,6 +97,21 @@
                     </argLine>
                 </configuration>
             </plugin>
+            <plugin>
+                <groupId>com.wizzdi</groupId>
+                <artifactId>flexicore-plugin-test-plugin</artifactId>
+                <version>${revision}</version>
+                <executions>
+                    <execution>
+                        <phase>process-test-classes</phase>
+                        <goals>
+                            <goal>extract-plugins</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
+
+
 </project>

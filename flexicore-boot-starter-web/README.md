@@ -36,7 +36,7 @@ your application class:
       
       }
     }
-a RestController inside a plugin:
+a RestController inside a plugins:
 
     @Extension  
     @RestController  

@@ -84,8 +84,8 @@ public class PluginLoadingTest {
 				}
 			}
 			PluginJar pluginZip = new PluginJar.Builder(pluginsDir.toPath().resolve("my-plugin-1.2.3.zip"), PLUGIN_ID)
-					.extension("com.wizzdi.flexicore.boot.data.rest.plugin.BookRepository")
-					.extension("com.wizzdi.flexicore.boot.data.rest.plugin.Config")
+					.extension("plugins.BookRepository")
+					.extension("plugins.Config")
 					.pluginVersion("1.2.3")
 					.build();
 		}

@@ -40,7 +40,7 @@ your application class:
       
       }
     }
-an entity inside an entity plugin:
+an entity inside an entity plugins:
 
     @Entity  
     public class TestEntity {  

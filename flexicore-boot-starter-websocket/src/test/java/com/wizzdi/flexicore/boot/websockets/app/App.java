@@ -2,7 +2,7 @@ package com.wizzdi.flexicore.boot.websockets.app;
 
 import com.wizzdi.flexicore.boot.base.annotations.plugins.EnableFlexiCorePlugins;
 import com.wizzdi.flexicore.boot.websockets.annotations.EnableFlexiCoreWebSocketPlugins;
-import com.wizzdi.flexicore.boot.websockets.pluginA.TestWS;
+import plugins.TestWS;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

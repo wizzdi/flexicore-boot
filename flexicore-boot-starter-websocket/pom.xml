@@ -63,7 +63,23 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
-
+<build>
+    <plugins>
+        <plugin>
+            <groupId>com.wizzdi</groupId>
+            <artifactId>flexicore-plugin-test-plugin</artifactId>
+            <version>${revision}</version>
+            <executions>
+                <execution>
+                    <phase>process-test-classes</phase>
+                    <goals>
+                        <goal>extract-plugins</goal>
+                    </goals>
+                </execution>
+            </executions>
+        </plugin>
+    </plugins>
+</build>
 
 
 

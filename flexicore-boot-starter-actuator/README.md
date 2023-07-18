@@ -36,7 +36,7 @@ your application class:
       
       }
     }
-a HealthIndicator inside a plugin:
+a HealthIndicator inside a plugins:
 
     @Component  
     @Extension  

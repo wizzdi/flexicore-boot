@@ -355,7 +355,6 @@ public class ClassScannerService implements Plugin {
 
         Set<String> ids = entities.parallelStream().map(f -> Baseclass.generateUUIDFromString(f.getCanonicalName())).collect(Collectors.toSet());
         ids.add(Baseclass.generateUUIDFromString(Clazz.class.getCanonicalName()));
-        ids.add(Baseclass.generateUUIDFromString(ClazzLink.class.getCanonicalName()));
         Map<String, Clazz> existing = new HashMap<>();
         for (List<String> part : partition(new ArrayList<>(ids), 50)) {
             if (!part.isEmpty()) {
@@ -365,7 +364,6 @@ public class ClassScannerService implements Plugin {
         List<Object> toMerge = new ArrayList<>();
         // registering clazz before all
         handleEntityClass(Clazz.class, existing, toMerge);
-        handleEntityClass(ClazzLink.class, existing, toMerge);
         // registering the rest
         for (Class<?> annotated : entities) {
             if (!annotated.getCanonicalName().equalsIgnoreCase(Clazz.class.getCanonicalName())) {
@@ -374,7 +372,6 @@ public class ClassScannerService implements Plugin {
         }
         //clazzService.massMerge(toMerge);
         entities.add(Clazz.class);
-        entities.add(ClazzLink.class);
         //createIndexes(entities);
         return new Clazzes(new ArrayList<>(existing.values()));
 
@@ -399,7 +396,7 @@ public class ClassScannerService implements Plugin {
 
             Clazz clazz = existing.get(ID);
             if (clazz == null) {
-                clazz = Baselink.class.isAssignableFrom(claz) ? createClazzLink(claz, existing, toMerge) : new Clazz(classname, null);
+                clazz =  new Clazz(classname, null);
                 clazz.setId(ID);
                 clazz.setDescription(annotatedclazz.Description());
                 clazz.setSystemObject(true);
@@ -420,51 +417,7 @@ public class ClassScannerService implements Plugin {
 
     }
 
-    private ClazzLink createClazzLink(Class<?> claz, Map<String, Clazz> existing, List<Object> toMerge) {
-        //handle the case where a ClazzLink is needed
-        String classname = claz.getCanonicalName();
-        ClazzLink clazzLink = new ClazzLink(classname, null);
-        Class<?>[] params = new Class[0];
-        try {
-            Method l = claz.getDeclaredMethod("getLeftside", params);
-            Method r = claz.getDeclaredMethod("getRightside", params);
-            Clazz valueClazz = Baseclass.getClazzByName(Baseclass.class.getCanonicalName());
-            if (valueClazz == null) {
-                handleEntityClass(Baseclass.class, existing, toMerge);
-                valueClazz = Baseclass.getClazzByName(Baseclass.class.getCanonicalName());
-            }
-            try {
-                Method v = claz.getDeclaredMethod("getValue", params);
-                ManyToOne mtO = v.getAnnotation(ManyToOne.class);
-                Class<?> cv = mtO.targetEntity();
-                handleEntityClass(cv, existing, toMerge);
-                valueClazz = Baseclass.getClazzByName(cv.getCanonicalName());
-            } catch (NoSuchMethodException e) {
-                logger.info("there is not spesific decleration for value for: " + claz.getCanonicalName());
 
-            }
-            clazzLink.setValue(valueClazz);
-            if (l.isAnnotationPresent(ManyToOne.class)) {
-                ManyToOne mtO = l.getAnnotation(ManyToOne.class);
-                Class<?> cl = mtO.targetEntity();
-                handleEntityClass(cl, existing, toMerge);
-                Clazz lclazz = Baseclass.getClazzByName(cl.getCanonicalName());
-                clazzLink.setLeft(lclazz);
-
-            }
-            if (r.isAnnotationPresent(ManyToOne.class)) {
-                ManyToOne mtO = r.getAnnotation(ManyToOne.class);
-                Class<?> cr = mtO.targetEntity();
-                handleEntityClass(cr, existing, toMerge);
-                Clazz rclazz = Baseclass.getClazzByName(cr.getCanonicalName());
-                clazzLink.setRight(rclazz);
-
-            }
-        } catch (Exception e) {
-            logger.debug("failed setting clazzlink properties", e);
-        }
-        return clazzLink;
-    }
 
 
     private AnnotatedClazz generateAnnotatedClazz(Class<?> claz) {
