@@ -7,64 +7,81 @@
 package com.flexicore.model;
 
 
-
-import com.flexicore.security.SecurityContextBase;
-
-import jakarta.persistence.Entity;
-import jakarta.persistence.ManyToOne;
+import com.flexicore.annotations.IOperation;
+import jakarta.persistence.*;
 
 
-@SuppressWarnings("serial")
 @Entity
-
-public class SecurityLink extends Baselink {
-
-
-	public SecurityLink() {
-	}
-
-	public SecurityLink(String name, SecurityContextBase securityContext) {
-		super(name, securityContext);
-	}
-
-	@ManyToOne(targetEntity = SecurityEntity.class)
-	@Override
-	public SecurityEntity getLeftside() {
-		// TODO Auto-generated method stub
-		return (SecurityEntity) super.getLeftside();
-	}
-	public void setLeftside(SecurityEntity leftside) {
-		this.leftside = leftside;
-	}
+public class SecurityLink extends SecuredBasic {
 
 
 	@ManyToOne(targetEntity = Baseclass.class)
-	@Override
-	public Baseclass getRightside() {
-		// TODO Auto-generated method stub
-		return super.getRightside();
-	}
+	private Baseclass baseclass;
 
-	@Override
-	public void setRightside(Baseclass rightside) {
-		super.setRightside(rightside);
-	}
+	@ManyToOne(targetEntity = PermissionGroup.class)
+	private PermissionGroup permissionGroup;
+	@ManyToOne(targetEntity = Clazz.class)
+	private Clazz clazz;
+
+	@ManyToOne(targetEntity = SecurityOperation.class)
+	private SecurityOperation operation;
+
+	@Enumerated(EnumType.STRING)
+	private IOperation.Access access;
+
 
 	@ManyToOne(targetEntity = Baseclass.class)
-	//@JoinColumn(name = "value", referencedColumnName = "id")
-
-	@Override
-	public Baseclass getValue() {
-		// TODO Auto-generated method stub
-		return super.getValue();
+	public Baseclass getBaseclass() {
+		return baseclass;
 	}
 
-
-	@Override
-	public void setValue(Baseclass operation) {
-		super.setValue(operation);
+	public <T extends SecurityLink> T setBaseclass(Baseclass baseclass) {
+		this.baseclass = baseclass;
+		return (T) this;
 	}
 
+	@Transient
+	public SecurityEntity getSecurityEntity(){
+		return null;
+	}
 
+	@ManyToOne(targetEntity = SecurityOperation.class)
+	public SecurityOperation getOperation() {
+		return operation;
+	}
 
+	public <T extends SecurityLink> T setOperation(SecurityOperation operation) {
+		this.operation = operation;
+		return (T) this;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public IOperation.Access getAccess() {
+		return access;
+	}
+
+	public <T extends SecurityLink> T setAccess(IOperation.Access access) {
+		this.access = access;
+		return (T) this;
+	}
+
+	@ManyToOne(targetEntity = PermissionGroup.class)
+	public PermissionGroup getPermissionGroup() {
+		return permissionGroup;
+	}
+
+	public <T extends SecurityLink> T setPermissionGroup(PermissionGroup permissionGroup) {
+		this.permissionGroup = permissionGroup;
+		return (T) this;
+	}
+
+	@ManyToOne(targetEntity = Clazz.class)
+	public Clazz getClazz() {
+		return clazz;
+	}
+
+	public <T extends SecurityLink> T setClazz(Clazz clazz) {
+		this.clazz = clazz;
+		return (T) this;
+	}
 }

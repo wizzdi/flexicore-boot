@@ -39,7 +39,7 @@ public class OperationsMethodScannerImpl implements OperationsMethodScanner, Plu
 			}
 			String id = Baseclass.generateUUIDFromString(method.toString());
 			return new OperationScanContext(new OperationCreate()
-					.setDefaultaccess(ioperation.access())
+					.setDefaultAccess(ioperation.access())
 					.setSystemObject(true)
 					.setDescription(ioperation.Description())
 					.setName(ioperation.Name())

@@ -32,14 +32,14 @@ public class SecurityRepository implements Plugin {
 		CriteriaQuery<SecurityUser> q = cb.createQuery(SecurityUser.class);
 		Root<SecurityUser> users = q.from(SecurityUser.class);
 		Join<SecurityUser, RoleToUser> roleToUser = users.join(SecurityUser_.roles, JoinType.LEFT);
-		Join<RoleToUser, Role> roles = cb.treat(roleToUser.join(RoleToUser_.leftside, JoinType.LEFT),Role.class);
+		Join<RoleToUser, Role> roles =roleToUser.join(RoleToUser_.role, JoinType.LEFT);
 		Join<Role, RoleToBaseclass> roleToBaseClass = roles.join(Role_.roleToBaseclass);
 		Predicate rolesPredicate = cb.and(
 				cb.isFalse(roleToUser.get(RoleToUser_.softDelete)),
 				cb.isFalse(roleToBaseClass.get(RoleToBaseclass_.softDelete)),
 				cb.equal(users.get(SecurityUser_.id), securityUser.getId()),
-				cb.equal(roleToBaseClass.get(RoleToBaseclass_.rightside), securityOperation),
-				cb.equal(roleToBaseClass.get(RoleToBaseclass_.simplevalue), access.name())
+				cb.equal(roleToBaseClass.get(RoleToBaseclass_.baseclass), securityOperation),
+				cb.equal(roleToBaseClass.get(RoleToBaseclass_.access), access)
 		);
 		List<Predicate> preds = new ArrayList<>();
 		preds.add(rolesPredicate);
@@ -57,12 +57,12 @@ public class SecurityRepository implements Plugin {
 		Root<SecurityUser> users = q.from(SecurityUser.class);
 		// check if this securityUser has direct connection with the securityOperation and the
 		// value is Deny.
-		Join<SecurityUser, UserToBaseClass> direct = users.join(SecurityUser_.userToBaseClasses, JoinType.LEFT);
+		Join<SecurityUser, UserToBaseclass> direct = users.join(SecurityUser_.userToBaseclasses, JoinType.LEFT);
 		Predicate directPredicate = cb.and(
-				cb.isFalse(direct.get(UserToBaseClass_.softDelete)),
+				cb.isFalse(direct.get(UserToBaseclass_.softDelete)),
 				cb.equal(users.get(SecurityUser_.id), securityUser.getId()),
-				cb.equal(direct.get(UserToBaseClass_.rightside), securityOperation),
-				cb.equal(direct.get(UserToBaseClass_.simplevalue), access.name()));
+				cb.equal(direct.get(UserToBaseclass_.baseclass), securityOperation),
+				cb.equal(direct.get(UserToBaseclass_.access), access));
 
 		List<Predicate> preds = new ArrayList<>();
 		preds.add(directPredicate);

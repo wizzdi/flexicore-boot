@@ -100,7 +100,7 @@ public interface BaseclassService extends FlexiCoreService {
     void massDelete(MassDeleteRequest massDeleteRequest, SecurityContext securityContext);
 
     @SuppressWarnings("unchecked")
-    <T extends Baselink, E extends Baseclass> List<String> getConnectedClasses(Clazz c, String id, Clazz linkClazz,
+    <T extends SecuredBasic, E extends Baseclass> List<String> getConnectedClasses(Clazz c, String id, Clazz linkClazz,
                                                                                FilteringInformationHolder filteringInformationHolder, int pagesize, int currentPage, Baseclass value, String simpleValue, SecurityContext securityContext);
 
     ParameterInfo getClassInfo(GetClassInfo filteringInformationHolder);
@@ -113,26 +113,26 @@ public interface BaseclassService extends FlexiCoreService {
 
     void validate(GetConnected getConnected, SecurityContext securityContext);
 
-    <T extends Baselink, E extends Baseclass> PaginationResponse<E> getDisconnected(GetDisconnected getDisconnected, SecurityContext securityContext);
+    <T extends SecuredBasic, E extends Baseclass> PaginationResponse<E> getDisconnected(GetDisconnected getDisconnected, SecurityContext securityContext);
 
-    <T extends Baselink, E extends Baseclass> PaginationResponse<E> getConnected(GetConnected getConnected, SecurityContext securityContext);
+    <T extends SecuredBasic, E extends Baseclass> PaginationResponse<E> getConnected(GetConnected getConnected, SecurityContext securityContext);
 
-    <T extends Baselink> Boolean onRight(Class<?> wanted, Class<T> link);
+    <T extends SecuredBasic> Boolean onRight(Class<?> wanted, Class<T> link);
 
     @SuppressWarnings("unchecked")
-    <T extends Baselink> List<Baseclass> getDisconnected(Clazz c, String id, Clazz linkClazz,
+    <T extends SecuredBasic> List<Baseclass> getDisconnected(Clazz c, String id, Clazz linkClazz,
                                                          FilteringInformationHolder filteringInformationHolder, int pagesize, int currentPage, Baseclass value, String simpleValue, SecurityContext securityContext) throws Exception;
 
     @SuppressWarnings("unchecked")
-    <T extends Baselink> long countDisconnected(Clazz c, String id, Clazz linkClazz,
+    <T extends SecuredBasic> long countDisconnected(Clazz c, String id, Clazz linkClazz,
                                                 FilteringInformationHolder filteringInformationHolder, int pagesize, int currentPage, Baseclass value, String simpleValue, SecurityContext securityContext) throws Exception;
 
     @SuppressWarnings("unchecked")
-    <T extends Baselink, E extends Baseclass> List<E> getConnected(Clazz c, String id, Clazz linkClazz,
+    <T extends SecuredBasic, E extends Baseclass> List<E> getConnected(Clazz c, String id, Clazz linkClazz,
                                                                    FilteringInformationHolder filteringInformationHolder, int pagesize, int currentPage, Baseclass value, String simpleValue, SecurityContext securityContext);
 
     @SuppressWarnings("unchecked")
-    <T extends Baselink, E extends Baseclass> long countConnected(Clazz c, String id, Clazz linkClazz,
+    <T extends SecuredBasic, E extends Baseclass> long countConnected(Clazz c, String id, Clazz linkClazz,
                                                                   FilteringInformationHolder filteringInformationHolder, int pagesize, int currentPage, Baseclass value, String simpleValue, SecurityContext securityContext);
 
     boolean updateInfo(String id, String name, String description, SecurityContext securityContext);

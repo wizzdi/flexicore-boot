@@ -11,7 +11,6 @@ import com.flexicore.annotations.Baseclassroot;
 import com.flexicore.annotations.FullTextSearch;
 import com.flexicore.annotations.FullTextSearchOptions;
 import com.flexicore.annotations.IOperation;
-import com.flexicore.annotations.rest.All;
 import com.flexicore.data.jsoncontainers.SortingOrder;
 import com.flexicore.events.BaseclassCreated;
 import com.flexicore.events.BaseclassUpdated;
@@ -944,8 +943,8 @@ public class BaseclassRepository implements com.flexicore.data.BaseclassReposito
     @Override
     public Pair<List<Baseclass>, List<Baseclass>> getDenied(User user, Operation op) {
         CriteriaBuilder cb = em.getCriteriaBuilder();
-        CriteriaQuery<UserToBaseClass> q = cb.createQuery(UserToBaseClass.class);
-        Root<UserToBaseClass> r = q.from(UserToBaseClass.class);
+        CriteriaQuery<UserToBaseclass> q = cb.createQuery(UserToBaseclass.class);
+        Root<UserToBaseclass> r = q.from(UserToBaseclass.class);
 
         Predicate p1 = cb.and(
                 cb.or(cb.isFalse(r.get(SecurityLink_.softDelete)), r.get(SecurityLink_.softDelete).isNull()),
@@ -958,9 +957,9 @@ public class BaseclassRepository implements com.flexicore.data.BaseclassReposito
         List<Predicate> preds = new ArrayList<>();
         preds.add(p1);
         finalizeQuery(r, q, preds, cb);
-        TypedQuery<UserToBaseClass> query = em.createQuery(q);
+        TypedQuery<UserToBaseclass> query = em.createQuery(q);
 
-        List<UserToBaseClass> deniedUsers = query.getResultList();
+        List<UserToBaseclass> deniedUsers = query.getResultList();
         CriteriaQuery<RoleToBaseclass> q1 = cb.createQuery(RoleToBaseclass.class);
         Root<RoleToBaseclass> r1 = q1.from(RoleToBaseclass.class);
         Join<RoleToBaseclass, Role> j1 = cb.treat(r1.join(RoleToBaseclass_.leftside, JoinType.LEFT), Role.class);
@@ -983,7 +982,7 @@ public class BaseclassRepository implements com.flexicore.data.BaseclassReposito
         for (RoleToBaseclass roleToBaseclass : deniedRoles) {
             deniedRolesBase.add(roleToBaseclass.getRightside());
         }
-        for (UserToBaseClass userToBaseClass : deniedUsers) {
+        for (UserToBaseclass userToBaseClass : deniedUsers) {
             deniedUsersBase.add(userToBaseClass.getRightside());
         }
 
@@ -1032,9 +1031,9 @@ public class BaseclassRepository implements com.flexicore.data.BaseclassReposito
 
     @Override
     public void addTenantToBaseClass(Baseclass b, Tenant tenant, SecurityContext securityContext) {
-        TenantToBaseClassPremission tenantToBaseClassPremission = new TenantToBaseClassPremission(b.getName(), securityContext);
-        tenantToBaseClassPremission.setTenant(tenant);
-        tenantToBaseClassPremission.setBaseclass(b);
+        TenantToBaseclass tenantToBaseclass = new TenantToBaseclass(b.getName(), securityContext);
+        tenantToBaseclass.setTenant(tenant);
+        tenantToBaseclass.setBaseclass(b);
 
     }
 

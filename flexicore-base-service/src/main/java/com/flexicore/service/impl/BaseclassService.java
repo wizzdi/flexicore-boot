@@ -207,7 +207,7 @@ public class BaseclassService implements com.flexicore.service.BaseclassService 
 
     @Override
     @SuppressWarnings("unchecked")
-    public <T extends Baselink, E extends Baseclass> List<String> getConnectedClasses(Clazz c, String id, Clazz linkClazz,
+    public <T extends SecuredBasic, E extends Baseclass> List<String> getConnectedClasses(Clazz c, String id, Clazz linkClazz,
                                                                                       FilteringInformationHolder filteringInformationHolder, int pagesize, int currentPage, Baseclass value, String simpleValue, SecurityContext securityContext) {
         try {
             ;
@@ -408,7 +408,7 @@ public class BaseclassService implements com.flexicore.service.BaseclassService 
 
 
     @Override
-    public <T extends Baselink, E extends Baseclass> PaginationResponse<E> getDisconnected(GetDisconnected getDisconnected, SecurityContext securityContext) {
+    public <T extends SecuredBasic, E extends Baseclass> PaginationResponse<E> getDisconnected(GetDisconnected getDisconnected, SecurityContext securityContext) {
         Class<?> rawType = getDisconnected.getWantedClass();
         if(!(Baseclass.class.isAssignableFrom(rawType))){
             Clazz clazz=Baseclass.getClazzByName(rawType.getCanonicalName());
@@ -432,7 +432,7 @@ public class BaseclassService implements com.flexicore.service.BaseclassService 
     }
 
     @Override
-    public <T extends Baselink, E extends Baseclass> PaginationResponse<E> getConnected(GetConnected getConnected, SecurityContext securityContext) {
+    public <T extends SecuredBasic, E extends Baseclass> PaginationResponse<E> getConnected(GetConnected getConnected, SecurityContext securityContext) {
         Class<?> rawType = getConnected.getWantedClass();
         if(!(Baseclass.class.isAssignableFrom(rawType))){
             Clazz clazz=Baseclass.getClazzByName(rawType.getCanonicalName());
@@ -456,7 +456,7 @@ public class BaseclassService implements com.flexicore.service.BaseclassService 
     }
 
     @Override
-    public <T extends Baselink> Boolean onRight(Class<?> wanted, Class<T> link) {
+    public <T extends SecuredBasic> Boolean onRight(Class<?> wanted, Class<T> link) {
         String key = getOnRightKey(wanted, link);
 
         LinkSide res = sideCache.get(key);
@@ -516,7 +516,7 @@ public class BaseclassService implements com.flexicore.service.BaseclassService 
 
     @Override
     @SuppressWarnings("unchecked")
-    public <T extends Baselink> List<Baseclass> getDisconnected(Clazz c, String id, Clazz linkClazz,
+    public <T extends SecuredBasic> List<Baseclass> getDisconnected(Clazz c, String id, Clazz linkClazz,
                                                                 FilteringInformationHolder filteringInformationHolder, int pagesize, int currentPage, Baseclass value, String simpleValue, SecurityContext securityContext) throws Exception {
         List<Baseclass> list;
         Class<?> type = Class.forName(c.getName());
@@ -535,7 +535,7 @@ public class BaseclassService implements com.flexicore.service.BaseclassService 
 
     @Override
     @SuppressWarnings("unchecked")
-    public <T extends Baselink> long countDisconnected(Clazz c, String id, Clazz linkClazz,
+    public <T extends SecuredBasic> long countDisconnected(Clazz c, String id, Clazz linkClazz,
                                                        FilteringInformationHolder filteringInformationHolder, int pagesize, int currentPage, Baseclass value, String simpleValue, SecurityContext securityContext) throws Exception {
         Class<?> type = Class.forName(c.getName());
         Class<T> linkclass = (Class<T>) Class.forName(linkClazz.getName());
@@ -553,7 +553,7 @@ public class BaseclassService implements com.flexicore.service.BaseclassService 
 
     @Override
     @SuppressWarnings("unchecked")
-    public <T extends Baselink, E extends Baseclass> List<E> getConnected(Clazz c, String id, Clazz linkClazz,
+    public <T extends SecuredBasic, E extends Baseclass> List<E> getConnected(Clazz c, String id, Clazz linkClazz,
                                                                           FilteringInformationHolder filteringInformationHolder, int pagesize, int currentPage, Baseclass value, String simpleValue, SecurityContext securityContext) {
         try {
             ;
@@ -579,7 +579,7 @@ public class BaseclassService implements com.flexicore.service.BaseclassService 
 
     @Override
     @SuppressWarnings("unchecked")
-    public <T extends Baselink, E extends Baseclass> long countConnected(Clazz c, String id, Clazz linkClazz,
+    public <T extends SecuredBasic, E extends Baseclass> long countConnected(Clazz c, String id, Clazz linkClazz,
                                                                          FilteringInformationHolder filteringInformationHolder, int pagesize, int currentPage, Baseclass value, String simpleValue, SecurityContext securityContext) {
         try {
             List<Baseclass> list = new ArrayList<>();

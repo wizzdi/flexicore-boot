@@ -48,14 +48,23 @@ public class RoleService implements Plugin {
 
 
 	public Role createRoleNoMerge(RoleCreate roleCreate, SecurityContextBase securityContext){
-		Role role=new Role(roleCreate.getName(),securityContext);
+		Role role=new Role();
+		role.setId(UUID.randomUUID().toString());
 		updateRoleNoMerge(roleCreate,role);
+		BaseclassService.createSecurityObjectNoMerge(role,securityContext);
+		role.getSecurity().setTenant(roleCreate.getTenant());
 		roleRepository.merge(role);
 		return role;
 	}
 
 	public boolean updateRoleNoMerge(RoleCreate roleCreate, Role role) {
-		return securityEntityService.updateNoMerge(roleCreate,role);
+		boolean update = securityEntityService.updateNoMerge(roleCreate, role);
+		SecurityTenant currentTenant=Optional.of(role).map(f->f.getSecurity()).map(f->f.getTenant()).orElse(null);
+		if(roleCreate.getTenant()!=null&&role.getSecurity()!=null&&(currentTenant==null||!roleCreate.getTenant().getId().equals(currentTenant.getId()))){
+			role.getSecurity().setTenant(roleCreate.getTenant());
+			update=true;
+		}
+		return update;
 	}
 
 	public Role updateRole(RoleUpdate roleUpdate, SecurityContextBase securityContext){
@@ -66,22 +75,7 @@ public class RoleService implements Plugin {
 		return role;
 	}
 
-	@Deprecated
-	public void validate(RoleCreate roleCreate, SecurityContextBase securityContext) {
-		securityEntityService.validate(roleCreate,securityContext);
-	}
 
-	@Deprecated
-	public void validate(RoleFilter roleFilter, SecurityContextBase securityContext) {
-		securityEntityService.validate(roleFilter,securityContext);
-		Set<String> securityTenantIds=roleFilter.getSecurityTenantsIds();
-		Map<String, SecurityTenant> securityTenantMap=securityTenantIds.isEmpty()?new HashMap<>():roleRepository.listByIds(SecurityTenant.class,securityTenantIds,securityContext).stream().collect(Collectors.toMap(f->f.getId(),f->f));
-		securityTenantIds.removeAll(securityTenantMap.keySet());
-		if(!securityTenantIds.isEmpty()){
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"no security tenants with ids "+securityTenantIds);
-		}
-		roleFilter.setSecurityTenants(new ArrayList<>(securityTenantMap.values()));
-	}
 
 	public <T extends Baseclass> T getByIdOrNull(String id,Class<T> c, SecurityContextBase securityContext) {
 		return roleRepository.getByIdOrNull(id,c,securityContext);

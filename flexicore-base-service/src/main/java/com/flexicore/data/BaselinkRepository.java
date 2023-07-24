@@ -105,7 +105,7 @@ public class BaselinkRepository extends BaseclassRepository {
 
 
 
-	public <E extends Baselink,T extends Baseclass> List<T> getConnected( GetConnected getConnected,boolean right, SecurityContext securityContext) {
+	public <E extends SecuredBasic,T extends Baseclass> List<T> getConnected( GetConnected getConnected,boolean right, SecurityContext securityContext) {
 		BaselinkFilter baselinkFilter = getConnected.getBaselinkFilter();
 		Class<E> linkClass= (Class<E>) baselinkFilter.getLinkClass();
 		Class<T> wantedClass= (Class<T>) getConnected.getWantedClass();
@@ -119,7 +119,7 @@ public class BaselinkRepository extends BaseclassRepository {
 		return getAllFiltered(queryInformationHolder,preds,cb,q,r);
 	}
 
-	public <E extends Baselink,T extends Baseclass> long countConnected( GetConnected getConnected,boolean right, SecurityContext securityContext) {
+	public <E extends SecuredBasic,T extends Baseclass> long countConnected( GetConnected getConnected,boolean right, SecurityContext securityContext) {
 		BaselinkFilter baselinkFilter = getConnected.getBaselinkFilter();
 		Class<E> linkClass= (Class<E>) baselinkFilter.getLinkClass();
 		Class<T> wantedClass= (Class<T>) getConnected.getWantedClass();
@@ -133,7 +133,7 @@ public class BaselinkRepository extends BaseclassRepository {
 		return countAllFiltered(queryInformationHolder,preds,cb,q,r);
 	}
 
-	public <E extends Baselink,T extends Baseclass> List<T> getDisconnected(GetDisconnected getDisconnected,boolean right, SecurityContext securityContext) {
+	public <E extends SecuredBasic,T extends Baseclass> List<T> getDisconnected(GetDisconnected getDisconnected,boolean right, SecurityContext securityContext) {
 		BaselinkFilter baselinkFilter = getDisconnected.getBaselinkFilter();
 		Class<E> linkClass= (Class<E>) baselinkFilter.getLinkClass();
 		Class<T> wantedClass= (Class<T>) getDisconnected.getWantedClass();
@@ -147,7 +147,7 @@ public class BaselinkRepository extends BaseclassRepository {
 		return getAllFiltered(queryInformationHolder,preds,cb,q,r);
 	}
 
-	public <E extends Baselink,T extends Baseclass> long countDisconnected(GetDisconnected getDisconnected,boolean right, SecurityContext securityContext) {
+	public <E extends SecuredBasic,T extends Baseclass> long countDisconnected(GetDisconnected getDisconnected,boolean right, SecurityContext securityContext) {
 		BaselinkFilter baselinkFilter = getDisconnected.getBaselinkFilter();
 		Class<E> linkClass= (Class<E>) baselinkFilter.getLinkClass();
 		Class<T> wantedClass= (Class<T>) getDisconnected.getWantedClass();
@@ -161,7 +161,7 @@ public class BaselinkRepository extends BaseclassRepository {
 		return countAllFiltered(queryInformationHolder,preds,cb,q,r);
 	}
 
-	public <E extends Baselink, T extends Baseclass> Subquery<String> createConnectionSubQuery(BaselinkFilter baselinkFilter, Class<E> linkClass, CriteriaBuilder cb, CriteriaQuery<?> q, Root<T> r,boolean right) {
+	public <E extends SecuredBasic, T extends Baseclass> Subquery<String> createConnectionSubQuery(BaselinkFilter baselinkFilter, Class<E> linkClass, CriteriaBuilder cb, CriteriaQuery<?> q, Root<T> r,boolean right) {
 		Subquery<String> sub=q.subquery(String.class);
 		Root<E> linkRoot=sub.from(linkClass);
 		Join<E,Baseclass> join=right?linkRoot.join(Baselink_.rightside):linkRoot.join(Baselink_.leftside);
@@ -177,7 +177,7 @@ public class BaselinkRepository extends BaseclassRepository {
 
 
 
-	public <T extends Baselink> List<T> getAllBaselinks(Class<T> linkClass, BaselinkFilter filter,SecurityContext securityContext) {
+	public <T extends SecuredBasic> List<T> getAllBaselinks(Class<T> linkClass, BaselinkFilter filter,SecurityContext securityContext) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<T> q = cb.createQuery(linkClass);
 		Root<T> r = q.from(linkClass);
@@ -187,7 +187,7 @@ public class BaselinkRepository extends BaseclassRepository {
 		return getAllFiltered(queryInformationHolder,preds,cb,q,r);
 	}
 
-	public <T extends Baselink> long countAllBaselinks(Class<T> linkClass, BaselinkFilter filter,SecurityContext securityContext) {
+	public <T extends SecuredBasic> long countAllBaselinks(Class<T> linkClass, BaselinkFilter filter,SecurityContext securityContext) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Long> q = cb.createQuery(Long.class);
 		Root<T> r = q.from(linkClass);
@@ -197,7 +197,7 @@ public class BaselinkRepository extends BaseclassRepository {
 		return countAllFiltered(queryInformationHolder,preds,cb,q,r);
 	}
 
-	private <T extends Baselink> void addBaselinkPredicates(BaselinkFilter filter, List<Predicate> preds, Root<T> r, CriteriaBuilder cb) {
+	private <T extends SecuredBasic> void addBaselinkPredicates(BaselinkFilter filter, List<Predicate> preds, Root<T> r, CriteriaBuilder cb) {
 
 		if(filter.getLeftside()!=null && !filter.getLeftside().isEmpty()){
 			Set<String> ids=filter.getLeftside().parallelStream().map(f->f.getId()).collect(Collectors.toSet());

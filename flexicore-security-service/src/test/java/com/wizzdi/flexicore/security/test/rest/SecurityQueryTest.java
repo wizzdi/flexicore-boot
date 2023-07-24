@@ -1,5 +1,6 @@
 package com.wizzdi.flexicore.security.test.rest;
 
+import com.flexicore.annotations.IOperation;
 import com.flexicore.model.*;
 import com.flexicore.security.SecurityContextBase;
 import com.wizzdi.flexicore.security.interfaces.SecurityContextProvider;
@@ -76,7 +77,7 @@ private SecurityUserService securityUserService;
     @Autowired
     private RoleToBaseclassService roleToBaseclassService;
     @Autowired
-    private TenantToBaseclassPermissionService tenantToBaseclassPermissionService;
+    private TenantToBaseclassService tenantToBaseclassService;
     @Autowired
     private PermissionGroupService permissionGroupService;
 
@@ -93,10 +94,9 @@ private SecurityUserService securityUserService;
     public void init() {
         testUser= securityUserService.createSecurityUser(new SecurityUserCreate().setName("testUser"), null);
         testTenant = securityTenantService.createTenant(new SecurityTenantCreate().setName("testTenant"), null);
-        tenantToUserService.createTenantToUser(new TenantToUserCreate().setSecurityUser(testUser).setDefaultTenant(true).setTenant(testTenant),null);
+        tenantToUserService.createTenantToUser(new TenantToUserCreate().setUser(testUser).setDefaultTenant(true).setTenant(testTenant),null);
         testRole= roleService.createRole(new RoleCreate().setTenant(testTenant).setName("testRole"), null);
-        testRole.setTenant(testTenant);
-        testRole.setCreator(testUser);
+        testRole.getSecurity().setCreator(testUser);
         roleService.merge(testRole);
         roleToUserService.createRoleToUser(new RoleToUserCreate().setRole(testRole).setSecurityUser(testUser),null);
         testUserSecurityContext=securityContextProvider.getSecurityContext(testUser);
@@ -112,12 +112,20 @@ private SecurityUserService securityUserService;
 
     @Test
     @Order(1)
+    public void testGetRoles() {
+        List<Role> forCreator = roleService.listAllRoles(new RoleFilter(), testUserSecurityContext);
+
+
+    }
+
+    @Test
+    @Order(1)
     public void testForCreator() {
         TestEntity forCreator = testEntityService.createTestEntity(new TestEntityCreate().setName("forCreator"), testUserSecurityContext);
         List<TestEntity> testEntities = testEntityService.listAllTestEntities(new TestEntityFilter(), testUserSecurityContext);
         Assertions.assertTrue(testEntities.stream().anyMatch(f->f.getId().equals(forCreator.getId())));
-        Assertions.assertFalse(testEntities.stream().noneMatch(f-> othersInOtherTenantIds.contains(f.getId())));
-        Assertions.assertFalse(testEntities.stream().noneMatch(f->othersInTenantIds.contains(f.getId())));
+        Assertions.assertTrue(testEntities.stream().noneMatch(f-> othersInOtherTenantIds.contains(f.getId())));
+        Assertions.assertTrue(testEntities.stream().noneMatch(f->othersInTenantIds.contains(f.getId())));
 
     }
 
@@ -127,11 +135,11 @@ private SecurityUserService securityUserService;
         TestEntity forUser = testEntityService.createTestEntity(new TestEntityCreate().setName("forUser"), adminSecurityContext);
         forUser.getSecurity().setTenant(testTenant);
         testEntityService.merge(forUser);
-        userToBaseclassService.createUserToBaseclass(new UserToBaseclassCreate().setUser(testUser).setBaseclass(forUser.getSecurity()),null);
+        userToBaseclassService.createUserToBaseclass(new UserToBaseclassCreate().setUser(testUser).setAccess(IOperation.Access.allow).setBaseclass(forUser.getSecurity()),null);
         List<TestEntity> testEntities = testEntityService.listAllTestEntities(new TestEntityFilter(), testUserSecurityContext);
         Assertions.assertTrue(testEntities.stream().anyMatch(f->f.getId().equals(forUser.getId())));
-        Assertions.assertFalse(testEntities.stream().noneMatch(f-> othersInOtherTenantIds.contains(f.getId())));
-        Assertions.assertFalse(testEntities.stream().noneMatch(f->othersInTenantIds.contains(f.getId())));
+        Assertions.assertTrue(testEntities.stream().noneMatch(f-> othersInOtherTenantIds.contains(f.getId())));
+        Assertions.assertTrue(testEntities.stream().noneMatch(f->othersInTenantIds.contains(f.getId())));
 
     }
 
@@ -141,11 +149,11 @@ private SecurityUserService securityUserService;
         TestEntity forRole = testEntityService.createTestEntity(new TestEntityCreate().setName("forRole"), adminSecurityContext);
         forRole.getSecurity().setTenant(testTenant);
         testEntityService.merge(forRole);
-        roleToBaseclassService.createRoleToBaseclass(new RoleToBaseclassCreate().setRole(testRole).setBaseclass(forRole.getSecurity()),null);
+        roleToBaseclassService.createRoleToBaseclass(new RoleToBaseclassCreate().setRole(testRole).setAccess(IOperation.Access.allow).setBaseclass(forRole.getSecurity()),null);
         List<TestEntity> testEntities = testEntityService.listAllTestEntities(new TestEntityFilter(), testUserSecurityContext);
         Assertions.assertTrue(testEntities.stream().anyMatch(f->f.getId().equals(forRole.getId())));
-        Assertions.assertFalse(testEntities.stream().noneMatch(f-> othersInOtherTenantIds.contains(f.getId())));
-        Assertions.assertFalse(testEntities.stream().noneMatch(f->othersInTenantIds.contains(f.getId())));
+        Assertions.assertTrue(testEntities.stream().noneMatch(f-> othersInOtherTenantIds.contains(f.getId())));
+        Assertions.assertTrue(testEntities.stream().noneMatch(f->othersInTenantIds.contains(f.getId())));
 
     }
 
@@ -154,11 +162,11 @@ private SecurityUserService securityUserService;
     public void testForTenant() {
         TestEntity forTenant = testEntityService.createTestEntity(new TestEntityCreate().setName("forTenant"), adminSecurityContext);
 
-        tenantToBaseclassPermissionService.createTenantToBaseclassPermission(new TenantToBaseclassPermissionCreate().setBaseclass(forTenant.getSecurity()).setTenant(testTenant),null);
+        tenantToBaseclassService.createTenantToBaseclass(new TenantToBaseclassCreate().setTenant(testTenant).setAccess(IOperation.Access.allow).setBaseclass(forTenant.getSecurity()),null);
         List<TestEntity> testEntities = testEntityService.listAllTestEntities(new TestEntityFilter(), testUserSecurityContext);
         Assertions.assertTrue(testEntities.stream().anyMatch(f->f.getId().equals(forTenant.getId())));
-        Assertions.assertFalse(testEntities.stream().noneMatch(f-> othersInOtherTenantIds.contains(f.getId())));
-        Assertions.assertFalse(testEntities.stream().noneMatch(f->othersInTenantIds.contains(f.getId())));
+        Assertions.assertTrue(testEntities.stream().noneMatch(f-> othersInOtherTenantIds.contains(f.getId())));
+        Assertions.assertTrue(testEntities.stream().noneMatch(f->othersInTenantIds.contains(f.getId())));
 
     }
 
@@ -171,11 +179,11 @@ private SecurityUserService securityUserService;
         PermissionGroup forUserGroup = permissionGroupService.createPermissionGroup(new PermissionGroupCreate().setName("forUserGroup"), null);
         TestEntity forUser = testEntityService.createTestEntity(new TestEntityCreate().setName("forUser"), adminSecurityContext);
         PermissionGroupToBaseclass permissionGroupToBaseclass = permissionGroupToBaseclassService.createPermissionGroupToBaseclass(new PermissionGroupToBaseclassCreate().setPermissionGroup(forUserGroup).setBaseclass(forUser.getSecurity()), null);
-        userToBaseclassService.createUserToBaseclass(new UserToBaseclassCreate().setUser(testUser).setBaseclass(forUserGroup),null);
+        userToBaseclassService.createUserToBaseclass(new UserToBaseclassCreate().setUser(testUser).setAccess(IOperation.Access.allow).setPermissionGroup(forUserGroup),null);
         List<TestEntity> testEntities = testEntityService.listAllTestEntities(new TestEntityFilter(), testUserSecurityContext);
         Assertions.assertTrue(testEntities.stream().anyMatch(f->f.getId().equals(forUser.getId())));
-        Assertions.assertFalse(testEntities.stream().noneMatch(f-> othersInOtherTenantIds.contains(f.getId())));
-        Assertions.assertFalse(testEntities.stream().noneMatch(f->othersInTenantIds.contains(f.getId())));
+        Assertions.assertTrue(testEntities.stream().noneMatch(f-> othersInOtherTenantIds.contains(f.getId())));
+        Assertions.assertTrue(testEntities.stream().noneMatch(f->othersInTenantIds.contains(f.getId())));
 
     }
 
@@ -185,11 +193,11 @@ private SecurityUserService securityUserService;
         PermissionGroup forRoleGroup = permissionGroupService.createPermissionGroup(new PermissionGroupCreate().setName("forRoleGroup"), null);
         TestEntity forRole = testEntityService.createTestEntity(new TestEntityCreate().setName("forRole"), adminSecurityContext);
         PermissionGroupToBaseclass permissionGroupToBaseclass = permissionGroupToBaseclassService.createPermissionGroupToBaseclass(new PermissionGroupToBaseclassCreate().setPermissionGroup(forRoleGroup).setBaseclass(forRole.getSecurity()), null);
-        roleToBaseclassService.createRoleToBaseclass(new RoleToBaseclassCreate().setRole(testRole).setBaseclass(forRoleGroup),null);
+        roleToBaseclassService.createRoleToBaseclass(new RoleToBaseclassCreate().setRole(testRole).setAccess(IOperation.Access.allow).setPermissionGroup(forRoleGroup),null);
         List<TestEntity> testEntities = testEntityService.listAllTestEntities(new TestEntityFilter(), testUserSecurityContext);
         Assertions.assertTrue(testEntities.stream().anyMatch(f->f.getId().equals(forRole.getId())));
-        Assertions.assertFalse(testEntities.stream().noneMatch(f-> othersInOtherTenantIds.contains(f.getId())));
-        Assertions.assertFalse(testEntities.stream().noneMatch(f->othersInTenantIds.contains(f.getId())));
+        Assertions.assertTrue(testEntities.stream().noneMatch(f-> othersInOtherTenantIds.contains(f.getId())));
+        Assertions.assertTrue(testEntities.stream().noneMatch(f->othersInTenantIds.contains(f.getId())));
     }
 
     @Test
@@ -198,12 +206,227 @@ private SecurityUserService securityUserService;
         PermissionGroup forTenantGroup = permissionGroupService.createPermissionGroup(new PermissionGroupCreate().setName("forTenantGroup"), null);
         TestEntity forTenant = testEntityService.createTestEntity(new TestEntityCreate().setName("forTenant"), adminSecurityContext);
         PermissionGroupToBaseclass permissionGroupToBaseclass = permissionGroupToBaseclassService.createPermissionGroupToBaseclass(new PermissionGroupToBaseclassCreate().setPermissionGroup(forTenantGroup).setBaseclass(forTenant.getSecurity()), null);
-        tenantToBaseclassPermissionService.createTenantToBaseclassPermission(new TenantToBaseclassPermissionCreate().setBaseclass(forTenantGroup).setTenant(testTenant),null);
+        tenantToBaseclassService.createTenantToBaseclass(new TenantToBaseclassCreate().setTenant(testTenant).setAccess(IOperation.Access.allow).setPermissionGroup(forTenantGroup),null);
         List<TestEntity> testEntities = testEntityService.listAllTestEntities(new TestEntityFilter(), testUserSecurityContext);
         Assertions.assertTrue(testEntities.stream().anyMatch(f->f.getId().equals(forTenant.getId())));
-        Assertions.assertFalse(testEntities.stream().noneMatch(f-> othersInOtherTenantIds.contains(f.getId())));
-        Assertions.assertFalse(testEntities.stream().noneMatch(f->othersInTenantIds.contains(f.getId())));
+        Assertions.assertTrue(testEntities.stream().noneMatch(f-> othersInOtherTenantIds.contains(f.getId())));
+        Assertions.assertTrue(testEntities.stream().noneMatch(f->othersInTenantIds.contains(f.getId())));
 
+    }
+
+    @Test
+    @Order(8)
+    public void testUserToClazz() {
+        // create a fresh user and link it to a tenant
+        SecurityUser freshUser = securityUserService.createSecurityUser(new SecurityUserCreate().setName("freshUser"), null);
+        SecurityTenant freshTenant = securityTenantService.createTenant(new SecurityTenantCreate().setName("freshTenant"), null);
+        tenantToUserService.createTenantToUser(new TenantToUserCreate().setUser(freshUser).setDefaultTenant(true).setTenant(freshTenant),null);
+
+        // validate it has access to nothing
+        List<TestEntity> testEntities = testEntityService.listAllTestEntities(new TestEntityFilter(), securityContextProvider.getSecurityContext(freshUser));
+        Assertions.assertTrue(testEntities.isEmpty());
+
+        // grant it access for clazz
+        userToBaseclassService.createUserToBaseclass(new UserToBaseclassCreate().setUser(freshUser).setAccess(IOperation.Access.allow).setClazz(Baseclass.getClazzByName(TestEntity.class.getCanonicalName())),null);
+
+        // validate it has access to all TestEntities in the tenant
+        testEntities = testEntityService.listAllTestEntities(new TestEntityFilter(), securityContextProvider.getSecurityContext(freshUser));
+        Assertions.assertTrue(testEntities.stream().allMatch(f->othersInTenantIds.contains(f.getId())));
+        Assertions.assertTrue(testEntities.stream().noneMatch(f->othersInOtherTenantIds.contains(f.getId())));
+
+    }
+
+    @Test
+    @Order(9)
+    public void testGrantAccessForRole() {
+        // create a fresh role, user and link them to a tenant
+        SecurityTenant freshTenant = securityTenantService.createTenant(new SecurityTenantCreate().setName("freshTenant2"), null);
+
+        Role freshRole = roleService.createRole(new RoleCreate().setTenant(freshTenant).setName("freshRole"), null);
+
+        SecurityUser freshUserWithRole = securityUserService.createSecurityUser(new SecurityUserCreate().setName("freshUserWithRole"), null);
+        roleToUserService.createRoleToUser(new RoleToUserCreate().setRole(freshRole).setSecurityUser(freshUserWithRole), null);
+        tenantToUserService.createTenantToUser(new TenantToUserCreate().setUser(freshUserWithRole).setDefaultTenant(true).setTenant(freshTenant),null);
+
+        // validate the user with role has access to nothing
+        List<TestEntity> testEntities = testEntityService.listAllTestEntities(new TestEntityFilter(), securityContextProvider.getSecurityContext(freshUserWithRole));
+        Assertions.assertTrue(testEntities.isEmpty());
+
+        // grant the role access for clazz
+        roleToBaseclassService.createRoleToBaseclass(new RoleToBaseclassCreate().setRole(freshRole).setAccess(IOperation.Access.allow).setClazz(Baseclass.getClazzByName(TestEntity.class.getCanonicalName())),null);
+
+        // validate the user with role has access to all TestEntities in the tenant
+        testEntities = testEntityService.listAllTestEntities(new TestEntityFilter(), securityContextProvider.getSecurityContext(freshUserWithRole));
+        Assertions.assertTrue(testEntities.stream().allMatch(f->othersInTenantIds.contains(f.getId())));
+        Assertions.assertTrue(testEntities.stream().noneMatch(f->othersInOtherTenantIds.contains(f.getId())));
+        //validate role does not have access to Test Entities in other tenant which he belongs to
+        tenantToUserService.createTenantToUser(new TenantToUserCreate().setUser(freshUserWithRole).setTenant(adminSecurityContext.getTenantToCreateIn()),null);
+        testEntities = testEntityService.listAllTestEntities(new TestEntityFilter(), securityContextProvider.getSecurityContext(freshUserWithRole));
+        Assertions.assertTrue(testEntities.stream().noneMatch(f->othersInOtherTenantIds.contains(f.getId())));
+
+
+    }
+
+    @Test
+    @Order(10)
+    public void testGrantAccessForTenant() {
+        // create a fresh tenant and a user linked to it
+        SecurityTenant freshTenant = securityTenantService.createTenant(new SecurityTenantCreate().setName("freshTenant"), null);
+        SecurityUser freshUserInTenant = securityUserService.createSecurityUser(new SecurityUserCreate().setName("freshUserInTenant"), null);
+        tenantToUserService.createTenantToUser(new TenantToUserCreate().setUser(freshUserInTenant).setDefaultTenant(true).setTenant(freshTenant),null);
+
+        // validate the user in the tenant has access to nothing
+        List<TestEntity> testEntities = testEntityService.listAllTestEntities(new TestEntityFilter(), securityContextProvider.getSecurityContext(freshUserInTenant));
+        Assertions.assertTrue(testEntities.isEmpty());
+
+        // grant the tenant access for clazz
+        tenantToBaseclassService.createTenantToBaseclass(new TenantToBaseclassCreate().setTenant(freshTenant).setAccess(IOperation.Access.allow).setClazz(Baseclass.getClazzByName(TestEntity.class.getCanonicalName())),null);
+
+        // validate the user in the tenant has access to all TestEntities in the tenant
+        testEntities = testEntityService.listAllTestEntities(new TestEntityFilter(), securityContextProvider.getSecurityContext(freshUserInTenant));
+        Assertions.assertTrue(testEntities.stream().allMatch(f->othersInTenantIds.contains(f.getId())));
+        Assertions.assertTrue(testEntities.stream().noneMatch(f->othersInOtherTenantIds.contains(f.getId())));
+    }
+
+    @Test
+    @Order(8)
+    public void testUserToAll() {
+        // create a fresh user and link it to a tenant
+        SecurityUser freshUser = securityUserService.createSecurityUser(new SecurityUserCreate().setName("freshUser"), null);
+        SecurityTenant freshTenant = securityTenantService.createTenant(new SecurityTenantCreate().setName("freshTenant"), null);
+        tenantToUserService.createTenantToUser(new TenantToUserCreate().setUser(freshUser).setDefaultTenant(true).setTenant(freshTenant),null);
+
+        // validate it has access to nothing
+        List<TestEntity> testEntities = testEntityService.listAllTestEntities(new TestEntityFilter(), securityContextProvider.getSecurityContext(freshUser));
+        Assertions.assertTrue(testEntities.isEmpty());
+
+        // grant it access for clazz
+        userToBaseclassService.createUserToBaseclass(new UserToBaseclassCreate().setUser(freshUser).setAccess(IOperation.Access.allow).setClazz(Baseclass.getClazzByName(SecurityWildcard.class.getCanonicalName())),null);
+
+        // validate it has access to all TestEntities in the tenant
+        testEntities = testEntityService.listAllTestEntities(new TestEntityFilter(), securityContextProvider.getSecurityContext(freshUser));
+        Assertions.assertTrue(testEntities.stream().allMatch(f->othersInTenantIds.contains(f.getId())));
+        Assertions.assertTrue(testEntities.stream().noneMatch(f->othersInOtherTenantIds.contains(f.getId())));
+
+    }
+
+    @Test
+    @Order(9)
+    public void testRoleToAll() {
+        // create a fresh role, user and link them to a tenant
+        SecurityTenant freshTenant = securityTenantService.createTenant(new SecurityTenantCreate().setName("freshTenant2"), null);
+
+        Role freshRole = roleService.createRole(new RoleCreate().setTenant(freshTenant).setName("freshRole"), null);
+
+        SecurityUser freshUserWithRole = securityUserService.createSecurityUser(new SecurityUserCreate().setName("freshUserWithRole"), null);
+        roleToUserService.createRoleToUser(new RoleToUserCreate().setRole(freshRole).setSecurityUser(freshUserWithRole), null);
+        tenantToUserService.createTenantToUser(new TenantToUserCreate().setUser(freshUserWithRole).setDefaultTenant(true).setTenant(freshTenant),null);
+
+        // validate the user with role has access to nothing
+        List<TestEntity> testEntities = testEntityService.listAllTestEntities(new TestEntityFilter(), securityContextProvider.getSecurityContext(freshUserWithRole));
+        Assertions.assertTrue(testEntities.isEmpty());
+
+        // grant the role access for clazz
+        roleToBaseclassService.createRoleToBaseclass(new RoleToBaseclassCreate().setRole(freshRole).setAccess(IOperation.Access.allow).setClazz(Baseclass.getClazzByName(SecurityWildcard.class.getCanonicalName())),null);
+
+        // validate the user with role has access to all TestEntities in the tenant
+        testEntities = testEntityService.listAllTestEntities(new TestEntityFilter(), securityContextProvider.getSecurityContext(freshUserWithRole));
+        Assertions.assertTrue(testEntities.stream().allMatch(f->othersInTenantIds.contains(f.getId())));
+        Assertions.assertTrue(testEntities.stream().noneMatch(f->othersInOtherTenantIds.contains(f.getId())));
+        //validate role does not have access to Test Entities in other tenant which he belongs to
+        tenantToUserService.createTenantToUser(new TenantToUserCreate().setUser(freshUserWithRole).setTenant(adminSecurityContext.getTenantToCreateIn()),null);
+        testEntities = testEntityService.listAllTestEntities(new TestEntityFilter(), securityContextProvider.getSecurityContext(freshUserWithRole));
+        Assertions.assertTrue(testEntities.stream().noneMatch(f->othersInOtherTenantIds.contains(f.getId())));
+
+
+    }
+
+    @Test
+    @Order(10)
+    public void testTenantToAll() {
+        // create a fresh tenant and a user linked to it
+        SecurityTenant freshTenant = securityTenantService.createTenant(new SecurityTenantCreate().setName("freshTenant"), null);
+        SecurityUser freshUserInTenant = securityUserService.createSecurityUser(new SecurityUserCreate().setName("freshUserInTenant"), null);
+        tenantToUserService.createTenantToUser(new TenantToUserCreate().setUser(freshUserInTenant).setDefaultTenant(true).setTenant(freshTenant),null);
+
+        // validate the user in the tenant has access to nothing
+        List<TestEntity> testEntities = testEntityService.listAllTestEntities(new TestEntityFilter(), securityContextProvider.getSecurityContext(freshUserInTenant));
+        Assertions.assertTrue(testEntities.isEmpty());
+
+        // grant the tenant access for clazz
+        tenantToBaseclassService.createTenantToBaseclass(new TenantToBaseclassCreate().setTenant(freshTenant).setAccess(IOperation.Access.allow).setClazz(Baseclass.getClazzByName(SecurityWildcard.class.getCanonicalName())),null);
+
+        // validate the user in the tenant has access to all TestEntities in the tenant
+        testEntities = testEntityService.listAllTestEntities(new TestEntityFilter(), securityContextProvider.getSecurityContext(freshUserInTenant));
+        Assertions.assertTrue(testEntities.stream().allMatch(f->othersInTenantIds.contains(f.getId())));
+        Assertions.assertTrue(testEntities.stream().noneMatch(f->othersInOtherTenantIds.contains(f.getId())));
+    }
+
+    @Test
+    @Order(11)
+    public void testAccessDenyForUser() {
+        SecurityUser freshUser = securityUserService.createSecurityUser(new SecurityUserCreate().setName("freshUser"), null);
+        SecurityTenant freshTenant = securityTenantService.createTenant(new SecurityTenantCreate().setName("freshTenant"), null);
+        tenantToUserService.createTenantToUser(new TenantToUserCreate().setUser(freshUser).setDefaultTenant(true).setTenant(freshTenant),null);
+        userToBaseclassService.createUserToBaseclass(new UserToBaseclassCreate().setUser(freshUser).setAccess(IOperation.Access.allow).setClazz(Baseclass.getClazzByName(SecurityWildcard.class.getCanonicalName())),null);
+
+        // validate it has access to nothing
+        SecurityContextBase securityContext = securityContextProvider.getSecurityContext(freshUser);
+        List<TestEntity> testEntities = testEntityService.listAllTestEntities(new TestEntityFilter(), securityContext);
+        Assertions.assertTrue(testEntities.stream().allMatch(f->othersInTenantIds.contains(f.getId())));
+
+        // grant it access for clazz
+        TestEntity toDeny = testEntityService.findByIdOrNull(TestEntity.class, othersInTenantIds.stream().findFirst().orElseThrow(() -> new RuntimeException("no test entity found")));
+        userToBaseclassService.createUserToBaseclass(new UserToBaseclassCreate().setUser(testUser).setAccess(IOperation.Access.deny).setBaseclass(toDeny.getSecurity()),null);
+        testEntities = testEntityService.listAllTestEntities(new TestEntityFilter(), securityContext);
+        Assertions.assertTrue(testEntities.stream().noneMatch(f->f.getId().equals(toDeny.getId())));
+        Assertions.assertTrue(testEntities.stream().allMatch(f->othersInTenantIds.contains(f.getId())));
+
+    }
+
+    @Test
+    @Order(12)
+    public void testAccessDenyForRole() {
+        SecurityTenant freshTenant = securityTenantService.createTenant(new SecurityTenantCreate().setName("freshTenant"), null);
+        Role freshRole = roleService.createRole(new RoleCreate().setTenant(freshTenant).setName("freshRole"), null);
+
+        SecurityUser freshUserWithRole = securityUserService.createSecurityUser(new SecurityUserCreate().setName("freshUserWithRole"), null);
+        roleToUserService.createRoleToUser(new RoleToUserCreate().setRole(freshRole).setSecurityUser(freshUserWithRole), null);
+        tenantToUserService.createTenantToUser(new TenantToUserCreate().setUser(freshUserWithRole).setDefaultTenant(true).setTenant(freshTenant),null);
+        roleToBaseclassService.createRoleToBaseclass(new RoleToBaseclassCreate().setRole(freshRole).setAccess(IOperation.Access.allow).setClazz(Baseclass.getClazzByName(SecurityWildcard.class.getCanonicalName())),null);
+
+        // validate it has access to nothing
+        SecurityContextBase securityContext = securityContextProvider.getSecurityContext(freshUserWithRole);
+        List<TestEntity> testEntities = testEntityService.listAllTestEntities(new TestEntityFilter(), securityContext);
+        Assertions.assertTrue(testEntities.stream().allMatch(f->othersInTenantIds.contains(f.getId())));
+
+        // grant it access for clazz
+        TestEntity toDeny = testEntityService.findByIdOrNull(TestEntity.class, othersInTenantIds.stream().findFirst().orElseThrow(() -> new RuntimeException("no test entity found")));
+        roleToBaseclassService.createRoleToBaseclass(new RoleToBaseclassCreate().setRole(freshRole).setAccess(IOperation.Access.deny).setBaseclass(toDeny.getSecurity()),null);
+        testEntities = testEntityService.listAllTestEntities(new TestEntityFilter(), securityContext);
+        Assertions.assertTrue(testEntities.stream().noneMatch(f->f.getId().equals(toDeny.getId())));
+        Assertions.assertTrue(testEntities.stream().allMatch(f->othersInTenantIds.contains(f.getId())));
+    }
+
+    @Test
+    @Order(13)
+    public void testAccessDenyForTenant() {
+        SecurityUser freshUser = securityUserService.createSecurityUser(new SecurityUserCreate().setName("freshUser"), null);
+        SecurityTenant freshTenant = securityTenantService.createTenant(new SecurityTenantCreate().setName("freshTenant"), null);
+        tenantToUserService.createTenantToUser(new TenantToUserCreate().setUser(freshUser).setDefaultTenant(true).setTenant(freshTenant),null);
+        tenantToBaseclassService.createTenantToBaseclass(new TenantToBaseclassCreate().setTenant(freshTenant).setAccess(IOperation.Access.allow).setClazz(Baseclass.getClazzByName(SecurityWildcard.class.getCanonicalName())),null);
+
+        // validate it has access to nothing
+        SecurityContextBase securityContext = securityContextProvider.getSecurityContext(freshUser);
+        List<TestEntity> testEntities = testEntityService.listAllTestEntities(new TestEntityFilter(), securityContext);
+        Assertions.assertTrue(testEntities.stream().allMatch(f->othersInTenantIds.contains(f.getId())));
+
+        // grant it access for clazz
+        TestEntity toDeny = testEntityService.findByIdOrNull(TestEntity.class, othersInTenantIds.stream().findFirst().orElseThrow(() -> new RuntimeException("no test entity found")));
+        tenantToBaseclassService.createTenantToBaseclass(new TenantToBaseclassCreate().setTenant(freshTenant).setAccess(IOperation.Access.deny).setBaseclass(toDeny.getSecurity()),null);
+        testEntities = testEntityService.listAllTestEntities(new TestEntityFilter(), securityContext);
+        Assertions.assertTrue(testEntities.stream().noneMatch(f->f.getId().equals(toDeny.getId())));
+        Assertions.assertTrue(testEntities.stream().allMatch(f->othersInTenantIds.contains(f.getId())));
     }
 
 

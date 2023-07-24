@@ -15,6 +15,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 
 @Extension
 @Component
@@ -44,8 +45,10 @@ public class SecurityTenantService implements Plugin {
 	}
 
 	public SecurityTenant createTenantNoMerge(SecurityTenantCreate tenantCreate, SecurityContextBase securityContext){
-		SecurityTenant tenant=new SecurityTenant(tenantCreate.getName(),securityContext);
+		SecurityTenant tenant=new SecurityTenant();
+		tenant.setId(UUID.randomUUID().toString());
 		updateTenantNoMerge(tenantCreate,tenant);
+		BaseclassService.createSecurityObjectNoMerge(tenant,securityContext);
 		tenantRepository.merge(tenant);
 		return tenant;
 	}
@@ -62,15 +65,7 @@ public class SecurityTenantService implements Plugin {
 		return tenant;
 	}
 
-	@Deprecated
-	public void validate(SecurityTenantCreate tenantCreate, SecurityContextBase securityContext) {
-		securityEntityService.validate(tenantCreate,securityContext);
-	}
 
-	@Deprecated
-	public void validate(SecurityTenantFilter tenantFilter, SecurityContextBase securityContext) {
-		securityEntityService.validate(tenantFilter,securityContext);
-	}
 
 	public <T extends Baseclass> T getByIdOrNull(String id,Class<T> c, SecurityContextBase securityContext) {
 		return tenantRepository.getByIdOrNull(id,c,securityContext);

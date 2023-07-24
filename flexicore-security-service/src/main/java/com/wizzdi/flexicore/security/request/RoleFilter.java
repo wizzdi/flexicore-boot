@@ -12,31 +12,31 @@ import java.util.List;
 import java.util.Set;
 
 @IdValid.List({
-        @IdValid(targetField = "securityTenants", fieldType = SecurityTenant.class, field = "securityTenantsIds", groups = {Create.class, Update.class})
+        @IdValid(targetField = "tenants", fieldType = SecurityTenant.class, field = "tenantIds", groups = {Create.class, Update.class})
 })
 public class RoleFilter extends SecurityEntityFilter {
 
-    private Set<String> securityTenantsIds = new HashSet<>();
+    private Set<String> tenantIds = new HashSet<>();
     @JsonIgnore
     @TypeRetention(SecurityTenant.class)
-    private List<SecurityTenant> securityTenants;
+    private List<SecurityTenant> tenants;
 
-    public Set<String> getSecurityTenantsIds() {
-        return securityTenantsIds;
+    public Set<String> getTenantIds() {
+        return tenantIds;
     }
 
-    public <T extends RoleFilter> T setSecurityTenantsIds(Set<String> securityTenantsIds) {
-        this.securityTenantsIds = securityTenantsIds;
+    public <T extends RoleFilter> T setTenantIds(Set<String> tenantIds) {
+        this.tenantIds = tenantIds;
         return (T) this;
     }
 
     @JsonIgnore
-    public List<SecurityTenant> getSecurityTenants() {
-        return securityTenants;
+    public List<SecurityTenant> getTenants() {
+        return tenants;
     }
 
-    public <T extends RoleFilter> T setSecurityTenants(List<SecurityTenant> securityTenants) {
-        this.securityTenants = securityTenants;
+    public <T extends RoleFilter> T setTenants(List<SecurityTenant> tenants) {
+        this.tenants = tenants;
         return (T) this;
     }
 }

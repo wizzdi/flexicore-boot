@@ -28,12 +28,6 @@ public class SecurityLinkController implements Plugin {
     @Autowired
     private SecurityLinkService securityLinkService;
 
-    @IOperation(Name = "creates SecurityLink", Description = "creates SecurityLink")
-    @PostMapping("/create")
-    public SecurityLink create(@RequestBody @Validated(Create.class) SecurityLinkCreate securityLinkCreate, @RequestAttribute SecurityContextBase securityContext) {
-
-        return securityLinkService.createSecurityLink(securityLinkCreate, securityContext);
-    }
 
     @IOperation(Name = "returns SecurityLink", Description = "returns SecurityLink")
     @PostMapping("/getAll")

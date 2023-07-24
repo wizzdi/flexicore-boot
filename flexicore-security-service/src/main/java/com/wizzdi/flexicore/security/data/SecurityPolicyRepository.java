@@ -27,7 +27,7 @@ public class SecurityPolicyRepository implements Plugin {
 	@PersistenceContext
 	private EntityManager em;
 	@Autowired
-	private BaseclassRepository baseclassRepository;
+	private SecuredBasicRepository securedBasicRepository;
 
 
 	public List<SecurityPolicy> listAllSecurityPolicies(SecurityPolicyFilter SecurityPolicyFilter, SecurityContextBase securityContext) {
@@ -38,12 +38,13 @@ public class SecurityPolicyRepository implements Plugin {
 		addSecurityPolicyPredicates(SecurityPolicyFilter, cb, q, r, predicates, securityContext);
 		q.select(r).where(predicates.toArray(Predicate[]::new));
 		TypedQuery<SecurityPolicy> query = em.createQuery(q);
-		BaseclassRepository.addPagination(SecurityPolicyFilter, query);
+		BasicRepository.addPagination(SecurityPolicyFilter, query);
 		return query.getResultList();
 
 	}
 
 	public <T extends SecurityPolicy> void addSecurityPolicyPredicates(SecurityPolicyFilter securityPolicyFilter, CriteriaBuilder cb, CommonAbstractCriteria q, From<?, T> r, List<Predicate> predicates, SecurityContextBase securityContext) {
+		securedBasicRepository.addSecuredBasicPredicates(securityPolicyFilter.getBasicPropertiesFilter(), cb, q, r, predicates, securityContext);
 		if (securityPolicyFilter.getEnabled() != null) {
 			predicates.add(cb.equal(r.get(SecurityPolicy_.enabled), securityPolicyFilter.getEnabled()));
 		}
@@ -67,11 +68,6 @@ public class SecurityPolicyRepository implements Plugin {
 			Join<T, Role> join = r.join(SecurityPolicy_.policyRole);
 			predicates.add(join.get(Role_.id).in(roleIds));
 		}
-		if (securityContext != null) {
-			Join<T, Baseclass> join = r.join(SecurityPolicy_.security);
-			baseclassRepository.addBaseclassPredicates(cb, q, join, predicates, securityContext);
-
-		}
 
 
 	}
@@ -90,33 +86,33 @@ public class SecurityPolicyRepository implements Plugin {
 
 	@Transactional
 	public <T> T merge(T o){
-		return baseclassRepository.merge(o);
+		return securedBasicRepository.merge(o);
 	}
 
 	@Transactional
 	public void massMerge(List<Object> list){
-		baseclassRepository.massMerge(list);
+		securedBasicRepository.massMerge(list);
 	}
 
 	public <T extends Baseclass> List<T> listByIds(Class<T> c, Set<String> ids, SecurityContextBase securityContext) {
-		return baseclassRepository.listByIds(c, ids, securityContext);
+		return securedBasicRepository.listByIds(c, ids, securityContext);
 	}
 
 	public <T extends Baseclass> T getByIdOrNull(String id, Class<T> c, SecurityContextBase securityContext) {
-		return baseclassRepository.getByIdOrNull(id, c, securityContext);
+		return securedBasicRepository.getByIdOrNull(id, c, securityContext);
 	}
 
 	public <T extends Baseclass> List<T> findByIds(Class<T> c, Set<String> requested) {
-		return baseclassRepository.findByIds(c, requested);
+		return securedBasicRepository.findByIds(c, requested);
 	}
 
 	public <T extends SecurityPolicy> T getSecurityPolicyByIdOrNull(String id, Class<T> c, SecurityContextBase securityContext) {
 
-		return baseclassRepository.getByIdOrNull(id,c,SecurityPolicy_.security,securityContext);
+		return securedBasicRepository.getByIdOrNull(id,c,SecurityPolicy_.security,securityContext);
 	}
 
 	public <T extends SecurityPolicy> List<T> listSecurityPolicyByIds( Class<T> c,Set<String> ids, SecurityContextBase securityContext) {
 
-		return baseclassRepository.listByIds(c,ids,SecurityPolicy_.security,securityContext);
+		return securedBasicRepository.listByIds(c,ids,SecurityPolicy_.security,securityContext);
 	}
 }

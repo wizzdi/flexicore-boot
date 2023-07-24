@@ -36,16 +36,17 @@ public class DefaultSecurityContextProviderConfiguration {
     }
 
     private SecurityContextBase getSecurityContext(SecurityUser securityUser) {
-        List<TenantToUser> links=tenantToUserService.listAllTenantToUsers(new TenantToUserFilter().setSecurityUsers(Collections.singletonList(securityUser)),null);
+        List<TenantToUser> links=tenantToUserService.listAllTenantToUsers(new TenantToUserFilter().setUsers(Collections.singletonList(securityUser)),null);
         List<RoleToUser> roleToUsers=roleToUserService.listAllRoleToUsers(new RoleToUserFilter().setSecurityUsers(Collections.singletonList(securityUser)),null);
-
-        List<SecurityTenant> tenants = new ArrayList<>(links.stream().map(f -> f.getLeftside()).collect(Collectors.toMap(f -> f.getId(), f -> f, (a, b) -> a)).values());
-        SecurityTenant tenantToCreateIn = links.stream().filter(f -> f.isDefualtTennant()).map(f -> f.getLeftside()).findFirst().orElse(null);
-        Map<String, List<Role>> roleMap = roleToUsers.stream().map(f -> f.getLeftside()).collect(Collectors.groupingBy(f -> f.getTenant().getId()));
-        return new SecurityContextBase<>()
+        List<Role> allRoles=new ArrayList<>(roleToUsers.stream().map(f->f.getRole()).collect(Collectors.toMap(f->f.getId(),f->f)).values());
+        List<SecurityTenant> tenants = new ArrayList<>(links.stream().map(f -> f.getTenant()).collect(Collectors.toMap(f -> f.getId(), f -> f, (a, b) -> a)).values());
+        SecurityTenant tenantToCreateIn = links.stream().filter(f -> f.isDefaultTenant()).map(f -> f.getTenant()).findFirst().orElse(null);
+        Map<String, List<Role>> roleMap = roleToUsers.stream().map(f -> f.getRole()).collect(Collectors.groupingBy(f -> f.getSecurity().getTenant().getId()));
+        return new SecurityContextBase()
                 .setTenants(tenants)
                 .setTenantToCreateIn(tenantToCreateIn)
                 .setRoleMap(roleMap)
+                .setAllRoles(allRoles)
                 .setUser(securityUser);
     }
 }

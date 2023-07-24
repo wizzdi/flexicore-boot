@@ -2,7 +2,6 @@ package com.wizzdi.flexicore.security.data;
 
 import com.flexicore.model.PermissionGroupToBaseclass;
 import com.flexicore.model.Baseclass;
-import com.flexicore.model.Baseclass_;
 import com.wizzdi.flexicore.boot.base.interfaces.Plugin;
 import com.flexicore.security.SecurityContextBase;
 import com.wizzdi.flexicore.security.request.PermissionGroupToBaseclassFilter;
@@ -25,9 +24,8 @@ public class PermissionGroupToBaseclassRepository implements Plugin {
 	@PersistenceContext
 	private EntityManager em;
 	@Autowired
-	private BaseclassRepository baseclassRepository;
-	@Autowired
-	private BaselinkRepository baselinkRepository;
+	private SecuredBasicRepository securedBasicRepository;
+
 
 	public List<PermissionGroupToBaseclass> listAllPermissionGroupToBaseclasss(PermissionGroupToBaseclassFilter permissionGroupToBaseclassFilter, SecurityContextBase securityContext){
 		CriteriaBuilder cb=em.getCriteriaBuilder();
@@ -37,13 +35,13 @@ public class PermissionGroupToBaseclassRepository implements Plugin {
 		addPermissionGroupToBaseclassPredicates(permissionGroupToBaseclassFilter,cb,q,r,predicates,securityContext);
 		q.select(r).where(predicates.toArray(Predicate[]::new));
 		TypedQuery<PermissionGroupToBaseclass> query = em.createQuery(q);
-		BaseclassRepository.addPagination(permissionGroupToBaseclassFilter,query);
+		BasicRepository.addPagination(permissionGroupToBaseclassFilter,query);
 		return query.getResultList();
 
 	}
 
 	public  <T extends PermissionGroupToBaseclass> void addPermissionGroupToBaseclassPredicates(PermissionGroupToBaseclassFilter permissionGroupToBaseclassFilter, CriteriaBuilder cb, CommonAbstractCriteria q, From<?,T> r, List<Predicate> predicates, SecurityContextBase securityContext) {
-		baselinkRepository.addBaselinkPredicates(permissionGroupToBaseclassFilter,cb,q,r,predicates,securityContext);
+		securedBasicRepository.addSecuredBasicPredicates(permissionGroupToBaseclassFilter.getBasicPropertiesFilter(),cb,q,r,predicates,securityContext);
 	}
 
 	public long countAllPermissionGroupToBaseclasss(PermissionGroupToBaseclassFilter permissionGroupToBaseclassFilter, SecurityContextBase securityContext){
@@ -60,20 +58,20 @@ public class PermissionGroupToBaseclassRepository implements Plugin {
 
 	@Transactional
 	public <T> T merge(T o){
-		return baseclassRepository.merge(o);
+		return securedBasicRepository.merge(o);
 	}
 
 	@Transactional
 	public void massMerge(List<Object> list){
-		baseclassRepository.massMerge(list);
+		securedBasicRepository.massMerge(list);
 	}
 
 	public <T extends Baseclass> List<T> listByIds(Class<T> c,Set<String> ids,  SecurityContextBase securityContext) {
-		return baseclassRepository.listByIds(c, ids, securityContext);
+		return securedBasicRepository.listByIds(c, ids, securityContext);
 	}
 
 	public <T extends Baseclass> T getByIdOrNull(String id, Class<T> c, SecurityContextBase securityContext) {
-		return baseclassRepository.getByIdOrNull(id, c, securityContext);
+		return securedBasicRepository.getByIdOrNull(id, c, securityContext);
 	}
 
 }

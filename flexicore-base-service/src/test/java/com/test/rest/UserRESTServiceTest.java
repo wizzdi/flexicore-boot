@@ -13,7 +13,6 @@ import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.core.ParameterizedTypeReference;
@@ -26,7 +25,6 @@ import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.testcontainers.containers.PostgreSQLContainer;
-import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.util.*;
@@ -206,7 +204,7 @@ public class UserRESTServiceTest {
                 .setRightsideIds(Collections.singleton(defaultTenant.getId()))
                 .setValueId(Baseclass.generateUUIDFromString(All.class.getCanonicalName()))
                 .setSimpleValue(IOperation.Access.allow.name())
-                .setLinkClassName(TenantToBaseClassPremission.class.getCanonicalName());
+                .setLinkClassName(TenantToBaseclass.class.getCanonicalName());
         createBaselink(request);
         Thread.sleep(5000);
         userToken=login(email,password);

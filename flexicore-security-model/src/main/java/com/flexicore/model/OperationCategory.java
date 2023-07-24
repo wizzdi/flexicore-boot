@@ -22,14 +22,11 @@ import jakarta.persistence.Entity;
 
 
 
-public class OperationCategory extends Baseclass {
+public class OperationCategory extends Basic {
 
 	public OperationCategory() {
 		super();
 	}
 
-	public OperationCategory(String name, SecurityContextBase securityContext) {
-		super(name, securityContext);
-	}
 
 }

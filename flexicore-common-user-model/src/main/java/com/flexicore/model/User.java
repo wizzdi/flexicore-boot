@@ -28,7 +28,7 @@ import com.flexicore.model.SecurityUser;
 
 
 //the table name 'user' isn't allowed in Postgresql
-@SuppressWarnings("serial")
+
 @AnnotatedClazz(Category = "core", Name = "User", Description = "The basic class which uses the system")
 @Table(name = "UserTable", indexes = {
         @Index(name = "user_email_ix", columnList = "email")
@@ -94,14 +94,6 @@ public class User extends SecurityUser {
     @Column(name = "phone_number")
     public String getPhoneNumber() {
         return phoneNumber;
-    }
-
-    public User() {
-        super();
-    }
-
-    public User(String name, SecurityContextBase securityContext) {
-        super(name, securityContext);
     }
 
     public void setPhoneNumber(String phoneNumber) {

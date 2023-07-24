@@ -129,7 +129,7 @@ public class FileResourceService implements com.flexicore.service.FileResourceSe
 
 	private void createSecurityLinkForFileResource(SecurityContext securityContext, FileResource fileResource) {
 		try {
-			UserToBaseClass utb = new UserToBaseClass("userToBaseclass", securityContext);
+			UserToBaseclass utb = new UserToBaseclass("userToBaseclass", securityContext);
 			utb.setLeftside(securityContext.getUser());
 			utb.setBaseclass(fileResource.getSecurity());
 			String download = Baseclass.generateUUIDFromString

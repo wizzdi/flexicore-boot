@@ -12,11 +12,11 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import java.time.OffsetDateTime;
 
-@SuppressWarnings("serial")
+
 
 @Entity
 
-public class TimedLink extends Baselink {
+public class TimedLink extends SecuredBasic {
 
 
 	public TimedLink() {

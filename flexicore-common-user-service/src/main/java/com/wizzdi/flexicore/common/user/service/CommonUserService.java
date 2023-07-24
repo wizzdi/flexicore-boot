@@ -106,7 +106,7 @@ public class CommonUserService implements Plugin {
         SecurityTenant securityTenant =  commonUserCreate.getTenant();
         User user = createUserNoMerge(commonUserCreate, securityContextBase);
         toMerge.add(user);
-        TenantToUserCreate tenantToUserCreate = new TenantToUserCreate().setDefaultTenant(true).setSecurityUser(user).setTenant(securityTenant);
+        TenantToUserCreate tenantToUserCreate = new TenantToUserCreate().setDefaultTenant(true).setUser(user).setTenant(securityTenant);
         TenantToUser tenantToUser = tenantToUserService.createTenantToUserNoMerge(tenantToUserCreate, securityContextBase);
         toMerge.add(tenantToUser);
         commonUserRepository.massMerge(toMerge);

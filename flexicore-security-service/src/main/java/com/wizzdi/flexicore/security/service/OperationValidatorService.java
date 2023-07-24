@@ -2,15 +2,16 @@ package com.wizzdi.flexicore.security.service;
 
 import com.flexicore.annotations.IOperation;
 import com.flexicore.annotations.IOperation.Access;
-import com.flexicore.model.Baselink;
 import com.flexicore.model.SecurityOperation;
 import com.flexicore.model.SecurityTenant;
 import com.flexicore.model.SecurityUser;
+import com.flexicore.model.TenantToBaseclass;
 import com.flexicore.security.SecurityContextBase;
 
 import com.wizzdi.flexicore.boot.base.interfaces.Plugin;
 import com.wizzdi.flexicore.security.data.SecurityRepository;
-import com.wizzdi.flexicore.security.request.BaselinkFilter;
+
+import com.wizzdi.flexicore.security.request.TenantToBaseclassFilter;
 import org.pf4j.Extension;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,11 +35,11 @@ public class OperationValidatorService implements Plugin {
     String ROLE_TYPE = "ROLE";
     String TENANT_TYPE = "TENANT";
 
-    @Autowired
-    private BaselinkService baselinkService;
 
     @Autowired
     private SecurityRepository securityRepository;
+    @Autowired
+    private TenantToBaseclassService tenantToBaseclassService;
 
 
 
@@ -57,7 +58,7 @@ public class OperationValidatorService implements Plugin {
     }
 
     public boolean checkIfAllowed(SecurityContextBase securityContextBase) {
-        Access defaultaccess = securityContextBase.getOperation() != null && securityContextBase.getOperation().getDefaultaccess() != null ? securityContextBase.getOperation().getDefaultaccess() : Access.allow;
+        Access defaultaccess = securityContextBase.getOperation() != null && securityContextBase.getOperation().getDefaultAccess() != null ? securityContextBase.getOperation().getDefaultAccess() : Access.allow;
         return checkIfAllowed(securityContextBase.getUser(), securityContextBase.getTenants(), securityContextBase.getOperation(), defaultaccess);
     }
 
@@ -114,7 +115,7 @@ public class OperationValidatorService implements Plugin {
         if(val!=null){
             return val;
         }
-        Baselink link = baselinkService.listAllBaselinks(new BaselinkFilter().setLeftside(Collections.singletonList(tenant)).setRightside(Collections.singletonList(operation)).setSimpleValues(Collections.singleton(access.name())),null).stream().findFirst().orElse(null);
+        TenantToBaseclass link = tenantToBaseclassService.listAllTenantToBaseclasss(new TenantToBaseclassFilter().setTenants(Collections.singletonList(tenant)).setBaseclasses(Collections.singletonList(operation.getSecurity())).setAccesses(Collections.singleton(access)),null).stream().findFirst().orElse(null);
         val= link != null;
         updateIsAllowedCache(cacheKey,val);
         return val;
@@ -127,7 +128,7 @@ public class OperationValidatorService implements Plugin {
         if(val!=null){
             return val;
         }
-        Baselink link = baselinkService.listAllBaselinks(new BaselinkFilter().setLeftside(Collections.singletonList(tenant)).setRightside(Collections.singletonList(operation)).setSimpleValues(Collections.singleton(access.name())),null).stream().findFirst().orElse(null);
+        TenantToBaseclass link = tenantToBaseclassService.listAllTenantToBaseclasss(new TenantToBaseclassFilter().setTenants(Collections.singletonList(tenant)).setBaseclasses(Collections.singletonList(operation.getSecurity())).setAccesses(Collections.singleton(access)),null).stream().findFirst().orElse(null);
         val= link != null;
         updateIsAllowedCache(cacheKey,val);
         return val;

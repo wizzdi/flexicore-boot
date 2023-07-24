@@ -83,6 +83,7 @@ public class SecurityService implements com.flexicore.service.SecurityService {
 				.setTotpVerified(runningUser.isTotpVerified())
 				.setSecurityPolicies(runningUser.getSecurityPolicies())
 				.setRoleMap(runningUser.getRoles())
+				.setAllRoles(runningUser.getRoles().values().stream().flatMap(f -> f.stream()).toList())
 				.setImpersonated(impersonated)
 				.setExpiresDate(runningUser.getExpiresDate());
 
@@ -233,12 +234,12 @@ public class SecurityService implements com.flexicore.service.SecurityService {
 		rightSide.addAll(new ArrayList<>(clazzMap.values()));
 		rightSide.add(securityWildcard);
 		List<SecurityLink> securityLinks = baselinkService.listAllBaselinks(new BaselinkFilter().setLinkClass(SecurityLink.class).setLeftside(leftsides).setRightside(rightSide), null);
-		Map<String, Map<String, List<UserToBaseClass>>> userToBaseclassMap = securityLinks.parallelStream().filter(f -> f instanceof UserToBaseClass && (!(f.getRightside() instanceof Clazz) && !(f.getRightside() instanceof PermissionGroup))).map(f -> (UserToBaseClass) f).collect(Collectors.groupingBy(f -> f.getLeftside().getId(), Collectors.groupingBy(f -> f.getRightside().getId())));
-		Map<String, Map<String, List<UserToBaseClass>>> userToClazzMap = securityLinks.parallelStream().filter(f -> f instanceof UserToBaseClass && f.getRightside() instanceof Clazz).map(f -> (UserToBaseClass) f).collect(Collectors.groupingBy(f -> f.getLeftside().getId(), Collectors.groupingBy(f -> f.getRightside().getId())));
-		Map<String, Map<String, List<UserToBaseClass>>> userToPermissionGroupMap = securityLinks.parallelStream().filter(f -> f instanceof UserToBaseClass && f.getRightside() instanceof PermissionGroup).map(f -> (UserToBaseClass) f).collect(Collectors.groupingBy(f -> f.getLeftside().getId(), Collectors.groupingBy(f -> f.getRightside().getId())));
+		Map<String, Map<String, List<UserToBaseclass>>> userToBaseclassMap = securityLinks.parallelStream().filter(f -> f instanceof UserToBaseclass && (!(f.getRightside() instanceof Clazz) && !(f.getRightside() instanceof PermissionGroup))).map(f -> (UserToBaseclass) f).collect(Collectors.groupingBy(f -> f.getLeftside().getId(), Collectors.groupingBy(f -> f.getRightside().getId())));
+		Map<String, Map<String, List<UserToBaseclass>>> userToClazzMap = securityLinks.parallelStream().filter(f -> f instanceof UserToBaseclass && f.getRightside() instanceof Clazz).map(f -> (UserToBaseclass) f).collect(Collectors.groupingBy(f -> f.getLeftside().getId(), Collectors.groupingBy(f -> f.getRightside().getId())));
+		Map<String, Map<String, List<UserToBaseclass>>> userToPermissionGroupMap = securityLinks.parallelStream().filter(f -> f instanceof UserToBaseclass && f.getRightside() instanceof PermissionGroup).map(f -> (UserToBaseclass) f).collect(Collectors.groupingBy(f -> f.getLeftside().getId(), Collectors.groupingBy(f -> f.getRightside().getId())));
 
 		Map<String, Map<String, List<RoleToBaseclass>>> roleToBaseclassMap = securityLinks.parallelStream().filter(f -> f instanceof RoleToBaseclass).map(f -> (RoleToBaseclass) f).collect(Collectors.groupingBy(f -> f.getLeftside().getId(), Collectors.groupingBy(f -> f.getRightside().getId())));
-		Map<String, Map<String, List<TenantToBaseClassPremission>>> tenantToBaseclassMap = securityLinks.parallelStream().filter(f -> f instanceof TenantToBaseClassPremission).map(f -> (TenantToBaseClassPremission) f).collect(Collectors.groupingBy(f -> f.getLeftside().getId(), Collectors.groupingBy(f -> f.getRightside().getId())));
+		Map<String, Map<String, List<TenantToBaseclass>>> tenantToBaseclassMap = securityLinks.parallelStream().filter(f -> f instanceof TenantToBaseclass).map(f -> (TenantToBaseclass) f).collect(Collectors.groupingBy(f -> f.getLeftside().getId(), Collectors.groupingBy(f -> f.getRightside().getId())));
 
 		PermissionSummaryResponse permissionSummaryResponse = new PermissionSummaryResponse()
 				.setPermissionGroupToBaseclasses(permissionGroupToBaseclassMap);
@@ -246,9 +247,9 @@ public class SecurityService implements com.flexicore.service.SecurityService {
 		for (User user : permissionSummaryRequest.getUsers()) {
 			List<RoleToUser> roles = roleMap.getOrDefault(user.getId(), new ArrayList<>());
 			List<TenantToUser> tenants = tenantMap.getOrDefault(user.getId(), new ArrayList<>());
-			Map<String, List<UserToBaseClass>> userToBaseclassSpecificMap = userToBaseclassMap.getOrDefault(user.getId(), new HashMap<>());
-			Map<String, List<UserToBaseClass>> userToClazz = userToClazzMap.getOrDefault(user.getId(), new HashMap<>());
-			Map<String, List<UserToBaseClass>> userToPermissionGroup = userToPermissionGroupMap.getOrDefault(user.getId(), new HashMap<>());
+			Map<String, List<UserToBaseclass>> userToBaseclassSpecificMap = userToBaseclassMap.getOrDefault(user.getId(), new HashMap<>());
+			Map<String, List<UserToBaseclass>> userToClazz = userToClazzMap.getOrDefault(user.getId(), new HashMap<>());
+			Map<String, List<UserToBaseclass>> userToPermissionGroup = userToPermissionGroupMap.getOrDefault(user.getId(), new HashMap<>());
 			PermissionSummaryEntry permissionSummaryEntry = new PermissionSummaryEntry()
 					.setUser(user)
 					.setRoles(roles)
@@ -261,7 +262,7 @@ public class SecurityService implements com.flexicore.service.SecurityService {
 
 			for (Baseclass baseclass : rightSide) {
 				Map<String, List<RoleToBaseclass>> outputMapRoles;
-				Map<String, List<TenantToBaseClassPremission>> outputMapTenant;
+				Map<String, List<TenantToBaseclass>> outputMapTenant;
 
 				boolean isClazz = baseclass instanceof Clazz;
 				if (isClazz) {
@@ -301,9 +302,9 @@ public class SecurityService implements com.flexicore.service.SecurityService {
 							continue;
 						}
 						if (!isClazz || (related.getTenant() != null && tenantToUser.getLeftside().getId().equals(related.getTenant().getId()))) {
-							Map<String, List<TenantToBaseClassPremission>> map = tenantToBaseclassMap.get(tenantToUser.getLeftside().getId());
+							Map<String, List<TenantToBaseclass>> map = tenantToBaseclassMap.get(tenantToUser.getLeftside().getId());
 							if (map != null) {
-								List<TenantToBaseClassPremission> list = map.get(baseId);
+								List<TenantToBaseclass> list = map.get(baseId);
 								if (list != null) {
 									outputMapTenant.put(id, list);
 								}

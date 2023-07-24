@@ -18,53 +18,56 @@ import java.util.List;
 import java.util.Map;
 
 
-public class SecurityContextBase<ST extends SecurityTenant,U extends SecurityUser,O extends SecurityOperation,R extends Role> {
+public class SecurityContextBase {
 
 
-	private List<ST> tenants;
-	private U user;
-	private O operation;
-	private Map<String,List<R>> roleMap;
+	private List<SecurityTenant> tenants;
+	private SecurityUser user;
+	private SecurityOperation operation;
+	private List<Role> allRoles;
+	private Map<String,List<Role>> roleMap;
 	private boolean impersonated;
 	private OffsetDateTime expiresDate;
-	private ST tenantToCreateIn;
+	private SecurityTenant tenantToCreateIn;
 	private List<SecurityPolicy> securityPolicies;
+
+	private SecurityPermissions securityPermissions;
 
 	public SecurityContextBase() {
 	}
 
-	public List<ST> getTenants() {
+	public List<SecurityTenant> getTenants() {
 		return tenants;
 	}
 
-	public <T extends SecurityContextBase<ST, U, O, R>> T setTenants(List<ST> tenants) {
+	public <T extends SecurityContextBase> T setTenants(List<SecurityTenant> tenants) {
 		this.tenants = tenants;
 		return (T) this;
 	}
 
-	public U getUser() {
+	public SecurityUser getUser() {
 		return user;
 	}
 
-	public <T extends SecurityContextBase<ST, U, O, R>> T setUser(U user) {
+	public <T extends SecurityContextBase> T setUser(SecurityUser user) {
 		this.user = user;
 		return (T) this;
 	}
 
-	public O getOperation() {
+	public SecurityOperation getOperation() {
 		return operation;
 	}
 
-	public <T extends SecurityContextBase<ST, U, O, R>> T setOperation(O operation) {
+	public <T extends SecurityContextBase> T setOperation(SecurityOperation operation) {
 		this.operation = operation;
 		return (T) this;
 	}
 
-	public Map<String, List<R>> getRoleMap() {
+	public Map<String, List<Role>> getRoleMap() {
 		return roleMap;
 	}
 
-	public <T extends SecurityContextBase<ST, U, O, R>> T setRoleMap(Map<String, List<R>> roleMap) {
+	public <T extends SecurityContextBase> T setRoleMap(Map<String, List<Role>> roleMap) {
 		this.roleMap = roleMap;
 		return (T) this;
 	}
@@ -73,7 +76,7 @@ public class SecurityContextBase<ST extends SecurityTenant,U extends SecurityUse
 		return impersonated;
 	}
 
-	public <T extends SecurityContextBase<ST, U, O, R>> T setImpersonated(boolean impersonated) {
+	public <T extends SecurityContextBase> T setImpersonated(boolean impersonated) {
 		this.impersonated = impersonated;
 		return (T) this;
 	}
@@ -82,16 +85,16 @@ public class SecurityContextBase<ST extends SecurityTenant,U extends SecurityUse
 		return expiresDate;
 	}
 
-	public <T extends SecurityContextBase<ST, U, O, R>> T setExpiresDate(OffsetDateTime expiresDate) {
+	public <T extends SecurityContextBase> T setExpiresDate(OffsetDateTime expiresDate) {
 		this.expiresDate = expiresDate;
 		return (T) this;
 	}
 
-	public ST getTenantToCreateIn() {
+	public SecurityTenant getTenantToCreateIn() {
 		return tenantToCreateIn;
 	}
 
-	public <T extends SecurityContextBase<ST, U, O, R>> T setTenantToCreateIn(ST tenantToCreateIn) {
+	public <T extends SecurityContextBase> T setTenantToCreateIn(SecurityTenant tenantToCreateIn) {
 		this.tenantToCreateIn = tenantToCreateIn;
 		return (T) this;
 	}
@@ -100,8 +103,26 @@ public class SecurityContextBase<ST extends SecurityTenant,U extends SecurityUse
 		return securityPolicies;
 	}
 
-	public <T extends SecurityContextBase<ST, U, O, R>> T setSecurityPolicies(List<SecurityPolicy> securityPolicies) {
+	public <T extends SecurityContextBase> T setSecurityPolicies(List<SecurityPolicy> securityPolicies) {
 		this.securityPolicies = securityPolicies;
+		return (T) this;
+	}
+
+	public List<Role> getAllRoles() {
+		return allRoles;
+	}
+
+	public <T extends SecurityContextBase> T setAllRoles(List<Role> allRoles) {
+		this.allRoles = allRoles;
+		return (T) this;
+	}
+
+	public SecurityPermissions getSecurityPermissions() {
+		return securityPermissions;
+	}
+
+	public <T extends SecurityContextBase> T setSecurityPermissions(SecurityPermissions securityPermissions) {
+		this.securityPermissions = securityPermissions;
 		return (T) this;
 	}
 }

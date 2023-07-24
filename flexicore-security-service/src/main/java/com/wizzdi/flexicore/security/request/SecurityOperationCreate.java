@@ -2,16 +2,16 @@ package com.wizzdi.flexicore.security.request;
 
 import com.flexicore.annotations.IOperation;
 
-public class SecurityOperationCreate extends BaseclassCreate {
+public class SecurityOperationCreate extends BasicCreate {
 
-    private IOperation.Access defaultaccess;
+    private IOperation.Access defaultAccess;
 
-    public IOperation.Access getDefaultaccess() {
-        return defaultaccess;
+    public IOperation.Access getDefaultAccess() {
+        return defaultAccess;
     }
 
-    public <T extends SecurityOperationCreate> T setDefaultaccess(IOperation.Access defaultaccess) {
-        this.defaultaccess = defaultaccess;
+    public <T extends SecurityOperationCreate> T setDefaultAccess(IOperation.Access defaultAccess) {
+        this.defaultAccess = defaultAccess;
         return (T) this;
     }
 }

@@ -12,7 +12,7 @@ import com.wizzdi.flexicore.security.validation.Update;
         @IdValid(targetField = "clazz", fieldType = Clazz.class, field = "clazzId", groups = {Create.class, Update.class})
 
 })
-public class OperationToClazzCreate extends BaselinkCreate {
+public class OperationToClazzCreate extends BasicCreate {
 
     @JsonIgnore
     private SecurityOperation securityOperation;

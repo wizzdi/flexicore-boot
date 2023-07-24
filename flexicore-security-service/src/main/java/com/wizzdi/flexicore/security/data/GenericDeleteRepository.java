@@ -3,7 +3,7 @@ package com.wizzdi.flexicore.security.data;
 import com.flexicore.model.*;
 import com.flexicore.security.SecurityContextBase;
 import com.wizzdi.flexicore.boot.base.interfaces.Plugin;
-import com.wizzdi.flexicore.security.request.BaselinkFilter;
+
 import org.pf4j.Extension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;

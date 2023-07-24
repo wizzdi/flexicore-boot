@@ -1,13 +1,11 @@
 package com.wizzdi.flexicore.security.data;
 
 import com.flexicore.model.Baseclass;
-import com.flexicore.model.Baseclass_;
 import com.flexicore.model.PermissionGroup;
 import com.flexicore.model.PermissionGroup_;
 import com.wizzdi.flexicore.boot.base.interfaces.Plugin;
 import com.flexicore.security.SecurityContextBase;
 import com.wizzdi.flexicore.security.request.PermissionGroupFilter;
-import com.wizzdi.flexicore.security.service.SecurityEntityService;
 import org.pf4j.Extension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -27,9 +25,8 @@ public class PermissionGroupRepository implements Plugin {
 	@PersistenceContext
 	private EntityManager em;
 	@Autowired
-	private BaseclassRepository baseclassRepository;
-	@Autowired
-	private SecurityEntityRepository securityEntityRepository;
+	private SecuredBasicRepository securedBasicRepository;
+
 
 
 
@@ -41,13 +38,13 @@ public class PermissionGroupRepository implements Plugin {
 		addPermissionGroupPredicates(permissionGroupFilter,cb,q,r,predicates,securityContext);
 		q.select(r).where(predicates.toArray(Predicate[]::new));
 		TypedQuery<PermissionGroup> query = em.createQuery(q);
-		BaseclassRepository.addPagination(permissionGroupFilter,query);
+		BasicRepository.addPagination(permissionGroupFilter,query);
 		return query.getResultList();
 
 	}
 
 	public <T extends PermissionGroup> void addPermissionGroupPredicates(PermissionGroupFilter permissionGroupFilter, CriteriaBuilder cb, CommonAbstractCriteria q, From<?,T> r, List<Predicate> predicates, SecurityContextBase securityContext) {
-		securityEntityRepository.addSecurityEntityPredicates(permissionGroupFilter,cb,q,r,predicates,securityContext);
+		securedBasicRepository.addSecuredBasicPredicates(permissionGroupFilter.getBasicPropertiesFilter(),cb,q,r,predicates,securityContext);
 		if(permissionGroupFilter.getExternalIds()!=null&&!permissionGroupFilter.getExternalIds().isEmpty()){
 			predicates.add(r.get(PermissionGroup_.externalId).in(permissionGroupFilter.getExternalIds()));
 		}
@@ -67,19 +64,19 @@ public class PermissionGroupRepository implements Plugin {
 
 	@Transactional
 	public <T> T merge(T o){
-		return baseclassRepository.merge(o);
+		return securedBasicRepository.merge(o);
 	}
 
 	@Transactional
 	public void massMerge(List<Object> list){
-		baseclassRepository.massMerge(list);
+		securedBasicRepository.massMerge(list);
 	}
 
 	public <T extends Baseclass> List<T> listByIds(Class<T> c,Set<String> ids,  SecurityContextBase securityContext) {
-		return baseclassRepository.listByIds(c, ids, securityContext);
+		return securedBasicRepository.listByIds(c, ids, securityContext);
 	}
 
 	public <T extends Baseclass> T getByIdOrNull(String id, Class<T> c, SecurityContextBase securityContext) {
-		return baseclassRepository.getByIdOrNull(id, c, securityContext);
+		return securedBasicRepository.getByIdOrNull(id, c, securityContext);
 	}
 }

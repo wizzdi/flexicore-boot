@@ -14,53 +14,37 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.ManyToOne;
 
 
-@SuppressWarnings("serial")
+
 
 @Entity
 
-public class PermissionGroupToBaseclass extends Baselink {
+public class PermissionGroupToBaseclass extends SecuredBasic {
 
-
-
-	public PermissionGroupToBaseclass() {
-	}
-
-	public PermissionGroupToBaseclass(String name, SecurityContextBase securityContext) {
-		super(name, securityContext);
-	}
 
 	@ManyToOne(targetEntity = PermissionGroup.class)
-	@Override
-	public PermissionGroup getLeftside() {
-		return (PermissionGroup) super.getLeftside();
+	private PermissionGroup permissionGroup;
+	@ManyToOne(targetEntity = Baseclass.class)
+	private Baseclass baseclass;
+
+	@ManyToOne(targetEntity = PermissionGroup.class)
+
+	public PermissionGroup getPermissionGroup() {
+		return permissionGroup;
 	}
 
-	public void setLeftside(PermissionGroup leftside) {
-		super.setLeftside(leftside);
-	}
-
-
-
-	public void setPermissionGroup(PermissionGroup operation) {
-		this.leftside=operation;
+	public <T extends PermissionGroupToBaseclass> T setPermissionGroup(PermissionGroup permissionGroup) {
+		this.permissionGroup = permissionGroup;
+		return (T) this;
 	}
 
 	@ManyToOne(targetEntity = Baseclass.class)
-	@Override
-	public Baseclass getRightside() {
-		return super.getRightside();
+
+	public Baseclass getBaseclass() {
+		return baseclass;
 	}
 
-	@Override
-	public void setRightside(Baseclass rightside) {
-		// TODO Auto-generated method stub
-		super.setRightside(rightside);
+	public <T extends PermissionGroupToBaseclass> T setBaseclass(Baseclass baseclass) {
+		this.baseclass = baseclass;
+		return (T) this;
 	}
-
-
-
-
-
-
-
 }

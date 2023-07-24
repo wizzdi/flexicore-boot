@@ -92,9 +92,9 @@ public class 	BaselinkRESTService implements RESTService {
 		Baselink link;
 
 		long time = System.currentTimeMillis();
-		Class<? extends Baselink> clazz;
+		Class<? extends SecuredBasic> clazz;
 		try {
-			clazz = (Class<? extends Baselink>) Class.forName(linkClazzName);
+			clazz = (Class<? extends SecuredBasic>) Class.forName(linkClazzName);
 		} catch (ClassNotFoundException e) {
 			throw new ClientErrorException("no class with name:" + linkClazzName, HttpResponseCodes.SC_BAD_REQUEST);
 		}
@@ -188,9 +188,9 @@ public class 	BaselinkRESTService implements RESTService {
 			@Parameter(description = "The ID of the right side of the link") @PathParam("rightId") String rightId,
 			@Parameter(description = "The canonical name of the class of the link, for example: com.flexicore.model.MediaToBundle, in this case the left ID must be of Media class and the RightID must be of a bundle class") @PathParam("linkClazzName") String linkClazzName,
 			@Context SecurityContext securityContext) {
-		Class<? extends Baselink> clazz;
+		Class<? extends SecuredBasic> clazz;
 		try {
-			clazz = (Class<? extends Baselink>) Class.forName(linkClazzName);
+			clazz = (Class<? extends SecuredBasic>) Class.forName(linkClazzName);
 		} catch (ClassNotFoundException e) {
 			throw new ClientErrorException("no class with name:" + linkClazzName, HttpResponseCodes.SC_BAD_REQUEST);
 		}
@@ -220,9 +220,9 @@ public class 	BaselinkRESTService implements RESTService {
 		Baseclass base = service.findById(right);
 		User user = service.findById(left);
 		com.flexicore.model.Operation operation = service.findById(operationId);
-		UserToBaseClass existing = service.findBySidesAndValue(user, base, operation, UserToBaseClass.class);
+		UserToBaseclass existing = service.findBySidesAndValue(user, base, operation, UserToBaseclass.class);
 		if (existing == null) {
-			UserToBaseClass link = service.linkEntities(user, base, UserToBaseClass.class);
+			UserToBaseclass link = service.linkEntities(user, base, UserToBaseclass.class);
 			link.setValue(operation);
 			link.setSimplevalue(Access.allow.name());
 			service.merge(link);
@@ -248,7 +248,7 @@ public class 	BaselinkRESTService implements RESTService {
 	@Produces(MediaType.APPLICATION_JSON)
 	@IOperation(access = Access.allow, Name = "Search for m2m relationship", Description = "Generic link search by pair of objects")
 
-	public <T extends Baselink> List<T> findLinks(@HeaderParam("authenticationkey") String authenticationkey,
+	public <T extends SecuredBasic> List<T> findLinks(@HeaderParam("authenticationkey") String authenticationkey,
 								  @PathParam("left") String leftId, @PathParam("right") String rightId,
 								  @PathParam("classname") String linkClazzName, @HeaderParam("value") @DefaultValue("") String valueId,
 								  @HeaderParam("simpleValue") @DefaultValue("-1") String simpleValue,
@@ -311,7 +311,7 @@ public class 	BaselinkRESTService implements RESTService {
 	@Produces(MediaType.APPLICATION_JSON)
 	@IOperation(access = Access.allow, Name = "Search for m2m relationship", Description = "Generic link search by pair of objects")
 
-	public <T extends Baselink> List<Baseclass> findLinksValues(@HeaderParam("authenticationkey") String authenticationkey,
+	public <T extends SecuredBasic> List<Baseclass> findLinksValues(@HeaderParam("authenticationkey") String authenticationkey,
 												  @PathParam("left") String leftId, @PathParam("right") String rightId,
 												  @PathParam("classname") String linkClazzName, @HeaderParam("value") @DefaultValue("") String valueId,
 												  @HeaderParam("simpleValue") @DefaultValue("-1") String simpleValue,
@@ -364,9 +364,9 @@ public class 	BaselinkRESTService implements RESTService {
 			@HeaderParam("simpleValue") @DefaultValue("-1") String simpleValue,
 			@Context SecurityContext securityContext) {
 		log.info( "Finding sides: " + linkClazzName + " leftID: " + leftId + " rightID: " + rightId);
-		Class<? extends Baselink> clazz;
+		Class<? extends SecuredBasic> clazz;
 		try {
-			clazz = (Class<? extends Baselink>) Class.forName(linkClazzName);
+			clazz = (Class<? extends SecuredBasic>) Class.forName(linkClazzName);
 		} catch (ClassNotFoundException e) {
 			throw new ClientErrorException("no class with name:" + linkClazzName, HttpResponseCodes.SC_BAD_REQUEST);
 		}

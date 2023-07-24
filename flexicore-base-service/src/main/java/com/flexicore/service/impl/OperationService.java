@@ -32,7 +32,6 @@ import org.springframework.transaction.annotation.Transactional;
 import jakarta.ws.rs.BadRequestException;
 import java.lang.reflect.Method;
 import java.util.*;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 @Primary
@@ -248,8 +247,8 @@ public class OperationService implements com.flexicore.service.OperationService 
 			operation.setName(updateOperationRequest.getName());
 			update=true;
 		}
-		if(updateOperationRequest.getAccess()!=null && !updateOperationRequest.getAccess().equals(operation.getDefaultaccess())){
-			operation.setDefaultaccess(updateOperationRequest.getAccess());
+		if(updateOperationRequest.getAccess()!=null && !updateOperationRequest.getAccess().equals(operation.getDefaultAccess())){
+			operation.setDefaultAccess(updateOperationRequest.getAccess());
 			update=true;
 		}
 		if(updateOperationRequest.getDynamicInvoker()!=null && (operation.getDynamicInvoker()==null||!updateOperationRequest.getDynamicInvoker().getId().equals(operation.getDynamicInvoker().getId()))){
@@ -334,8 +333,8 @@ public class OperationService implements com.flexicore.service.OperationService 
 			operation.setAuditable(operationCreate.getAuditable());
 			update = true;
 		}
-		if (operationCreate.getDefaultaccess() != null && operationCreate.getDefaultaccess() != operation.getDefaultaccess()) {
-			operation.setDefaultaccess(operationCreate.getDefaultaccess());
+		if (operationCreate.getDefaultAccess() != null && operationCreate.getDefaultAccess() != operation.getDefaultAccess()) {
+			operation.setDefaultAccess(operationCreate.getDefaultAccess());
 			update = true;
 		}
 		if (operationCreate.getDynamicInvoker() != null && (operation.getDynamicInvoker() == null || !operationCreate.getDynamicInvoker().getId().equals(operation.getDynamicInvoker().getId()))) {

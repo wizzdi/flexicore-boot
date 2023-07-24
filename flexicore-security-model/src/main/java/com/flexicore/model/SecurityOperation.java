@@ -8,7 +8,6 @@ package com.flexicore.model;
 
 import com.flexicore.annotations.AnnotatedClazz;
 import com.flexicore.annotations.IOperation;
-import com.flexicore.security.SecurityContextBase;
 
 import jakarta.persistence.Entity;
 
@@ -16,28 +15,20 @@ import jakarta.persistence.Entity;
  * Entity implementation class for Entity: Operation
  * Default Operations are created differently from other classes, methods are automatically extracted from all classes annotated with OperationsInside and IOperation on the method itself
  */
-@SuppressWarnings("serial")
+
 @AnnotatedClazz(Category = "access control", Name = "Operation", Description = "Defines an operation that can be blocked or allowed")
 @Entity
 
-public class SecurityOperation extends Baseclass {
+public class SecurityOperation extends SecuredBasic {
 
-	private IOperation.Access defaultaccess;
+	private IOperation.Access defaultAccess;
 
-
-	public SecurityOperation() {
+	public IOperation.Access getDefaultAccess() {
+		return defaultAccess;
 	}
 
-	public SecurityOperation(String name, SecurityContextBase securityContext) {
-		super(name, securityContext);
-	}
-
-	public IOperation.Access getDefaultaccess() {
-		return defaultaccess;
-	}
-
-	public <T extends SecurityOperation> T setDefaultaccess(IOperation.Access defaultaccess) {
-		this.defaultaccess = defaultaccess;
+	public <T extends SecurityOperation> T setDefaultAccess(IOperation.Access defaultaccess) {
+		this.defaultAccess = defaultaccess;
 		return (T) this;
 	}
 }

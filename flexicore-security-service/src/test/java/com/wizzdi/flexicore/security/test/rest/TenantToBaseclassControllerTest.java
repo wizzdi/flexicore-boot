@@ -1,16 +1,15 @@
 package com.wizzdi.flexicore.security.test.rest;
 
-import com.flexicore.model.TenantToBaseClassPremission;
-import com.wizzdi.flexicore.security.request.TenantToBaseclassPermissionCreate;
-import com.wizzdi.flexicore.security.request.TenantToBaseclassPermissionFilter;
-import com.wizzdi.flexicore.security.request.TenantToBaseclassPermissionUpdate;
+import com.flexicore.model.TenantToBaseclass;
+import com.wizzdi.flexicore.security.request.TenantToBaseclassCreate;
+import com.wizzdi.flexicore.security.request.TenantToBaseclassFilter;
+import com.wizzdi.flexicore.security.request.TenantToBaseclassUpdate;
 import com.wizzdi.flexicore.security.response.PaginationResponse;
 import com.wizzdi.flexicore.security.test.app.App;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.core.ParameterizedTypeReference;
@@ -22,7 +21,6 @@ import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.testcontainers.containers.PostgreSQLContainer;
-import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.util.Collections;
@@ -55,7 +53,7 @@ public class TenantToBaseclassControllerTest {
         registry.add("spring.datasource.password", postgresqlContainer::getPassword);
     }
 
-    private TenantToBaseClassPremission tenantToBaseClassPremission;
+    private TenantToBaseclass tenantToBaseclass;
     @Autowired
     private TestRestTemplate restTemplate;
 
@@ -74,48 +72,48 @@ public class TenantToBaseclassControllerTest {
     @Order(1)
     public void testTenantToBaseClassPremissionCreate() {
         String name = UUID.randomUUID().toString();
-        TenantToBaseclassPermissionCreate request = new TenantToBaseclassPermissionCreate()
+        TenantToBaseclassCreate request = new TenantToBaseclassCreate()
                 .setName(name);
-        ResponseEntity<TenantToBaseClassPremission> tenantToBaseClassPremissionResponse = this.restTemplate.postForEntity("/tenantToBaseclassPermission/create", request, TenantToBaseClassPremission.class);
+        ResponseEntity<TenantToBaseclass> tenantToBaseClassPremissionResponse = this.restTemplate.postForEntity("/tenantToBaseclass/create", request, TenantToBaseclass.class);
         Assertions.assertEquals(200, tenantToBaseClassPremissionResponse.getStatusCodeValue());
-        tenantToBaseClassPremission = tenantToBaseClassPremissionResponse.getBody();
-        assertTenantToBaseClassPremission(request, tenantToBaseClassPremission);
+        tenantToBaseclass = tenantToBaseClassPremissionResponse.getBody();
+        assertTenantToBaseClassPremission(request, tenantToBaseclass);
 
     }
 
     @Test
     @Order(2)
     public void testListAllTenantToBaseClassPremissions() {
-        TenantToBaseclassPermissionFilter request=new TenantToBaseclassPermissionFilter();
-        ParameterizedTypeReference<PaginationResponse<TenantToBaseClassPremission>> t=new ParameterizedTypeReference<PaginationResponse<TenantToBaseClassPremission>>() {};
+        TenantToBaseclassFilter request=new TenantToBaseclassFilter();
+        ParameterizedTypeReference<PaginationResponse<TenantToBaseclass>> t=new ParameterizedTypeReference<PaginationResponse<TenantToBaseclass>>() {};
 
-        ResponseEntity<PaginationResponse<TenantToBaseClassPremission>> tenantToBaseClassPremissionResponse = this.restTemplate.exchange("/tenantToBaseclassPermission/getAll", HttpMethod.POST, new HttpEntity<>(request), t);
+        ResponseEntity<PaginationResponse<TenantToBaseclass>> tenantToBaseClassPremissionResponse = this.restTemplate.exchange("/tenantToBaseclass/getAll", HttpMethod.POST, new HttpEntity<>(request), t);
         Assertions.assertEquals(200, tenantToBaseClassPremissionResponse.getStatusCodeValue());
-        PaginationResponse<TenantToBaseClassPremission> body = tenantToBaseClassPremissionResponse.getBody();
+        PaginationResponse<TenantToBaseclass> body = tenantToBaseClassPremissionResponse.getBody();
         Assertions.assertNotNull(body);
-        List<TenantToBaseClassPremission> tenantToBaseClassPremissions = body.getList();
-        Assertions.assertNotEquals(0,tenantToBaseClassPremissions.size());
-        Assertions.assertTrue(tenantToBaseClassPremissions.stream().anyMatch(f->f.getId().equals(tenantToBaseClassPremission.getId())));
+        List<TenantToBaseclass> tenantToBaseclasses = body.getList();
+        Assertions.assertNotEquals(0, tenantToBaseclasses.size());
+        Assertions.assertTrue(tenantToBaseclasses.stream().anyMatch(f->f.getId().equals(tenantToBaseclass.getId())));
 
 
     }
 
-    public void assertTenantToBaseClassPremission(TenantToBaseclassPermissionCreate request, TenantToBaseClassPremission tenantToBaseClassPremission) {
-        Assertions.assertNotNull(tenantToBaseClassPremission);
-        Assertions.assertEquals(request.getName(), tenantToBaseClassPremission.getName());
+    public void assertTenantToBaseClassPremission(TenantToBaseclassCreate request, TenantToBaseclass tenantToBaseclass) {
+        Assertions.assertNotNull(tenantToBaseclass);
+        Assertions.assertEquals(request.getName(), tenantToBaseclass.getName());
     }
 
     @Test
     @Order(3)
     public void testTenantToBaseClassPremissionUpdate(){
         String name = UUID.randomUUID().toString();
-        TenantToBaseclassPermissionUpdate request = new TenantToBaseclassPermissionUpdate()
-                .setId(tenantToBaseClassPremission.getId())
+        TenantToBaseclassUpdate request = new TenantToBaseclassUpdate()
+                .setId(tenantToBaseclass.getId())
                 .setName(name);
-        ResponseEntity<TenantToBaseClassPremission> tenantToBaseClassPremissionResponse = this.restTemplate.exchange("/tenantToBaseclassPermission/update",HttpMethod.PUT, new HttpEntity<>(request), TenantToBaseClassPremission.class);
+        ResponseEntity<TenantToBaseclass> tenantToBaseClassPremissionResponse = this.restTemplate.exchange("/tenantToBaseclass/update",HttpMethod.PUT, new HttpEntity<>(request), TenantToBaseclass.class);
         Assertions.assertEquals(200, tenantToBaseClassPremissionResponse.getStatusCodeValue());
-        tenantToBaseClassPremission = tenantToBaseClassPremissionResponse.getBody();
-        assertTenantToBaseClassPremission(request, tenantToBaseClassPremission);
+        tenantToBaseclass = tenantToBaseClassPremissionResponse.getBody();
+        assertTenantToBaseClassPremission(request, tenantToBaseclass);
 
     }
 

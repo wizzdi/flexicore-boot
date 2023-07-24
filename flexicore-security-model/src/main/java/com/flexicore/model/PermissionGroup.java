@@ -16,26 +16,21 @@ import jakarta.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.List;
 
-@SuppressWarnings("serial")
+
 @Entity
-public class PermissionGroup extends Baseclass {
+public class PermissionGroup extends SecuredBasic {
 
 
 
 	private String externalId;
 
-	public PermissionGroup() {
-	}
 
-	public PermissionGroup(String name, SecurityContextBase securityContext) {
-		super(name, securityContext);
-	}
 
-	@OneToMany(targetEntity = PermissionGroupToBaseclass.class,mappedBy="leftside",fetch=FetchType.LAZY)
+	@OneToMany(targetEntity = PermissionGroupToBaseclass.class,mappedBy="permissionGroup")
 	@JsonIgnore
 	private List<PermissionGroupToBaseclass> links =new ArrayList<>();
 
-	@OneToMany(targetEntity = PermissionGroupToBaseclass.class,mappedBy="leftside",fetch=FetchType.LAZY)
+	@OneToMany(targetEntity = PermissionGroupToBaseclass.class,mappedBy="permissionGroup")
 	@JsonIgnore
 	public List<PermissionGroupToBaseclass> getLinks() {
 		return links;

@@ -8,66 +8,40 @@ package com.flexicore.model;
 
 
 
-import com.flexicore.security.SecurityContextBase;
-
 import jakarta.persistence.Entity;
 import jakarta.persistence.ManyToOne;
 
-@SuppressWarnings("serial")
+
 
 @Entity
-
-public class OperationToClazz extends Baselink {
-
-
-
-	public OperationToClazz() {
-	}
-
-	public OperationToClazz(String name, SecurityContextBase securityContext) {
-		super(name, securityContext);
-	}
+public class OperationToClazz extends Basic {
 
 	@ManyToOne(targetEntity = SecurityOperation.class)
-	//@JoinColumn(name = "leftside", referencedColumnName = "id")
+	private SecurityOperation operation;
+	@ManyToOne(targetEntity = Clazz.class)
+	private Clazz clazz;
 
-	@Override
-	public SecurityOperation getLeftside() {
-		return (SecurityOperation) super.getLeftside();
+	
+
+	@ManyToOne(targetEntity = SecurityOperation.class)
+
+	public SecurityOperation getOperation() {
+		return operation;
 	}
 
-	@Override
-	public void setLeftside(Baseclass leftside) {
-		// TODO Auto-generated method stub
-		super.setLeftside(leftside);
+	public <T extends OperationToClazz> T setOperation(SecurityOperation operation) {
+		this.operation = operation;
+		return (T) this;
 	}
 
-
-	public void setOperation(SecurityOperation operation) {
-		this.leftside=operation;
-	}
 
 	@ManyToOne(targetEntity = Clazz.class)
-	//@JoinColumn(name = "rightside", referencedColumnName = "id")
-
-	@Override
-	public Clazz getRightside() {
-		return (Clazz)super.getRightside();
+	public Clazz getClazz() {
+		return clazz;
 	}
 
-	@Override
-	public void setRightside(Baseclass rightside) {
-		// TODO Auto-generated method stub
-		super.setRightside(rightside);
+	public <T extends OperationToClazz> T setClazz(Clazz clazz) {
+		this.clazz = clazz;
+		return (T) this;
 	}
-
-
-	public void setClazz(Clazz clazz) {
-		this.rightside=clazz;
-	}
-
-
-
-
-
 }

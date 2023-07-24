@@ -1,6 +1,6 @@
 package com.wizzdi.flexicore.security.test.rest;
 
-import com.flexicore.model.UserToBaseClass;
+import com.flexicore.model.UserToBaseclass;
 import com.wizzdi.flexicore.security.request.UserToBaseclassCreate;
 import com.wizzdi.flexicore.security.request.UserToBaseclassFilter;
 import com.wizzdi.flexicore.security.request.UserToBaseclassUpdate;
@@ -10,7 +10,6 @@ import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.core.ParameterizedTypeReference;
@@ -22,7 +21,6 @@ import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.testcontainers.containers.PostgreSQLContainer;
-import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.util.Collections;
@@ -55,7 +53,7 @@ public class UserToBaseclassControllerTest {
         registry.add("spring.datasource.password", postgresqlContainer::getPassword);
     }
 
-    private UserToBaseClass userToBaseClass;
+    private UserToBaseclass userToBaseClass;
     @Autowired
     private TestRestTemplate restTemplate;
 
@@ -76,7 +74,7 @@ public class UserToBaseclassControllerTest {
         String name = UUID.randomUUID().toString();
         UserToBaseclassCreate request = new UserToBaseclassCreate()
                 .setName(name);
-        ResponseEntity<UserToBaseClass> userToBaseClassResponse = this.restTemplate.postForEntity("/userToBaseclass/create", request, UserToBaseClass.class);
+        ResponseEntity<UserToBaseclass> userToBaseClassResponse = this.restTemplate.postForEntity("/userToBaseclass/create", request, UserToBaseclass.class);
         Assertions.assertEquals(200, userToBaseClassResponse.getStatusCodeValue());
         userToBaseClass = userToBaseClassResponse.getBody();
         assertUserToBaseClass(request, userToBaseClass);
@@ -87,20 +85,20 @@ public class UserToBaseclassControllerTest {
     @Order(2)
     public void testListAllUserToBaseClasss() {
         UserToBaseclassFilter request=new UserToBaseclassFilter();
-        ParameterizedTypeReference<PaginationResponse<UserToBaseClass>> t=new ParameterizedTypeReference<PaginationResponse<UserToBaseClass>>() {};
+        ParameterizedTypeReference<PaginationResponse<UserToBaseclass>> t=new ParameterizedTypeReference<PaginationResponse<UserToBaseclass>>() {};
 
-        ResponseEntity<PaginationResponse<UserToBaseClass>> userToBaseClassResponse = this.restTemplate.exchange("/userToBaseclass/getAll", HttpMethod.POST, new HttpEntity<>(request), t);
+        ResponseEntity<PaginationResponse<UserToBaseclass>> userToBaseClassResponse = this.restTemplate.exchange("/userToBaseclass/getAll", HttpMethod.POST, new HttpEntity<>(request), t);
         Assertions.assertEquals(200, userToBaseClassResponse.getStatusCodeValue());
-        PaginationResponse<UserToBaseClass> body = userToBaseClassResponse.getBody();
+        PaginationResponse<UserToBaseclass> body = userToBaseClassResponse.getBody();
         Assertions.assertNotNull(body);
-        List<UserToBaseClass> userToBaseClasss = body.getList();
-        Assertions.assertNotEquals(0,userToBaseClasss.size());
-        Assertions.assertTrue(userToBaseClasss.stream().anyMatch(f->f.getId().equals(userToBaseClass.getId())));
+        List<UserToBaseclass> userToBaseClassses = body.getList();
+        Assertions.assertNotEquals(0, userToBaseClassses.size());
+        Assertions.assertTrue(userToBaseClassses.stream().anyMatch(f->f.getId().equals(userToBaseClass.getId())));
 
 
     }
 
-    public void assertUserToBaseClass(UserToBaseclassCreate request, UserToBaseClass userToBaseClass) {
+    public void assertUserToBaseClass(UserToBaseclassCreate request, UserToBaseclass userToBaseClass) {
         Assertions.assertNotNull(userToBaseClass);
         Assertions.assertEquals(request.getName(), userToBaseClass.getName());
     }
@@ -112,7 +110,7 @@ public class UserToBaseclassControllerTest {
         UserToBaseclassUpdate request = new UserToBaseclassUpdate()
                 .setId(userToBaseClass.getId())
                 .setName(name);
-        ResponseEntity<UserToBaseClass> userToBaseClassResponse = this.restTemplate.exchange("/userToBaseclass/update",HttpMethod.PUT, new HttpEntity<>(request), UserToBaseClass.class);
+        ResponseEntity<UserToBaseclass> userToBaseClassResponse = this.restTemplate.exchange("/userToBaseclass/update",HttpMethod.PUT, new HttpEntity<>(request), UserToBaseclass.class);
         Assertions.assertEquals(200, userToBaseClassResponse.getStatusCodeValue());
         userToBaseClass = userToBaseClassResponse.getBody();
         assertUserToBaseClass(request, userToBaseClass);

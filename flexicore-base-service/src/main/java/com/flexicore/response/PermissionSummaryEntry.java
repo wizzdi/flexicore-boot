@@ -13,17 +13,17 @@ public class PermissionSummaryEntry {
     private List<TenantToUser> tenants;
     private Map<String, Baseclass> creator;
     private Map<String, Boolean> allowed = new HashMap<>();
-    private Map<String, List<UserToBaseClass>> userToBaseClasses = new HashMap<>();
+    private Map<String, List<UserToBaseclass>> userToBaseClasses = new HashMap<>();
     private Map<String, List<RoleToBaseclass>> roleToBaseclasses = new HashMap<>();
-    private Map<String, List<TenantToBaseClassPremission>> tenantToBaseClassPremissions = new HashMap<>();
+    private Map<String, List<TenantToBaseclass>> tenantToBaseClassPremissions = new HashMap<>();
 
-    private Map<String, List<UserToBaseClass>> userToClazz = new HashMap<>();
+    private Map<String, List<UserToBaseclass>> userToClazz = new HashMap<>();
     private Map<String, List<RoleToBaseclass>> roleToClazz = new HashMap<>();
-    private Map<String, List<TenantToBaseClassPremission>> tenantToClazz = new HashMap<>();
+    private Map<String, List<TenantToBaseclass>> tenantToClazz = new HashMap<>();
 
-    private Map<String, List<UserToBaseClass>> userToPermissionGroup = new HashMap<>();
+    private Map<String, List<UserToBaseclass>> userToPermissionGroup = new HashMap<>();
     private Map<String, List<RoleToBaseclass>> roleToPermissionGroup = new HashMap<>();
-    private Map<String, List<TenantToBaseClassPremission>> tenantToPermissionGroup = new HashMap<>();
+    private Map<String, List<TenantToBaseclass>> tenantToPermissionGroup = new HashMap<>();
 
 
     public User getUser() {
@@ -54,11 +54,11 @@ public class PermissionSummaryEntry {
         return (T) this;
     }
 
-    public Map<String, List<UserToBaseClass>> getUserToBaseClasses() {
+    public Map<String, List<UserToBaseclass>> getUserToBaseClasses() {
         return userToBaseClasses;
     }
 
-    public <T extends PermissionSummaryEntry> T setUserToBaseClasses(Map<String, List<UserToBaseClass>> userToBaseClasses) {
+    public <T extends PermissionSummaryEntry> T setUserToBaseClasses(Map<String, List<UserToBaseclass>> userToBaseClasses) {
         this.userToBaseClasses = userToBaseClasses;
         return (T) this;
     }
@@ -72,20 +72,20 @@ public class PermissionSummaryEntry {
         return (T) this;
     }
 
-    public Map<String, List<TenantToBaseClassPremission>> getTenantToBaseClassPremissions() {
+    public Map<String, List<TenantToBaseclass>> getTenantToBaseClassPremissions() {
         return tenantToBaseClassPremissions;
     }
 
-    public <T extends PermissionSummaryEntry> T setTenantToBaseClassPremissions(Map<String, List<TenantToBaseClassPremission>> tenantToBaseClassPremissions) {
+    public <T extends PermissionSummaryEntry> T setTenantToBaseClassPremissions(Map<String, List<TenantToBaseclass>> tenantToBaseClassPremissions) {
         this.tenantToBaseClassPremissions = tenantToBaseClassPremissions;
         return (T) this;
     }
 
-    public Map<String, List<UserToBaseClass>> getUserToClazz() {
+    public Map<String, List<UserToBaseclass>> getUserToClazz() {
         return userToClazz;
     }
 
-    public <T extends PermissionSummaryEntry> T setUserToClazz(Map<String, List<UserToBaseClass>> userToClazz) {
+    public <T extends PermissionSummaryEntry> T setUserToClazz(Map<String, List<UserToBaseclass>> userToClazz) {
         this.userToClazz = userToClazz;
         return (T) this;
     }
@@ -99,20 +99,20 @@ public class PermissionSummaryEntry {
         return (T) this;
     }
 
-    public Map<String, List<TenantToBaseClassPremission>> getTenantToClazz() {
+    public Map<String, List<TenantToBaseclass>> getTenantToClazz() {
         return tenantToClazz;
     }
 
-    public <T extends PermissionSummaryEntry> T setTenantToClazz(Map<String, List<TenantToBaseClassPremission>> tenantToClazz) {
+    public <T extends PermissionSummaryEntry> T setTenantToClazz(Map<String, List<TenantToBaseclass>> tenantToClazz) {
         this.tenantToClazz = tenantToClazz;
         return (T) this;
     }
 
-    public Map<String, List<UserToBaseClass>> getUserToPermissionGroup() {
+    public Map<String, List<UserToBaseclass>> getUserToPermissionGroup() {
         return userToPermissionGroup;
     }
 
-    public <T extends PermissionSummaryEntry> T setUserToPermissionGroup(Map<String, List<UserToBaseClass>> userToPermissionGroup) {
+    public <T extends PermissionSummaryEntry> T setUserToPermissionGroup(Map<String, List<UserToBaseclass>> userToPermissionGroup) {
         this.userToPermissionGroup = userToPermissionGroup;
         return (T) this;
     }
@@ -126,11 +126,11 @@ public class PermissionSummaryEntry {
         return (T) this;
     }
 
-    public Map<String, List<TenantToBaseClassPremission>> getTenantToPermissionGroup() {
+    public Map<String, List<TenantToBaseclass>> getTenantToPermissionGroup() {
         return tenantToPermissionGroup;
     }
 
-    public <T extends PermissionSummaryEntry> T setTenantToPermissionGroup(Map<String, List<TenantToBaseClassPremission>> tenantToPermissionGroup) {
+    public <T extends PermissionSummaryEntry> T setTenantToPermissionGroup(Map<String, List<TenantToBaseclass>> tenantToPermissionGroup) {
         this.tenantToPermissionGroup = tenantToPermissionGroup;
         return (T) this;
     }
@@ -169,9 +169,9 @@ public class PermissionSummaryEntry {
         if(creator.get(baseclassId)!=null){
             reasons.add("it is it creator");
         }
-        List<UserToBaseClass> userToBaseClasses = this.userToBaseClasses.get(baseclassId);
-        if(userToBaseClasses !=null ){
-            for (UserToBaseClass userToBaseClass : userToBaseClasses) {
+        List<UserToBaseclass> userToBaseclasses = this.userToBaseClasses.get(baseclassId);
+        if(userToBaseclasses !=null ){
+            for (UserToBaseclass userToBaseClass : userToBaseclasses) {
                 reasons.add("it has a direct link "+userToBaseClass.getId()+"to it");
             }
         }
@@ -183,17 +183,17 @@ public class PermissionSummaryEntry {
             }
         }
 
-        List<TenantToBaseClassPremission> tenantToBaseClassPremissions = this.tenantToBaseClassPremissions.get(baseclassId);
-        if(tenantToBaseClassPremissions !=null){
-            for (TenantToBaseClassPremission tenantToBaseClassPremission : tenantToBaseClassPremissions) {
-                reasons.add("its Tenant "+tenantToBaseClassPremission.getLeftside().getId()+" has a direct link "+tenantToBaseClassPremission.getId()+"to it");
+        List<TenantToBaseclass> tenantToBaseclasses = this.tenantToBaseClassPremissions.get(baseclassId);
+        if(tenantToBaseclasses !=null){
+            for (TenantToBaseclass tenantToBaseclass : tenantToBaseclasses) {
+                reasons.add("its Tenant "+ tenantToBaseclass.getLeftside().getId()+" has a direct link "+ tenantToBaseclass.getId()+"to it");
 
             }
         }
 
-        List<UserToBaseClass> userToClazz = this.userToClazz.get(baseclassId);
+        List<UserToBaseclass> userToClazz = this.userToClazz.get(baseclassId);
         if(userToClazz !=null ){
-            for (UserToBaseClass userToBaseClass : userToClazz) {
+            for (UserToBaseclass userToBaseClass : userToClazz) {
                 reasons.add("its clazz "+userToBaseClass.getRightside().getId()+" has a link "+userToBaseClass.getId()+"to it");
             }
         }
@@ -205,17 +205,17 @@ public class PermissionSummaryEntry {
             }
         }
 
-        List<TenantToBaseClassPremission> tenantToClazzes = this.tenantToClazz.get(baseclassId);
+        List<TenantToBaseclass> tenantToClazzes = this.tenantToClazz.get(baseclassId);
         if(tenantToClazzes !=null){
-            for (TenantToBaseClassPremission tenantToClazz : tenantToClazzes) {
+            for (TenantToBaseclass tenantToClazz : tenantToClazzes) {
                 reasons.add("its clazz "+tenantToClazz.getRightside().getId()+" has a link "+tenantToClazz.getId()+"with a tenant "+tenantToClazz.getLeftside().getId()+" it is in");
 
             }
         }
 
-        List<UserToBaseClass> userToPermissionGroups = this.userToPermissionGroup.get(baseclassId);
+        List<UserToBaseclass> userToPermissionGroups = this.userToPermissionGroup.get(baseclassId);
         if(userToPermissionGroups !=null ){
-            for (UserToBaseClass userToPermissionGroup : userToPermissionGroups) {
+            for (UserToBaseclass userToPermissionGroup : userToPermissionGroups) {
                 reasons.add("it is connected via link "+userToPermissionGroup.getId()+"to a permission group "+userToPermissionGroup.getRightside().getId()+"in which it is in");
             }
         }
@@ -227,9 +227,9 @@ public class PermissionSummaryEntry {
             }
         }
 
-        List<TenantToBaseClassPremission> tenantToPermissionGroups = this.tenantToBaseClassPremissions.get(baseclassId);
+        List<TenantToBaseclass> tenantToPermissionGroups = this.tenantToBaseClassPremissions.get(baseclassId);
         if(tenantToPermissionGroups !=null){
-            for (TenantToBaseClassPremission tenantToPermissionGroup : tenantToPermissionGroups) {
+            for (TenantToBaseclass tenantToPermissionGroup : tenantToPermissionGroups) {
                 reasons.add("its Tenant "+tenantToPermissionGroup.getLeftside().getId()+"is connected via link "+tenantToPermissionGroup.getId()+"to a permission group "+tenantToPermissionGroup.getRightside().getId()+"in which it is in");
 
             }

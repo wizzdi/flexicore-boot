@@ -1,4 +1,4 @@
 package com.wizzdi.flexicore.security.request;
 
-public class ClazzCreate extends BaseclassCreate {
+public class ClazzCreate extends BasicCreate {
 }

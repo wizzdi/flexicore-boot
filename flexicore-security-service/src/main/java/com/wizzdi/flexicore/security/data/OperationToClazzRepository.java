@@ -24,9 +24,8 @@ public class OperationToClazzRepository implements Plugin {
 	@PersistenceContext
 	private EntityManager em;
 	@Autowired
-	private BaseclassRepository baseclassRepository;
-	@Autowired
-	private BaselinkRepository baselinkRepository;
+	private SecuredBasicRepository securedBasicRepository;
+
 
 	public List<OperationToClazz> listAllOperationToClazzs(OperationToClazzFilter operationToClazzFilter, SecurityContextBase securityContext){
 		CriteriaBuilder cb=em.getCriteriaBuilder();
@@ -36,22 +35,22 @@ public class OperationToClazzRepository implements Plugin {
 		addOperationToClazzPredicates(operationToClazzFilter,cb,q,r,predicates,securityContext);
 		q.select(r).where(predicates.toArray(Predicate[]::new));
 		TypedQuery<OperationToClazz> query = em.createQuery(q);
-		BaseclassRepository.addPagination(operationToClazzFilter,query);
+		BasicRepository.addPagination(operationToClazzFilter,query);
 		return query.getResultList();
 
 	}
 
 	public  <T extends OperationToClazz> void addOperationToClazzPredicates(OperationToClazzFilter operationToClazzFilter, CriteriaBuilder cb, CommonAbstractCriteria q, From<?,T> r, List<Predicate> predicates, SecurityContextBase securityContext) {
-		baselinkRepository.addBaselinkPredicates(operationToClazzFilter,cb,q,r,predicates,securityContext);
+		BasicRepository.addBasicPropertiesFilter(operationToClazzFilter.getBasicPropertiesFilter(),cb,q,r,predicates);
 		if(operationToClazzFilter.getClazzes()!=null&&!operationToClazzFilter.getClazzes().isEmpty()){
 			Set<String> ids=operationToClazzFilter.getClazzes().stream().map(f->f.getId()).collect(Collectors.toSet());
-			Join<T, Clazz> join=cb.treat(r.join(Baselink_.rightside),Clazz.class);
+			Join<T, Clazz> join=r.join(OperationToClazz_.clazz);
 			predicates.add(join.get(Clazz_.id).in(ids));
 		}
 
 		if(operationToClazzFilter.getSecurityOperations()!=null&&!operationToClazzFilter.getSecurityOperations().isEmpty()){
 			Set<String> ids=operationToClazzFilter.getSecurityOperations().stream().map(f->f.getId()).collect(Collectors.toSet());
-			Join<T, SecurityOperation> join=cb.treat(r.join(Baselink_.leftside),SecurityOperation.class);
+			Join<T, SecurityOperation> join=r.join(OperationToClazz_.operation);
 			predicates.add(join.get(SecurityOperation_.id).in(ids));
 		}
 	}
@@ -70,19 +69,19 @@ public class OperationToClazzRepository implements Plugin {
 
 	@Transactional
 	public <T> T merge(T o){
-		return baseclassRepository.merge(o);
+		return securedBasicRepository.merge(o);
 	}
 
 	@Transactional
 	public void massMerge(List<Object> list){
-		baseclassRepository.massMerge(list);
+		securedBasicRepository.massMerge(list);
 	}
 
 	public <T extends Baseclass> List<T> listByIds(Class<T> c,Set<String> ids,  SecurityContextBase securityContext) {
-		return baseclassRepository.listByIds(c, ids, securityContext);
+		return securedBasicRepository.listByIds(c, ids, securityContext);
 	}
 
 	public <T extends Baseclass> T getByIdOrNull(String id, Class<T> c, SecurityContextBase securityContext) {
-		return baseclassRepository.getByIdOrNull(id, c, securityContext);
+		return securedBasicRepository.getByIdOrNull(id, c, securityContext);
 	}
 }

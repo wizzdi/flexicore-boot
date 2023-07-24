@@ -1,6 +1,7 @@
 package com.wizzdi.security.bearer.jwt;
 
 import com.flexicore.model.SecurityUser;
+import com.flexicore.model.SecurityUser_;
 import com.flexicore.security.SecurityContextBase;
 import com.wizzdi.flexicore.security.interfaces.SecurityContextProvider;
 import com.wizzdi.flexicore.security.service.SecurityUserService;
@@ -37,17 +38,13 @@ public class JWTSecurityContextCreator {
         Claims claims = claimsJws.getBody();
         // Get user identity and set it on the spring security context
         String id = flexicoreJwtTokenUtil.getId(claimsJws);
-        SecurityUser securityUser = securityUserService.getByIdOrNull(id, SecurityUser.class, null);
+        SecurityUser securityUser = securityUserService.getByIdOrNull(id, SecurityUser.class, SecurityUser_.security,null);
         FlexicoreUserDetails userDetails = getUserDetails(securityUser);
         SecurityContextBase securityContext = securityContextProvider.getSecurityContext(securityUser);
-        for (SecurityContextCustomizer securityContextCustomizer : securityContextCustomizers.orderedStream().collect(Collectors.toList())) {
+        for (SecurityContextCustomizer securityContextCustomizer : securityContextCustomizers.orderedStream().toList()) {
             securityContext=securityContextCustomizer.customize(securityContext,claims);
         }
-        FlexiCoreAuthentication
-                authentication = new FlexiCoreAuthentication(
-                userDetails, securityContext
-        );
-        return authentication;
+        return new FlexiCoreAuthentication(userDetails, securityContext);
     }
 
     private FlexicoreUserDetails getUserDetails(SecurityUser securityUser) {

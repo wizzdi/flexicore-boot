@@ -3,7 +3,7 @@ package com.flexicore.request;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.flexicore.model.Baselink;
 
-public class BaselinkUpdate extends BaselinkCreate{
+public class BaselinkUpdate extends SecuredBasicCreate{
 
     private String id;
     @JsonIgnore
@@ -13,7 +13,7 @@ public class BaselinkUpdate extends BaselinkCreate{
         return id;
     }
 
-    public <T extends BaselinkUpdate> T setId(String id) {
+    public <T extends SecuredBasicUpdate> T setId(String id) {
         this.id = id;
         return (T) this;
     }
@@ -23,7 +23,7 @@ public class BaselinkUpdate extends BaselinkCreate{
         return baselink;
     }
 
-    public <T extends BaselinkUpdate> T setBaselink(Baselink baselink) {
+    public <T extends SecuredBasicUpdate> T setBaselink(Baselink baselink) {
         this.baselink = baselink;
         return (T) this;
     }

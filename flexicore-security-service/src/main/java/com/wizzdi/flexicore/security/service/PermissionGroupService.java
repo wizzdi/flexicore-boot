@@ -15,13 +15,14 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 
 @Extension
 @Component
 public class PermissionGroupService implements Plugin {
 
 	@Autowired
-	private BaseclassService baseclassService;
+	private BasicService basicService;
 	@Autowired
 	private PermissionGroupRepository permissionGroupRepository;
 
@@ -44,14 +45,16 @@ public class PermissionGroupService implements Plugin {
 	}
 
 	public PermissionGroup createPermissionGroupNoMerge(PermissionGroupCreate permissionGroupCreate, SecurityContextBase securityContext){
-		PermissionGroup permissionGroup=new PermissionGroup(permissionGroupCreate.getName(),securityContext);
+		PermissionGroup permissionGroup=new PermissionGroup();
+		permissionGroup.setId(UUID.randomUUID().toString());
 		updatePermissionGroupNoMerge(permissionGroupCreate,permissionGroup);
+		BaseclassService.createSecurityObjectNoMerge(permissionGroup,securityContext);
 		permissionGroupRepository.merge(permissionGroup);
 		return permissionGroup;
 	}
 
 	public boolean updatePermissionGroupNoMerge(PermissionGroupCreate permissionGroupCreate, PermissionGroup permissionGroup) {
-		boolean update = baseclassService.updateBaseclassNoMerge(permissionGroupCreate, permissionGroup);
+		boolean update = basicService.updateBasicNoMerge(permissionGroupCreate, permissionGroup);
 		if(permissionGroupCreate.getExternalId()!=null&&!permissionGroupCreate.getExternalId().equals(permissionGroup.getExternalId())){
 			permissionGroup.setExternalId(permissionGroupCreate.getExternalId());
 			update=true;
@@ -69,7 +72,7 @@ public class PermissionGroupService implements Plugin {
 
 	@Deprecated
 	public void validate(PermissionGroupCreate permissionGroupCreate, SecurityContextBase securityContext) {
-		baseclassService.validate(permissionGroupCreate,securityContext);
+		basicService.validate(permissionGroupCreate,securityContext);
 	}
 
 	@Deprecated

@@ -32,7 +32,7 @@ public class BaselinkFilter extends FilteringInformationHolder {
     private String simpleValue;
     private String linkClassName;
     @JsonIgnore
-    private Class<? extends Baselink> linkClass;
+    private Class<? extends SecuredBasic> linkClass;
 
     public BaselinkFilter() {
     }
@@ -60,7 +60,7 @@ public class BaselinkFilter extends FilteringInformationHolder {
         return leftsideIds;
     }
 
-    public <T extends BaselinkFilter> T setLeftsideIds(Set<String> leftsideIds) {
+    public <T extends SecuredBasicFilter> T setLeftsideIds(Set<String> leftsideIds) {
         this.leftsideIds = leftsideIds;
         return (T) this;
     }
@@ -69,7 +69,7 @@ public class BaselinkFilter extends FilteringInformationHolder {
         return leftside;
     }
 
-    public <T extends BaselinkFilter> T setLeftside(List<Baseclass> leftside) {
+    public <T extends SecuredBasicFilter> T setLeftside(List<Baseclass> leftside) {
         this.leftside = leftside;
         return (T) this;
     }
@@ -78,7 +78,7 @@ public class BaselinkFilter extends FilteringInformationHolder {
         return rightsideIds;
     }
 
-    public <T extends BaselinkFilter> T setRightsideIds(Set<String> rightsideIds) {
+    public <T extends SecuredBasicFilter> T setRightsideIds(Set<String> rightsideIds) {
         this.rightsideIds = rightsideIds;
         return (T) this;
     }
@@ -87,7 +87,7 @@ public class BaselinkFilter extends FilteringInformationHolder {
         return rightside;
     }
 
-    public <T extends BaselinkFilter> T setRightside(List<Baseclass> rightside) {
+    public <T extends SecuredBasicFilter> T setRightside(List<Baseclass> rightside) {
         this.rightside = rightside;
         return (T) this;
     }
@@ -96,7 +96,7 @@ public class BaselinkFilter extends FilteringInformationHolder {
         return valueId;
     }
 
-    public <T extends BaselinkFilter> T setValueId(String valueId) {
+    public <T extends SecuredBasicFilter> T setValueId(String valueId) {
         this.valueId = valueId;
         return (T) this;
     }
@@ -105,7 +105,7 @@ public class BaselinkFilter extends FilteringInformationHolder {
         return value;
     }
 
-    public <T extends BaselinkFilter> T setValue(Baseclass value) {
+    public <T extends SecuredBasicFilter> T setValue(Baseclass value) {
         this.value = value;
         return (T) this;
     }
@@ -114,7 +114,7 @@ public class BaselinkFilter extends FilteringInformationHolder {
         return simpleValue;
     }
 
-    public <T extends BaselinkFilter> T setSimpleValue(String simpleValue) {
+    public <T extends SecuredBasicFilter> T setSimpleValue(String simpleValue) {
         this.simpleValue = simpleValue;
         return (T) this;
     }
@@ -123,17 +123,17 @@ public class BaselinkFilter extends FilteringInformationHolder {
         return linkClassName;
     }
 
-    public <T extends BaselinkFilter> T setLinkClassName(String linkClassName) {
+    public <T extends SecuredBasicFilter> T setLinkClassName(String linkClassName) {
         this.linkClassName = linkClassName;
         return (T) this;
     }
 
     @JsonIgnore
-    public Class<? extends Baselink> getLinkClass() {
+    public Class<? extends SecuredBasic> getLinkClass() {
         return linkClass;
     }
 
-    public <T extends BaselinkFilter> T setLinkClass(Class<? extends Baselink> linkClass) {
+    public <T extends SecuredBasicFilter> T setLinkClass(Class<? extends SecuredBasic> linkClass) {
         this.linkClass = linkClass;
         return (T) this;
     }
@@ -143,7 +143,7 @@ public class BaselinkFilter extends FilteringInformationHolder {
         return leftsideType;
     }
 
-    public <T extends BaselinkFilter> T setLeftsideType(Class<?> leftsideType) {
+    public <T extends SecuredBasicFilter> T setLeftsideType(Class<?> leftsideType) {
         this.leftsideType = leftsideType;
         return (T) this;
     }
@@ -153,7 +153,7 @@ public class BaselinkFilter extends FilteringInformationHolder {
         return rightsideType;
     }
 
-    public <T extends BaselinkFilter> T setRightsideType(Class<?> rightsideType) {
+    public <T extends SecuredBasicFilter> T setRightsideType(Class<?> rightsideType) {
         this.rightsideType = rightsideType;
         return (T) this;
     }
@@ -162,7 +162,7 @@ public class BaselinkFilter extends FilteringInformationHolder {
         return leftsideTypeClassName;
     }
 
-    public <T extends BaselinkFilter> T setLeftsideTypeClassName(String leftsideTypeClassName) {
+    public <T extends SecuredBasicFilter> T setLeftsideTypeClassName(String leftsideTypeClassName) {
         this.leftsideTypeClassName = leftsideTypeClassName;
         return (T) this;
     }
@@ -171,7 +171,7 @@ public class BaselinkFilter extends FilteringInformationHolder {
         return rightsideTypeClassName;
     }
 
-    public <T extends BaselinkFilter> T setRightsideTypeClassName(String rightsideTypeClassName) {
+    public <T extends SecuredBasicFilter> T setRightsideTypeClassName(String rightsideTypeClassName) {
         this.rightsideTypeClassName = rightsideTypeClassName;
         return (T) this;
     }

@@ -45,7 +45,7 @@ public class SecurityRESTService implements RESTService {
     @IOperation(access = Access.allow, Name = "checkIfOperationIsAllowed", Description = "checks if operation is allowed")
     public boolean checkIfOperationIsAllowed(@HeaderParam("authenticationkey") String authenticationkey, @PathParam("id") String id, @Context SecurityContext securityContext) {
         Operation operation = operationRepository.findById(id);
-        Access access = operation.getDefaultaccess();
+        Access access = operation.getDefaultAccess();
         return securityService.checkIfAllowed(securityContext.getUser(), securityContext.getTenants(), operation, access);
 
 

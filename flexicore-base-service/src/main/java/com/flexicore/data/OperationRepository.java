@@ -87,7 +87,7 @@ public class OperationRepository extends BaseclassRepository {
         Root<User> users = q.from(User.class);
         // check if this user has direct connection with the operation and the
         // value is Deny.
-        Join<User, UserToBaseClass> direct = users.join(User_.userToBaseClasses, JoinType.LEFT);
+        Join<User, UserToBaseclass> direct = users.join(User_.userToBaseClasses, JoinType.LEFT);
         Predicate directPredicate = cb.and(cb.equal(users.get(User_.id), user.getId()),
                 cb.equal(direct.get(UserToBaseClass_.rightside), operation),
                 cb.equal(direct.get(UserToBaseClass_.simplevalue), access.name()));

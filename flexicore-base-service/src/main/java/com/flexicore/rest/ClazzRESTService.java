@@ -98,7 +98,7 @@ public class ClazzRESTService implements RESTService {
         List<OperationToClazz> operations = baselinkService.findAllBySide(OperationToClazz.class, c, true, securityContext);
         List<com.flexicore.model.SecurityOperation> ops = new ArrayList<>();
         for (OperationToClazz operationToClazz : operations) {
-            ops.add(operationToClazz.getLeftside());
+            ops.add(operationToClazz.getOperation());
         }
         addDefaultOperations(ops);
 

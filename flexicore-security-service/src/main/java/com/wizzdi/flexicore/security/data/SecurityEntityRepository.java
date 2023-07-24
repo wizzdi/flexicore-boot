@@ -1,6 +1,6 @@
 package com.wizzdi.flexicore.security.data;
 
-import com.flexicore.model.Baseclass;
+import com.flexicore.model.SecurityEntity;
 import com.wizzdi.flexicore.boot.base.interfaces.Plugin;
 import com.flexicore.security.SecurityContextBase;
 import com.wizzdi.flexicore.security.request.SecurityEntityFilter;
@@ -16,11 +16,11 @@ import java.util.List;
 public class SecurityEntityRepository implements Plugin {
 
 	@Autowired
-	private BaseclassRepository baseclassRepository;
+	private SecuredBasicRepository securedBasicRepository;
 
 
-	public <T extends Baseclass> void addSecurityEntityPredicates(SecurityEntityFilter securityEntityFilter, CriteriaBuilder cb, CommonAbstractCriteria q, From<?,T> r, List<Predicate> predicates, SecurityContextBase securityContext) {
-		baseclassRepository.addBaseclassPredicates(securityEntityFilter.getBasicPropertiesFilter(),cb,q,r,predicates,securityContext);
+	public <T extends SecurityEntity> void addSecurityEntityPredicates(SecurityEntityFilter securityEntityFilter, CriteriaBuilder cb, CommonAbstractCriteria q, From<?,T> r, List<Predicate> predicates, SecurityContextBase securityContext) {
+		securedBasicRepository.addSecuredBasicPredicates(securityEntityFilter.getBasicPropertiesFilter(),cb,q,r,predicates,securityContext);
 	}
 
 }

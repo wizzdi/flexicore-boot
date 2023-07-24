@@ -11,7 +11,7 @@ import com.flexicore.security.SecurityContext;
 import jakarta.persistence.Entity;
 
 
-@SuppressWarnings("serial")
+
 @Entity
 
 public class DocumentationTag extends Baseclass {

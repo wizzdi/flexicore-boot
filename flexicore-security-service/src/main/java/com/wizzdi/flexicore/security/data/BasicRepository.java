@@ -47,6 +47,7 @@ public class BasicRepository implements Plugin {
     }
 
     public static <T extends Basic> void addBasicPropertiesFilter(BasicPropertiesFilter basicPropertiesFilter, CriteriaBuilder cb, CommonAbstractCriteria q, From<?, T> r, List<Predicate> predicates) {
+        basicPropertiesFilter=basicPropertiesFilter!=null?basicPropertiesFilter:new BasicPropertiesFilter().setSoftDelete(SoftDeleteOption.DEFAULT);
         if (basicPropertiesFilter.getNames() != null && !basicPropertiesFilter.getNames().isEmpty()) {
             predicates.add(r.get(Basic_.name).in(basicPropertiesFilter.getNames()));
         }

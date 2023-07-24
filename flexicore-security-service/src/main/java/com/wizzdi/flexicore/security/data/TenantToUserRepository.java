@@ -24,9 +24,9 @@ public class TenantToUserRepository implements Plugin {
 	@PersistenceContext
 	private EntityManager em;
 	@Autowired
-	private BaseclassRepository baseclassRepository;
-	@Autowired
-	private BaselinkRepository baselinkRepository;
+	private SecuredBasicRepository securedBasicRepository;
+
+
 
 	public List<TenantToUser> listAllTenantToUsers(TenantToUserFilter tenantToUserFilter, SecurityContextBase securityContext){
 		CriteriaBuilder cb=em.getCriteriaBuilder();
@@ -36,23 +36,20 @@ public class TenantToUserRepository implements Plugin {
 		addTenantToUserPredicates(tenantToUserFilter,cb,q,r,predicates,securityContext);
 		q.select(r).where(predicates.toArray(Predicate[]::new));
 		TypedQuery<TenantToUser> query = em.createQuery(q);
-		BaseclassRepository.addPagination(tenantToUserFilter,query);
+		BasicRepository.addPagination(tenantToUserFilter,query);
 		return query.getResultList();
 
 	}
 
 	public <T extends TenantToUser> void addTenantToUserPredicates(TenantToUserFilter tenantToUserFilter, CriteriaBuilder cb, CommonAbstractCriteria q, From<?,T> r, List<Predicate> predicates, SecurityContextBase securityContext) {
-		baselinkRepository.addBaselinkPredicates(tenantToUserFilter,cb,q,r,predicates,securityContext);
-		if(tenantToUserFilter.getSecurityTenants()!=null&&!tenantToUserFilter.getSecurityTenants().isEmpty()){
-			Set<String> ids=tenantToUserFilter.getSecurityTenants().stream().map(f->f.getId()).collect(Collectors.toSet());
-			Join<T, SecurityTenant> join=cb.treat(r.join(Baselink_.leftside),SecurityTenant.class);
-			predicates.add(join.get(SecurityTenant_.id).in(ids));
+		securedBasicRepository.addSecuredBasicPredicates(tenantToUserFilter.getBasicPropertiesFilter(),cb,q,r,predicates,securityContext);
+		if(tenantToUserFilter.getTenants()!=null&&!tenantToUserFilter.getTenants().isEmpty()){
+			predicates.add(r.get(TenantToUser_.tenant).in(tenantToUserFilter.getTenants()));
 		}
 
-		if(tenantToUserFilter.getSecurityUsers()!=null&&!tenantToUserFilter.getSecurityUsers().isEmpty()){
-			Set<String> ids=tenantToUserFilter.getSecurityUsers().stream().map(f->f.getId()).collect(Collectors.toSet());
-			Join<T, SecurityUser> join=cb.treat(r.join(Baselink_.rightside),SecurityUser.class);
-			predicates.add(join.get(SecurityUser_.id).in(ids));
+		if(tenantToUserFilter.getUsers()!=null&&!tenantToUserFilter.getUsers().isEmpty()){
+			predicates.add(r.get(TenantToUser_.user).in(tenantToUserFilter.getUsers()));
+
 		}
 	}
 
@@ -70,27 +67,27 @@ public class TenantToUserRepository implements Plugin {
 
 	@Transactional
 	public <T> T merge(T o){
-		return baseclassRepository.merge(o);
+		return securedBasicRepository.merge(o);
 	}
 
 	@Transactional
 	public void massMerge(List<Object> list){
-		baseclassRepository.massMerge(list);
+		securedBasicRepository.massMerge(list);
 	}
 
 	public <T extends Baseclass> List<T> listByIds(Class<T> c,Set<String> ids,  SecurityContextBase securityContext) {
-		return baseclassRepository.listByIds(c, ids, securityContext);
+		return securedBasicRepository.listByIds(c, ids, securityContext);
 	}
 
 	public <T extends Baseclass> T getByIdOrNull(String id, Class<T> c, SecurityContextBase securityContext) {
-		return baseclassRepository.getByIdOrNull(id, c, securityContext);
+		return securedBasicRepository.getByIdOrNull(id, c, securityContext);
 	}
 
 	public <T extends Baseclass> List<T> findByIds(Class<T> c, Set<String> requested) {
-		return baseclassRepository.findByIds(c, requested);
+		return securedBasicRepository.findByIds(c, requested);
 	}
 
 	public <T> T findByIdOrNull(Class<T> type, String id) {
-		return baseclassRepository.findByIdOrNull(type, id);
+		return securedBasicRepository.findByIdOrNull(type, id);
 	}
 }

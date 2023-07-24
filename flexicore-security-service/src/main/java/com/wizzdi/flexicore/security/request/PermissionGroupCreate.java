@@ -1,6 +1,7 @@
 package com.wizzdi.flexicore.security.request;
 
-public class PermissionGroupCreate extends BaseclassCreate {
+public class PermissionGroupCreate extends BasicCreate {
+
 
     private String externalId;
 
@@ -12,4 +13,5 @@ public class PermissionGroupCreate extends BaseclassCreate {
         this.externalId = externalId;
         return (T) this;
     }
+
 }

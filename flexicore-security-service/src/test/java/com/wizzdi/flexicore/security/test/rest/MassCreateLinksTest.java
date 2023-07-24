@@ -71,14 +71,14 @@ public class MassCreateLinksTest {
 
     @Test
     public void testMassCreate() {
-        List<PermissionGroupToBaseclass> permissionGroupToBaseclasses = permissionGroupToBaseclassService.listAllPermissionGroupToBaseclass(new PermissionGroupToBaseclassFilter().setLeftside(Collections.singletonList(permissionGroup)).setRightside(baseclasses), adminSecurityContext);
+        List<PermissionGroupToBaseclass> permissionGroupToBaseclasses = permissionGroupToBaseclassService.listAllPermissionGroupToBaseclass(new PermissionGroupToBaseclassFilter().setPermissionGroups(Collections.singletonList(permissionGroup)).setBaseclasses(baseclasses), adminSecurityContext);
         Assertions.assertTrue(permissionGroupToBaseclasses.isEmpty());
         Map<String, Map<String, PermissionGroupToBaseclass>> stringMapMap = permissionGroupToBaseclassService.massCreatePermissionLinks(new PermissionGroupToBaseclassMassCreate().setPermissionGroups(Collections.singletonList(permissionGroup)).setBaseclasses(baseclasses), adminSecurityContext);
         Map<String, PermissionGroupToBaseclass> stringPermissionGroupToBaseclassMap = stringMapMap.get(permissionGroup.getId());
         Assertions.assertNotNull(stringPermissionGroupToBaseclassMap);
         Assertions.assertEquals(baseclasses.size(), stringPermissionGroupToBaseclassMap.size());
         permissionGroupToBaseclassService.massCreatePermissionLinks(new PermissionGroupToBaseclassMassCreate().setPermissionGroups(Collections.singletonList(permissionGroup)).setBaseclasses(baseclasses), adminSecurityContext);
-        permissionGroupToBaseclasses = permissionGroupToBaseclassService.listAllPermissionGroupToBaseclass(new PermissionGroupToBaseclassFilter().setLeftside(Collections.singletonList(permissionGroup)).setRightside(baseclasses), adminSecurityContext);
+        permissionGroupToBaseclasses = permissionGroupToBaseclassService.listAllPermissionGroupToBaseclass(new PermissionGroupToBaseclassFilter().setPermissionGroups(Collections.singletonList(permissionGroup)).setBaseclasses(baseclasses), adminSecurityContext);
         Assertions.assertEquals(baseclasses.size(), permissionGroupToBaseclasses.size());
     }
 

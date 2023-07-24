@@ -14,7 +14,9 @@ import java.util.Set;
         @IdValid(targetField = "roles", fieldType = Role.class, field = "rolesIds"),
         @IdValid(targetField = "securityUsers", fieldType = SecurityUser.class, field = "usersIds")
 })
-public class RoleToUserFilter extends BaselinkFilter {
+public class RoleToUserFilter extends PaginationFilter {
+
+    private BasicPropertiesFilter basicPropertiesFilter;
 
     private Set<String> rolesIds = new HashSet<>();
     @JsonIgnore
@@ -60,6 +62,15 @@ public class RoleToUserFilter extends BaselinkFilter {
 
     public <T extends RoleToUserFilter> T setSecurityUsers(List<SecurityUser> securityUsers) {
         this.securityUsers = securityUsers;
+        return (T) this;
+    }
+
+    public BasicPropertiesFilter getBasicPropertiesFilter() {
+        return basicPropertiesFilter;
+    }
+
+    public <T extends RoleToUserFilter> T setBasicPropertiesFilter(BasicPropertiesFilter basicPropertiesFilter) {
+        this.basicPropertiesFilter = basicPropertiesFilter;
         return (T) this;
     }
 }

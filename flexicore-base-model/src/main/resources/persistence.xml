@@ -28,10 +28,10 @@
 		<class>com.flexicore.model.RoleToUser</class>
 		<class>com.flexicore.model.SecurityLink</class>
 		<class>com.flexicore.model.Tenant</class>
-		<class>com.flexicore.model.TenantToBaseClassPremission</class>
+		<class>com.flexicore.model.TenantToBaseclass</class>
 		<class>com.flexicore.model.TenantToUser</class>
 		<class>com.flexicore.model.User</class>
-		<class>com.flexicore.model.UserToBaseClass</class>
+		<class>com.flexicore.model.UserToBaseclass</class>
 		<class>com.flexicore.model.TimedLink</class>
 		<class>com.flexicore.model.PermissionGroup</class>
 		<class>com.flexicore.model.PermissionGroupToBaseclass</class>

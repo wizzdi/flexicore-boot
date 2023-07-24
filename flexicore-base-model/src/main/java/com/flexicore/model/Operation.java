@@ -20,7 +20,7 @@ import jakarta.persistence.ManyToOne;
  * Entity implementation class for Entity: Operation
  * Default Operations are created differently from other classes, methods are automatically extracted from all classes annotated with OperationsInside and IOperation on the method itself
  */
-@SuppressWarnings("serial")
+
 @AnnotatedClazz(Category = "access control", Name = "Operation", Description = "Defines an operation that can be blocked or allowed")
 @Entity
 
@@ -43,7 +43,7 @@ public class Operation extends SecurityOperation  {
 		this.setId(id);
 		this.setName(operationannotation.Name());
 		this.setDescription(operationannotation.Description());
-		this.setDefaultaccess(operationannotation.access());
+		this.setDefaultAccess(operationannotation.access());
 		this.auditable=operationannotation.auditable();
 	}
 

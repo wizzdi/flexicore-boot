@@ -15,13 +15,14 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 
 @Extension
 @Component
 public class OperationToClazzService implements Plugin {
 
 	@Autowired
-	private BaselinkService baselinkService;
+	private BasicService basicService;
 	@Autowired
 	private OperationToClazzRepository operationToClazzRepository;
 
@@ -43,19 +44,20 @@ public class OperationToClazzService implements Plugin {
 	}
 
 	public OperationToClazz createOperationToClazzNoMerge(OperationToClazzCreate operationToClazzCreate, SecurityContextBase securityContext){
-		OperationToClazz operationToClazz=new OperationToClazz(operationToClazzCreate.getName(),securityContext);
+		OperationToClazz operationToClazz=new OperationToClazz();
+		operationToClazz.setId(UUID.randomUUID().toString());
 		updateOperationToClazzNoMerge(operationToClazzCreate,operationToClazz);
 		operationToClazzRepository.merge(operationToClazz);
 		return operationToClazz;
 	}
 
 	public boolean updateOperationToClazzNoMerge(OperationToClazzCreate operationToClazzCreate, OperationToClazz operationToClazz) {
-		boolean update= baselinkService.updateBaselinkNoMerge(operationToClazzCreate,operationToClazz);
+		boolean update= basicService.updateBasicNoMerge(operationToClazzCreate,operationToClazz);
 		if(operationToClazzCreate.getClazz()!=null&&(operationToClazz.getClazz()==null||!operationToClazzCreate.getClazz().getId().equals(operationToClazz.getClazz().getId()))){
 			operationToClazz.setClazz(operationToClazzCreate.getClazz());
 			update=true;
 		}
-		if(operationToClazzCreate.getSecurityOperation()!=null&&(operationToClazz.getLeftside()==null||!operationToClazzCreate.getSecurityOperation().getId().equals(operationToClazz.getLeftside().getId()))){
+		if(operationToClazzCreate.getSecurityOperation()!=null&&(operationToClazz.getOperation()==null||!operationToClazzCreate.getSecurityOperation().getId().equals(operationToClazz.getOperation().getId()))){
 			operationToClazz.setOperation(operationToClazzCreate.getSecurityOperation());
 			update=true;
 		}
@@ -72,12 +74,12 @@ public class OperationToClazzService implements Plugin {
 
 	@Deprecated
 	public void validate(OperationToClazzCreate operationToClazzCreate, SecurityContextBase securityContext) {
-		baselinkService.validate(operationToClazzCreate,securityContext);
+		basicService.validate(operationToClazzCreate,securityContext);
 	}
 
 	@Deprecated
 	public void validate(OperationToClazzFilter operationToClazzFilter, SecurityContextBase securityContext) {
-		baselinkService.validate(operationToClazzFilter,securityContext);
+		basicService.validate(operationToClazzFilter,securityContext);
 	}
 
 	public <T extends Baseclass> T getByIdOrNull(String id,Class<T> c, SecurityContextBase securityContext) {

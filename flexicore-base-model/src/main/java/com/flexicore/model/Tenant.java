@@ -24,7 +24,7 @@ import java.util.List;
  * Entity implementation class for Entity: Operation
  *
  */
-@SuppressWarnings("serial")
+
 @AnnotatedClazz(Category="core", Name="Tenant", Description="Defines a way to run different isolated virtual database on a single physical one")
 @Entity
 @FullTextSearch(supported = true)
@@ -35,9 +35,9 @@ public class Tenant extends SecurityTenant  {
 	private FileResource icon;
 
 	@JsonIgnore
-	@OneToMany(targetEntity = TenantToBaseClassPremission.class,mappedBy="leftside")
+	@OneToMany(targetEntity = TenantToBaseclass.class,mappedBy="leftside")
 
-	private List<TenantToBaseClassPremission> tenantToBaseClassPremissions =new ArrayList<>();
+	private List<TenantToBaseclass> tenantToBaseclasses =new ArrayList<>();
 
 	@OneToMany(targetEntity = TenantToUser.class,mappedBy="leftside")
 	@JsonIgnore

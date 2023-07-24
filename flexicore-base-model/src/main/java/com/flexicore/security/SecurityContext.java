@@ -5,16 +5,17 @@ import com.flexicore.model.Role;
 import com.flexicore.model.Tenant;
 import com.flexicore.model.User;
 
+import java.util.ArrayList;
 import java.util.List;
 
-public class SecurityContext extends SecurityContextBase<Tenant,User, Operation, Role> {
+public class SecurityContext extends SecurityContextBase {
 	private boolean totpVerified;
 
 	public SecurityContext() {
 	}
 
 	public SecurityContext(List<Tenant>tenants,User user,Operation operation,Tenant tenantToCreateIn) {
-		this.setTenants(tenants);
+		this.setTenants(new ArrayList<>(tenants));
 		this.setUser(user);
 		this.setOperation(operation);
 		this.setTenantToCreateIn(tenantToCreateIn);

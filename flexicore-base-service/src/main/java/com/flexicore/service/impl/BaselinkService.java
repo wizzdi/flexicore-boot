@@ -60,32 +60,32 @@ public class BaselinkService implements com.flexicore.service.BaselinkService {
     }
 
     @Override
-    public <T extends Baselink> T linkEntities(Baseclass left, Baseclass right, Class<T> clazz) {
+    public <T extends SecuredBasic> T linkEntities(Baseclass left, Baseclass right, Class<T> clazz) {
         SecurityContext securityContext=securityService.getAdminUserSecurityContext();
         T baselink = createBaselink(new BaselinkCreate().setLeftside(left).setRightside(right).setLinkClass(clazz),securityContext);
         return baselink;
     }
 
     @Override
-    public <T extends Baselink> T linkEntitiesNoCheck(Baseclass left, Baseclass right, Class<T> clazz, SecurityContext securityContext) {
+    public <T extends SecuredBasic> T linkEntitiesNoCheck(Baseclass left, Baseclass right, Class<T> clazz, SecurityContext securityContext) {
         return linkEntitiesNoCheck(left, right, null, null, clazz, securityContext);
 
     }
 
     @Override
-    public <T extends Baselink> T linkEntitiesNoCheck(Baseclass left, Baseclass right, Baseclass value, String simpleVal, Class<T> clazz, SecurityContext securityContext) {
+    public <T extends SecuredBasic> T linkEntitiesNoCheck(Baseclass left, Baseclass right, Baseclass value, String simpleVal, Class<T> clazz, SecurityContext securityContext) {
         return createBaselink(new BaselinkCreate().setLeftside(left).setRightside(right).setLinkClass(clazz).setValue(value).setSimpleValue(simpleVal),securityContext);
     }
 
 
     @Override
-    public <T extends Baselink> T linkEntities(Baseclass left, Baseclass right, Class<T> clazz, Baseclass value, String simpleVal) {
+    public <T extends SecuredBasic> T linkEntities(Baseclass left, Baseclass right, Class<T> clazz, Baseclass value, String simpleVal) {
         SecurityContext securityContext=securityService.getAdminUserSecurityContext();
         return linkEntitiesNoCheck(left,right,value,simpleVal,clazz,securityContext);
     }
 
     @Override
-    public <T extends Baselink> T findBySides(Class<T> clazz, Baseclass left, Baseclass right) {
+    public <T extends SecuredBasic> T findBySides(Class<T> clazz, Baseclass left, Baseclass right) {
         List<T> baselinks = listAllBaselinks(new BaselinkFilter().setLinkClass(clazz).setLeftside(Collections.singletonList(left)).setRightside(Collections.singletonList(right)), null);
         return baselinks.isEmpty()?null:baselinks.get(0);
     }
@@ -102,7 +102,7 @@ public class BaselinkService implements com.flexicore.service.BaselinkService {
     }
 
     @Override
-    public <T extends Baselink> T findBySidesAndValue(Baseclass leftside, Baseclass rightside, Baseclass value, Class<T> c) {
+    public <T extends SecuredBasic> T findBySidesAndValue(Baseclass leftside, Baseclass rightside, Baseclass value, Class<T> c) {
         List<T> baselinks = listAllBaselinks(new BaselinkFilter().setLinkClass(c).setLeftside(Collections.singletonList(leftside)).setRightside(Collections.singletonList(rightside)).setValue(value), null);
         return baselinks.isEmpty()?null:baselinks.get(0);
     }
@@ -115,7 +115,7 @@ public class BaselinkService implements com.flexicore.service.BaselinkService {
     }
 
     @Override
-    public <T extends Baselink> T findBySidesAndValue(Baseclass leftside, Baseclass rightside, Baseclass value, String simpleValue, Class<T> c) {
+    public <T extends SecuredBasic> T findBySidesAndValue(Baseclass leftside, Baseclass rightside, Baseclass value, String simpleValue, Class<T> c) {
         List<T> baselinks = listAllBaselinks(new BaselinkFilter().setLinkClass(c).setValue(value).setLeftside(Collections.singletonList(leftside)).setRightside(Collections.singletonList(rightside)).setSimpleValue(simpleValue), null);
         return baselinks.isEmpty()?null:baselinks.get(0);
     }
@@ -127,13 +127,13 @@ public class BaselinkService implements com.flexicore.service.BaselinkService {
     }
 
     @Override
-    public <T extends Baselink> T findBySides(Baseclass leftside, Baseclass rightside) {
+    public <T extends SecuredBasic> T findBySides(Baseclass leftside, Baseclass rightside) {
         List<T> baselinks = listAllBaselinks(new BaselinkFilter().setLinkClass(Baselink.class).setLeftside(Collections.singletonList(leftside)).setRightside(Collections.singletonList(rightside)), null);
         return baselinks.isEmpty()?null:baselinks.get(0);
     }
 
     @Override
-    public <T extends Baselink> List<T> findAllBySides(Class<T> type, Baseclass left, Baseclass right,
+    public <T extends SecuredBasic> List<T> findAllBySides(Class<T> type, Baseclass left, Baseclass right,
                                                        SecurityContext securityContext) {
         return listAllBaselinks(new BaselinkFilter().setLinkClass(type).setLeftside(Collections.singletonList(left)).setRightside(Collections.singletonList(right)), securityContext);
 
@@ -141,7 +141,7 @@ public class BaselinkService implements com.flexicore.service.BaselinkService {
 
 
     @Override
-    public <T extends Baselink> List<T> findAllBySidesAndValue(Class<T> type, Baseclass left, Baseclass right, Baseclass value, String simpleValue, FilteringInformationHolder filter,
+    public <T extends SecuredBasic> List<T> findAllBySidesAndValue(Class<T> type, Baseclass left, Baseclass right, Baseclass value, String simpleValue, FilteringInformationHolder filter,
                                                                int pagesize, int current, SecurityContext securityContext) {
         return listAllBaselinks(new BaselinkFilter(filter).setLinkClass(type).setLeftside(Collections.singletonList(left)).setRightside(Collections.singletonList(right)).setPageSize(pagesize).setCurrentPage(current), securityContext);
 
@@ -149,7 +149,7 @@ public class BaselinkService implements com.flexicore.service.BaselinkService {
     }
 
     @Override
-    public <T extends Baselink> List<Baseclass> getAllValues(Class<T> type, Baseclass left, Baseclass right, Baseclass value, String simpleValue, FilteringInformationHolder filter,
+    public <T extends SecuredBasic> List<Baseclass> getAllValues(Class<T> type, Baseclass left, Baseclass right, Baseclass value, String simpleValue, FilteringInformationHolder filter,
                                                              int pagesize, int current, SecurityContext securityContext) {
         List<T> links=findAllBySidesAndValue(type,left,right,value,simpleValue,filter,pagesize,current,securityContext);
         List<Baseclass> values = new ArrayList<>();
@@ -165,7 +165,7 @@ public class BaselinkService implements com.flexicore.service.BaselinkService {
 
 
     @Override
-    public <T extends Baselink> List<T> findAllBySide(Class<T> linkType, Baseclass base, boolean right, SecurityContext securityContext) {
+    public <T extends SecuredBasic> List<T> findAllBySide(Class<T> linkType, Baseclass base, boolean right, SecurityContext securityContext) {
         BaselinkFilter baselinkFilter = new BaselinkFilter().setLinkClass(linkType);
         if(right){
             baselinkFilter.setRightside(Collections.singletonList(base));
@@ -196,10 +196,10 @@ public class BaselinkService implements com.flexicore.service.BaselinkService {
         if (createBaselinkRequest.getRightsideIds() == null || createBaselinkRequest.getRightsideIds().isEmpty()) {
             throw new BadRequestException("Must provide at least one rightside");
         }
-        Class<? extends Baselink> clazz;
+        Class<? extends SecuredBasic> clazz;
         String linkClazzName = createBaselinkRequest.getLinkClassName();
         try {
-            clazz = linkClazzName != null ? (Class<? extends Baselink>) Class.forName(linkClazzName) : null;
+            clazz = linkClazzName != null ? (Class<? extends SecuredBasic>) Class.forName(linkClazzName) : null;
         } catch (ClassNotFoundException e) {
             throw new BadRequestException("no class with name:" + linkClazzName);
         }
@@ -249,10 +249,10 @@ public class BaselinkService implements com.flexicore.service.BaselinkService {
     @Override
     public void validate(BaselinkFilter baselinkFilter, SecurityContext securityContext) {
 
-        Class<? extends Baselink> clazz;
+        Class<? extends SecuredBasic> clazz;
         String linkClazzName = baselinkFilter.getLinkClassName();
         try {
-            clazz = linkClazzName != null ? (Class<? extends Baselink>) Class.forName(linkClazzName) : null;
+            clazz = linkClazzName != null ? (Class<? extends SecuredBasic>) Class.forName(linkClazzName) : null;
         } catch (ClassNotFoundException e) {
             throw new BadRequestException("no class with name:" + linkClazzName);
         }
@@ -305,7 +305,7 @@ public class BaselinkService implements com.flexicore.service.BaselinkService {
         throw new BadRequestException("cannot list by ids type "+type);
     }
 
-    private Class<? extends Baseclass> getLinkSideClass(boolean rightside, Class<? extends Baselink> linkClass) {
+    private Class<? extends Baseclass> getLinkSideClass(boolean rightside, Class<? extends SecuredBasic> linkClass) {
         String name = rightside ? "getRightside" : "getLeftside";
 
         try {
@@ -352,7 +352,7 @@ public class BaselinkService implements com.flexicore.service.BaselinkService {
     }
 
 	@Override
-    public <T extends Baselink> T createBaselink(BaselinkCreate baselinkCreate, SecurityContext securityContext) {
+    public <T extends SecuredBasic> T createBaselink(BaselinkCreate baselinkCreate, SecurityContext securityContext) {
         Class<T> linkClass = (Class<T>) baselinkCreate.getLinkClass();
         BaselinkFilter baselinkFilter=new BaselinkFilter()
                 .setLeftside(Collections.singletonList(baselinkCreate.getLeftside()))
@@ -383,7 +383,7 @@ public class BaselinkService implements com.flexicore.service.BaselinkService {
 	}
 
     @Override
-    public <T extends Baselink> T createBaselinkNoMerge(BaselinkCreate baselinkCreate, SecurityContext securityContext) {
+    public <T extends SecuredBasic> T createBaselinkNoMerge(BaselinkCreate baselinkCreate, SecurityContext securityContext) {
         try {
             Class<T> c = (Class<T>) baselinkCreate.getLinkClass();
             Constructor<T> constructor = c.getConstructor(String.class, SecurityContextBase.class);
@@ -399,7 +399,7 @@ public class BaselinkService implements com.flexicore.service.BaselinkService {
 
     }
 
-	private <T extends Baselink> boolean updateBaselinkNoMerge(T link, BaselinkCreate baselinkCreate) {
+	private <T extends SecuredBasic> boolean updateBaselinkNoMerge(T link, BaselinkCreate baselinkCreate) {
 		boolean update=false;
 		if(baselinkCreate.getName()!=null && !baselinkCreate.getName().equals(link.getName())){
 			link.setName(baselinkCreate.getName());
@@ -440,7 +440,7 @@ public class BaselinkService implements com.flexicore.service.BaselinkService {
     }
 
     @Override
-    public <T extends Baselink> List<T> listAllBaselinks(BaselinkFilter baselinkFilter, SecurityContext securityContext) {
+    public <T extends SecuredBasic> List<T> listAllBaselinks(BaselinkFilter baselinkFilter, SecurityContext securityContext) {
         return repository.getAllBaselinks((Class<T>) baselinkFilter.getLinkClass(), baselinkFilter, securityContext);
     }
 
@@ -448,10 +448,10 @@ public class BaselinkService implements com.flexicore.service.BaselinkService {
     @Override
     public void validate(BaselinkCreate baselinkCreate, SecurityContext securityContext) {
 
-		Class<? extends Baselink> clazz;
+		Class<? extends SecuredBasic> clazz;
 		String linkClazzName = baselinkCreate.getLinkClassName();
 		try {
-			clazz = linkClazzName != null ? (Class<? extends Baselink>) Class.forName(linkClazzName) : null;
+			clazz = linkClazzName != null ? (Class<? extends SecuredBasic>) Class.forName(linkClazzName) : null;
 		} catch (ClassNotFoundException e) {
 			throw new BadRequestException("no class with name:" + linkClazzName);
 		}

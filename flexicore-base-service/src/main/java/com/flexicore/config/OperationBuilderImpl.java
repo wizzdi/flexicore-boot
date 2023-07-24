@@ -28,7 +28,7 @@ public class OperationBuilderImpl implements OperationBuilder, Plugin {
 	private OperationToClazzService operationToClazzService;
 
 	@Override
-	public SecurityOperation upsertOperationNoMerge(OperationScanContext e, Map<String, SecurityOperation> securityOperationMap, Map<String, Map<String, OperationToClazz>> relatedClazzes, List<Object> toMerge, Map<String, Clazz> clazzes, SecurityContextBase<?, ?, ?, ?> securityContextBase) {
+	public SecurityOperation upsertOperationNoMerge(OperationScanContext e, Map<String, SecurityOperation> securityOperationMap, Map<String, Map<String, OperationToClazz>> relatedClazzes, List<Object> toMerge, Map<String, Clazz> clazzes, SecurityContextBase securityContextBase) {
 		return createOperation(e,securityOperationMap,relatedClazzes,toMerge,clazzes,(SecurityContext) securityContextBase);
 	}
 

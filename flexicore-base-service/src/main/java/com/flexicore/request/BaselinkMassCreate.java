@@ -28,14 +28,14 @@ public class BaselinkMassCreate {
     private String simpleValue;
     private String linkClassName;
     @JsonIgnore
-    private Class<? extends Baselink> linkClass;
+    private Class<? extends SecuredBasic> linkClass;
 
 
     public Set<String> getLeftsideIds() {
         return leftsideIds;
     }
 
-    public <T extends BaselinkMassCreate> T setLeftsideIds(Set<String> leftsideIds) {
+    public <T extends SecuredBasicMassCreate> T setLeftsideIds(Set<String> leftsideIds) {
         this.leftsideIds = leftsideIds;
         return (T) this;
     }
@@ -44,7 +44,7 @@ public class BaselinkMassCreate {
         return leftside;
     }
 
-    public <T extends BaselinkMassCreate> T setLeftside(List<Baseclass> leftside) {
+    public <T extends SecuredBasicMassCreate> T setLeftside(List<Baseclass> leftside) {
         this.leftside = leftside;
         return (T) this;
     }
@@ -53,7 +53,7 @@ public class BaselinkMassCreate {
         return rightsideIds;
     }
 
-    public <T extends BaselinkMassCreate> T setRightsideIds(Set<String> rightsideIds) {
+    public <T extends SecuredBasicMassCreate> T setRightsideIds(Set<String> rightsideIds) {
         this.rightsideIds = rightsideIds;
         return (T) this;
     }
@@ -62,7 +62,7 @@ public class BaselinkMassCreate {
         return rightside;
     }
 
-    public <T extends BaselinkMassCreate> T setRightside(List<Baseclass> rightside) {
+    public <T extends SecuredBasicMassCreate> T setRightside(List<Baseclass> rightside) {
         this.rightside = rightside;
         return (T) this;
     }
@@ -71,7 +71,7 @@ public class BaselinkMassCreate {
         return valueId;
     }
 
-    public <T extends BaselinkMassCreate> T setValueId(String valueId) {
+    public <T extends SecuredBasicMassCreate> T setValueId(String valueId) {
         this.valueId = valueId;
         return (T) this;
     }
@@ -80,7 +80,7 @@ public class BaselinkMassCreate {
         return value;
     }
 
-    public <T extends BaselinkMassCreate> T setValue(Baseclass value) {
+    public <T extends SecuredBasicMassCreate> T setValue(Baseclass value) {
         this.value = value;
         return (T) this;
     }
@@ -89,7 +89,7 @@ public class BaselinkMassCreate {
         return simpleValue;
     }
 
-    public <T extends BaselinkMassCreate> T setSimpleValue(String simpleValue) {
+    public <T extends SecuredBasicMassCreate> T setSimpleValue(String simpleValue) {
         this.simpleValue = simpleValue;
         return (T) this;
     }
@@ -98,17 +98,17 @@ public class BaselinkMassCreate {
         return linkClassName;
     }
 
-    public <T extends BaselinkMassCreate> T setLinkClassName(String linkClassName) {
+    public <T extends SecuredBasicMassCreate> T setLinkClassName(String linkClassName) {
         this.linkClassName = linkClassName;
         return (T) this;
     }
 
     @JsonIgnore
-    public Class<? extends Baselink> getLinkClass() {
+    public Class<? extends SecuredBasic> getLinkClass() {
         return linkClass;
     }
 
-    public <T extends BaselinkMassCreate> T setLinkClass(Class<? extends Baselink> linkClass) {
+    public <T extends SecuredBasicMassCreate> T setLinkClass(Class<? extends SecuredBasic> linkClass) {
         this.linkClass = linkClass;
         return (T) this;
     }
@@ -117,7 +117,7 @@ public class BaselinkMassCreate {
         return leftsideTypeClassName;
     }
 
-    public <T extends BaselinkMassCreate> T setLeftsideTypeClassName(String leftsideTypeClassName) {
+    public <T extends SecuredBasicMassCreate> T setLeftsideTypeClassName(String leftsideTypeClassName) {
         this.leftsideTypeClassName = leftsideTypeClassName;
         return (T) this;
     }
@@ -127,7 +127,7 @@ public class BaselinkMassCreate {
         return leftsideType;
     }
 
-    public <T extends BaselinkMassCreate> T setLeftsideType(Class<?> leftsideType) {
+    public <T extends SecuredBasicMassCreate> T setLeftsideType(Class<?> leftsideType) {
         this.leftsideType = leftsideType;
         return (T) this;
     }
@@ -136,7 +136,7 @@ public class BaselinkMassCreate {
         return rightsideTypeClassName;
     }
 
-    public <T extends BaselinkMassCreate> T setRightsideTypeClassName(String rightsideTypeClassName) {
+    public <T extends SecuredBasicMassCreate> T setRightsideTypeClassName(String rightsideTypeClassName) {
         this.rightsideTypeClassName = rightsideTypeClassName;
         return (T) this;
     }
@@ -146,7 +146,7 @@ public class BaselinkMassCreate {
         return rightsideType;
     }
 
-    public <T extends BaselinkMassCreate> T setRightsideType(Class<?> rightsideType) {
+    public <T extends SecuredBasicMassCreate> T setRightsideType(Class<?> rightsideType) {
         this.rightsideType = rightsideType;
         return (T) this;
     }

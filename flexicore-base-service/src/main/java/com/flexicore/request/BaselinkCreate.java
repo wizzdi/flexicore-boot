@@ -19,13 +19,13 @@ public class BaselinkCreate {
     private String simpleValue;
     private String linkClassName;
     @JsonIgnore
-    private Class<? extends Baselink> linkClass;
+    private Class<? extends SecuredBasic> linkClass;
 
     public String getName() {
         return name;
     }
 
-    public <T extends BaselinkCreate> T setName(String name) {
+    public <T extends SecuredBasicCreate> T setName(String name) {
         this.name = name;
         return (T) this;
     }
@@ -34,7 +34,7 @@ public class BaselinkCreate {
         return description;
     }
 
-    public <T extends BaselinkCreate> T setDescription(String description) {
+    public <T extends SecuredBasicCreate> T setDescription(String description) {
         this.description = description;
         return (T) this;
     }
@@ -43,7 +43,7 @@ public class BaselinkCreate {
         return leftsideId;
     }
 
-    public <T extends BaselinkCreate> T setLeftsideId(String leftsideId) {
+    public <T extends SecuredBasicCreate> T setLeftsideId(String leftsideId) {
         this.leftsideId = leftsideId;
         return (T) this;
     }
@@ -53,7 +53,7 @@ public class BaselinkCreate {
         return leftside;
     }
 
-    public <T extends BaselinkCreate> T setLeftside(Baseclass leftside) {
+    public <T extends SecuredBasicCreate> T setLeftside(Baseclass leftside) {
         this.leftside = leftside;
         return (T) this;
     }
@@ -62,7 +62,7 @@ public class BaselinkCreate {
         return rightsideId;
     }
 
-    public <T extends BaselinkCreate> T setRightsideId(String rightsideId) {
+    public <T extends SecuredBasicCreate> T setRightsideId(String rightsideId) {
         this.rightsideId = rightsideId;
         return (T) this;
     }
@@ -72,7 +72,7 @@ public class BaselinkCreate {
         return rightside;
     }
 
-    public <T extends BaselinkCreate> T setRightside(Baseclass rightside) {
+    public <T extends SecuredBasicCreate> T setRightside(Baseclass rightside) {
         this.rightside = rightside;
         return (T) this;
     }
@@ -81,7 +81,7 @@ public class BaselinkCreate {
         return valueId;
     }
 
-    public <T extends BaselinkCreate> T setValueId(String valueId) {
+    public <T extends SecuredBasicCreate> T setValueId(String valueId) {
         this.valueId = valueId;
         return (T) this;
     }
@@ -91,7 +91,7 @@ public class BaselinkCreate {
         return value;
     }
 
-    public <T extends BaselinkCreate> T setValue(Baseclass value) {
+    public <T extends SecuredBasicCreate> T setValue(Baseclass value) {
         this.value = value;
         return (T) this;
     }
@@ -100,7 +100,7 @@ public class BaselinkCreate {
         return simpleValue;
     }
 
-    public <T extends BaselinkCreate> T setSimpleValue(String simpleValue) {
+    public <T extends SecuredBasicCreate> T setSimpleValue(String simpleValue) {
         this.simpleValue = simpleValue;
         return (T) this;
     }
@@ -109,17 +109,17 @@ public class BaselinkCreate {
         return linkClassName;
     }
 
-    public <T extends BaselinkCreate> T setLinkClassName(String linkClassName) {
+    public <T extends SecuredBasicCreate> T setLinkClassName(String linkClassName) {
         this.linkClassName = linkClassName;
         return (T) this;
     }
 
     @JsonIgnore
-    public Class<? extends Baselink> getLinkClass() {
+    public Class<? extends SecuredBasic> getLinkClass() {
         return linkClass;
     }
 
-    public <T extends BaselinkCreate> T setLinkClass(Class<? extends Baselink> linkClass) {
+    public <T extends SecuredBasicCreate> T setLinkClass(Class<? extends SecuredBasic> linkClass) {
         this.linkClass = linkClass;
         return (T) this;
     }
