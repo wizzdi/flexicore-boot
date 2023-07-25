@@ -43,12 +43,12 @@ public class OperationValidatorService implements Plugin {
 
 
 
-    @Cacheable(value = "operationValidatorCache", key = "#key",cacheManager = "accessControlCacheManager",unless = "#result==null")
+    @Cacheable(value = "operationValidatorCache", key = "#key",cacheManager = "operationAccessControlCacheManager",unless = "#result==null")
     public Boolean getIsAllowedFromCache(String key) {
         return null;
     }
 
-    @CachePut(value = "operationValidatorCache", key = "#key",cacheManager = "accessControlCacheManager",unless = "#result==null")
+    @CachePut(value = "operationValidatorCache", key = "#key",cacheManager = "operationAccessControlCacheManager",unless = "#result==null")
     public Boolean updateIsAllowedCache(String key, Boolean value) {
         return value;
     }

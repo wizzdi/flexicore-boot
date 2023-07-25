@@ -15,10 +15,7 @@ import org.springframework.util.ObjectUtils;
 import java.io.Serializable;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Queue;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -97,11 +94,11 @@ public class FlexiCoreDependencyObjectProvider implements ObjectProvider<Object>
 	}
 
 	private Object getObject(DependencyDescriptor descriptor, boolean throwing) {
-		Object result = original.doResolveDependency(descriptor, this.beanName, null, null);
+		Object result = PluginResolveUtils.resolveDependency(original,descriptor, this.beanName, null, null);
 		if (result == null) {
 			for (DefaultListableBeanFactory defaultListableBeanFactory : getBeanFactories(applicationContexts)) {
 				if(original!=defaultListableBeanFactory){
-					result = defaultListableBeanFactory.doResolveDependency(descriptor, this.beanName, null, null);
+					result = PluginResolveUtils.resolveDependency(defaultListableBeanFactory,descriptor, this.beanName, null, null);
 					if (result != null) {
 						return result;
 					}
@@ -198,11 +195,11 @@ public class FlexiCoreDependencyObjectProvider implements ObjectProvider<Object>
 	@SuppressWarnings("unchecked")
 	private Stream<Object> resolveStream(boolean ordered) {
 		DependencyDescriptor descriptorToUse = getStreaming(this.descriptor, ordered);
-		Object result = original.doResolveDependency(descriptorToUse, this.beanName, null, null);
+		Object result = PluginResolveUtils.resolveDependency(original,descriptorToUse, this.beanName, null, null);
 		Stream<Object> objectStream = result instanceof Stream ? (Stream<Object>) result : Stream.of(result);
 		for (DefaultListableBeanFactory applicationContext : getBeanFactories(applicationContexts)) {
 			if(original!=applicationContext){
-				Object resultInner = applicationContext.doResolveDependency(descriptorToUse, this.beanName, null, null);
+				Object resultInner = PluginResolveUtils.resolveDependency(applicationContext,descriptorToUse,this.beanName,null,null);
 				Stream<Object> objectStreamInner = resultInner instanceof Stream ? (Stream<Object>) resultInner : Stream.of(resultInner);
 				objectStream = Stream.concat(objectStream, objectStreamInner);
 			}
@@ -231,12 +228,12 @@ public class FlexiCoreDependencyObjectProvider implements ObjectProvider<Object>
 			}
 		});
 
-		Object result = original.doResolveDependency(descriptorToUse, beanName, null, null);
+		Object result = PluginResolveUtils.resolveDependency(original,descriptorToUse, beanName, null, null);
 		Optional<?> o = result instanceof Optional ? (Optional<?>) result : Optional.ofNullable(result);
 		if (o.isEmpty()) {
 			for (DefaultListableBeanFactory applicationContext : getBeanFactories(applicationContexts)) {
 				if(original!=applicationContext){
-					result = applicationContext.doResolveDependency(descriptorToUse, beanName, null, null);
+					result = PluginResolveUtils.resolveDependency(applicationContext,descriptorToUse, beanName, null, null);
 					o = result instanceof Optional ? (Optional<?>) result : Optional.ofNullable(result);
 					if (o.isPresent()) {
 						return o;

@@ -23,6 +23,7 @@
 package com.wizzdi.flexicore.common.user.service;
 
 
+import com.flexicore.model.SecuredBasic_;
 import com.wizzdi.flexicore.common.user.data.CommonUserRepository;
 import com.flexicore.model.SecurityTenant;
 import com.flexicore.model.TenantToUser;
@@ -35,6 +36,7 @@ import com.lambdaworks.crypto.SCryptUtil;
 import com.wizzdi.flexicore.boot.base.interfaces.Plugin;
 import com.wizzdi.flexicore.security.request.TenantToUserCreate;
 import com.wizzdi.flexicore.security.response.PaginationResponse;
+import com.wizzdi.flexicore.security.service.BaseclassService;
 import com.wizzdi.flexicore.security.service.SecurityUserService;
 import com.wizzdi.flexicore.security.service.TenantToUserService;
 import org.pf4j.Extension;
@@ -110,7 +112,7 @@ public class CommonUserService implements Plugin {
         TenantToUser tenantToUser = tenantToUserService.createTenantToUserNoMerge(tenantToUserCreate, securityContextBase);
         toMerge.add(tenantToUser);
         commonUserRepository.massMerge(toMerge);
-        user.getTenantToUsers().add(tenantToUser);
+        user.getTenants().add(tenantToUser);
         return user;
     }
 
@@ -118,8 +120,10 @@ public class CommonUserService implements Plugin {
 
     
     public User createUserNoMerge(CommonUserCreate createUser, SecurityContextBase securityContextBase) {
-        User user = new User(createUser.getName(), securityContextBase);
+        User user = new User();
+        user.setId(UUID.randomUUID().toString());
         updateUserNoMerge(user, createUser);
+        BaseclassService.createSecurityObjectNoMerge(user, securityContextBase);
         return user;
     }
 
@@ -215,8 +219,7 @@ public class CommonUserService implements Plugin {
 
     
     public void validateUserUpdate(CommonUserUpdate userUpdate, SecurityContextBase securityContextBase) {
-        securityUserService.validate(userUpdate, securityContextBase);
-        User user = commonUserRepository.getByIdOrNull(userUpdate.getId(), User.class, null);
+        User user = commonUserRepository.getByIdOrNull(userUpdate.getId(), User.class, SecuredBasic_.security, null);
         if (user == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"No User With id " + userUpdate.getId());
         }
@@ -242,7 +245,6 @@ public class CommonUserService implements Plugin {
 
     
     public void validateUser(CommonUserCreate commonUserCreate, SecurityContextBase securityContextBase) {
-        securityUserService.validate(commonUserCreate, securityContextBase);
         SecurityTenant securityTenant = commonUserCreate.getTenant();
         if (securityTenant == null) {
             securityTenant = securityContextBase.getTenantToCreateIn() != null ? securityContextBase.getTenantToCreateIn() : (securityContextBase.getTenants().isEmpty() ? null : (SecurityTenant) securityContextBase.getTenants().get(0));
@@ -283,7 +285,7 @@ public class CommonUserService implements Plugin {
     public void validate(CommonUserFilter commonUserFilter, SecurityContextBase securityContextBase) {
 
         Set<String> securityTenantIds = commonUserFilter.getUserSecurityTenantsIds();
-        Map<String, SecurityTenant> map = securityTenantIds.isEmpty() ? new HashMap<>() : commonUserRepository.listByIds(SecurityTenant.class, securityTenantIds, securityContextBase).parallelStream().collect(Collectors.toMap(f -> f.getId(), f -> f));
+        Map<String, SecurityTenant> map = securityTenantIds.isEmpty() ? new HashMap<>() : commonUserRepository.listByIds(SecurityTenant.class, securityTenantIds,SecuredBasic_.security, securityContextBase).parallelStream().collect(Collectors.toMap(f -> f.getId(), f -> f));
         securityTenantIds.removeAll(map.keySet());
         if (!securityTenantIds.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"No SecurityTenant with ids " + securityTenantIds);

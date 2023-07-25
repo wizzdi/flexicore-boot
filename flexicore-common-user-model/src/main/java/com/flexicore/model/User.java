@@ -73,16 +73,6 @@ public class User extends SecurityUser {
     private boolean totpEnabled;
 
 
-    @JsonIgnore
-
-    @OneToMany(targetEntity = RoleToUser.class,mappedBy = "rightside") //users are subscribed to very few roles.
-    private List<RoleToUser> roles = new ArrayList<>();
-
-
-    @OneToMany(targetEntity = TenantToUser.class,mappedBy = "rightside")
-    @JsonIgnore
-    //users are subscribed to very few roles.
-    private List<TenantToUser> tenantToUsers = new ArrayList<>();
 
 
 
@@ -141,15 +131,6 @@ public class User extends SecurityUser {
 
 
 
-    @OneToMany(targetEntity = TenantToUser.class,mappedBy = "rightside")
-    @JsonIgnore
-    public List<TenantToUser> getTenantToUsers() {
-        return tenantToUsers;
-    }
-
-    public void setTenantToUsers(List<TenantToUser> tenantToUsers) {
-        this.tenantToUsers = tenantToUsers;
-    }
     @JsonIgnore
     public String getForgotPasswordToken() {
         return forgotPasswordToken;

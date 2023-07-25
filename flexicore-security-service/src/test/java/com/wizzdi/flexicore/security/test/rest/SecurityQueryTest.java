@@ -428,6 +428,36 @@ private SecurityUserService securityUserService;
         Assertions.assertTrue(testEntities.stream().noneMatch(f->f.getId().equals(toDeny.getId())));
         Assertions.assertTrue(testEntities.stream().allMatch(f->othersInTenantIds.contains(f.getId())));
     }
+    @Test
+    @Order(14)
+    public void testAccessDenyForTenantWithCache() {
+        SecurityUser freshUser = securityUserService.createSecurityUser(new SecurityUserCreate().setName("freshUser"), null);
+        SecurityTenant freshTenant = securityTenantService.createTenant(new SecurityTenantCreate().setName("freshTenant"), null);
+        tenantToUserService.createTenantToUser(new TenantToUserCreate().setUser(freshUser).setDefaultTenant(true).setTenant(freshTenant),null);
+        tenantToBaseclassService.createTenantToBaseclass(new TenantToBaseclassCreate().setTenant(freshTenant).setAccess(IOperation.Access.allow).setClazz(Baseclass.getClazzByName(SecurityWildcard.class.getCanonicalName())),null);
+
+        // validate it has access to nothing
+        SecurityContextBase securityContext = securityContextProvider.getSecurityContext(freshUser);
+        List<TestEntity> testEntities = testEntityService.listAllTestEntities(new TestEntityFilter(), securityContext);
+        Assertions.assertTrue(testEntities.stream().allMatch(f->othersInTenantIds.contains(f.getId())));
+        for (int i = 0; i < 10000; i++) {
+            TestEntity entity = testEntityService.createTestEntity(new TestEntityCreate().setName("i:"+i), adminSecurityContext);
+            othersInTenantIds.add(entity.getId());
+        }
+        // grant it access for clazz
+        TestEntity toDeny = testEntityService.findByIdOrNull(TestEntity.class, othersInTenantIds.stream().findFirst().orElseThrow(() -> new RuntimeException("no test entity found")));
+        tenantToBaseclassService.createTenantToBaseclass(new TenantToBaseclassCreate().setTenant(freshTenant).setAccess(IOperation.Access.deny).setBaseclass(toDeny.getSecurity()),null);
+        testEntities = testEntityService.listAllTestEntities(new TestEntityFilter(), securityContext);
+        Assertions.assertTrue(testEntities.stream().noneMatch(f->f.getId().equals(toDeny.getId())));
+        Assertions.assertTrue(testEntities.stream().allMatch(f->othersInTenantIds.contains(f.getId())));
+        long start = System.currentTimeMillis();
+        for (int i = 0; i < 100; i++) {
+            testEntities = testEntityService.listAllTestEntities(new TestEntityFilter(), securityContext);
+            Assertions.assertTrue(testEntities.stream().noneMatch(f->f.getId().equals(toDeny.getId())));
+            Assertions.assertTrue(testEntities.stream().allMatch(f->othersInTenantIds.contains(f.getId())));
+        }
+        System.out.println("took: "+(System.currentTimeMillis()-start)/100.0+" ms");
+    }
 
 
 

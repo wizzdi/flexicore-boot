@@ -1,7 +1,9 @@
 package com.wizzdi.flexicore.security.configuration;
 
 import com.github.benmanes.caffeine.cache.Caffeine;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.cache.caffeine.CaffeineCacheManager;
@@ -17,10 +19,28 @@ import java.util.concurrent.TimeUnit;
 public class SecurityServiceCacheConfig {
 
     @Bean
-    public CacheManager accessControlCacheManager() {
+    @Qualifier("operationAccessControlCache")
+    @ConditionalOnMissingBean(name = "operationAccessControlCacheManager")
+    public CacheManager operationAccessControlCacheManager() {
         CaffeineCacheManager cacheManager = new CaffeineCacheManager();
         cacheManager.setCaffeine(Caffeine.newBuilder().maximumSize(100).expireAfterWrite(15, TimeUnit.MINUTES));
         return cacheManager;
+    }
+
+    @Bean
+    @Qualifier("operationAccessControlCache")
+    @ConditionalOnMissingBean(name = "dataAccessControlCacheManager")
+    public CacheManager dataAccessControlCacheManager() {
+        CaffeineCacheManager cacheManager = new CaffeineCacheManager();
+        cacheManager.setCaffeine(Caffeine.newBuilder().maximumSize(100).expireAfterWrite(15, TimeUnit.MINUTES));
+        return cacheManager;
+    }
+
+
+    @Bean
+    @Qualifier("operationAccessControlCache")
+    public Cache dataAccessControlCache(@Qualifier("operationAccessControlCache")CacheManager dataAccessControlCacheManager) {
+        return dataAccessControlCacheManager.getCache("dataAccessControlCache");
     }
     @Bean
     @Primary

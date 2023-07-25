@@ -23,8 +23,6 @@
         <module>flexicore-plugin-test-plugin</module>
         <module>dynamic-properties-converter-postgresql</module>
         <module>dynamic-properties-database-converter</module>
-        <module>flexicore-base-model</module>
-        <module>flexicore-base-service</module>
         <module>flexicore-boot</module>
         <module>flexicore-boot-dynamic-invokers-model</module>
         <module>flexicore-boot-dynamic-invokers-service</module>
@@ -39,7 +37,6 @@
         <module>flexicore-boot-starter-websocket</module>
         <module>flexicore-boot-swagger</module>
         <module>flexicore-boot-test-helper</module>
-        <module>flexicore-boot-vintage</module>
         <module>flexicore-common-user-model</module>
         <module>flexicore-common-user-service</module>
         <module>flexicore-security-model</module>

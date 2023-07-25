@@ -45,7 +45,7 @@ public class FlexiCorePluginBeanFactory extends DefaultListableBeanFactory {
             for (ApplicationContext applicationContext   : dependenciesContext) {
                 try {
                     AutowireCapableBeanFactory autowireCapableBeanFactory = applicationContext.getAutowireCapableBeanFactory();
-                    return autowireCapableBeanFactory instanceof FlexiCorePluginBeanFactory ?((FlexiCorePluginBeanFactory)autowireCapableBeanFactory).resolveNamedBeanDirect(requiredType):autowireCapableBeanFactory.resolveNamedBean(requiredType);
+                    return PluginResolveUtils.resolveNamedBean(autowireCapableBeanFactory,requiredType);
                 }
                 catch (BeansException ignored){
 
@@ -73,7 +73,7 @@ public class FlexiCorePluginBeanFactory extends DefaultListableBeanFactory {
             for (ApplicationContext applicationContext   : dependenciesContext) {
                 try {
                     AutowireCapableBeanFactory autowireCapableBeanFactory = applicationContext.getAutowireCapableBeanFactory();
-                    return autowireCapableBeanFactory instanceof FlexiCorePluginBeanFactory ?((FlexiCorePluginBeanFactory)autowireCapableBeanFactory).resolveDependencyDirect(descriptor, requestingBeanName, autowiredBeanNames, typeConverter):autowireCapableBeanFactory.resolveDependency(descriptor, requestingBeanName, autowiredBeanNames, typeConverter);
+                    return PluginResolveUtils.resolveDependency(autowireCapableBeanFactory,descriptor, requestingBeanName, autowiredBeanNames, typeConverter);
                 }
                 catch (BeansException ignored){
 

@@ -7,6 +7,8 @@ import com.flexicore.security.SecurityContextBase;
 import com.flexicore.security.SecurityPermissionEntry;
 import com.flexicore.security.SecurityPermissions;
 import com.wizzdi.flexicore.boot.base.interfaces.Plugin;
+import com.wizzdi.flexicore.security.events.BasicCreated;
+import com.wizzdi.flexicore.security.events.BasicUpdated;
 import com.wizzdi.flexicore.security.request.BaseclassFilter;
 import com.wizzdi.flexicore.security.request.BasicPropertiesFilter;
 import com.wizzdi.flexicore.security.request.SoftDeleteOption;
@@ -16,7 +18,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.cache.Cache;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.context.event.EventListener;
 import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -43,21 +47,64 @@ public class BaseclassRepository implements Plugin {
 	@Qualifier("allOps")
 	@Lazy
 	private SecurityOperation allOp;
-	@Autowired
-	@Qualifier("securityWildcard")
-	@Lazy
-	private SecurityWildcard securityWildcard;
+
 
 	@Autowired
 	private BasicRepository basicRepository;
+	@Autowired
+	@Qualifier("dataAccessControlCache")
+	private Cache dataAccessControlCache;
 
+
+	@EventListener
+	public void invalidateUserCache(BasicCreated<UserToBaseclass> securityLink) {
+		SecurityLink link = securityLink.getBaseclass();
+		invalidateCache(link);
+	}
+
+	@EventListener
+	public void invalidateRoleCache(BasicCreated<RoleToBaseclass> securityLink) {
+		SecurityLink link = securityLink.getBaseclass();
+		invalidateCache(link);
+	}
+
+	@EventListener
+	public void invalidateTenantCache(BasicCreated<TenantToBaseclass> securityLink) {
+		SecurityLink link = securityLink.getBaseclass();
+		invalidateCache(link);
+	}
+
+	@EventListener
+	public void invalidateUserCache(BasicUpdated<UserToBaseclass> securityLink) {
+		SecurityLink link = securityLink.getBaseclass();
+		invalidateCache(link);
+	}
+
+	@EventListener
+	public void invalidateRoleCache(BasicUpdated<RoleToBaseclass> securityLink) {
+		SecurityLink link = securityLink.getBaseclass();
+		invalidateCache(link);
+	}
+
+	@EventListener
+	public void invalidateTenantCache(BasicUpdated<TenantToBaseclass> securityLink) {
+		SecurityLink link = securityLink.getBaseclass();
+		invalidateCache(link);
+	}
+
+	private void invalidateCache(SecurityLink link) {
+		if (link.getSecurityEntity() != null) {
+			dataAccessControlCache.evict(link.getSecurityEntity().getId());
+			logger.debug("evicted security entity " + link.getSecurityEntity().getId());
+		}
+	}
 
 	public static <T> boolean addPagination(BaseclassFilter baseclassFilter, TypedQuery<T> q) {
 		return BasicRepository.addPagination(baseclassFilter, q);
 	}
 
 	public <T extends Baseclass> void addBaseclassPredicates(BasicPropertiesFilter basicPropertiesFilter, CriteriaBuilder cb, CommonAbstractCriteria q, From<?, T> r, List<Predicate> predicates, SecurityContextBase securityContextBase) {
-		if(basicPropertiesFilter!=null){
+		if (basicPropertiesFilter != null) {
 			BasicRepository.addBasicPropertiesFilter(basicPropertiesFilter, cb, q, r, predicates);
 		} else {
 			BasicRepository.addBasicPropertiesFilter(new BasicPropertiesFilter().setSoftDelete(SoftDeleteOption.DEFAULT), cb, q, r, predicates);
@@ -67,30 +114,60 @@ public class BaseclassRepository implements Plugin {
 		}
 	}
 
+	record SecurityLinkHolder(List<UserToBaseclass> users, List<RoleToBaseclass> roles,
+							  List<TenantToBaseclass> tenants) {
+	}
+
 	public SecurityPermissions getSecurityPermissions(SecurityContextBase securityContextBase) {
-		if(securityContextBase.getSecurityPermissions()!=null){
-			return securityContextBase.getSecurityPermissions();
+		SecurityLinkHolder securityLinkHolder = getSecurityLinkHolder(securityContextBase);
+		List<UserToBaseclass> userLinks = securityLinkHolder.users();
+		List<RoleToBaseclass> roleLinks = securityLinkHolder.roles();
+		List<TenantToBaseclass> tenantLinks = securityLinkHolder.tenants();
+		Map<String, Role> allRoles = securityContextBase.getAllRoles().stream().collect(Collectors.toMap(f -> f.getId(), f -> f, (a, b) -> a));
+		Map<String, SecurityTenant> allTenants = securityContextBase.getTenants().stream().collect(Collectors.toMap(f -> f.getId(), f -> f, (a, b) -> a));
+		Set<String> relevantOps = securityContextBase.getOperation() != null ? Set.of(allOp.getId(), securityContextBase.getOperation().getId()) : null;
+		List<UserToBaseclass> user = userLinks.stream().filter(f -> relevantOps == null || relevantOps.contains(f.getOperation().getId())).filter(f -> f instanceof UserToBaseclass).map(f -> (UserToBaseclass) f).toList();
+		Map<String, List<RoleToBaseclass>> role = roleLinks.stream().filter(f -> relevantOps == null || relevantOps.contains(f.getOperation().getId())).filter(f -> f instanceof RoleToBaseclass).map(f -> (RoleToBaseclass) f).collect(Collectors.groupingBy(f -> f.getRole().getId()));
+		Map<String, List<TenantToBaseclass>> tenant = tenantLinks.stream().filter(f -> relevantOps == null || relevantOps.contains(f.getOperation().getId())).filter(f -> f instanceof TenantToBaseclass).map(f -> (TenantToBaseclass) f).collect(Collectors.groupingBy(f -> f.getTenant().getId()));
+		return new SecurityPermissions(SecurityPermissionEntry.of(securityContextBase.getUser(), user), role.entrySet().stream().map(f -> SecurityPermissionEntry.of(allRoles.get(f.getKey()), f.getValue())).toList(), tenant.entrySet().stream().map(f -> SecurityPermissionEntry.of(allTenants.get(f.getKey()), f.getValue())).toList());
+
+	}
+
+	private SecurityLinkHolder getSecurityLinkHolder(SecurityContextBase securityContextBase) {
+		List<UserToBaseclass> userPermissions = dataAccessControlCache.get(securityContextBase.getUser().getId(), List.class);
+		List<List<RoleToBaseclass>> rolePermissions = securityContextBase.getAllRoles().stream().map(f -> (List<RoleToBaseclass>) dataAccessControlCache.get(f.getId(), List.class)).toList();
+		List<List<TenantToBaseclass>> tenantPermissions = securityContextBase.getTenants().stream().map(f -> (List<TenantToBaseclass>) dataAccessControlCache.get(f.getId(), List.class)).toList();
+		if (userPermissions != null && rolePermissions.stream().allMatch(f -> f != null) && tenantPermissions.stream().allMatch(f -> f != null)) {
+			List<RoleToBaseclass> roleLinks = rolePermissions.stream().flatMap(f -> f.stream()).toList();
+			List<TenantToBaseclass> tenantLinks = tenantPermissions.stream().flatMap(f -> f.stream()).toList();
+			logger.info("cache hit users: {} , roles: {} , tenants: {}", userPermissions.size(), roleLinks.size(), tenantLinks.size());
+			return new SecurityLinkHolder(userPermissions, roleLinks, tenantLinks);
+
 		}
 		List<SecurityLink> securityLinks = getSecurityLinks(securityContextBase);
-		Map<String, Role> allRoles = securityContextBase.getAllRoles().stream().collect(Collectors.toMap(f -> f.getId(), f -> f,(a,b)->a));
-		Map<String,SecurityTenant> allTenants=securityContextBase.getTenants().stream().collect(Collectors.toMap(f->f.getId(),f->f,(a,b)->a));
-		Set<String> relevantOps = securityContextBase.getOperation()!=null?Set.of(allOp.getId(), securityContextBase.getOperation().getId()):null;
-		List<UserToBaseclass> user = securityLinks.stream().filter(f -> relevantOps==null||relevantOps.contains(f.getOperation().getId())).filter(f -> f instanceof UserToBaseclass).map(f->(UserToBaseclass)f).toList();
-		Map<String,List<RoleToBaseclass>> role = securityLinks.stream().filter(f -> relevantOps==null||relevantOps.contains(f.getOperation().getId())).filter(f -> f instanceof RoleToBaseclass).map(f->(RoleToBaseclass)f).collect(Collectors.groupingBy(f->f.getRole().getId()));
-		Map<String,List<TenantToBaseclass>> tenant = securityLinks.stream().filter(f -> relevantOps==null||relevantOps.contains(f.getOperation().getId())).filter(f -> f instanceof TenantToBaseclass).map(f->(TenantToBaseclass)f).collect(Collectors.groupingBy(f->f.getTenant().getId()));
-		return new SecurityPermissions(SecurityPermissionEntry.of(securityContextBase.getUser(), user),role.entrySet().stream().map(f->SecurityPermissionEntry.of(allRoles.get(f.getKey()),f.getValue())).toList(),tenant.entrySet().stream().map(f->SecurityPermissionEntry.of(allTenants.get(f.getKey()),f.getValue())).toList());
+		List<UserToBaseclass> userLinks = securityLinks.stream().filter(f -> f instanceof UserToBaseclass).map(f -> (UserToBaseclass) f).toList();
+		List<RoleToBaseclass> roleLinks = securityLinks.stream().filter(f -> f instanceof RoleToBaseclass).map(f -> (RoleToBaseclass) f).toList();
+		List<TenantToBaseclass> tenantLinks = securityLinks.stream().filter(f -> f instanceof TenantToBaseclass).map(f -> (TenantToBaseclass) f).toList();
+		dataAccessControlCache.put(securityContextBase.getUser().getId(), userLinks);
+		for (Role role : securityContextBase.getAllRoles()) {
+			dataAccessControlCache.put(role.getId(), roleLinks.stream().filter(f -> f.getRole().getId().equals(role.getId())).toList());
+		}
+		for (SecurityTenant tenant : securityContextBase.getTenants()) {
+			dataAccessControlCache.put(tenant.getId(), tenantLinks.stream().filter(f -> f.getTenant().getId().equals(tenant.getId())).toList());
+		}
+		return new SecurityLinkHolder(userLinks, roleLinks, tenantLinks);
 
 	}
 
 	public List<SecurityLink> getSecurityLinks(SecurityContextBase securityContextBase) {
-		CriteriaBuilder cb=em.getCriteriaBuilder();
-		CriteriaQuery<SecurityLink> q=cb.createQuery(SecurityLink.class);
-		Root<SecurityLink> r=q.from(SecurityLink.class);
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<SecurityLink> q = cb.createQuery(SecurityLink.class);
+		Root<SecurityLink> r = q.from(SecurityLink.class);
 		Root<UserToBaseclass> user = cb.treat(r, UserToBaseclass.class);
 		Root<RoleToBaseclass> role = cb.treat(r, RoleToBaseclass.class);
-		Root<TenantToBaseclass> tenant=cb.treat(r,TenantToBaseclass.class);
-		Map<String,List<Role>> roleMap = securityContextBase.getRoleMap();
-		List<Role> roles= roleMap.values()
+		Root<TenantToBaseclass> tenant = cb.treat(r, TenantToBaseclass.class);
+		Map<String, List<Role>> roleMap = securityContextBase.getRoleMap();
+		List<Role> roles = roleMap.values()
 				.stream()
 				.flatMap(List::stream).toList();
 		q.select(r).where(cb.or(

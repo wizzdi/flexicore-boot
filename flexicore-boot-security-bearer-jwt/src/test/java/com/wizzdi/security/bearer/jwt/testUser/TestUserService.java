@@ -74,16 +74,6 @@ public class TestUserService implements Plugin {
     }
 
 
-    public void validate(TestUserCreate testUserCreate, SecurityContextBase securityContext) {
-        securityUserService.validate(testUserCreate, securityContext);
-
-
-
-    }
-
-    public void validate(TestUserFilter testUserFiltering, SecurityContextBase securityContext) {
-        securityUserService.validate(testUserFiltering, securityContext);
-    }
 
     public PaginationResponse<TestUser> getAllTestUsers(TestUserFilter testUserFiltering, SecurityContextBase securityContext) {
         List<TestUser> list = listAllTestUsers(testUserFiltering, securityContext);

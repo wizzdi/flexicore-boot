@@ -30,7 +30,7 @@ public @interface IOperation {
 	String Description() default "";
 	String Category() default "General";
 	boolean auditable() default false;
-	Class<? extends Baseclass>[] relatedClazzes() default {};
+	Class<?>[] relatedClazzes() default {};
 	
 	enum Access {
 		deny, allow
