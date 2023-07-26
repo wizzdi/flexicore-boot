@@ -7,6 +7,7 @@ import com.wizzdi.flexicore.security.validation.Create;
 import com.wizzdi.flexicore.security.validation.Update;
 import io.swagger.v3.oas.annotations.media.Schema;
 
+import jakarta.persistence.Column;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -17,6 +18,7 @@ public class CommonUserCreate extends SecurityUserCreate {
     @Email
     @NotNull(groups = Create.class)
     @Size(min = 1,max = 255,groups = {Create.class, Update.class})
+    @Column(unique = true)
     private String email;
     private String lastName;
     @NotNull(groups = Create.class)

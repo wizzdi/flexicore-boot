@@ -45,8 +45,7 @@ import java.util.stream.Collectors;
 
 
 @Component
-@Extension
-public class CommonUserRepository implements Plugin {
+public class CommonUserRepository{
 
     @PersistenceContext
     private EntityManager em;

@@ -26,10 +26,11 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
-@Service
+@Configuration
 public class DefaultObjectsCreator {
     private static final Logger logger= LoggerFactory.getLogger(DefaultObjectsCreator.class);
 
@@ -37,57 +38,49 @@ public class DefaultObjectsCreator {
     private static final String TENANT_TO_USER_ID = "Xk5siBx+TyWv+G6V+XuSdw";
     private static final String SUPER_ADMIN_ROLE_ID = "HzFnw-nVR0Olq6WBvwKcQg";
     private static final String SUPER_ADMIN_TO_ADMIN_ID = "EbVFgr+YS3ezYUblzceVGA";
-    @Autowired
-    private SecurityTenantService tenantService;
 
-    @Autowired
-    private TenantToUserService tenantToUserService;
-    @Autowired
-    private RoleService roleService;
 
-    @Autowired
-    private RoleToUserService roleToUserService;
-    @Autowired
-    private SecurityUserService userService;
-    @Autowired
-    @Qualifier("systemAdminId")
-    private String systemAdminId;
+
+
+
+
 
 
     @ConditionalOnMissingBean
     @Bean
-    public DefaultTenantProvider<SecurityTenant> defaultTenantProvider() {
+    public DefaultTenantProvider<SecurityTenant> defaultTenantProvider(SecurityTenantService tenantService) {
         return securityTenantCreate -> tenantService.createTenant(securityTenantCreate, null);
     }
 
     @ConditionalOnMissingBean
     @Bean
-    public DefaultUserProvider<SecurityUser> defaultSecurityUserProvider() {
+    public DefaultUserProvider<SecurityUser> defaultSecurityUserProvider(SecurityUserService userService) {
         return securityUserCreate -> userService.createSecurityUser(securityUserCreate, null);
     }
 
     @ConditionalOnMissingBean
     @Bean
-    public DefaultTenantToUserProvider<TenantToUser> defaultTenantToUserProvider() {
+    public DefaultTenantToUserProvider<TenantToUser> defaultTenantToUserProvider(TenantToUserService tenantToUserService) {
         return tenantToUserCreate -> tenantToUserService.createTenantToUser(tenantToUserCreate, null);
     }
 
     @ConditionalOnMissingBean
     @Bean
-    public DefaultRoleProvider<Role> defaultRoleProvider() {
+    public DefaultRoleProvider<Role> defaultRoleProvider(RoleService roleService) {
         return roleCreate -> roleService.createRole(roleCreate, null);
     }
 
     @ConditionalOnMissingBean
     @Bean
-    public DefaultRoleToUserProvider<RoleToUser> defaultRoleToUserProvider() {
+    public DefaultRoleToUserProvider<RoleToUser> defaultRoleToUserProvider(RoleToUserService roleToUserService) {
         return roleToUserCreate -> roleToUserService.createRoleToUser(roleToUserCreate, null);
     }
 
 
     @Bean
     @ConditionalOnMissingBean
-    public TenantAndUserInit tenantAndUserInit(DefaultTenantProvider defaultTenantProvider, DefaultUserProvider defaultUserProvider, DefaultTenantToUserProvider defaultTenantToUserProvider) {
+    public TenantAndUserInit tenantAndUserInit(DefaultTenantProvider defaultTenantProvider, DefaultUserProvider defaultUserProvider, DefaultTenantToUserProvider defaultTenantToUserProvider,
+                                               @Qualifier("systemAdminId") String systemAdminId,SecurityUserService userService,TenantToUserService tenantToUserService,SecurityTenantService tenantService) {
         SecurityTenantCreate tenantCreate = new SecurityTenantCreate()
                 .setIdForCreate(DEFAULT_TENANT_ID)
                 .setName("Default SecurityTenant")
@@ -153,7 +146,8 @@ public class DefaultObjectsCreator {
     @ConditionalOnMissingBean
     @Scope(value = ConfigurableBeanFactory.SCOPE_SINGLETON)
     @Bean
-    public DefaultSecurityEntities createDefaultObjects(Clazzes clazzes, TenantAndUserInit tenantAndUserInit, DefaultRoleProvider defaultRoleProvider, DefaultRoleToUserProvider defaultRoleToUserProvider) {
+    public DefaultSecurityEntities createDefaultObjects(Clazzes clazzes, TenantAndUserInit tenantAndUserInit, DefaultRoleProvider defaultRoleProvider,
+                                                        DefaultRoleToUserProvider defaultRoleToUserProvider, RoleToUserService roleToUserService,RoleService roleService) {
         SecurityTenant defaultTenant = tenantAndUserInit.getDefaultTenant();
         SecurityUser admin = tenantAndUserInit.getAdmin();
         TenantToUser tenantToUser=tenantAndUserInit.getTenantToUser();

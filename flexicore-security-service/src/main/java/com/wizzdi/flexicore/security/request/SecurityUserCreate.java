@@ -15,6 +15,8 @@ public class SecurityUserCreate extends SecurityEntityCreate {
 
     public SecurityUserCreate(SecurityUserCreate other) {
         super(other);
+        this.tenant=other.tenant;
+        this.tenantId=other.tenantId;
     }
 
 
