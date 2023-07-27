@@ -23,34 +23,31 @@
 package com.wizzdi.flexicore.common.user.service;
 
 
-import com.flexicore.model.SecuredBasic_;
-import com.wizzdi.flexicore.common.user.data.CommonUserRepository;
 import com.flexicore.model.SecurityTenant;
 import com.flexicore.model.TenantToUser;
 import com.flexicore.model.User;
+import com.flexicore.security.SecurityContextBase;
+import com.wizzdi.flexicore.common.user.data.CommonUserRepository;
 import com.wizzdi.flexicore.common.user.request.CommonUserCreate;
 import com.wizzdi.flexicore.common.user.request.CommonUserFilter;
 import com.wizzdi.flexicore.common.user.request.CommonUserUpdate;
-import com.flexicore.security.SecurityContextBase;
-import com.lambdaworks.crypto.SCryptUtil;
-import com.wizzdi.flexicore.boot.base.interfaces.Plugin;
 import com.wizzdi.flexicore.security.request.TenantToUserCreate;
 import com.wizzdi.flexicore.security.response.PaginationResponse;
 import com.wizzdi.flexicore.security.service.BaseclassService;
 import com.wizzdi.flexicore.security.service.SecurityUserService;
 import com.wizzdi.flexicore.security.service.TenantToUserService;
-import org.pf4j.Extension;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.io.File;
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 
 
 @Component
@@ -63,24 +60,20 @@ public class CommonUserService  {
     private CommonUserRepository commonUserRepository;
 
     @Autowired
+    @Lazy
     private SecurityUserService securityUserService;
 
 
     @Autowired
+    @Lazy
     private TenantToUserService tenantToUserService;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
 
     @Value("${flexicore.users.rootDirPath:/home/flexicore/users/}")
     private String usersRootHomeDir;
-
-
-    @Value("${flexicore.security.password.scryptN:16384}")
-    private int scryptN;
-    @Value("${flexicore.security.password.scryptR:8}")
-    private int scryptR;
-    @Value("${flexicore.security.password.scryptP:1}")
-    private int scryptP;
-
 
 
     
@@ -170,7 +163,7 @@ public class CommonUserService  {
 
         if (createUser.getPassword() != null) {
 
-            String hash = hashPassword(createUser.getPassword());
+            String hash = passwordEncoder.encode(createUser.getPassword());
             if (!hash.equals(user.getPassword())) {
                 user.setPassword(hash);
                 update = true;
@@ -179,9 +172,6 @@ public class CommonUserService  {
         return update;
     }
 
-    private String hashPassword(String plain) {
-        return SCryptUtil.scrypt(plain, scryptN, scryptR, scryptP);
-    }
 
 
 
