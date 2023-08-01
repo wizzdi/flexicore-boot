@@ -2,6 +2,7 @@ package com.flexicore.rest;
 
 import com.flexicore.annotations.OperationsInside;
 import com.flexicore.annotations.ProtectedREST;
+import com.flexicore.model.SecuredBasic_;
 import com.flexicore.model.security.TotpSecurityPolicy;
 import com.flexicore.model.security.SecurityPolicy;
 import com.flexicore.request.TotpSecurityPolicyCreate;
@@ -51,7 +52,7 @@ public class TotpSecurityPolicyController implements Plugin {
 
 	public TotpSecurityPolicy update(@RequestHeader(value = "authenticationKey",required = false)String key,@RequestBody TotpSecurityPolicyUpdate securityPolicyUpdate, @RequestAttribute SecurityContextBase securityContext){
 		String id=securityPolicyUpdate.getId();
-		TotpSecurityPolicy totpSecurityPolicy=id!=null? totpSecurityPolicyService.getSecurityPolicyByIdOrNull(id,TotpSecurityPolicy.class,securityContext):null;
+		TotpSecurityPolicy totpSecurityPolicy=id!=null? totpSecurityPolicyService.getByIdOrNull(id,TotpSecurityPolicy.class, SecuredBasic_.security,securityContext):null;
 		if(totpSecurityPolicy==null){
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"no TotpSecurityPolicy user with id "+id);
 		}

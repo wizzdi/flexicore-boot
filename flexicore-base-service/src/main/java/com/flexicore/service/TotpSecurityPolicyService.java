@@ -2,6 +2,7 @@ package com.flexicore.service;
 
 import com.flexicore.data.TotpSecurityPolicyRepository;
 import com.flexicore.model.Baseclass;
+import com.flexicore.model.Basic;
 import com.flexicore.model.security.TotpSecurityPolicy;
 import com.flexicore.request.TotpSecurityPolicyCreate;
 import com.flexicore.request.TotpSecurityPolicyFilter;
@@ -10,9 +11,11 @@ import com.flexicore.security.SecurityContextBase;
 import com.wizzdi.flexicore.boot.base.interfaces.Plugin;
 import com.wizzdi.flexicore.security.response.PaginationResponse;
 import com.wizzdi.flexicore.security.service.SecurityPolicyService;
+import jakarta.persistence.metamodel.SingularAttribute;
 import org.pf4j.Extension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Arrays;
 import java.util.List;
@@ -38,17 +41,6 @@ public class TotpSecurityPolicyService implements Plugin {
 		return totpSecurityPolicy;
 	}
 
-	public void merge(Object o) {
-		totpSecurityPolicyRepository.merge(o);
-	}
-
-	public void massMerge(List<Object> list) {
-		totpSecurityPolicyRepository.massMerge(list);
-	}
-
-	public <T extends Baseclass> List<T> listByIds(Class<T> c, Set<String> ids, SecurityContextBase securityContext) {
-		return totpSecurityPolicyRepository.listByIds(c, ids, securityContext);
-	}
 
 	public TotpSecurityPolicy createSecurityPolicyNoMerge(TotpSecurityPolicyCreate securityPolicyCreate, SecurityContextBase securityContext) {
 		TotpSecurityPolicy securityPolicy = new TotpSecurityPolicy();
@@ -88,13 +80,7 @@ public class TotpSecurityPolicyService implements Plugin {
 
 	}
 
-	public <T extends Baseclass> T getByIdOrNull(String id, Class<T> c, SecurityContextBase securityContext) {
-		return totpSecurityPolicyRepository.getByIdOrNull(id, c, securityContext);
-	}
 
-	public <T extends TotpSecurityPolicy> T getSecurityPolicyByIdOrNull(String id, Class<T> c, SecurityContextBase securityContext) {
-		return totpSecurityPolicyRepository.getSecurityPolicyByIdOrNull(id, c, securityContext);
-	}
 
 	public PaginationResponse<TotpSecurityPolicy> getAllSecurityPolicies(TotpSecurityPolicyFilter TotpSecurityPolicyFilter, SecurityContextBase securityContext) {
 		List<TotpSecurityPolicy> list = listAllSecurityPolicies(TotpSecurityPolicyFilter, securityContext);
@@ -106,8 +92,41 @@ public class TotpSecurityPolicyService implements Plugin {
 		return totpSecurityPolicyRepository.listAllSecurityPolicies(TotpSecurityPolicyFilter, securityContext);
 	}
 
-	public <T extends Baseclass> List<T> findByIds(Class<T> c, Set<String> requested) {
+	public <T extends Baseclass> List<T> listByIds(Class<T> c, Set<String> ids, SecurityContextBase securityContext) {
+		return totpSecurityPolicyRepository.listByIds(c, ids, securityContext);
+	}
+
+	public <T extends Baseclass> T getByIdOrNull(String id, Class<T> c, SecurityContextBase securityContext) {
+		return totpSecurityPolicyRepository.getByIdOrNull(id, c, securityContext);
+	}
+
+	public <D extends Basic, E extends Baseclass, T extends D> T getByIdOrNull(String id, Class<T> c, SingularAttribute<D, E> baseclassAttribute, SecurityContextBase securityContext) {
+		return totpSecurityPolicyRepository.getByIdOrNull(id, c, baseclassAttribute, securityContext);
+	}
+
+	public <D extends Basic, E extends Baseclass, T extends D> List<T> listByIds(Class<T> c, Set<String> ids, SingularAttribute<D, E> baseclassAttribute, SecurityContextBase securityContext) {
+		return totpSecurityPolicyRepository.listByIds(c, ids, baseclassAttribute, securityContext);
+	}
+
+	public <D extends Basic, T extends D> List<T> findByIds(Class<T> c, Set<String> ids, SingularAttribute<D, String> idAttribute) {
+		return totpSecurityPolicyRepository.findByIds(c, ids, idAttribute);
+	}
+
+	public <T extends Basic> List<T> findByIds(Class<T> c, Set<String> requested) {
 		return totpSecurityPolicyRepository.findByIds(c, requested);
 	}
 
+	public <T> T findByIdOrNull(Class<T> type, String id) {
+		return totpSecurityPolicyRepository.findByIdOrNull(type, id);
+	}
+
+	@Transactional
+	public void merge(Object base) {
+		totpSecurityPolicyRepository.merge(base);
+	}
+
+	@Transactional
+	public void massMerge(List<?> toMerge) {
+		totpSecurityPolicyRepository.massMerge(toMerge);
+	}
 }

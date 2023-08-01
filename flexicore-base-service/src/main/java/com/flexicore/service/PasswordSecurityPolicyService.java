@@ -2,6 +2,7 @@ package com.flexicore.service;
 
 import com.flexicore.data.PasswordSecurityPolicyRepository;
 import com.flexicore.model.Baseclass;
+import com.flexicore.model.Basic;
 import com.flexicore.model.Role;
 import com.flexicore.model.SecurityTenant;
 import com.flexicore.model.security.PasswordSecurityPolicy;
@@ -13,10 +14,12 @@ import com.flexicore.security.SecurityContextBase;
 import com.wizzdi.flexicore.boot.base.interfaces.Plugin;
 import com.wizzdi.flexicore.security.response.PaginationResponse;
 import com.wizzdi.flexicore.security.service.SecurityPolicyService;
+import jakarta.persistence.metamodel.SingularAttribute;
 import org.pf4j.Extension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.ArrayList;
@@ -49,17 +52,7 @@ public class PasswordSecurityPolicyService implements Plugin {
 		return passwordSecurityPolicy;
 	}
 
-	public void merge(Object o) {
-		passwordSecurityPolicyRepository.merge(o);
-	}
 
-	public void massMerge(List<Object> list) {
-		passwordSecurityPolicyRepository.massMerge(list);
-	}
-
-	public <T extends Baseclass> List<T> listByIds(Class<T> c, Set<String> ids, SecurityContextBase securityContext) {
-		return passwordSecurityPolicyRepository.listByIds(c, ids, securityContext);
-	}
 
 	public PasswordSecurityPolicy createSecurityPolicyNoMerge(PasswordSecurityPolicyCreate securityPolicyCreate, SecurityContextBase securityContext) {
 		PasswordSecurityPolicy securityPolicy = new PasswordSecurityPolicy();
@@ -115,9 +108,36 @@ public class PasswordSecurityPolicyService implements Plugin {
 		return passwordSecurityPolicyRepository.getByIdOrNull(id, c, securityContext);
 	}
 
-	public <T extends PasswordSecurityPolicy> T getSecurityPolicyByIdOrNull(String id, Class<T> c, SecurityContextBase securityContext) {
-		return passwordSecurityPolicyRepository.getSecurityPolicyByIdOrNull(id, c, securityContext);
+	public <D extends Basic, E extends Baseclass, T extends D> T getByIdOrNull(String id, Class<T> c, SingularAttribute<D, E> baseclassAttribute, SecurityContextBase securityContext) {
+		return passwordSecurityPolicyRepository.getByIdOrNull(id, c, baseclassAttribute, securityContext);
 	}
+
+	public <D extends Basic, E extends Baseclass, T extends D> List<T> listByIds(Class<T> c, Set<String> ids, SingularAttribute<D, E> baseclassAttribute, SecurityContextBase securityContext) {
+		return passwordSecurityPolicyRepository.listByIds(c, ids, baseclassAttribute, securityContext);
+	}
+
+	public <D extends Basic, T extends D> List<T> findByIds(Class<T> c, Set<String> ids, SingularAttribute<D, String> idAttribute) {
+		return passwordSecurityPolicyRepository.findByIds(c, ids, idAttribute);
+	}
+
+	public <T extends Basic> List<T> findByIds(Class<T> c, Set<String> requested) {
+		return passwordSecurityPolicyRepository.findByIds(c, requested);
+	}
+
+	public <T> T findByIdOrNull(Class<T> type, String id) {
+		return passwordSecurityPolicyRepository.findByIdOrNull(type, id);
+	}
+
+	@Transactional
+	public void merge(Object base) {
+		passwordSecurityPolicyRepository.merge(base);
+	}
+
+	@Transactional
+	public void massMerge(List<?> toMerge) {
+		passwordSecurityPolicyRepository.massMerge(toMerge);
+	}
+
 
 	public PaginationResponse<PasswordSecurityPolicy> getAllSecurityPolicies(PasswordSecurityPolicyFilter PasswordSecurityPolicyFilter, SecurityContextBase securityContext) {
 		List<PasswordSecurityPolicy> list = listAllSecurityPolicies(PasswordSecurityPolicyFilter, securityContext);
@@ -129,9 +149,6 @@ public class PasswordSecurityPolicyService implements Plugin {
 		return passwordSecurityPolicyRepository.listAllSecurityPolicies(PasswordSecurityPolicyFilter, securityContext);
 	}
 
-	public <T extends Baseclass> List<T> findByIds(Class<T> c, Set<String> requested) {
-		return passwordSecurityPolicyRepository.findByIds(c, requested);
-	}
 
 	public List<PasswordPolicyError> enforcePolicy(PasswordSecurityPolicy passwordSecurityPolicy, String password) {
 		List<PasswordPolicyError> errors=new ArrayList<>();
@@ -153,4 +170,5 @@ public class PasswordSecurityPolicyService implements Plugin {
 		}
 		return errors;
 	}
+
 }

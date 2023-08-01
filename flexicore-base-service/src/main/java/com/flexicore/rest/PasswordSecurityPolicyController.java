@@ -2,6 +2,7 @@ package com.flexicore.rest;
 
 import com.flexicore.annotations.OperationsInside;
 import com.flexicore.annotations.ProtectedREST;
+import com.flexicore.model.SecuredBasic_;
 import com.flexicore.model.security.PasswordSecurityPolicy;
 import com.flexicore.model.security.SecurityPolicy;
 import com.flexicore.request.PasswordSecurityPolicyCreate;
@@ -52,7 +53,7 @@ public class PasswordSecurityPolicyController implements Plugin {
 
 	public PasswordSecurityPolicy update(@RequestHeader(value = "authenticationKey",required = false)String key,@RequestBody PasswordSecurityPolicyUpdate securityPolicyUpdate, @RequestAttribute SecurityContextBase securityContext){
 		String id=securityPolicyUpdate.getId();
-		PasswordSecurityPolicy passwordSecurityPolicy=id!=null? passwordSecurityPolicyService.getSecurityPolicyByIdOrNull(id,PasswordSecurityPolicy.class,securityContext):null;
+		PasswordSecurityPolicy passwordSecurityPolicy=id!=null? passwordSecurityPolicyService.getByIdOrNull(id,PasswordSecurityPolicy.class, SecuredBasic_.security,securityContext):null;
 		if(passwordSecurityPolicy==null){
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"no PasswordSecurityPolicy user with id "+id);
 		}
