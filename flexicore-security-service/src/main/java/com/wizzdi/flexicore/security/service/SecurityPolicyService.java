@@ -1,6 +1,7 @@
 package com.wizzdi.flexicore.security.service;
 
 import com.flexicore.model.Baseclass;
+import com.flexicore.model.Basic;
 import com.flexicore.model.Role;
 import com.flexicore.model.SecurityTenant;
 import com.flexicore.model.security.SecurityPolicy;
@@ -11,10 +12,12 @@ import com.wizzdi.flexicore.security.request.SecurityPolicyCreate;
 import com.wizzdi.flexicore.security.request.SecurityPolicyFilter;
 import com.wizzdi.flexicore.security.request.SecurityPolicyUpdate;
 import com.wizzdi.flexicore.security.response.PaginationResponse;
+import jakarta.persistence.metamodel.SingularAttribute;
 import org.pf4j.Extension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.*;
@@ -33,29 +36,16 @@ public class SecurityPolicyService implements Plugin {
 
 	public SecurityPolicy createSecurityPolicy(SecurityPolicyCreate securityPolicyCreate, SecurityContextBase securityContext) {
 		SecurityPolicy securityPolicy = createSecurityPolicyNoMerge(securityPolicyCreate, securityContext);
-		Baseclass security = new Baseclass(securityPolicyCreate.getName(), securityContext);
-		securityPolicy.setSecurity(security);
-		SecurityPolicyRepository.massMerge(Arrays.asList(securityPolicy,security));
+		SecurityPolicyRepository.merge(securityPolicy);
 		return securityPolicy;
 	}
 
-	public void merge(Object o) {
-		SecurityPolicyRepository.merge(o);
-	}
-
-	public void massMerge(List<Object> list) {
-		SecurityPolicyRepository.massMerge(list);
-	}
-
-	public <T extends Baseclass> List<T> listByIds(Class<T> c, Set<String> ids, SecurityContextBase securityContext) {
-		return SecurityPolicyRepository.listByIds(c, ids, securityContext);
-	}
 
 	public SecurityPolicy createSecurityPolicyNoMerge(SecurityPolicyCreate securityPolicyCreate, SecurityContextBase securityContext) {
 		SecurityPolicy securityPolicy = new SecurityPolicy();
 		securityPolicy.setId(Baseclass.getBase64ID());
 		updateSecurityPolicyNoMerge(securityPolicyCreate, securityPolicy);
-		SecurityPolicyRepository.merge(securityPolicy);
+		BaseclassService.createSecurityObjectNoMerge(securityPolicy,securityContext);
 		return securityPolicy;
 	}
 
@@ -109,12 +99,6 @@ public class SecurityPolicyService implements Plugin {
 		}
 		securityPolicyCreate.setPolicyTenant(securityTenant);
 
-		String securityId=securityPolicyCreate.getSecurityId();
-		Baseclass baseclass=securityId!=null?getByIdOrNull(securityId,Baseclass.class,securityContext):null;
-		if(securityId!=null&&baseclass==null){
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"no Baseclass with id "+securityId);
-		}
-		securityPolicyCreate.setSecurity(baseclass);
 	}
 
 	@Deprecated
@@ -139,13 +123,6 @@ public class SecurityPolicyService implements Plugin {
 
 	}
 
-	public <T extends Baseclass> T getByIdOrNull(String id, Class<T> c, SecurityContextBase securityContext) {
-		return SecurityPolicyRepository.getByIdOrNull(id, c, securityContext);
-	}
-
-	public <T extends SecurityPolicy> T getSecurityPolicyByIdOrNull(String id, Class<T> c, SecurityContextBase securityContext) {
-		return SecurityPolicyRepository.getSecurityPolicyByIdOrNull(id, c, securityContext);
-	}
 
 	public PaginationResponse<SecurityPolicy> getAllSecurityPolicies(SecurityPolicyFilter SecurityPolicyFilter, SecurityContextBase securityContext) {
 		List<SecurityPolicy> list = listAllSecurityPolicies(SecurityPolicyFilter, securityContext);
@@ -157,7 +134,41 @@ public class SecurityPolicyService implements Plugin {
 		return SecurityPolicyRepository.listAllSecurityPolicies(SecurityPolicyFilter, securityContext);
 	}
 
-	public <T extends Baseclass> List<T> findByIds(Class<T> c, Set<String> requested) {
+	public <T extends Baseclass> List<T> listByIds(Class<T> c, Set<String> ids, SecurityContextBase securityContext) {
+		return SecurityPolicyRepository.listByIds(c, ids, securityContext);
+	}
+
+	public <T extends Baseclass> T getByIdOrNull(String id, Class<T> c, SecurityContextBase securityContext) {
+		return SecurityPolicyRepository.getByIdOrNull(id, c, securityContext);
+	}
+
+	public <D extends Basic, E extends Baseclass, T extends D> T getByIdOrNull(String id, Class<T> c, SingularAttribute<D, E> baseclassAttribute, SecurityContextBase securityContext) {
+		return SecurityPolicyRepository.getByIdOrNull(id, c, baseclassAttribute, securityContext);
+	}
+
+	public <D extends Basic, E extends Baseclass, T extends D> List<T> listByIds(Class<T> c, Set<String> ids, SingularAttribute<D, E> baseclassAttribute, SecurityContextBase securityContext) {
+		return SecurityPolicyRepository.listByIds(c, ids, baseclassAttribute, securityContext);
+	}
+
+	public <D extends Basic, T extends D> List<T> findByIds(Class<T> c, Set<String> ids, SingularAttribute<D, String> idAttribute) {
+		return SecurityPolicyRepository.findByIds(c, ids, idAttribute);
+	}
+
+	public <T extends Basic> List<T> findByIds(Class<T> c, Set<String> requested) {
 		return SecurityPolicyRepository.findByIds(c, requested);
+	}
+
+	public <T> T findByIdOrNull(Class<T> type, String id) {
+		return SecurityPolicyRepository.findByIdOrNull(type, id);
+	}
+
+	@Transactional
+	public void merge(Object base) {
+		SecurityPolicyRepository.merge(base);
+	}
+
+	@Transactional
+	public void massMerge(List<?> toMerge) {
+		SecurityPolicyRepository.massMerge(toMerge);
 	}
 }

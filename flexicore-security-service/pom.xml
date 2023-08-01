@@ -51,7 +51,7 @@
 
         <dependency>
             <groupId>com.wizzdi</groupId>
-            <artifactId>flexicore-boot-starter-data-jpa-hibernate</artifactId>
+            <artifactId>flexicore-boot-starter-data-jpa-eclipselink</artifactId>
             <scope>test</scope>
         </dependency>
 

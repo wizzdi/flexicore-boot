@@ -1,9 +1,6 @@
 package com.flexicore.model.security;
 
-import com.flexicore.model.Baseclass;
-import com.flexicore.model.Basic;
-import com.flexicore.model.Role;
-import com.flexicore.model.SecurityTenant;
+import com.flexicore.model.*;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -11,7 +8,7 @@ import jakarta.persistence.ManyToOne;
 import java.time.OffsetDateTime;
 
 @Entity
-public class SecurityPolicy extends Basic {
+public class SecurityPolicy extends SecuredBasic {
 
 
 	@Column(columnDefinition = "timestamp with time zone")
@@ -21,8 +18,6 @@ public class SecurityPolicy extends Basic {
 	private Role policyRole;
 	@ManyToOne(targetEntity = SecurityTenant.class)
 	private SecurityTenant policyTenant;
-	@ManyToOne(targetEntity = Baseclass.class)
-	private Baseclass security;
 
 
 	@Column(columnDefinition = "timestamp with time zone")
@@ -64,14 +59,5 @@ public class SecurityPolicy extends Basic {
 		return (T) this;
 	}
 
-	@ManyToOne(targetEntity = Baseclass.class)
-	public Baseclass getSecurity() {
-		return security;
-	}
-
-	public <T extends SecurityPolicy> T setSecurity(Baseclass security) {
-		this.security = security;
-		return (T) this;
-	}
 
 }

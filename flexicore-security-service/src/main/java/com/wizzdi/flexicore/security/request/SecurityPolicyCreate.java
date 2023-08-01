@@ -12,8 +12,7 @@ import java.time.OffsetDateTime;
 
 @IdValid.List({
         @IdValid(targetField = "policyRole", fieldType = Role.class, field = "policyRoleId", groups = {Create.class, Update.class}),
-        @IdValid(targetField = "policyTenant", fieldType = SecurityTenant.class, field = "policyTenantId", groups = {Create.class, Update.class}),
-        @IdValid(targetField = "security", fieldType = Baseclass.class, field = "securityId", groups = {Create.class, Update.class}),
+        @IdValid(targetField = "policyTenant", fieldType = SecurityTenant.class, field = "policyTenantId", groups = {Create.class, Update.class})
 
 })
 public class SecurityPolicyCreate extends BasicCreate {
@@ -27,9 +26,6 @@ public class SecurityPolicyCreate extends BasicCreate {
     private String policyTenantId;
     @JsonIgnore
     private SecurityTenant policyTenant;
-    private String securityId;
-    @JsonIgnore
-    private Baseclass security;
 
 
     public OffsetDateTime getStartTime() {
@@ -88,23 +84,5 @@ public class SecurityPolicyCreate extends BasicCreate {
         return (T) this;
     }
 
-    public String getSecurityId() {
-        return securityId;
-    }
-
-    public <T extends SecurityPolicyCreate> T setSecurityId(String securityId) {
-        this.securityId = securityId;
-        return (T) this;
-    }
-
-    @JsonIgnore
-    public Baseclass getSecurity() {
-        return security;
-    }
-
-    public <T extends SecurityPolicyCreate> T setSecurity(Baseclass security) {
-        this.security = security;
-        return (T) this;
-    }
 
 }

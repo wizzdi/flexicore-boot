@@ -17,7 +17,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import jakarta.persistence.EntityManager;
-import jakarta.persistence.NoResultException;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.TypedQuery;
 import jakarta.persistence.criteria.*;
@@ -218,7 +217,38 @@ public class BaseclassRepository implements Plugin {
 		return Pair.of(deniedUsersBase, deniedRolesBase);
 	}
 
+	//temporary solution to solve issues before new permission model is implemented
 	private Subquery<String> getPermissionGroupSubQuery(CommonAbstractCriteria query, CriteriaBuilder cb, List<Role> roles, SecurityUser securityUser, List<? extends SecurityTenant> tenants, SecurityOperation op, Clazz clazz, List<Baseclass> userDenied, List<Baseclass> roleDenied) {
+	if(em.getDelegate().getClass().getCanonicalName().contains("eclipselink")){
+		return getPermissionGroupSubQueryEclipselink(query, cb, roles, securityUser, tenants, op, clazz, userDenied, roleDenied);
+	}
+	return getPermissionGroupSubQueryHibernate(query, cb, roles, securityUser, tenants, op, clazz, userDenied, roleDenied);
+	}
+
+	private Subquery<String> getPermissionGroupSubQueryEclipselink(CommonAbstractCriteria query, CriteriaBuilder cb, List<Role> roles, SecurityUser securityUser, List<? extends SecurityTenant> tenants, SecurityOperation op, Clazz clazz, List<Baseclass> userDenied, List<Baseclass> roleDenied) {
+		Subquery<String> sub = query.subquery(String.class);
+		Root<SecurityLink> securityLinkRoot = sub.from(SecurityLink.class);
+		Join<SecurityLink, Baseclass> rightsideJoin = securityLinkRoot.join(SecurityLink_.rightside);
+		Root<UserToBaseClass> userToBaseClassRoot = cb.treat(securityLinkRoot, UserToBaseClass.class);
+		Root<RoleToBaseclass> roleToBaseclassRoot = cb.treat(securityLinkRoot, RoleToBaseclass.class);
+		Root<TenantToBaseClassPremission> tenantToBaseClassPremissionRoot = cb.treat(securityLinkRoot, TenantToBaseClassPremission.class);
+		Join<PermissionGroup, PermissionGroupToBaseclass> permissionGroupLinkJoin = rightsideJoin.join("links");
+		Join<PermissionGroupToBaseclass, Baseclass> permissionGroupTargetJoin = permissionGroupLinkJoin.join(PermissionGroupToBaseclass_.rightside);
+
+
+		Predicate linkPredicate = cb.and(
+				createBaseclassSpecificPredicate(cb, roles, securityUser, tenants, op, userDenied, roleDenied, securityLinkRoot, userToBaseClassRoot, roleToBaseclassRoot, tenantToBaseClassPremissionRoot),
+				cb.isFalse(permissionGroupLinkJoin.get(PermissionGroupToBaseclass_.softDelete)),
+				cb.isFalse(rightsideJoin.get(PermissionGroup_.softDelete)),
+				cb.equal(rightsideJoin.get(Baseclass_.dtype), PermissionGroup.class.getSimpleName())
+		);
+
+		sub.select(permissionGroupTargetJoin.get(Baseclass_.id)).where(linkPredicate);
+		return sub;
+
+	}
+
+	private Subquery<String> getPermissionGroupSubQueryHibernate(CommonAbstractCriteria query, CriteriaBuilder cb, List<Role> roles, SecurityUser securityUser, List<? extends SecurityTenant> tenants, SecurityOperation op, Clazz clazz, List<Baseclass> userDenied, List<Baseclass> roleDenied) {
 		Subquery<String> sub = query.subquery(String.class);
 		Root<SecurityLink> securityLinkRoot = sub.from(SecurityLink.class);
 		Join<SecurityLink, Baseclass> rightsideJoin = securityLinkRoot.join(SecurityLink_.rightside);

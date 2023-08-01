@@ -16,7 +16,9 @@ import java.util.Set;
         @IdValid(targetField = "roles", fieldType = SecurityTenant.class, field = "rolesIds"),
 
 })
-public class SecurityPolicyFilter extends BaseclassFilter {
+public class SecurityPolicyFilter extends PaginationFilter {
+
+    private BasicPropertiesFilter basicPropertiesFilter;
 
     private Set<String> securityTenantsIds = new HashSet<>();
     @JsonIgnore
@@ -93,6 +95,15 @@ public class SecurityPolicyFilter extends BaseclassFilter {
 
     public <T extends SecurityPolicyFilter> T setIncludeNoRole(boolean includeNoRole) {
         this.includeNoRole = includeNoRole;
+        return (T) this;
+    }
+
+    public BasicPropertiesFilter getBasicPropertiesFilter() {
+        return basicPropertiesFilter;
+    }
+
+    public <T extends SecurityPolicyFilter> T setBasicPropertiesFilter(BasicPropertiesFilter basicPropertiesFilter) {
+        this.basicPropertiesFilter = basicPropertiesFilter;
         return (T) this;
     }
 }
