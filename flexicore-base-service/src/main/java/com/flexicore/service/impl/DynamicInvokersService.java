@@ -317,6 +317,11 @@ public class DynamicInvokersService implements ServicePlugin {
                 //failed in the past
                 current = null;
             }
+            if(current instanceof Map<?,?> map){
+                current=map.get(currentPathComponent);
+                currentClass = current.getClass();
+                continue;
+            }
             Method method = getGetter(methodCache, fullPathSoFar, currentClass, currentPathComponent);
             if (method == null) {
                 failedCache.add(fullPathSoFar);
