@@ -319,6 +319,9 @@ public class DynamicInvokersService implements ServicePlugin {
             }
             if(current instanceof Map<?,?> map){
                 current=map.get(currentPathComponent);
+                if(current==null){
+                    break;
+                }
                 currentClass = current.getClass();
                 continue;
             }
