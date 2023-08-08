@@ -106,8 +106,8 @@
         <reflections.version>0.10.2</reflections.version>
         <org.eclipse.persistence.jpa.version>4.0.2</org.eclipse.persistence.jpa.version>
         <jjwt-api.version>0.11.5</jjwt-api.version>
-        <swagger.version>2.2.14</swagger.version>
-        <springdoc-openapi-starter-webmvc-api.version>2.1.0</springdoc-openapi-starter-webmvc-api.version>
+        <swagger.version>2.2.15</swagger.version>
+        <springdoc-openapi-starter-webmvc-api.version>2.2.0</springdoc-openapi-starter-webmvc-api.version>
 
         <commons-io.version>2.13.0</commons-io.version>
         <commons-codec.version>1.16.0</commons-codec.version>
