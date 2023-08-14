@@ -14,13 +14,19 @@ import com.wizzdi.flexicore.boot.base.interfaces.Plugin;
 import com.wizzdi.flexicore.file.model.FileResource;
 import com.wizzdi.flexicore.file.service.FileResourceService;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
 import org.pf4j.Extension;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 
 @RestController
@@ -44,8 +50,9 @@ public class FileUploadController implements Plugin {
     public FileResource uploadFile(@RequestHeader("md5") String md5, @RequestHeader(value = "name",required = false) String name,
                                    @RequestHeader(value = "chunkMd5",required = false) String chunkMd5,
                                    @RequestHeader(value = "lastChunk",required = false) boolean lastChunk,
-                                   InputStream stream, @RequestAttribute SecurityContextBase securityContext) {
-        return fileResourceService.uploadFileResource(name, securityContext, md5,chunkMd5,lastChunk, stream);
+                                   @RequestBody byte[] data, @RequestAttribute SecurityContextBase securityContext) {
+            return fileResourceService.uploadFileResource(name, securityContext, md5,chunkMd5,lastChunk, data);
+
 
     }
 

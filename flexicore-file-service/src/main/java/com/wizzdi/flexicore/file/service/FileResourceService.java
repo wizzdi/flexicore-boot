@@ -321,24 +321,39 @@ public class FileResourceService implements Plugin {
 	public void saveFile(InputStream is, FileResource file) {
 		saveFile(is, null, file);
 	}
+
+
 	public void saveFile(InputStream is, String chunkMd5, FileResource file) {
 		try {
 			byte[] data = IOUtils.toByteArray(is);
-			if (chunkMd5 != null) {
-				String calculatedChunkMd5 = md5Service.generateMD5(new ByteArrayInputStream(data));
-				if (!chunkMd5.equals(calculatedChunkMd5)) {
-					throw new ResponseStatusException(HttpStatus.PRECONDITION_FAILED,"Chunk MD5 was " + calculatedChunkMd5 + " expected " + chunkMd5);
-				}
-			}
-
-			saveFile(data, file.getOffset(), file);
+			saveFile(data,chunkMd5, file );
 
 		} catch (IOException e) {
 			logger.error("unable to read data from received input stream", e);
 		}
 	}
 
-	public FileResource uploadFileResource(String filename, SecurityContextBase securityContext, String md5, String chunkMd5, boolean lastChunk, InputStream fileInputStream) {
+	public void saveFile(byte[] data,String chunkMd5, FileResource file ) {
+		if (chunkMd5 != null) {
+			String calculatedChunkMd5 = md5Service.generateMD5(new ByteArrayInputStream(data));
+			if (!chunkMd5.equals(calculatedChunkMd5)) {
+				throw new ResponseStatusException(HttpStatus.PRECONDITION_FAILED,"Chunk MD5 was " + calculatedChunkMd5 + " expected " + chunkMd5);
+			}
+		}
+
+		saveFile(data, file.getOffset(), file);
+	}
+	public FileResource uploadFileResource(String filename, SecurityContextBase securityContext, String md5, String chunkMd5, boolean lastChunk, InputStream data) {
+		try {
+			IOUtils.toByteArray(data);
+			return uploadFileResource(filename, securityContext, md5, chunkMd5, lastChunk, data);
+		} catch (IOException e) {
+			throw new ResponseStatusException(HttpStatus.SERVICE_UNAVAILABLE, "unable to read data from input stream", e);
+		}
+	}
+
+
+		public FileResource uploadFileResource(String filename, SecurityContextBase securityContext, String md5, String chunkMd5, boolean lastChunk, byte[] data) {
 
 		FileResource fileResource = listAllFileResources(new FileResourceFilter().setMd5s(Collections.singleton(md5)),securityContext).stream().findFirst().orElse(null);
 		if (fileResource == null) {
@@ -356,7 +371,7 @@ public class FileResourceService implements Plugin {
 
 		}
 		if (!fileResource.isDone()) {
-			saveFile(fileInputStream, chunkMd5, fileResource);
+			saveFile(data, chunkMd5, fileResource);
 			if (lastChunk) {
 				File file = new File(fileResource.getFullPath());
 				String calculatedFileMd5 = md5Service.generateMD5(file);
