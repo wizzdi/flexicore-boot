@@ -140,8 +140,8 @@ public class CommonUserService  {
         }
 
 
-        if (createUser.getLastName() != null && !createUser.getLastName().equals(user.getSurName())) {
-            user.setSurName(createUser.getLastName());
+        if (createUser.getLastName() != null && !createUser.getLastName().equals(user.getLastName())) {
+            user.setLastName(createUser.getLastName());
             update = true;
         }
 

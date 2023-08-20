@@ -13,8 +13,11 @@ import com.flexicore.annotations.AnnotatedClazz;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.Transient;
+
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Entity implementation class for Entity: Role
@@ -57,6 +60,11 @@ public class Role extends SecurityEntity  {
 
 	public void setRoleToBaseclass(List<RoleToBaseclass> baseclasses) {
 		this.roleToBaseclass = baseclasses;
+	}
+
+	@Transient
+	public SecurityTenant getSecurityTenant(){
+		return Optional.ofNullable(getSecurity()).map(f->f.getTenant()).orElse(null);
 	}
 
 }

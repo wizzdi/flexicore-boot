@@ -10,7 +10,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.flexicore.annotations.AnnotatedClazz;
 
-import com.flexicore.security.SecurityContextBase;
 import com.wizzdi.flexicore.boot.rest.views.Views;
 import io.swagger.v3.oas.annotations.media.Schema;
 
@@ -19,12 +18,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Index;
 import jakarta.persistence.Lob;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import java.time.OffsetDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import com.flexicore.model.SecurityUser;
 
 
 //the table name 'user' isn't allowed in Postgresql
@@ -39,7 +34,7 @@ public class User extends SecurityUser {
 
     private String email;
     private String homeDir;
-    private String surName;
+    private String lastName;
     @JsonView(Views.Full.class)
     private String totpSalt;
 
@@ -121,12 +116,12 @@ public class User extends SecurityUser {
         this.homeDir = homeDir;
     }
 
-    public String getSurName() {
-        return surName;
+    public String getLastName() {
+        return lastName;
     }
 
-    public void setSurName(String surName) {
-        this.surName = surName;
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
     }
 
 
