@@ -32,7 +32,7 @@ public class SecurityLinkController implements Plugin {
     @IOperation(Name = "returns SecurityLink", Description = "returns SecurityLink")
     @PostMapping("/getAll")
     public PaginationResponse<SecurityLink> getAll(@RequestBody @Valid SecurityLinkFilter securityLinkFilter, @RequestAttribute SecurityContextBase securityContext) {
-
+        securityLinkService.setRelevant(securityLinkFilter,securityContext);
         return securityLinkService.getAllSecurityLinks(securityLinkFilter, securityContext);
     }
 

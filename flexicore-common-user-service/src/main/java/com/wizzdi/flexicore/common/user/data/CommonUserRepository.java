@@ -95,7 +95,7 @@ public class CommonUserRepository{
 
 
         if (commonUserFilter.getLastNameLike() != null) {
-            preds.add(cb.like(r.get(User_.surName), commonUserFilter.getLastNameLike()));
+            preds.add(cb.like(r.get(User_.lastName), commonUserFilter.getLastNameLike()));
         }
 
 

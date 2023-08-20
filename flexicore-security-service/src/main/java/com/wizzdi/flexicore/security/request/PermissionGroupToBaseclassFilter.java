@@ -12,8 +12,8 @@ import java.util.List;
 import java.util.Set;
 
 @IdValid.List({
-        @IdValid(targetField = "permissionGroups", fieldType = PermissionGroup.class, field = "permissionGroupIds", groups = {Create.class, Update.class}),
-        @IdValid(targetField = "baseclasses", fieldType = Baseclass.class, field = "baseclassIds", groups = {Create.class, Update.class})
+        @IdValid(targetField = "permissionGroups", fieldType = PermissionGroup.class, field = "permissionGroupIds"),
+        @IdValid(targetField = "baseclasses", fieldType = Baseclass.class, field = "baseclassIds")
 })
 public class PermissionGroupToBaseclassFilter extends PaginationFilter {
 

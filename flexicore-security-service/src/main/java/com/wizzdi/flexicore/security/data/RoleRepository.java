@@ -50,6 +50,10 @@ public class RoleRepository implements Plugin {
 			Join<Baseclass, SecurityTenant> join=baseclassJoin.join(Baseclass_.tenant);
 			predicates.add(join.get(SecurityTenant_.id).in(ids));
 		}
+		if(roleFilter.getUsers()!=null &&!roleFilter.getUsers().isEmpty()){
+			Join<T,RoleToUser> roleToUserJoin=r.join(Role_.roleToUser);
+			predicates.add(roleToUserJoin.get(SecurityUser_.id).in(roleFilter.getUsers()));
+		}
 	}
 
 	public long countAllRoles(RoleFilter roleFilter, SecurityContextBase securityContext){

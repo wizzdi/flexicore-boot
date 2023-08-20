@@ -2,10 +2,11 @@ package com.wizzdi.flexicore.boot.dynamic.invokers.request;
 
 import com.wizzdi.flexicore.security.request.BaseclassFilter;
 import com.wizzdi.flexicore.security.request.BasicPropertiesFilter;
+import com.wizzdi.flexicore.security.request.PaginationFilter;
 
 import java.util.Set;
 
-public class DynamicInvokerMethodFilter extends BaseclassFilter {
+public class DynamicInvokerMethodFilter extends PaginationFilter {
 
     private BasicPropertiesFilter basicPropertiesFilter;
     private Set<String> categories;

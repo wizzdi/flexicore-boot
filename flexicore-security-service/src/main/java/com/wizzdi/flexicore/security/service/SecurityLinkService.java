@@ -5,9 +5,7 @@ import com.flexicore.model.SecurityLink;
 import com.flexicore.security.SecurityContextBase;
 import com.wizzdi.flexicore.boot.base.interfaces.Plugin;
 import com.wizzdi.flexicore.security.data.SecurityLinkRepository;
-import com.wizzdi.flexicore.security.request.SecurityLinkCreate;
-import com.wizzdi.flexicore.security.request.SecurityLinkFilter;
-import com.wizzdi.flexicore.security.request.SecurityLinkUpdate;
+import com.wizzdi.flexicore.security.request.*;
 import com.wizzdi.flexicore.security.response.PaginationResponse;
 import org.pf4j.Extension;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +22,10 @@ public class SecurityLinkService implements Plugin {
 	private BasicService basicService;
 	@Autowired
 	private SecurityLinkRepository securityLinkRepository;
+	@Autowired
+	private SecurityTenantService securityTenantService;
+	@Autowired
+	private RoleService roleService;
 
 
 
@@ -88,5 +90,12 @@ public class SecurityLinkService implements Plugin {
 
 	public List<SecurityLink> listAllSecurityLinks(SecurityLinkFilter securityLinkFilter, SecurityContextBase securityContext) {
 		return securityLinkRepository.listAllSecurityLinks(securityLinkFilter, securityContext);
+	}
+
+	public void setRelevant(SecurityLinkFilter securityLinkFilter, SecurityContextBase securityContext) {
+		if(securityLinkFilter.getRelevantUsers()!=null&&!securityLinkFilter.getRelevantUsers().isEmpty()){
+			securityLinkFilter.setRelevantRoles(roleService.listAllRoles(new RoleFilter().setUsers(securityLinkFilter.getRelevantUsers()),securityContext));
+			securityLinkFilter.setRelevantTenants(securityTenantService.listAllTenants(new SecurityTenantFilter().setUsers(securityLinkFilter.getRelevantUsers()),securityContext));
+		}
 	}
 }

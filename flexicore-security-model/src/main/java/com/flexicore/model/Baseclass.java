@@ -230,18 +230,6 @@ public class Baseclass extends Basic implements Syncable {
 		return this;
 	}
 
-
-	@Column(name = "dtype", insertable = false, updatable = false)
-
-	public String getDtype() {
-		return dtype;
-	}
-
-	public <T extends Baseclass> T setDtype(String dtype) {
-		this.dtype = dtype;
-		return (T) this;
-	}
-
 	@Lob
 	@JsonIgnore
 	public String getSearchKey() {

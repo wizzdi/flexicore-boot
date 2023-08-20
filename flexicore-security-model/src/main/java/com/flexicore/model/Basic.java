@@ -1,9 +1,6 @@
 package com.flexicore.model;
 
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import com.fasterxml.jackson.annotation.*;
 import com.fasterxml.jackson.databind.annotation.JsonTypeIdResolver;
 import com.wizzdi.flexicore.boot.rest.resolvers.CrossLoaderResolver;
 
@@ -28,6 +25,11 @@ public abstract class Basic {
 	private OffsetDateTime creationDate;
 	@Column(columnDefinition = "timestamp with time zone")
 	private OffsetDateTime updateDate;
+
+	@JsonIgnore
+	@Column(name = "dtype", insertable = false, updatable = false)
+	private String dtype;
+
 
 
 	@Id
@@ -93,5 +95,16 @@ public abstract class Basic {
 	@JsonProperty("json-type")
 	public String getJsonType(){
 		return getClass().getCanonicalName();
+	}
+
+	@JsonIgnore
+	@Column(name = "dtype", insertable = false, updatable = false)
+	public String getDtype() {
+		return dtype;
+	}
+
+	public <T extends Basic> T setDtype(String dtype) {
+		this.dtype = dtype;
+		return (T) this;
 	}
 }

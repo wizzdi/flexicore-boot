@@ -1,7 +1,6 @@
 package com.wizzdi.flexicore.security.data;
 
-import com.flexicore.model.Baseclass;
-import com.flexicore.model.SecurityLink;
+import com.flexicore.model.*;
 import com.wizzdi.flexicore.boot.base.interfaces.Plugin;
 import com.flexicore.security.SecurityContextBase;
 import com.wizzdi.flexicore.security.request.SecurityLinkFilter;
@@ -42,6 +41,32 @@ public class SecurityLinkRepository implements Plugin {
 
 	public <T extends SecurityLink> void addSecurityLinkPredicates(SecurityLinkFilter securityLinkFilter, CriteriaBuilder cb, CommonAbstractCriteria q, From<?,T> r, List<Predicate> predicates, SecurityContextBase securityContext) {
 		securedBasicRepository.addSecuredBasicPredicates(securityLinkFilter.getBasicPropertiesFilter(),cb,q,r,predicates,securityContext);
+		if(securityLinkFilter.getBaseclasses()!=null&&!securityLinkFilter.getBaseclasses().isEmpty()){
+			predicates.add(r.get(SecurityLink_.baseclass).in(securityLinkFilter.getBaseclasses()));
+		}
+		if(securityLinkFilter.getAccesses()!=null&&!securityLinkFilter.getAccesses().isEmpty()){
+			predicates.add(r.get(SecurityLink_.access).in(securityLinkFilter.getAccesses()));
+		}
+		if(securityLinkFilter.getOperations()!=null&&!securityLinkFilter.getOperations().isEmpty()){
+			predicates.add(r.get(SecurityLink_.operation).in(securityLinkFilter.getOperations()));
+		}
+		if(securityLinkFilter.getRelevantUsers()!=null&&!securityLinkFilter.getRelevantUsers().isEmpty()){
+
+			Predicate pred=cb.and(
+					cb.equal(r.type(), UserToBaseclass.class),
+					r.get("user").in(securityLinkFilter.getRelevantUsers()));
+			if(securityLinkFilter.getRelevantRoles()!=null&&!securityLinkFilter.getRelevantRoles().isEmpty()){
+				pred=cb.or(pred,cb.and(
+						cb.equal(r.type(), RoleToBaseclass.class),
+						r.get("role").in(securityLinkFilter.getRelevantRoles())));
+			}
+			if(securityLinkFilter.getRelevantTenants()!=null&&!securityLinkFilter.getRelevantTenants().isEmpty()){
+				pred=cb.or(pred,cb.and(
+						cb.equal(r.type(), TenantToBaseclass.class),
+						r.get("tenant").in(securityLinkFilter.getRelevantTenants())));
+			}
+			predicates.add(pred);
+		}
 	}
 
 	public long countAllSecurityLinks(SecurityLinkFilter securityLinkFilter, SecurityContextBase securityContext){

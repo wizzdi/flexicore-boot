@@ -1,8 +1,23 @@
 package com.wizzdi.flexicore.security.data;
 
-import com.flexicore.annotations.IOperation;
-import com.flexicore.annotations.rest.All;
-import com.flexicore.model.*;
+import com.flexicore.model.Baseclass;
+import com.flexicore.model.Baseclass_;
+import com.flexicore.model.Basic;
+import com.flexicore.model.Basic_;
+import com.flexicore.model.PermissionGroup;
+import com.flexicore.model.PermissionGroupToBaseclass;
+import com.flexicore.model.PermissionGroupToBaseclass_;
+import com.flexicore.model.Role;
+import com.flexicore.model.RoleToBaseclass;
+import com.flexicore.model.RoleToBaseclass_;
+import com.flexicore.model.SecurityLink;
+import com.flexicore.model.SecurityOperation;
+import com.flexicore.model.SecurityTenant;
+import com.flexicore.model.SecurityUser;
+import com.flexicore.model.TenantToBaseclass;
+import com.flexicore.model.TenantToBaseclass_;
+import com.flexicore.model.UserToBaseclass;
+import com.flexicore.model.UserToBaseclass_;
 import com.flexicore.security.SecurityContextBase;
 import com.flexicore.security.SecurityPermissionEntry;
 import com.flexicore.security.SecurityPermissions;
@@ -12,7 +27,11 @@ import com.wizzdi.flexicore.security.events.BasicUpdated;
 import com.wizzdi.flexicore.security.request.BaseclassFilter;
 import com.wizzdi.flexicore.security.request.BasicPropertiesFilter;
 import com.wizzdi.flexicore.security.request.SoftDeleteOption;
-
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.TypedQuery;
+import jakarta.persistence.criteria.*;
+import jakarta.persistence.metamodel.SingularAttribute;
 import org.pf4j.Extension;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,17 +40,13 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.cache.Cache;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.context.event.EventListener;
-import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
-import jakarta.persistence.TypedQuery;
-import jakarta.persistence.criteria.*;
-import jakarta.persistence.metamodel.SingularAttribute;
-
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
@@ -54,6 +69,39 @@ public class BaseclassRepository implements Plugin {
 	@Autowired
 	@Qualifier("dataAccessControlCache")
 	private Cache dataAccessControlCache;
+
+	public List<Baseclass> listAllBaseclass(BaseclassFilter baseclassFilter,SecurityContextBase securityContextBase){
+		CriteriaBuilder cb=em.getCriteriaBuilder();
+		CriteriaQuery<Baseclass> q=cb.createQuery(Baseclass.class);
+		Root<Baseclass> r=q.from(Baseclass.class);
+		List<Predicate> predicates=new ArrayList<>();
+		addBaseclassPredicates(baseclassFilter,cb,q,r,predicates,securityContextBase);
+		q.select(r).where(predicates.toArray(Predicate[]::new)).orderBy(cb.asc(r.get(Baseclass_.name)));
+		TypedQuery<Baseclass> query = em.createQuery(q);
+		BasicRepository.addPagination(baseclassFilter,query);
+		return query.getResultList();
+
+	}
+
+	private <T extends Baseclass> void addBaseclassPredicates(BaseclassFilter baseclassFilter, CriteriaBuilder cb, CommonAbstractCriteria q, From<?,T> r, List<Predicate> predicates, SecurityContextBase securityContextBase) {
+		addBaseclassPredicates(baseclassFilter.getBasicPropertiesFilter(),cb,q,r,predicates,securityContextBase);
+		if(baseclassFilter.getClazzes()!=null&&!baseclassFilter.getClazzes().isEmpty()){
+			predicates.add(r.get(Baseclass_.clazz).in(baseclassFilter.getClazzes()));
+		}
+	}
+
+	public long countAllBaseclass(BaseclassFilter baseclassFilter,SecurityContextBase securityContextBase){
+		CriteriaBuilder cb=em.getCriteriaBuilder();
+		CriteriaQuery<Long> q=cb.createQuery(Long.class);
+		Root<Baseclass> r=q.from(Baseclass.class);
+		List<Predicate> predicates=new ArrayList<>();
+		addBaseclassPredicates(baseclassFilter,cb,q,r,predicates,securityContextBase);
+		q.select(cb.count(r)).where(predicates.toArray(Predicate[]::new));
+		TypedQuery<Long> query = em.createQuery(q);
+		BasicRepository.addPagination(baseclassFilter,query);
+		return query.getSingleResult();
+
+	}
 
 
 	@EventListener

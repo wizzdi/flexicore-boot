@@ -12,7 +12,7 @@ import java.util.Set;
 
 @IdValid.List({
 
-        @IdValid(targetField = "tenants", field = "tenantIds",fieldType = SecurityTenant.class, groups = {Create.class, Update.class})
+        @IdValid(targetField = "tenants", field = "tenantIds",fieldType = SecurityTenant.class)
 })
 public class TenantToBaseclassFilter extends SecurityLinkFilter {
 

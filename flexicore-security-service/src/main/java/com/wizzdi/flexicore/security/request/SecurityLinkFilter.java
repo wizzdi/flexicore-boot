@@ -2,23 +2,31 @@ package com.wizzdi.flexicore.security.request;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.flexicore.annotations.IOperation;
-import com.flexicore.model.Baseclass;
-import com.flexicore.model.SecurityOperation;
-import com.wizzdi.flexicore.security.validation.Create;
+import com.flexicore.model.*;
 import com.wizzdi.flexicore.security.validation.IdValid;
-import com.wizzdi.flexicore.security.validation.Update;
 
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 @IdValid.List({
-        @IdValid(targetField = "baseclasses", fieldType = Baseclass.class, groups = {Create.class, Update.class}),
-        @IdValid(targetField = "operations", fieldType = SecurityOperation.class, groups = {Create.class, Update.class})
+        @IdValid(field = "baseclassIds", targetField = "baseclasses", fieldType = Baseclass.class),
+        @IdValid(field = "operationIds", targetField = "operations", fieldType = SecurityOperation.class),
+        @IdValid(field = "relevantUserIds", targetField = "relevantUsers", fieldType = SecurityUser.class)
 })
 public class SecurityLinkFilter extends PaginationFilter {
 
     private BasicPropertiesFilter basicPropertiesFilter;
+
+    private Set<String> relevantUserIds = new HashSet<>();
+
+    @JsonIgnore
+    private List<SecurityUser> relevantUsers;
+    @JsonIgnore
+    private List<Role> relevantRoles;
+
+    @JsonIgnore
+    private List<SecurityTenant> relevantTenants;
 
     @JsonIgnore
     private List<Baseclass> baseclasses;
@@ -82,6 +90,45 @@ public class SecurityLinkFilter extends PaginationFilter {
 
     public <T extends SecurityLinkFilter> T setAccesses(Set<IOperation.Access> accesses) {
         this.accesses = accesses;
+        return (T) this;
+    }
+
+    public Set<String> getRelevantUserIds() {
+        return relevantUserIds;
+    }
+
+    public <T extends SecurityLinkFilter> T setRelevantUserIds(Set<String> relevantUserIds) {
+        this.relevantUserIds = relevantUserIds;
+        return (T) this;
+    }
+
+    @JsonIgnore
+    public List<SecurityUser> getRelevantUsers() {
+        return relevantUsers;
+    }
+
+    public <T extends SecurityLinkFilter> T setRelevantUsers(List<SecurityUser> relevantUsers) {
+        this.relevantUsers = relevantUsers;
+        return (T) this;
+    }
+
+    @JsonIgnore
+    public List<Role> getRelevantRoles() {
+        return relevantRoles;
+    }
+
+    public <T extends SecurityLinkFilter> T setRelevantRoles(List<Role> relevantRoles) {
+        this.relevantRoles = relevantRoles;
+        return (T) this;
+    }
+
+    @JsonIgnore
+    public List<SecurityTenant> getRelevantTenants() {
+        return relevantTenants;
+    }
+
+    public <T extends SecurityLinkFilter> T setRelevantTenants(List<SecurityTenant> relevantTenants) {
+        this.relevantTenants = relevantTenants;
         return (T) this;
     }
 }
