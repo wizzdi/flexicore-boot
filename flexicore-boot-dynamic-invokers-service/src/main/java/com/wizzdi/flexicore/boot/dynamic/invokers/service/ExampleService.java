@@ -75,6 +75,12 @@ public class ExampleService implements Plugin {
 		if (isKnownType(c)) {
 			return getKnownTypeValue(c);
 		}
+		if(c.isEnum()){
+			if(c.getEnumConstants().length==0){
+				return null;
+			}
+			return c.getEnumConstants()[0];
+		}
 
 
 		Object example = null;
