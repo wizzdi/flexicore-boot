@@ -1,6 +1,8 @@
 package com.wizzdi.flexicore.boot.dynamic.invokers.service;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.github.benmanes.caffeine.cache.Cache;
+import com.github.benmanes.caffeine.cache.Caffeine;
 import com.wizzdi.flexicore.boot.base.interfaces.Plugin;
 import com.wizzdi.flexicore.boot.dynamic.invokers.annotations.ListFieldInfo;
 import org.pf4j.Extension;
@@ -20,10 +22,7 @@ import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Array;
 import java.lang.reflect.Method;
-import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.OffsetDateTime;
-import java.time.ZonedDateTime;
+import java.time.*;
 import java.util.*;
 
 @Extension
@@ -32,7 +31,7 @@ public class ExampleService implements Plugin {
 
 	private static final Logger logger= LoggerFactory.getLogger(ExampleService.class);
 
-
+	private static final Cache<String, Object> exampleCache = Caffeine.newBuilder().expireAfterAccess(Duration.ofHours(1)).maximumSize(1000).build();
 	public Object getExample(Class<?> c) {
 
 		Object exampleCached = getExampleCached(c);
@@ -43,14 +42,14 @@ public class ExampleService implements Plugin {
 
 	}
 
-	@Cacheable(value = "exampleCache", key = "#c.getCanonicalName()", unless = "#result==null",cacheManager = "exampleCacheManager")
 	public Object getExampleCached(Class<?> c) {
-		return generateExample(c);
+
+		return exampleCache.get(c.getCanonicalName(),a->generateExample(c));
+
 	}
 
-	@CachePut(value = "exampleCache", key = "#c.getCanonicalName()", unless = "#result==null",cacheManager = "exampleCacheManager")
-	public Object updateExampleCache(Class<?> c,Object value){
-		return value;
+	public void updateExampleCache(Class<?> c,Object value){
+		exampleCache.put(c.getCanonicalName(),value);
 	}
 
 	private String getSetterName(String name) {
