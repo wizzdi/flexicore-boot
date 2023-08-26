@@ -5,6 +5,7 @@ import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.io.Encoders;
 import io.jsonwebtoken.security.Keys;
+import io.jsonwebtoken.security.SignatureException;
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -88,6 +89,12 @@ public class FlexicoreJwtTokenUtil {
             logger.error("Unsupported JWT token - {}", ex.getMessage());
         } catch (IllegalArgumentException ex) {
             logger.error("JWT claims string is empty - {}", ex.getMessage());
+        }
+        catch (SignatureException e){
+            logger.error("invalid signature",e);
+        }
+        catch (Exception ex){
+            logger.error("failed parsing jwt token",ex);
         }
         return null;
     }
