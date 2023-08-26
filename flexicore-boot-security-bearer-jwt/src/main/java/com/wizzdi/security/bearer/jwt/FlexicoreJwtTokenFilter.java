@@ -4,17 +4,25 @@ import com.flexicore.security.SecurityContextBase;
 import com.wizzdi.security.adapter.FlexiCoreAuthentication;
 import com.wizzdi.security.adapter.FlexiCoreSecurityFilter;
 import com.wizzdi.security.adapter.OperationInterceptor;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.security.web.context.RequestAttributeSecurityContextRepository;
 import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.RequestAttribute;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.web.method.HandlerMethod;
+import org.springframework.web.servlet.HandlerExecutionChain;
+import org.springframework.web.servlet.HandlerMapping;
+
 import java.io.IOException;
+import java.lang.reflect.Method;
+import java.util.Arrays;
 
 
 @Component
@@ -24,11 +32,13 @@ public class FlexicoreJwtTokenFilter extends OncePerRequestFilter implements Fle
     private final JWTSecurityContextCreator JWTSecurityContextCreator;
     private final TokenExtractor tokenExtractor;
     private final RequestAttributeSecurityContextRepository requestAttributeSecurityContextRepository=new RequestAttributeSecurityContextRepository();
+    private final HandlerMapping handlerMapping;
 
 
-    public FlexicoreJwtTokenFilter(JWTSecurityContextCreator JWTSecurityContextCreator, TokenExtractor tokenExtractor) {
+    public FlexicoreJwtTokenFilter(JWTSecurityContextCreator JWTSecurityContextCreator, TokenExtractor tokenExtractor, @Qualifier("requestMappingHandlerMapping") HandlerMapping handlerMapping) {
         this.JWTSecurityContextCreator = JWTSecurityContextCreator;
         this.tokenExtractor=tokenExtractor;
+        this.handlerMapping=handlerMapping;
 
     }
 
@@ -45,8 +55,14 @@ public class FlexicoreJwtTokenFilter extends OncePerRequestFilter implements Fle
         }
         FlexiCoreAuthentication authentication= JWTSecurityContextCreator.getSecurityContext(token);
         if(authentication==null){
-            chain.doFilter(request, response);
+            if(isProtected(request)){
+                response.sendError(HttpServletResponse.SC_UNAUTHORIZED,"Invalid token");
+            }
+            else{
+                chain.doFilter(request, response);
+            }
             return;
+
         }
         SecurityContextBase securityContext=authentication.getSecurityContextBase();
 
@@ -58,6 +74,20 @@ public class FlexicoreJwtTokenFilter extends OncePerRequestFilter implements Fle
         request.setAttribute(OperationInterceptor.SECURITY_CONTEXT,securityContext);
         this.requestAttributeSecurityContextRepository.saveContext(SecurityContextHolder.getContext(),request,response);
         chain.doFilter(request, response);
+    }
+
+    private boolean isProtected(HttpServletRequest request) {
+        try {
+            HandlerExecutionChain handler = handlerMapping.getHandler(request);
+            if(handler.getHandler() instanceof HandlerMethod handlerMethod){
+                Method method = handlerMethod.getMethod();
+                return Arrays.stream(method.getParameterTypes()).anyMatch(SecurityContextBase.class::isAssignableFrom);
+            }
+        } catch (Exception e) {
+            logger.debug("unable to determine if request is protected",e);
+        }
+        return false;
+
     }
 
 
