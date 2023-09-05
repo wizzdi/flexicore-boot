@@ -9,8 +9,10 @@ import com.flexicore.model.SecurityOperation;
 import com.wizzdi.flexicore.security.validation.Create;
 import com.wizzdi.flexicore.security.validation.IdValid;
 import com.wizzdi.flexicore.security.validation.Update;
+import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
+import org.apache.commons.lang.StringUtils;
 
 @IdValid.List({
         @IdValid(targetField = "baseclass",field = "baseclassId",fieldType = Baseclass.class, groups = {Create.class, Update.class}),
@@ -22,19 +24,16 @@ public class SecurityLinkCreate extends BasicCreate {
 
     @JsonIgnore
     private Baseclass baseclass;
-    @NotEmpty(groups = Create.class)
 
     private String baseclassId;
 
     @JsonIgnore
     private PermissionGroup permissionGroup;
-    @NotEmpty(groups = Create.class)
 
     private String permissionGroupId;
 
     @JsonIgnore
     private Clazz clazz;
-    @NotEmpty(groups = Create.class)
 
     private String clazzId;
     @NotEmpty(groups = Create.class)
@@ -131,5 +130,10 @@ public class SecurityLinkCreate extends BasicCreate {
     public <T extends SecurityLinkCreate> T setClazzId(String clazzId) {
         this.clazzId = clazzId;
         return (T) this;
+    }
+
+    @AssertTrue(message = "clazzId or baseclassId or permissionGroupId must be provided",groups = Create.class)
+    private boolean isTargetProvided() {
+        return !StringUtils.isEmpty(clazzId)||!StringUtils.isEmpty(baseclassId)||!StringUtils.isEmpty(permissionGroupId);
     }
 }
