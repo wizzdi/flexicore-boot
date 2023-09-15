@@ -1,23 +1,6 @@
 package com.wizzdi.flexicore.security.data;
 
-import com.flexicore.model.Baseclass;
-import com.flexicore.model.Baseclass_;
-import com.flexicore.model.Basic;
-import com.flexicore.model.Basic_;
-import com.flexicore.model.PermissionGroup;
-import com.flexicore.model.PermissionGroupToBaseclass;
-import com.flexicore.model.PermissionGroupToBaseclass_;
-import com.flexicore.model.Role;
-import com.flexicore.model.RoleToBaseclass;
-import com.flexicore.model.RoleToBaseclass_;
-import com.flexicore.model.SecurityLink;
-import com.flexicore.model.SecurityOperation;
-import com.flexicore.model.SecurityTenant;
-import com.flexicore.model.SecurityUser;
-import com.flexicore.model.TenantToBaseclass;
-import com.flexicore.model.TenantToBaseclass_;
-import com.flexicore.model.UserToBaseclass;
-import com.flexicore.model.UserToBaseclass_;
+import com.flexicore.model.*;
 import com.flexicore.security.SecurityContextBase;
 import com.flexicore.security.SecurityPermissionEntry;
 import com.flexicore.security.SecurityPermissions;
@@ -26,7 +9,9 @@ import com.wizzdi.flexicore.security.events.BasicCreated;
 import com.wizzdi.flexicore.security.events.BasicUpdated;
 import com.wizzdi.flexicore.security.request.BaseclassFilter;
 import com.wizzdi.flexicore.security.request.BasicPropertiesFilter;
+import com.wizzdi.flexicore.security.request.OperationToGroupFilter;
 import com.wizzdi.flexicore.security.request.SoftDeleteOption;
+import com.wizzdi.flexicore.security.service.OperationToGroupService;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.TypedQuery;
@@ -43,10 +28,8 @@ import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
+import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
@@ -63,12 +46,19 @@ public class BaseclassRepository implements Plugin {
 	@Lazy
 	private SecurityOperation allOp;
 
+	@Autowired
+	@Lazy
+	private OperationToGroupService operationToGroupService;
 
 	@Autowired
 	private BasicRepository basicRepository;
 	@Autowired
 	@Qualifier("dataAccessControlCache")
 	private Cache dataAccessControlCache;
+
+	@Autowired
+	@Qualifier("operationToOperationGroupCache")
+	private Cache operationToOperationGroupCache;
 
 	public List<Baseclass> listAllBaseclass(BaseclassFilter baseclassFilter,SecurityContextBase securityContextBase){
 		CriteriaBuilder cb=em.getCriteriaBuilder();
@@ -140,6 +130,24 @@ public class BaseclassRepository implements Plugin {
 		invalidateCache(link);
 	}
 
+	@EventListener
+	public void invalidateOperationGroupCache(BasicUpdated<OperationToGroup> operationToGroup){
+		invalidateCache(operationToGroup.getBaseclass());
+	}
+
+	@EventListener
+	public void invalidateOperationGroupCache(BasicCreated<OperationToGroup> operationToGroup){
+		invalidateCache(operationToGroup.getBaseclass());
+	}
+
+	private void invalidateCache(OperationToGroup operationToGroup) {
+		if(operationToGroup.getOperation()==null){
+			return;
+		}
+		operationToOperationGroupCache.evict(operationToGroup.getOperation().getId());
+	}
+
+
 	private void invalidateCache(SecurityLink link) {
 		if (link.getSecurityEntity() != null) {
 			dataAccessControlCache.evict(link.getSecurityEntity().getId());
@@ -166,6 +174,7 @@ public class BaseclassRepository implements Plugin {
 							  List<TenantToBaseclass> tenants) {
 	}
 
+
 	public SecurityPermissions getSecurityPermissions(SecurityContextBase securityContextBase) {
 		SecurityLinkHolder securityLinkHolder = getSecurityLinkHolder(securityContextBase);
 		List<UserToBaseclass> userLinks = securityLinkHolder.users();
@@ -174,11 +183,25 @@ public class BaseclassRepository implements Plugin {
 		Map<String, Role> allRoles = securityContextBase.getAllRoles().stream().collect(Collectors.toMap(f -> f.getId(), f -> f, (a, b) -> a));
 		Map<String, SecurityTenant> allTenants = securityContextBase.getTenants().stream().collect(Collectors.toMap(f -> f.getId(), f -> f, (a, b) -> a));
 		Set<String> relevantOps = securityContextBase.getOperation() != null ? Set.of(allOp.getId(), securityContextBase.getOperation().getId()) : null;
-		List<UserToBaseclass> user = userLinks.stream().filter(f -> relevantOps == null || relevantOps.contains(f.getOperation().getId())).filter(f -> f instanceof UserToBaseclass).map(f -> (UserToBaseclass) f).toList();
-		Map<String, List<RoleToBaseclass>> role = roleLinks.stream().filter(f -> relevantOps == null || relevantOps.contains(f.getOperation().getId())).filter(f -> f instanceof RoleToBaseclass).map(f -> (RoleToBaseclass) f).collect(Collectors.groupingBy(f -> f.getRole().getId()));
-		Map<String, List<TenantToBaseclass>> tenant = tenantLinks.stream().filter(f -> relevantOps == null || relevantOps.contains(f.getOperation().getId())).filter(f -> f instanceof TenantToBaseclass).map(f -> (TenantToBaseclass) f).collect(Collectors.groupingBy(f -> f.getTenant().getId()));
+		Set<String> relevantOpGroups=securityContextBase.getOperation()!=null?getRelevantOpGroups(securityContextBase.getOperation()):null;
+		List<UserToBaseclass> user = userLinks.stream().filter(f -> filterSecurityLinkForOperation(f, relevantOps, relevantOpGroups)).toList();
+		Map<String, List<RoleToBaseclass>> role = roleLinks.stream().filter(f ->filterSecurityLinkForOperation(f,relevantOps,relevantOpGroups)).collect(Collectors.groupingBy(f -> f.getRole().getId()));
+		Map<String, List<TenantToBaseclass>> tenant = tenantLinks.stream().filter(f -> filterSecurityLinkForOperation(f,relevantOps,relevantOpGroups)).collect(Collectors.groupingBy(f -> f.getTenant().getId()));
 		return new SecurityPermissions(SecurityPermissionEntry.of(securityContextBase.getUser(), user), role.entrySet().stream().map(f -> SecurityPermissionEntry.of(allRoles.get(f.getKey()), f.getValue())).toList(), tenant.entrySet().stream().map(f -> SecurityPermissionEntry.of(allTenants.get(f.getKey()), f.getValue())).toList());
 
+	}
+
+	private static boolean filterSecurityLinkForOperation(SecurityLink f, Set<String> relevantOps, Set<String> relevantOpGroups) {
+		return relevantOps == null || relevantOpGroups == null || (f.getOperation() != null && relevantOps.contains(f.getOperation().getId())) || (f.getOperationGroup() != null && relevantOpGroups.contains(f.getOperationGroup().getId()));
+	}
+
+	private Set<String> getRelevantOpGroups(SecurityOperation op) {
+		return operationToOperationGroupCache.get(op.getId(), new Callable<Set<String>>() {
+			@Override
+			public Set<String> call() throws Exception {
+				return operationToGroupService.listAllOperationToGroups(new OperationToGroupFilter().setOperations(Collections.singletonList(op)),null).stream().map(f->f.getOperationGroup().getId()).collect(Collectors.toSet());
+			}
+		});
 	}
 
 	private SecurityLinkHolder getSecurityLinkHolder(SecurityContextBase securityContextBase) {

@@ -48,7 +48,12 @@ public class SecurityOperationService implements Plugin {
 	}
 
 	public boolean updateOperationNoMerge(SecurityOperationCreate operationCreate, SecurityOperation operation) {
-		return basicService.updateBasicNoMerge(operationCreate,operation);
+		boolean update = basicService.updateBasicNoMerge(operationCreate, operation);
+		if(operationCreate.getCategory()!=null&&!operationCreate.getCategory().equals(operation.getCategory())){
+			operation.setCategory(operationCreate.getCategory());
+			update=true;
+		}
+		return update;
 	}
 
 	public SecurityOperation updateOperation(SecurityOperationUpdate operationUpdate, SecurityContextBase securityContext){

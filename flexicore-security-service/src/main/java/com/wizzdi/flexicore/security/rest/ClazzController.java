@@ -28,24 +28,11 @@ public class ClazzController implements Plugin {
     @Autowired
     private ClazzService ClazzService;
 
-    @IOperation(Name = "creates Clazz", Description = "creates Clazz")
-    @PostMapping("/create")
-    public Clazz create(@RequestBody @Validated(Create.class) ClazzCreate ClazzCreate, @RequestAttribute SecurityContextBase securityContext) {
-
-        return ClazzService.createClazz(ClazzCreate, securityContext);
-    }
 
     @IOperation(Name = "returns Clazz", Description = "returns Clazz")
     @PostMapping("/getAll")
     public PaginationResponse<Clazz> getAll(@RequestBody @Valid ClazzFilter ClazzFilter, @RequestAttribute SecurityContextBase securityContext) {
 
         return ClazzService.getAllClazzs(ClazzFilter, securityContext);
-    }
-
-    @IOperation(Name = "updates Clazz", Description = "updates Clazz")
-    @PutMapping("/update")
-    public Clazz update(@RequestBody @Validated(Update.class) ClazzUpdate clazzUpdate, @RequestAttribute SecurityContextBase securityContext) {
-
-        return ClazzService.updateClazz(clazzUpdate, securityContext);
     }
 }

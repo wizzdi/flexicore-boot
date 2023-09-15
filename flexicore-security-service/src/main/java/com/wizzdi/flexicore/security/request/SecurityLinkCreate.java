@@ -2,10 +2,7 @@ package com.wizzdi.flexicore.security.request;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.flexicore.annotations.IOperation;
-import com.flexicore.model.Baseclass;
-import com.flexicore.model.Clazz;
-import com.flexicore.model.PermissionGroup;
-import com.flexicore.model.SecurityOperation;
+import com.flexicore.model.*;
 import com.wizzdi.flexicore.security.validation.Create;
 import com.wizzdi.flexicore.security.validation.IdValid;
 import com.wizzdi.flexicore.security.validation.Update;
@@ -17,6 +14,7 @@ import org.apache.commons.lang.StringUtils;
 @IdValid.List({
         @IdValid(targetField = "baseclass",field = "baseclassId",fieldType = Baseclass.class, groups = {Create.class, Update.class}),
         @IdValid(targetField = "operation",field = "operationId",fieldType = SecurityOperation.class, groups = {Create.class, Update.class}),
+        @IdValid(targetField = "operationGroup",field = "operationGroupId",fieldType = OperationGroup.class, groups = {Create.class, Update.class}),
         @IdValid(targetField = "permissionGroup",field = "permissionGroupId",fieldType = PermissionGroup.class, groups = {Create.class, Update.class}),
         @IdValid(targetField = "clazz",field = "clazzId",fieldType = Clazz.class, groups = {Create.class, Update.class})
 })
@@ -36,10 +34,14 @@ public class SecurityLinkCreate extends BasicCreate {
     private Clazz clazz;
 
     private String clazzId;
-    @NotEmpty(groups = Create.class)
     private String operationId;
     @JsonIgnore
     private SecurityOperation operation;
+
+    private String operationGroupId;
+    @JsonIgnore
+    private OperationGroup operationGroup;
+
     @NotNull(groups = Create.class)
     private IOperation.Access access;
 
@@ -132,8 +134,32 @@ public class SecurityLinkCreate extends BasicCreate {
         return (T) this;
     }
 
+    public String getOperationGroupId() {
+        return operationGroupId;
+    }
+
+    public <T extends SecurityLinkCreate> T setOperationGroupId(String operationGroupId) {
+        this.operationGroupId = operationGroupId;
+        return (T) this;
+    }
+
+    @JsonIgnore
+    public OperationGroup getOperationGroup() {
+        return operationGroup;
+    }
+
+    public <T extends SecurityLinkCreate> T setOperationGroup(OperationGroup operationGroup) {
+        this.operationGroup = operationGroup;
+        return (T) this;
+    }
+
     @AssertTrue(message = "clazzId or baseclassId or permissionGroupId must be provided",groups = Create.class)
     private boolean isTargetProvided() {
         return !StringUtils.isEmpty(clazzId)||!StringUtils.isEmpty(baseclassId)||!StringUtils.isEmpty(permissionGroupId);
+    }
+
+    @AssertTrue(message = "operationId or operationGroupId must be provided",groups = Create.class)
+    private boolean isOperationOrOperationGroupProvided() {
+        return !StringUtils.isEmpty(operationId)||!StringUtils.isEmpty(operationGroupId);
     }
 }

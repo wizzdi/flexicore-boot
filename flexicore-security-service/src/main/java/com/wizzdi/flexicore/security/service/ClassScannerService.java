@@ -10,14 +10,8 @@ import com.wizzdi.flexicore.boot.base.init.FlexiCorePluginManager;
 import com.wizzdi.flexicore.boot.base.init.PluginInit;
 import com.wizzdi.flexicore.boot.base.interfaces.Plugin;
 import com.wizzdi.flexicore.security.interfaces.*;
-import com.wizzdi.flexicore.security.request.ClazzCreate;
-import com.wizzdi.flexicore.security.request.OperationToClazzCreate;
-import com.wizzdi.flexicore.security.request.OperationToClazzFilter;
-import com.wizzdi.flexicore.security.request.SecurityOperationCreate;
-import com.wizzdi.flexicore.security.response.Clazzes;
-import com.wizzdi.flexicore.security.response.DefaultSecurityEntities;
-import com.wizzdi.flexicore.security.response.OperationScanContext;
-import com.wizzdi.flexicore.security.response.Operations;
+import com.wizzdi.flexicore.security.request.*;
+import com.wizzdi.flexicore.security.response.*;
 import org.pf4j.Extension;
 import org.pf4j.PluginWrapper;
 import org.slf4j.Logger;
@@ -157,6 +151,68 @@ public class ClassScannerService implements Plugin {
     }
 
     @Bean
+    public OperationGroups operationGroups(Operations operations, ObjectProvider<OperationGroupProvider> operationGroupProviders, OperationGroupService operationGroupService, OperationToGroupService operationToGroupService, @Qualifier("adminSecurityContext") SecurityContextBase adminSecurityContext) {
+        Map<String, OperationGroupContext> contexts = operationGroupProviders.stream().map(f -> f.getOperationGroupContext(operations)).filter(f -> f.operationGroupCreate().getExternalId() != null).collect(Collectors.toMap(f -> f.operationGroupCreate().getExternalId(), f -> f, (a, b) -> a));
+        Map<String, OperationGroup> existing = contexts.isEmpty() ? new HashMap<>() : operationGroupService.listAllOperationGroups(new OperationGroupFilter().setExternalIds(contexts.keySet()), null).stream().collect(Collectors.toMap(f -> f.getExternalId(), f -> f, (a, b) -> a));
+        List<OperationGroup> existingList = new ArrayList<>(existing.values());
+        Map<String, Map<String, OperationToGroup>> existingLinks = existingList.isEmpty() ? new HashMap<>() : operationToGroupService.listAllOperationToGroups(new OperationToGroupFilter().setOperationGroups(existingList), null).stream().filter(f -> f.getOperation() != null).collect(Collectors.groupingBy(f -> f.getOperationGroup().getId(), Collectors.toMap(f -> f.getOperation().getId(), f -> f, (a, b) -> a)));
+        List<OperationGroup> operationGroups = new ArrayList<>();
+        for (OperationGroupContext value : contexts.values()) {
+            OperationGroupCreate operationGroupCreate = new OperationGroupCreate()
+                    .setExternalId(value.operationGroupCreate().getExternalId())
+                    .setName(value.operationGroupCreate().getName())
+                    .setDescription(value.operationGroupCreate().getDescription());
+            OperationGroup operationGroup = Optional.ofNullable(existing.get(value.operationGroupCreate().getExternalId()))
+                    .map(f -> operationGroupService.updateOperationGroup(operationGroupCreate, f))
+                    .orElseGet(() -> operationGroupService.createOperationGroup(operationGroupCreate, adminSecurityContext));
+            operationGroups.add(operationGroup);
+            Map<String, OperationToGroup> linkMap = existingLinks.computeIfAbsent(operationGroup.getId(), f -> new HashMap<>());
+            for (SecurityOperation operation : value.operations()) {
+                OperationToGroupCreate operationToGroupCreate = new OperationToGroupCreate()
+                        .setOperationGroup(operationGroup)
+                        .setOperation(operation);
+                OperationToGroup operationToGroup = Optional.ofNullable(linkMap.get(operation.getId()))
+                        .map(f -> operationToGroupService.updateOperationToGroup(operationToGroupCreate, f))
+                        .orElseGet(() -> operationToGroupService.createOperationToGroup(operationToGroupCreate, adminSecurityContext));
+                linkMap.put(operation.getId(), operationToGroup);
+            }
+
+        }
+        return new OperationGroups(operationGroups);
+
+    }
+
+    @Bean
+    public OperationGroupProvider viewOperations() {
+        return operations -> {
+            List<SecurityOperation> operationList = operations.getOperations().stream().filter(f -> f.getCategory()!=null&&f.getCategory().equals(StandardSecurityOperationCategories.READ.name())).collect(Collectors.toList());
+            return new OperationGroupContext(new OperationGroupCreate().setExternalId("ViewOperations").setName("View Operations").setDescription("Operations that are required for viewers: read."), operationList);
+        };
+    }
+
+    @Bean
+    public OperationGroupProvider managingOperations() {
+        Set<String> categories=Set.of(StandardSecurityOperationCategories.READ,StandardSecurityOperationCategories.UPDATE,StandardSecurityOperationCategories.WRITE).stream().map(f->f.name()).collect(Collectors.toSet());
+       return operations -> {
+            List<SecurityOperation> operationList = operations.getOperations().stream().filter(f -> f.getCategory()!=null&&categories.contains(f.getCategory())).collect(Collectors.toList());
+            return new OperationGroupContext(new OperationGroupCreate().setExternalId("ManagingOperations").setName("Managing Operations").setDescription("Operations that are required for managers: read , write and update."), operationList);
+        };
+       }
+
+       @Bean
+       public OperationGroupProvider administrativeOperations() {
+           Set<String> categories=Set.of(StandardSecurityOperationCategories.READ,StandardSecurityOperationCategories.UPDATE,StandardSecurityOperationCategories.WRITE,StandardSecurityOperationCategories.DELETE).stream().map(f->f.name()).collect(Collectors.toSet());
+
+           return operations -> {
+               List<SecurityOperation> operationList = operations.getOperations().stream().filter(f -> f.getCategory()!=null&&categories.contains(f.getCategory())).collect(Collectors.toList());
+               return new OperationGroupContext(new OperationGroupCreate().setExternalId("AdministrativeOperations").setName("Administrative Operations").setDescription("Operations that are required for administrators: read,write,update and delete."), operationList);
+           };
+       }
+
+
+
+
+    @Bean
     @Scope(value = ConfigurableBeanFactory.SCOPE_SINGLETON)
     @ConditionalOnMissingBean
     public Operations initializeOperations(@Qualifier("adminSecurityContext") SecurityContextBase securityContextBase, Clazzes clazzes, OperationsClassScanner operationsClassScanner, OperationBuilder operationBuilder, StandardOperationScanner standardOperationScanner) {
@@ -202,11 +258,29 @@ public class ClassScannerService implements Plugin {
     private OperationScanContext standardAccess(Class<?> standardAccess) {
         IOperation ioperation = standardAccess.getDeclaredAnnotation(IOperation.class);
         return new OperationScanContext(new SecurityOperationCreate()
+                .setCategory(ioperation.Category().isEmpty() ? detectCategory(ioperation) : ioperation.Category())
                 .setDefaultAccess(ioperation.access())
                 .setDescription(ioperation.Description())
                 .setName(ioperation.Name())
                 .setIdForCreate(Baseclass.generateUUIDFromString(standardAccess.getCanonicalName()))
                 , null);
+    }
+
+    private String detectCategory(IOperation ioperation) {
+        String name = ioperation.Name();
+        if (name.contains("create")) {
+            return StandardSecurityOperationCategories.WRITE.name();
+        }
+        if (name.contains("update")) {
+            return StandardSecurityOperationCategories.UPDATE.name();
+        }
+        if (name.contains("delete")) {
+            return StandardSecurityOperationCategories.DELETE.name();
+        }
+        if (name.contains("read")) {
+            return StandardSecurityOperationCategories.READ.name();
+        }
+        return StandardSecurityOperationCategories.WRITE.name();
     }
 
 

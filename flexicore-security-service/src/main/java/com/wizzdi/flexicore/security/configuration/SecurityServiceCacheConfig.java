@@ -36,11 +36,26 @@ public class SecurityServiceCacheConfig {
         return cacheManager;
     }
 
+    @Bean
+    @Qualifier("operationToOperationGroupCache")
+    @ConditionalOnMissingBean(name = "operationToOperationGroupCacheManager")
+    public CacheManager operationToOperationGroupCacheManager() {
+        CaffeineCacheManager cacheManager = new CaffeineCacheManager();
+        cacheManager.setCaffeine(Caffeine.newBuilder().maximumSize(100));
+        return cacheManager;
+    }
+
 
     @Bean
     @Qualifier("operationAccessControlCache")
     public Cache dataAccessControlCache(@Qualifier("operationAccessControlCache")CacheManager dataAccessControlCacheManager) {
         return dataAccessControlCacheManager.getCache("dataAccessControlCache");
+    }
+
+    @Bean
+    @Qualifier("operationToOperationGroupCache")
+    public Cache operationToOperationGroupCache(@Qualifier("operationToOperationGroupCacheManager")CacheManager operationToOperationGroupCacheManager) {
+        return operationToOperationGroupCacheManager.getCache("operationToOperationGroupCache");
     }
     @Bean
     @Primary

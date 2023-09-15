@@ -52,6 +52,10 @@ public class SecurityLinkService implements Plugin {
 			securityLink.setOperation(securityLinkCreate.getOperation());
 			updated=true;
 		}
+		if(securityLinkCreate.getOperationGroup()!=null&&(securityLink.getOperationGroup()==null||!securityLinkCreate.getOperationGroup().getId().equals(securityLink.getOperationGroup().getId()))){
+			securityLink.setOperationGroup(securityLinkCreate.getOperationGroup());
+			updated=true;
+		}
 		if(securityLinkCreate.getBaseclass()!=null&&(securityLink.getBaseclass()==null || !securityLinkCreate.getBaseclass().getId().equals(securityLink.getBaseclass().getId()))){
 			securityLink.setBaseclass(securityLinkCreate.getBaseclass());
 			updated=true;

@@ -1,8 +1,6 @@
 package com.wizzdi.flexicore.security.data;
 
-import com.flexicore.model.Basic;
-import com.flexicore.model.SecurityOperation;
-import com.flexicore.model.Baseclass;
+import com.flexicore.model.*;
 import com.wizzdi.flexicore.boot.base.interfaces.Plugin;
 import com.wizzdi.flexicore.security.request.SecurityOperationFilter;
 import com.flexicore.security.SecurityContextBase;
@@ -44,6 +42,17 @@ public class SecurityOperationRepository implements Plugin {
 
 	public <T extends SecurityOperation> void addOperationPredicates(SecurityOperationFilter operationFilter, CriteriaBuilder cb, CommonAbstractCriteria q, From<?,T> r, List<Predicate> predicates, SecurityContextBase securityContext) {
 		securedBasicRepository.addSecuredBasicPredicates(operationFilter.getBasicPropertiesFilter(),cb,q,r,predicates,securityContext);
+		if(operationFilter.getCategories()!=null&&!operationFilter.getCategories().isEmpty()){
+			predicates.add(r.get(SecurityOperation_.category).in(operationFilter.getCategories()));
+		}
+		if(operationFilter.getCategoryLike()!=null){
+			predicates.add(cb.like(r.get(SecurityOperation_.category),operationFilter.getCategoryLike()));
+		}
+		if(operationFilter.getOperationGroups()!=null&&!operationFilter.getOperationGroups().isEmpty()){
+			Join<T, OperationToGroup> join=r.join(SecurityOperation_.operationToGroups);
+			predicates.add(join.get(OperationToGroup_.operationGroup).in(operationFilter.getOperationGroups()));
+
+		}
 	}
 
 	public long countAllOperations(SecurityOperationFilter operationFilter, SecurityContextBase securityContext){
