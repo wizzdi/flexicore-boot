@@ -88,7 +88,6 @@ public class BaseclassRepository implements Plugin {
 		addBaseclassPredicates(baseclassFilter,cb,q,r,predicates,securityContextBase);
 		q.select(cb.count(r)).where(predicates.toArray(Predicate[]::new));
 		TypedQuery<Long> query = em.createQuery(q);
-		BasicRepository.addPagination(baseclassFilter,query);
 		return query.getSingleResult();
 
 	}

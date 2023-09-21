@@ -48,8 +48,8 @@ public class RoleToUserRepository implements Plugin {
 			predicates.add(join.get(Role_.id).in(ids));
 		}
 
-		if(roleToUserFilter.getSecurityUsers()!=null&&!roleToUserFilter.getSecurityUsers().isEmpty()){
-			Set<String> ids=roleToUserFilter.getSecurityUsers().stream().map(f->f.getId()).collect(Collectors.toSet());
+		if(roleToUserFilter.getUsers()!=null&&!roleToUserFilter.getUsers().isEmpty()){
+			Set<String> ids=roleToUserFilter.getUsers().stream().map(f->f.getId()).collect(Collectors.toSet());
 			Join<T, SecurityUser> join=r.join(RoleToUser_.user);
 			predicates.add(join.get(SecurityUser_.id).in(ids));
 		}

@@ -3,6 +3,7 @@ package com.wizzdi.flexicore.security.data;
 import com.flexicore.model.Baseclass;
 import com.flexicore.model.Basic;
 import com.flexicore.model.Clazz;
+import com.flexicore.model.Clazz_;
 import com.flexicore.security.SecurityContextBase;
 import com.wizzdi.flexicore.boot.base.interfaces.Plugin;
 import com.wizzdi.flexicore.security.request.ClazzFilter;
@@ -35,7 +36,7 @@ public class ClazzRepository implements Plugin {
 		Root<Clazz> r = q.from(Clazz.class);
 		List<Predicate> predicates = new ArrayList<>();
 		addClazzPredicates(ClazzFilter, cb, q, r, predicates, securityContext);
-		q.select(r).where(predicates.toArray(Predicate[]::new));
+		q.select(r).where(predicates.toArray(Predicate[]::new)).orderBy(cb.asc(r.get(Clazz_.name)));
 		TypedQuery<Clazz> query = em.createQuery(q);
 		BasicRepository.addPagination(ClazzFilter, query);
 		return query.getResultList();

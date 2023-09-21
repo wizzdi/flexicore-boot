@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Set;
 
 @IdValid.List({
-        @IdValid(targetField = "users", fieldType = SecurityUser.class, field = "usersIds"),
+        @IdValid(targetField = "users", fieldType = SecurityUser.class, field = "userIds"),
         @IdValid(targetField = "tenants", fieldType = SecurityTenant.class, field = "tenantsIds"),
 
 })
@@ -19,7 +19,7 @@ public class TenantToUserFilter extends PaginationFilter {
 
     private BasicPropertiesFilter basicPropertiesFilter;
 
-    private Set<String> usersIds = new HashSet<>();
+    private Set<String> userIds = new HashSet<>();
     @TypeRetention(SecurityUser.class)
     @JsonIgnore
     private List<SecurityUser> users;
@@ -28,12 +28,12 @@ public class TenantToUserFilter extends PaginationFilter {
     @TypeRetention(SecurityTenant.class)
     private List<SecurityTenant> tenants;
 
-    public Set<String> getUsersIds() {
-        return usersIds;
+    public Set<String> getUserIds() {
+        return userIds;
     }
 
-    public <T extends TenantToUserFilter> T setUsersIds(Set<String> usersIds) {
-        this.usersIds = usersIds;
+    public <T extends TenantToUserFilter> T setUserIds(Set<String> userIds) {
+        this.userIds = userIds;
         return (T) this;
     }
 
