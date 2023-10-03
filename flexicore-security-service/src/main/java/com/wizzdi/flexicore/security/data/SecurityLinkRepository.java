@@ -41,6 +41,9 @@ public class SecurityLinkRepository implements Plugin {
 
 	public <T extends SecurityLink> void addSecurityLinkPredicates(SecurityLinkFilter securityLinkFilter, CriteriaBuilder cb, CommonAbstractCriteria q, From<?,T> r, List<Predicate> predicates, SecurityContextBase securityContext) {
 		securedBasicRepository.addSecuredBasicPredicates(securityLinkFilter.getBasicPropertiesFilter(),cb,q,r,predicates,securityContext);
+		if(securityLinkFilter.getSecurityLinkGroups()!=null&&!securityLinkFilter.getSecurityLinkGroups().isEmpty()){
+			predicates.add(r.get(SecurityLink_.securityLinkGroup).in(securityLinkFilter.getSecurityLinkGroups()));
+		}
 		if(securityLinkFilter.getBaseclasses()!=null&&!securityLinkFilter.getBaseclasses().isEmpty()){
 			predicates.add(r.get(SecurityLink_.baseclass).in(securityLinkFilter.getBaseclasses()));
 		}
@@ -51,19 +54,19 @@ public class SecurityLinkRepository implements Plugin {
 			predicates.add(r.get(SecurityLink_.operation).in(securityLinkFilter.getOperations()));
 		}
 		if(securityLinkFilter.getRelevantUsers()!=null&&!securityLinkFilter.getRelevantUsers().isEmpty()){
-
+			Path<SecurityLink> p = (Path<SecurityLink>) r;
 			Predicate pred=cb.and(
 					cb.equal(r.type(), UserToBaseclass.class),
-					r.get("user").in(securityLinkFilter.getRelevantUsers()));
+					cb.treat(p, UserToBaseclass.class).get(UserToBaseclass_.user).in(securityLinkFilter.getRelevantUsers()));
 			if(securityLinkFilter.getRelevantRoles()!=null&&!securityLinkFilter.getRelevantRoles().isEmpty()){
 				pred=cb.or(pred,cb.and(
 						cb.equal(r.type(), RoleToBaseclass.class),
-						r.get("role").in(securityLinkFilter.getRelevantRoles())));
+						cb.treat(p, RoleToBaseclass.class).get(RoleToBaseclass_.role).in(securityLinkFilter.getRelevantRoles())));
 			}
 			if(securityLinkFilter.getRelevantTenants()!=null&&!securityLinkFilter.getRelevantTenants().isEmpty()){
 				pred=cb.or(pred,cb.and(
 						cb.equal(r.type(), TenantToBaseclass.class),
-						r.get("tenant").in(securityLinkFilter.getRelevantTenants())));
+						cb.treat(p, TenantToBaseclass.class).get(TenantToBaseclass_.tenant).in(securityLinkFilter.getRelevantTenants())));
 			}
 			predicates.add(pred);
 		}

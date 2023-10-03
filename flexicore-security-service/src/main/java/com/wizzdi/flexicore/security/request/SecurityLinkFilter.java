@@ -10,15 +10,20 @@ import java.util.List;
 import java.util.Set;
 
 @IdValid.List({
+        @IdValid(field = "securityLinkGroupIds", targetField = "securityLinkGroups", fieldType = SecurityLinkGroup.class),
         @IdValid(field = "baseclassIds", targetField = "baseclasses", fieldType = Baseclass.class),
         @IdValid(field = "operationIds", targetField = "operations", fieldType = SecurityOperation.class),
-        @IdValid(field = "relevantUserIds", targetField = "relevantUsers", fieldType = SecurityUser.class)
+        @IdValid(field = "relevantUserIds", targetField = "relevantUsers", fieldType = SecurityUser.class),
+
 })
 public class SecurityLinkFilter extends PaginationFilter {
 
     private BasicPropertiesFilter basicPropertiesFilter;
 
     private Set<String> relevantUserIds = new HashSet<>();
+    private Set<String> securityLinkGroupIds = new HashSet<>();
+    @JsonIgnore
+    private List<SecurityLinkGroup> securityLinkGroups;
 
     @JsonIgnore
     private List<SecurityUser> relevantUsers;
@@ -129,6 +134,25 @@ public class SecurityLinkFilter extends PaginationFilter {
 
     public <T extends SecurityLinkFilter> T setRelevantTenants(List<SecurityTenant> relevantTenants) {
         this.relevantTenants = relevantTenants;
+        return (T) this;
+    }
+
+    public Set<String> getSecurityLinkGroupIds() {
+        return securityLinkGroupIds;
+    }
+
+    public <T extends SecurityLinkFilter> T setSecurityLinkGroupIds(Set<String> securityLinkGroupIds) {
+        this.securityLinkGroupIds = securityLinkGroupIds;
+        return (T) this;
+    }
+
+    @JsonIgnore
+    public List<SecurityLinkGroup> getSecurityLinkGroups() {
+        return securityLinkGroups;
+    }
+
+    public <T extends SecurityLinkFilter> T setSecurityLinkGroups(List<SecurityLinkGroup> securityLinkGroups) {
+        this.securityLinkGroups = securityLinkGroups;
         return (T) this;
     }
 }

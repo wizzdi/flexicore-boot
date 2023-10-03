@@ -28,6 +28,8 @@ public class SecurityLink extends SecuredBasic {
 
 	@ManyToOne(targetEntity = OperationGroup.class)
 	private OperationGroup operationGroup;
+	@ManyToOne(targetEntity = SecurityLinkGroup.class)
+	private SecurityLinkGroup securityLinkGroup;
 
 	@Enumerated(EnumType.STRING)
 	private IOperation.Access access;
@@ -95,6 +97,16 @@ public class SecurityLink extends SecuredBasic {
 
 	public <T extends SecurityLink> T setOperationGroup(OperationGroup operationGroup) {
 		this.operationGroup = operationGroup;
+		return (T) this;
+	}
+
+	@ManyToOne(targetEntity = SecurityLinkGroup.class)
+	public SecurityLinkGroup getSecurityLinkGroup() {
+		return securityLinkGroup;
+	}
+
+	public <T extends SecurityLink> T setSecurityLinkGroup(SecurityLinkGroup securityLinkGroup) {
+		this.securityLinkGroup = securityLinkGroup;
 		return (T) this;
 	}
 }

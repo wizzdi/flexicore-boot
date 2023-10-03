@@ -12,6 +12,7 @@ import jakarta.validation.constraints.NotNull;
 import org.apache.commons.lang.StringUtils;
 
 @IdValid.List({
+        @IdValid(targetField = "securityLinkGroup",field = "securityLinkGroupId",fieldType = SecurityLinkGroup.class, groups = {Create.class, Update.class}),
         @IdValid(targetField = "baseclass",field = "baseclassId",fieldType = Baseclass.class, groups = {Create.class, Update.class}),
         @IdValid(targetField = "operation",field = "operationId",fieldType = SecurityOperation.class, groups = {Create.class, Update.class}),
         @IdValid(targetField = "operationGroup",field = "operationGroupId",fieldType = OperationGroup.class, groups = {Create.class, Update.class}),
@@ -19,6 +20,10 @@ import org.apache.commons.lang.StringUtils;
         @IdValid(targetField = "clazz",field = "clazzId",fieldType = Clazz.class, groups = {Create.class, Update.class})
 })
 public class SecurityLinkCreate extends BasicCreate {
+
+    private String securityLinkGroupId;
+    @JsonIgnore
+    private SecurityLinkGroup securityLinkGroup;
 
     @JsonIgnore
     private Baseclass baseclass;
@@ -153,6 +158,25 @@ public class SecurityLinkCreate extends BasicCreate {
         return (T) this;
     }
 
+    public String getSecurityLinkGroupId() {
+        return securityLinkGroupId;
+    }
+
+    public <T extends SecurityLinkCreate> T setSecurityLinkGroupId(String securityLinkGroupId) {
+        this.securityLinkGroupId = securityLinkGroupId;
+        return (T) this;
+    }
+
+    @JsonIgnore
+    public SecurityLinkGroup getSecurityLinkGroup() {
+        return securityLinkGroup;
+    }
+
+    public <T extends SecurityLinkCreate> T setSecurityLinkGroup(SecurityLinkGroup securityLinkGroup) {
+        this.securityLinkGroup = securityLinkGroup;
+        return (T) this;
+    }
+
     @AssertTrue(message = "clazzId or baseclassId or permissionGroupId must be provided",groups = Create.class)
     private boolean isTargetProvided() {
         return !StringUtils.isEmpty(clazzId)||!StringUtils.isEmpty(baseclassId)||!StringUtils.isEmpty(permissionGroupId);
@@ -162,4 +186,5 @@ public class SecurityLinkCreate extends BasicCreate {
     private boolean isOperationOrOperationGroupProvided() {
         return !StringUtils.isEmpty(operationId)||!StringUtils.isEmpty(operationGroupId);
     }
+
 }

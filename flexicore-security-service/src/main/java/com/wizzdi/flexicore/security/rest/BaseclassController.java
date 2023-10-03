@@ -26,6 +26,9 @@ public class BaseclassController implements Plugin {
     @IOperation(Name = "returns Baseclass", Description = "returns Baseclass")
     @PostMapping("/getAll")
     public PaginationResponse<Baseclass> getAll(@RequestBody @Valid BaseclassFilter baseclassFilter, @RequestAttribute SecurityContextBase securityContext) {
+        if(baseclassFilter.getClazzes()!=null){
+            baseclassFilter.setClazzes(baseclassFilter.getClazzes().stream().filter(f->!Baseclass.class.getCanonicalName().equals(f.getName())).toList());
+        }
         return baseclassService.getAllBaseclass(baseclassFilter, securityContext);
     }
 

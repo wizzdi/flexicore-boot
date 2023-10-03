@@ -70,6 +70,10 @@ public class SecurityLinkService implements Plugin {
 			securityLink.setClazz(securityLinkCreate.getClazz());
 			updated=true;
 		}
+		if(securityLinkCreate.getSecurityLinkGroup()!=null&&(securityLink.getSecurityLinkGroup()==null || !securityLinkCreate.getSecurityLinkGroup().getId().equals(securityLink.getSecurityLinkGroup().getId()))){
+			securityLink.setSecurityLinkGroup(securityLinkCreate.getSecurityLinkGroup());
+			updated=true;
+		}
 		return updated;
 	}
 

@@ -32,6 +32,7 @@
         <class>com.flexicore.model.security.SecurityPolicy</class>
         <class>com.flexicore.model.OperationGroup</class>
         <class>com.flexicore.model.OperationToGroup</class>
+        <class>com.flexicore.model.SecurityLinkGroup</class>
 
 
 
