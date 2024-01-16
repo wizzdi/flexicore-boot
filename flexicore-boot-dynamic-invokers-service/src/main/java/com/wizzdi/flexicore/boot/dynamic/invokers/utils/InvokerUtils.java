@@ -161,12 +161,12 @@ public class InvokerUtils {
 		return new ListFieldInfo(){
 			@Override
 			public String displayName() {
-				return field.getName();
+				return camelCaseToDisplayName(field.getName());
 			}
 
 			@Override
 			public String description() {
-				return field.getName();
+				return camelCaseToDisplayName(field.getName());
 			}
 
 			@Override
@@ -197,12 +197,12 @@ public class InvokerUtils {
 		return new FieldInfo() {
 			@Override
 			public String displayName() {
-				return field.getName();
+				return camelCaseToDisplayName(field.getName());
 			}
 
 			@Override
 			public String description() {
-				return field.getName();
+				return camelCaseToDisplayName(field.getName());
 			}
 
 			@Override
