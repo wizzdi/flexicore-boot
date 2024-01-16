@@ -273,12 +273,12 @@ public class InvokerUtils {
 		return new IdRefFieldInfo() {
 			@Override
 			public String displayName() {
-				return idField.getName();
+				return camelCaseToDisplayName(relatedField.getName());
 			}
 
 			@Override
 			public String description() {
-				return idField.getName();
+				return camelCaseToDisplayName(relatedField.getName());
 			}
 
 			@Override
@@ -307,6 +307,20 @@ public class InvokerUtils {
 				return IdRefFieldInfo.class;
 			}
 		};
+	}
+
+	private static String camelCaseToDisplayName(String name) {
+		StringBuilder sb = new StringBuilder();
+		for (int i = 0; i < name.length(); i++) {
+			char c = name.charAt(i);
+
+			boolean upper = Character.isUpperCase(c);
+			if (upper) {
+				sb.append(" ");
+			}
+			sb.append(i==0?Character.toUpperCase(c):c);
+		}
+		return sb.toString();
 	}
 
 
