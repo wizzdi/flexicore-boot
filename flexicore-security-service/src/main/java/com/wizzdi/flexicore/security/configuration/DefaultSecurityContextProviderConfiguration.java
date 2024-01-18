@@ -38,7 +38,7 @@ public class DefaultSecurityContextProviderConfiguration {
     private SecurityContextBase getSecurityContext(SecurityUser securityUser) {
         List<TenantToUser> links=tenantToUserService.listAllTenantToUsers(new TenantToUserFilter().setUsers(Collections.singletonList(securityUser)),null);
         List<RoleToUser> roleToUsers=roleToUserService.listAllRoleToUsers(new RoleToUserFilter().setUsers(Collections.singletonList(securityUser)),null);
-        List<Role> allRoles=new ArrayList<>(roleToUsers.stream().map(f->f.getRole()).collect(Collectors.toMap(f->f.getId(),f->f)).values());
+        List<Role> allRoles=new ArrayList<>(roleToUsers.stream().map(f->f.getRole()).collect(Collectors.toMap(f->f.getId(),f->f,(a,b)->a)).values());
         List<SecurityTenant> tenants = new ArrayList<>(links.stream().map(f -> f.getTenant()).collect(Collectors.toMap(f -> f.getId(), f -> f, (a, b) -> a)).values());
         SecurityTenant tenantToCreateIn = links.stream().filter(f -> f.isDefaultTenant()).map(f -> f.getTenant()).findFirst().orElse(null);
         Map<String, List<Role>> roleMap = roleToUsers.stream().map(f -> f.getRole()).collect(Collectors.groupingBy(f -> f.getSecurity().getTenant().getId()));
