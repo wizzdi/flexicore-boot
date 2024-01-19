@@ -22,7 +22,10 @@ import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Array;
 import java.lang.reflect.Method;
-import java.time.*;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
+import java.time.ZonedDateTime;
 import java.util.*;
 
 @Extension
@@ -31,7 +34,7 @@ public class ExampleService implements Plugin {
 
 	private static final Logger logger= LoggerFactory.getLogger(ExampleService.class);
 
-	private static final Cache<String, Object> exampleCache = Caffeine.newBuilder().expireAfterAccess(Duration.ofHours(1)).maximumSize(1000).build();
+
 	public Object getExample(Class<?> c) {
 
 		Object exampleCached = getExampleCached(c);
@@ -42,14 +45,14 @@ public class ExampleService implements Plugin {
 
 	}
 
+	@Cacheable(value = "exampleCache", key = "#c.getCanonicalName()", unless = "#result==null",cacheManager = "exampleCacheManager")
 	public Object getExampleCached(Class<?> c) {
-
-		return exampleCache.get(c.getCanonicalName(),a->generateExample(c));
-
+		return generateExample(c);
 	}
 
-	public void updateExampleCache(Class<?> c,Object value){
-		exampleCache.put(c.getCanonicalName(),value);
+	@CachePut(value = "exampleCache", key = "#c.getCanonicalName()", unless = "#result==null",cacheManager = "exampleCacheManager")
+	public Object updateExampleCache(Class<?> c,Object value){
+		return value;
 	}
 
 	private String getSetterName(String name) {

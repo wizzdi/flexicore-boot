@@ -30,7 +30,6 @@ import java.util.HashSet;
 @EnableFlexiCoreJPAPlugins
 @EnableFlexiCoreSecurity
 @SpringBootApplication
-
 public class App {
 
 
@@ -45,7 +44,7 @@ public class App {
 
 	@Bean
 	public EntitiesHolder entitiesHolder(){
-		return new EntitiesHolder(new HashSet<>(Arrays.asList(Baseclass.class, Basic.class, SecurityPolicy.class)));
+		return new EntitiesHolder(new HashSet<>(Arrays.asList(Baseclass.class, Basic.class, SecurityPolicy.class, TestEntity.class)));
 	}
 
 
