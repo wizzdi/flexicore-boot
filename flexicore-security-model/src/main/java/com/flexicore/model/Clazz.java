@@ -6,22 +6,14 @@
  ******************************************************************************/
 package com.flexicore.model;
 
-import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.flexicore.annotations.AnnotatedClazz;
-import com.flexicore.security.SecurityContextBase;
-
 import jakarta.persistence.Entity;
 
-@SuppressWarnings("serial")
+
 @AnnotatedClazz(Category="core", Name="Clazz", Description="Describes all other classes in the system")
 @Entity
-public class Clazz extends Baseclass {
+public class Clazz extends SecuredBasic {
 
-	public Clazz() {
-	}
 
-	public Clazz(String name, SecurityContextBase securityContext) {
-		super(name, securityContext);
-	}
 
 }

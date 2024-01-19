@@ -24,9 +24,8 @@ public class RoleToUserRepository implements Plugin {
 	@PersistenceContext
 	private EntityManager em;
 	@Autowired
-	private BaseclassRepository baseclassRepository;
-	@Autowired
-	private BaselinkRepository baselinkRepository;
+	private SecuredBasicRepository securedBasicRepository;
+
 
 	public List<RoleToUser> listAllRoleToUsers(RoleToUserFilter roleToUserFilter, SecurityContextBase securityContext){
 		CriteriaBuilder cb=em.getCriteriaBuilder();
@@ -36,22 +35,22 @@ public class RoleToUserRepository implements Plugin {
 		addRoleToUserPredicates(roleToUserFilter,cb,q,r,predicates,securityContext);
 		q.select(r).where(predicates.toArray(Predicate[]::new));
 		TypedQuery<RoleToUser> query = em.createQuery(q);
-		BaseclassRepository.addPagination(roleToUserFilter,query);
+		BasicRepository.addPagination(roleToUserFilter,query);
 		return query.getResultList();
 
 	}
 
 	public <T extends RoleToUser> void addRoleToUserPredicates(RoleToUserFilter roleToUserFilter, CriteriaBuilder cb, CommonAbstractCriteria q, From<?,T> r, List<Predicate> predicates, SecurityContextBase securityContext) {
-		baselinkRepository.addBaselinkPredicates(roleToUserFilter,cb,q,r,predicates,securityContext);
+		securedBasicRepository.addSecuredBasicPredicates(roleToUserFilter.getBasicPropertiesFilter(),cb,q,r,predicates,securityContext);
 		if(roleToUserFilter.getRoles()!=null&&!roleToUserFilter.getRoles().isEmpty()){
 			Set<String> ids=roleToUserFilter.getRoles().stream().map(f->f.getId()).collect(Collectors.toSet());
-			Join<T, Role> join=cb.treat(r.join(Baselink_.leftside),Role.class);
+			Join<T, Role> join=r.join(RoleToUser_.role);
 			predicates.add(join.get(Role_.id).in(ids));
 		}
 
-		if(roleToUserFilter.getSecurityUsers()!=null&&!roleToUserFilter.getSecurityUsers().isEmpty()){
-			Set<String> ids=roleToUserFilter.getSecurityUsers().stream().map(f->f.getId()).collect(Collectors.toSet());
-			Join<T, SecurityUser> join=cb.treat(r.join(Baselink_.rightside),SecurityUser.class);
+		if(roleToUserFilter.getUsers()!=null&&!roleToUserFilter.getUsers().isEmpty()){
+			Set<String> ids=roleToUserFilter.getUsers().stream().map(f->f.getId()).collect(Collectors.toSet());
+			Join<T, SecurityUser> join=r.join(RoleToUser_.user);
 			predicates.add(join.get(SecurityUser_.id).in(ids));
 		}
 	}
@@ -70,27 +69,27 @@ public class RoleToUserRepository implements Plugin {
 
 	@Transactional
 	public <T> T merge(T o){
-		return baseclassRepository.merge(o);
+		return securedBasicRepository.merge(o);
 	}
 
 	@Transactional
 	public void massMerge(List<Object> list){
-		baseclassRepository.massMerge(list);
+		securedBasicRepository.massMerge(list);
 	}
 
 	public <T extends Baseclass> List<T> listByIds(Class<T> c,Set<String> ids,  SecurityContextBase securityContext) {
-		return baseclassRepository.listByIds(c, ids, securityContext);
+		return securedBasicRepository.listByIds(c, ids, securityContext);
 	}
 
 	public <T extends Baseclass> T getByIdOrNull(String id, Class<T> c, SecurityContextBase securityContext) {
-		return baseclassRepository.getByIdOrNull(id, c, securityContext);
+		return securedBasicRepository.getByIdOrNull(id, c, securityContext);
 	}
 
 	public <T extends Baseclass> List<T> findByIds(Class<T> c, Set<String> requested) {
-		return baseclassRepository.findByIds(c, requested);
+		return securedBasicRepository.findByIds(c, requested);
 	}
 
 	public <T> T findByIdOrNull(Class<T> type, String id) {
-		return baseclassRepository.findByIdOrNull(type, id);
+		return securedBasicRepository.findByIdOrNull(type, id);
 	}
 }

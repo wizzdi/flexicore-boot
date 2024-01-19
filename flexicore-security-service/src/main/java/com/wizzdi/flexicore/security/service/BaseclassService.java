@@ -5,12 +5,16 @@ import com.flexicore.model.Basic;
 import com.flexicore.model.SecuredBasic;
 import com.wizzdi.flexicore.boot.base.interfaces.Plugin;
 import com.flexicore.security.SecurityContextBase;
+import com.wizzdi.flexicore.security.data.BaseclassRepository;
 import com.wizzdi.flexicore.security.request.BaseclassCreate;
+import com.wizzdi.flexicore.security.request.BaseclassFilter;
+import com.wizzdi.flexicore.security.response.PaginationResponse;
 import org.pf4j.Extension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.time.OffsetDateTime;
+import java.util.List;
 
 @Component
 @Extension
@@ -18,6 +22,8 @@ public class BaseclassService implements Plugin {
 
 	@Autowired
 	private BasicService basicService;
+	@Autowired
+	private BaseclassRepository baseclassRepository;
 
 
 	public boolean updateBaseclassNoMerge(BaseclassCreate baseclassCreate, Baseclass baseclass) {
@@ -29,6 +35,16 @@ public class BaseclassService implements Plugin {
 		}
 
 		return update;
+	}
+
+	public PaginationResponse<Baseclass> getAllBaseclass(BaseclassFilter baseclasssFilter , SecurityContextBase securityContext) {
+		List<Baseclass> baseclasses = listAllBaseclass(baseclasssFilter, securityContext);
+		long count = baseclassRepository.countAllBaseclass(baseclasssFilter,securityContext);
+		return new PaginationResponse<>(baseclasses, baseclasssFilter, count);
+	}
+
+	public List<Baseclass> listAllBaseclass(BaseclassFilter baseclasssFilter , SecurityContextBase securityContext) {
+		return baseclassRepository.listAllBaseclass(baseclasssFilter,securityContext);
 	}
 
 	@Deprecated

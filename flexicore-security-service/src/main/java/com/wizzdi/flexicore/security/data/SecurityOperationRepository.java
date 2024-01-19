@@ -1,11 +1,10 @@
 package com.wizzdi.flexicore.security.data;
 
-import com.flexicore.model.Baseclass_;
-import com.flexicore.model.SecurityOperation;
-import com.flexicore.model.Baseclass;
+import com.flexicore.model.*;
 import com.wizzdi.flexicore.boot.base.interfaces.Plugin;
 import com.wizzdi.flexicore.security.request.SecurityOperationFilter;
 import com.flexicore.security.SecurityContextBase;
+import jakarta.persistence.metamodel.SingularAttribute;
 import org.pf4j.Extension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -25,9 +24,8 @@ public class SecurityOperationRepository implements Plugin {
 	@PersistenceContext
 	private EntityManager em;
 	@Autowired
-	private BaseclassRepository baseclassRepository;
-	@Autowired
-	private SecurityEntityRepository securityEntityRepository;
+	private SecuredBasicRepository securedBasicRepository;
+
 
 	public List<SecurityOperation> listAllOperations(SecurityOperationFilter operationFilter, SecurityContextBase securityContext){
 		CriteriaBuilder cb=em.getCriteriaBuilder();
@@ -37,13 +35,24 @@ public class SecurityOperationRepository implements Plugin {
 		addOperationPredicates(operationFilter,cb,q,r,predicates,securityContext);
 		q.select(r).where(predicates.toArray(Predicate[]::new));
 		TypedQuery<SecurityOperation> query = em.createQuery(q);
-		BaseclassRepository.addPagination(operationFilter,query);
+		BasicRepository.addPagination(operationFilter,query);
 		return query.getResultList();
 
 	}
 
 	public <T extends SecurityOperation> void addOperationPredicates(SecurityOperationFilter operationFilter, CriteriaBuilder cb, CommonAbstractCriteria q, From<?,T> r, List<Predicate> predicates, SecurityContextBase securityContext) {
-		securityEntityRepository.addSecurityEntityPredicates(operationFilter,cb,q,r,predicates,securityContext);
+		securedBasicRepository.addSecuredBasicPredicates(operationFilter.getBasicPropertiesFilter(),cb,q,r,predicates,securityContext);
+		if(operationFilter.getCategories()!=null&&!operationFilter.getCategories().isEmpty()){
+			predicates.add(r.get(SecurityOperation_.category).in(operationFilter.getCategories()));
+		}
+		if(operationFilter.getCategoryLike()!=null){
+			predicates.add(cb.like(r.get(SecurityOperation_.category),operationFilter.getCategoryLike()));
+		}
+		if(operationFilter.getOperationGroups()!=null&&!operationFilter.getOperationGroups().isEmpty()){
+			Join<T, OperationToGroup> join=r.join(SecurityOperation_.operationToGroups);
+			predicates.add(join.get(OperationToGroup_.operationGroup).in(operationFilter.getOperationGroups()));
+
+		}
 	}
 
 	public long countAllOperations(SecurityOperationFilter operationFilter, SecurityContextBase securityContext){
@@ -58,28 +67,52 @@ public class SecurityOperationRepository implements Plugin {
 
 	}
 
+
 	@Transactional
-	public <T> T merge(T o){
-		return baseclassRepository.merge(o);
+	public <T> T merge(T base, boolean updateDate, boolean propagateEvents) {
+		return securedBasicRepository.merge(base, updateDate, propagateEvents);
 	}
 
 	@Transactional
-	public void massMerge(List<Object> list){
-		baseclassRepository.massMerge(list);
-	}
-
-
-
-
-	public <T extends Baseclass> List<T> findByIds(Class<T> c, Set<String> requested) {
-		return baseclassRepository.findByIds(c, requested);
+	public void massMerge(List<?> toMerge, boolean updatedate, boolean propagateEvents) {
+		securedBasicRepository.massMerge(toMerge, updatedate, propagateEvents);
 	}
 
 	public <T extends Baseclass> List<T> listByIds(Class<T> c, Set<String> ids, SecurityContextBase securityContext) {
-		return baseclassRepository.listByIds(c, ids, securityContext);
+		return securedBasicRepository.listByIds(c, ids, securityContext);
 	}
 
 	public <T extends Baseclass> T getByIdOrNull(String id, Class<T> c, SecurityContextBase securityContext) {
-		return baseclassRepository.getByIdOrNull(id, c, securityContext);
+		return securedBasicRepository.getByIdOrNull(id, c, securityContext);
+	}
+
+	public <D extends Basic, E extends Baseclass, T extends D> T getByIdOrNull(String id, Class<T> c, SingularAttribute<D, E> baseclassAttribute, SecurityContextBase securityContext) {
+		return securedBasicRepository.getByIdOrNull(id, c, baseclassAttribute, securityContext);
+	}
+
+	public <D extends Basic, E extends Baseclass, T extends D> List<T> listByIds(Class<T> c, Set<String> ids, SingularAttribute<D, E> baseclassAttribute, SecurityContextBase securityContext) {
+		return securedBasicRepository.listByIds(c, ids, baseclassAttribute, securityContext);
+	}
+
+	public <D extends Basic, T extends D> List<T> findByIds(Class<T> c, Set<String> ids, SingularAttribute<D, String> idAttribute) {
+		return securedBasicRepository.findByIds(c, ids, idAttribute);
+	}
+
+	public <T extends Basic> List<T> findByIds(Class<T> c, Set<String> requested) {
+		return securedBasicRepository.findByIds(c, requested);
+	}
+
+	public <T> T findByIdOrNull(Class<T> type, String id) {
+		return securedBasicRepository.findByIdOrNull(type, id);
+	}
+
+	@Transactional
+	public <T> T merge(T base) {
+		return securedBasicRepository.merge(base);
+	}
+
+	@Transactional
+	public void massMerge(List<?> toMerge) {
+		securedBasicRepository.massMerge(toMerge);
 	}
 }

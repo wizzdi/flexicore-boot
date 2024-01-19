@@ -2,7 +2,6 @@ package com.wizzdi.flexicore.security.data;
 
 import com.flexicore.model.RoleToBaseclass;
 import com.flexicore.model.Baseclass;
-import com.flexicore.model.Baseclass_;
 import com.wizzdi.flexicore.boot.base.interfaces.Plugin;
 import com.flexicore.security.SecurityContextBase;
 import com.wizzdi.flexicore.security.request.RoleToBaseclassFilter;
@@ -24,8 +23,7 @@ import java.util.Set;
 public class RoleToBaseclassRepository implements Plugin {
 	@PersistenceContext
 	private EntityManager em;
-	@Autowired
-	private BaseclassRepository baseclassRepository;
+
 	@Autowired
 	private SecurityLinkRepository securityLinkRepository;
 
@@ -37,7 +35,7 @@ public class RoleToBaseclassRepository implements Plugin {
 		addRoleToBaseclassPredicates(roleToBaseclassFilter,cb,q,r,predicates,securityContext);
 		q.select(r).where(predicates.toArray(Predicate[]::new));
 		TypedQuery<RoleToBaseclass> query = em.createQuery(q);
-		BaseclassRepository.addPagination(roleToBaseclassFilter,query);
+		BasicRepository.addPagination(roleToBaseclassFilter,query);
 		return query.getResultList();
 
 	}
@@ -60,19 +58,19 @@ public class RoleToBaseclassRepository implements Plugin {
 
 	@Transactional
 	public <T> T merge(T o){
-		return baseclassRepository.merge(o);
+		return securityLinkRepository.merge(o);
 	}
 
 	@Transactional
 	public void massMerge(List<Object> list){
-		baseclassRepository.massMerge(list);
+		securityLinkRepository.massMerge(list);
 	}
 
 	public <T extends Baseclass> List<T> listByIds(Class<T> c,Set<String> ids,  SecurityContextBase securityContext) {
-		return baseclassRepository.listByIds(c, ids, securityContext);
+		return securityLinkRepository.listByIds(c, ids, securityContext);
 	}
 
 	public <T extends Baseclass> T getByIdOrNull(String id, Class<T> c, SecurityContextBase securityContext) {
-		return baseclassRepository.getByIdOrNull(id, c, securityContext);
+		return securityLinkRepository.getByIdOrNull(id, c, securityContext);
 	}
 }

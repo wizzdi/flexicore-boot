@@ -20,7 +20,7 @@ public class SecurityInterceptor implements HandlerInterceptor {
 
 	@Autowired
 	@Qualifier("adminSecurityContext")
-	private SecurityContextBase<?,?,?,?> securityContextBase;
+	private SecurityContextBase securityContextBase;
 
 
 	@Override

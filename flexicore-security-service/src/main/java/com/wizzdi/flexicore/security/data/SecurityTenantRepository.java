@@ -1,8 +1,6 @@
 package com.wizzdi.flexicore.security.data;
 
-import com.flexicore.model.Baseclass;
-import com.flexicore.model.SecurityTenant;
-import com.flexicore.model.SecurityTenant_;
+import com.flexicore.model.*;
 import com.wizzdi.flexicore.boot.base.interfaces.Plugin;
 import com.flexicore.security.SecurityContextBase;
 import com.wizzdi.flexicore.security.request.SecurityTenantFilter;
@@ -44,6 +42,10 @@ public class SecurityTenantRepository implements Plugin {
 
 	public <T extends SecurityTenant> void addTenantPredicates(SecurityTenantFilter tenantFilter, CriteriaBuilder cb, CommonAbstractCriteria q, From<?,T> r, List<Predicate> predicates, SecurityContextBase securityContext) {
 		securityEntityRepository.addSecurityEntityPredicates(tenantFilter,cb,q,r,predicates,securityContext);
+		if(tenantFilter.getUsers()!=null&&!tenantFilter.getUsers().isEmpty()){
+			Join<T, TenantToUser> join=r.join(SecurityTenant_.tenantToUser);
+			predicates.add(join.get(TenantToUser_.user).in(tenantFilter.getUsers()));
+		}
 	}
 
 	public long countAllTenants(SecurityTenantFilter tenantFilter, SecurityContextBase securityContext){

@@ -7,9 +7,6 @@
 package com.flexicore.model;
 
 import com.flexicore.annotations.AnnotatedClazz;
-import com.flexicore.security.SecurityContextBase;
-
-
 import jakarta.persistence.Entity;
 import jakarta.persistence.ManyToOne;
 
@@ -17,48 +14,32 @@ import jakarta.persistence.ManyToOne;
  * Entity implementation class for Entity: RoleToUser
  *
  */
-@SuppressWarnings("serial")
+
 @AnnotatedClazz(Category="access control", Name="RoleToUser", Description="Relates Users  to Roles")
 @Entity
 
-public class RoleToUser extends Baselink  {
+public class RoleToUser extends SecuredBasic  {
 
+    private Role role;
+    private SecurityUser user;
 
-	@ManyToOne(targetEntity = Role.class)
-	@Override
-	public Role getLeftside() {
-		return (Role) super.getLeftside();
-	}
+    @ManyToOne(targetEntity = Role.class)
+    public Role getRole() {
+        return role;
+    }
 
-	public void setLeftside(Role leftside) {
-		super.setLeftside(leftside);
-	}
+    public <T extends RoleToUser> T setRole(Role role) {
+        this.role = role;
+        return (T) this;
+    }
 
-	public void setRole(Role role) {
-		this.leftside=role;
-	}
+    @ManyToOne(targetEntity = SecurityUser.class)
+    public SecurityUser getUser() {
+        return user;
+    }
 
-
-	@ManyToOne(targetEntity = SecurityUser.class)
-	@Override
-	public SecurityUser getRightside() {
-		return (SecurityUser) super.getRightside();
-	}
-	public void setUser(SecurityUser user) {
-		this.rightside=user;
-	}
-
-	public void setRightside(SecurityUser rightside) {
-		super.setRightside(rightside);
-	}
-
-	public RoleToUser() {
-		super();
-	}
-
-	public RoleToUser(String name, SecurityContextBase securityContext) {
-		super(name, securityContext);
-	}
-
-
+    public <T extends RoleToUser> T setUser(SecurityUser user) {
+        this.user = user;
+        return (T) this;
+    }
 }

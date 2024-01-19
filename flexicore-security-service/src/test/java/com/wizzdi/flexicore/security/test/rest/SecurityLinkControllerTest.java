@@ -1,5 +1,6 @@
 package com.wizzdi.flexicore.security.test.rest;
 
+import com.flexicore.annotations.IOperation;
 import com.flexicore.model.SecurityLink;
 import com.wizzdi.flexicore.security.request.SecurityLinkCreate;
 import com.wizzdi.flexicore.security.request.SecurityLinkFilter;
@@ -10,7 +11,6 @@ import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.core.ParameterizedTypeReference;
@@ -22,7 +22,6 @@ import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.testcontainers.containers.PostgreSQLContainer;
-import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.util.Collections;
@@ -75,7 +74,7 @@ public class SecurityLinkControllerTest {
     public void testSecurityLinkCreate() {
         String name = UUID.randomUUID().toString();
         SecurityLinkCreate request = new SecurityLinkCreate()
-                .setSimpleValue("allow")
+                .setAccess(IOperation.Access.allow)
                 .setName(name);
         ResponseEntity<SecurityLink> securityLinkResponse = this.restTemplate.postForEntity("/securityLink/create", request, SecurityLink.class);
         Assertions.assertEquals(200, securityLinkResponse.getStatusCodeValue());

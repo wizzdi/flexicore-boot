@@ -26,10 +26,11 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
-@Service
+@Configuration
 public class DefaultObjectsCreator {
     private static final Logger logger= LoggerFactory.getLogger(DefaultObjectsCreator.class);
 
@@ -37,57 +38,49 @@ public class DefaultObjectsCreator {
     private static final String TENANT_TO_USER_ID = "Xk5siBx+TyWv+G6V+XuSdw";
     private static final String SUPER_ADMIN_ROLE_ID = "HzFnw-nVR0Olq6WBvwKcQg";
     private static final String SUPER_ADMIN_TO_ADMIN_ID = "EbVFgr+YS3ezYUblzceVGA";
-    @Autowired
-    private SecurityTenantService tenantService;
 
-    @Autowired
-    private TenantToUserService tenantToUserService;
-    @Autowired
-    private RoleService roleService;
 
-    @Autowired
-    private RoleToUserService roleToUserService;
-    @Autowired
-    private SecurityUserService userService;
-    @Autowired
-    @Qualifier("systemAdminId")
-    private String systemAdminId;
+
+
+
+
 
 
     @ConditionalOnMissingBean
     @Bean
-    public DefaultTenantProvider<SecurityTenant> defaultTenantProvider() {
+    public DefaultTenantProvider<SecurityTenant> defaultTenantProvider(SecurityTenantService tenantService) {
         return securityTenantCreate -> tenantService.createTenant(securityTenantCreate, null);
     }
 
     @ConditionalOnMissingBean
     @Bean
-    public DefaultUserProvider<SecurityUser> defaultSecurityUserProvider() {
+    public DefaultUserProvider<SecurityUser> defaultSecurityUserProvider(SecurityUserService userService) {
         return securityUserCreate -> userService.createSecurityUser(securityUserCreate, null);
     }
 
     @ConditionalOnMissingBean
     @Bean
-    public DefaultTenantToUserProvider<TenantToUser> defaultTenantToUserProvider() {
+    public DefaultTenantToUserProvider<TenantToUser> defaultTenantToUserProvider(TenantToUserService tenantToUserService) {
         return tenantToUserCreate -> tenantToUserService.createTenantToUser(tenantToUserCreate, null);
     }
 
     @ConditionalOnMissingBean
     @Bean
-    public DefaultRoleProvider<Role> defaultRoleProvider() {
+    public DefaultRoleProvider<Role> defaultRoleProvider(RoleService roleService) {
         return roleCreate -> roleService.createRole(roleCreate, null);
     }
 
     @ConditionalOnMissingBean
     @Bean
-    public DefaultRoleToUserProvider<RoleToUser> defaultRoleToUserProvider() {
+    public DefaultRoleToUserProvider<RoleToUser> defaultRoleToUserProvider(RoleToUserService roleToUserService) {
         return roleToUserCreate -> roleToUserService.createRoleToUser(roleToUserCreate, null);
     }
 
 
     @Bean
     @ConditionalOnMissingBean
-    public TenantAndUserInit tenantAndUserInit(DefaultTenantProvider defaultTenantProvider, DefaultUserProvider defaultUserProvider, DefaultTenantToUserProvider defaultTenantToUserProvider) {
+    public TenantAndUserInit tenantAndUserInit(DefaultTenantProvider defaultTenantProvider, DefaultUserProvider defaultUserProvider, DefaultTenantToUserProvider defaultTenantToUserProvider,
+                                               @Qualifier("systemAdminId") String systemAdminId,SecurityUserService userService,TenantToUserService tenantToUserService,SecurityTenantService tenantService) {
         SecurityTenantCreate tenantCreate = new SecurityTenantCreate()
                 .setIdForCreate(DEFAULT_TENANT_ID)
                 .setName("Default SecurityTenant")
@@ -97,13 +90,12 @@ public class DefaultObjectsCreator {
             logger.debug("Creating Default SecurityTenant");
             defaultTenant = defaultTenantProvider.createDefaultTenant(tenantCreate);
         }
-        if (defaultTenant.getTenant() == null) {
-            defaultTenant.setTenant(defaultTenant);
+        if (defaultTenant.getSecurity().getTenant() == null) {
+            defaultTenant.getSecurity().setTenant(defaultTenant);
             defaultTenant = tenantService.merge(defaultTenant);
         }
 
         SecurityUserCreate userCreate = new SecurityUserCreate()
-                .setTenant(defaultTenant)
                 .setName("Admin")
                 .setIdForCreate(systemAdminId);
         SecurityUser admin = userService.findByIdOrNull(SecurityUser.class, systemAdminId);
@@ -112,20 +104,24 @@ public class DefaultObjectsCreator {
             admin = defaultUserProvider.createSecurityUser(userCreate);
         }
 
-        if (admin.getCreator() == null) {
-            admin.setCreator(admin);
+        if (admin.getSecurity().getCreator() == null) {
+            admin.getSecurity().setCreator(admin);
+            admin = userService.merge(admin);
+        }
+        if (admin.getSecurity().getTenant() == null) {
+            admin.getSecurity().setTenant(defaultTenant);
             admin = userService.merge(admin);
         }
 
 
-        if (defaultTenant.getCreator() == null) {
-            defaultTenant.setCreator(admin);
+        if (defaultTenant.getSecurity().getCreator() == null) {
+            defaultTenant.getSecurity().setCreator(admin);
             defaultTenant = tenantService.merge(defaultTenant);
         }
 
         TenantToUserCreate tenantToUserCreate = new TenantToUserCreate()
                 .setDefaultTenant(true)
-                .setSecurityUser(admin)
+                .setUser(admin)
                 .setTenant(defaultTenant)
                 .setIdForCreate(TENANT_TO_USER_ID);
         TenantToUser tenantToUser = tenantToUserService.findByIdOrNull(TenantToUser.class, TENANT_TO_USER_ID);
@@ -134,8 +130,8 @@ public class DefaultObjectsCreator {
             tenantToUser = defaultTenantToUserProvider.createTenantToUser(tenantToUserCreate);
         }
 
-        if (tenantToUser.getCreator() == null) {
-            tenantToUser.setCreator(admin);
+        if (tenantToUser.getSecurity().getCreator() == null) {
+            tenantToUser.getSecurity().setCreator(admin);
             defaultTenant = tenantService.merge(defaultTenant);
         }
 
@@ -150,7 +146,8 @@ public class DefaultObjectsCreator {
     @ConditionalOnMissingBean
     @Scope(value = ConfigurableBeanFactory.SCOPE_SINGLETON)
     @Bean
-    public DefaultSecurityEntities createDefaultObjects(Clazzes clazzes, TenantAndUserInit tenantAndUserInit, DefaultRoleProvider defaultRoleProvider, DefaultRoleToUserProvider defaultRoleToUserProvider) {
+    public DefaultSecurityEntities createDefaultObjects(Clazzes clazzes, TenantAndUserInit tenantAndUserInit, DefaultRoleProvider defaultRoleProvider,
+                                                        DefaultRoleToUserProvider defaultRoleToUserProvider, RoleToUserService roleToUserService,RoleService roleService) {
         SecurityTenant defaultTenant = tenantAndUserInit.getDefaultTenant();
         SecurityUser admin = tenantAndUserInit.getAdmin();
         TenantToUser tenantToUser=tenantAndUserInit.getTenantToUser();
@@ -164,28 +161,28 @@ public class DefaultObjectsCreator {
         if (superAdminRole == null) {
             logger.debug("Creating Super Admin role");
             superAdminRole = defaultRoleProvider.createRole(roleCreate);
-            superAdminRole.setTenant(defaultTenant);
-            superAdminRole.setCreator(admin);
+            superAdminRole.getSecurity().setTenant(defaultTenant);
+            superAdminRole.getSecurity().setCreator(admin);
             superAdminRole = roleToUserService.merge(superAdminRole);
         }
-        if(superAdminRole.getCreator()==null){
-            superAdminRole.setCreator(admin);
+        if(superAdminRole.getSecurity().getCreator()==null){
+            superAdminRole.getSecurity().setCreator(admin);
             superAdminRole=roleService.merge(superAdminRole);
         }
         RoleToUserCreate roleToUserCreate = new RoleToUserCreate()
                 .setRole(superAdminRole)
                 .setSecurityUser(admin)
-                .setTenant(defaultTenant)
+               // .setTenant(defaultTenant)
                 .setIdForCreate(SUPER_ADMIN_TO_ADMIN_ID);
         RoleToUser roleToUser = roleToUserService.findByIdOrNull(RoleToUser.class, SUPER_ADMIN_TO_ADMIN_ID);
         if (roleToUser == null) {
             logger.debug("Creating Role To SecurityUser Link");
             roleToUser = defaultRoleToUserProvider.createRoleToUser(roleToUserCreate);
         }
-        if(roleToUser.getCreator()==null){
+        /*if(roleToUser.getCreator()==null){
             roleToUser.setCreator(admin);
             roleToUser=roleToUserService.merge(roleToUser);
-        }
+        }*/
 
 
         //roleToUserService.massMerge(toMerge);

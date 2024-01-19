@@ -7,42 +7,33 @@
 package com.flexicore.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.flexicore.security.SecurityContextBase;
-
 import jakarta.persistence.Entity;
-import jakarta.persistence.Index;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+
 import java.util.ArrayList;
 import java.util.List;
 
 //the table name 'user' isn't allowed in Postgresql
-@SuppressWarnings("serial")
+
 @Table(name = "UserTable")
 @Entity
 
 public class SecurityUser extends SecurityEntity {
 
 	@JsonIgnore
-	@OneToMany(targetEntity = RoleToUser.class,mappedBy = "rightside")
+	@OneToMany(targetEntity = RoleToUser.class,mappedBy = "user")
 	private List<RoleToUser> roles=new ArrayList<>();
 	@JsonIgnore
-	@OneToMany(targetEntity = TenantToUser.class,mappedBy = "rightside")
+	@OneToMany(targetEntity = TenantToUser.class,mappedBy = "user")
 	private List<TenantToUser> tenants=new ArrayList<>();
 
 	@JsonIgnore
-	@OneToMany(targetEntity = UserToBaseClass.class,mappedBy = "leftside")
-	private List<UserToBaseClass> userToBaseClasses=new ArrayList<>();
-
-	public SecurityUser() {
-	}
-
-	public SecurityUser(String name, SecurityContextBase securityContext) {
-		super(name, securityContext);
-	}
+	@OneToMany(targetEntity = UserToBaseclass.class,mappedBy = "user")
+	private List<UserToBaseclass> userToBaseclasses =new ArrayList<>();
 
 	@JsonIgnore
-	@OneToMany(targetEntity = RoleToUser.class,mappedBy = "rightside")
+	@OneToMany(targetEntity = RoleToUser.class,mappedBy = "user")
 	public List<RoleToUser> getRoles() {
 		return roles;
 	}
@@ -53,18 +44,18 @@ public class SecurityUser extends SecurityEntity {
 	}
 
 	@JsonIgnore
-	@OneToMany(targetEntity = UserToBaseClass.class,mappedBy = "leftside")
-	public List<UserToBaseClass> getUserToBaseClasses() {
-		return userToBaseClasses;
+	@OneToMany(targetEntity = UserToBaseclass.class,mappedBy = "user")
+	public List<UserToBaseclass> getUserToBaseClasses() {
+		return userToBaseclasses;
 	}
 
-	public <T extends SecurityUser> T setUserToBaseClasses(List<UserToBaseClass> userToBaseClasses) {
-		this.userToBaseClasses = userToBaseClasses;
+	public <T extends SecurityUser> T setUserToBaseClasses(List<UserToBaseclass> userToBaseclasses) {
+		this.userToBaseclasses = userToBaseclasses;
 		return (T) this;
 	}
 
 	@JsonIgnore
-	@OneToMany(targetEntity = TenantToUser.class,mappedBy = "rightside")
+	@OneToMany(targetEntity = TenantToUser.class,mappedBy = "user")
 	public List<TenantToUser> getTenants() {
 		return tenants;
 	}

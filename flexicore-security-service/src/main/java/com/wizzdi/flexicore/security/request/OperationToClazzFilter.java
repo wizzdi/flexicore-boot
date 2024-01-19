@@ -7,7 +7,9 @@ import com.flexicore.model.SecurityOperation;
 
 import java.util.List;
 
-public class OperationToClazzFilter extends BaselinkFilter {
+public class OperationToClazzFilter extends PaginationFilter {
+
+    private BasicPropertiesFilter basicPropertiesFilter;
 
     @JsonIgnore
     @TypeRetention(SecurityOperation.class)
@@ -15,6 +17,16 @@ public class OperationToClazzFilter extends BaselinkFilter {
     @JsonIgnore
     @TypeRetention(Clazz.class)
     private List<Clazz> clazzes;
+
+
+    public BasicPropertiesFilter getBasicPropertiesFilter() {
+        return basicPropertiesFilter;
+    }
+
+    public <T extends OperationToClazzFilter> T setBasicPropertiesFilter(BasicPropertiesFilter basicPropertiesFilter) {
+        this.basicPropertiesFilter = basicPropertiesFilter;
+        return (T) this;
+    }
 
     @JsonIgnore
     public List<SecurityOperation> getSecurityOperations() {

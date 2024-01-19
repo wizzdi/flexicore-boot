@@ -44,10 +44,15 @@ public class RoleRepository implements Plugin {
 
 	public <T extends Role> void addRolePredicates(RoleFilter roleFilter, CriteriaBuilder cb, CommonAbstractCriteria q, From<?,T> r, List<Predicate> predicates, SecurityContextBase securityContext) {
 		securityEntityRepository.addSecurityEntityPredicates(roleFilter,cb,q,r,predicates,securityContext);
-		if(roleFilter.getSecurityTenants()!=null &&!roleFilter.getSecurityTenants().isEmpty()){
-			Set<String> ids=roleFilter.getSecurityTenants().stream().map(f->f.getId()).collect(Collectors.toSet());
-			Join<T, SecurityTenant> join=r.join(Role_.tenant);
+		if(roleFilter.getTenants()!=null &&!roleFilter.getTenants().isEmpty()){
+			Set<String> ids=roleFilter.getTenants().stream().map(f->f.getId()).collect(Collectors.toSet());
+			Join<T,Baseclass> baseclassJoin=r.join(Role_.security);
+			Join<Baseclass, SecurityTenant> join=baseclassJoin.join(Baseclass_.tenant);
 			predicates.add(join.get(SecurityTenant_.id).in(ids));
+		}
+		if(roleFilter.getUsers()!=null &&!roleFilter.getUsers().isEmpty()){
+			Join<T,RoleToUser> roleToUserJoin=r.join(Role_.roleToUser);
+			predicates.add(roleToUserJoin.get(SecurityUser_.id).in(roleFilter.getUsers()));
 		}
 	}
 

@@ -25,7 +25,7 @@ import java.util.stream.Collectors;
 public class RoleToUserService implements Plugin {
 
 	@Autowired
-	private BaselinkService baselinkService;
+	private BasicService basicService;
 	@Autowired
 	private RoleToUserRepository roleToUserRepository;
 
@@ -48,19 +48,21 @@ public class RoleToUserService implements Plugin {
 
 
 	public RoleToUser createRoleToUserNoMerge(RoleToUserCreate roleToUserCreate, SecurityContextBase securityContext){
-		RoleToUser roleToUser=new RoleToUser(roleToUserCreate.getName(),securityContext);
+		RoleToUser roleToUser=new RoleToUser();
+		roleToUser.setId(UUID.randomUUID().toString());
 		updateRoleToUserNoMerge(roleToUserCreate,roleToUser);
+		BaseclassService.createSecurityObjectNoMerge(roleToUser,securityContext);
 		roleToUserRepository.merge(roleToUser);
 		return roleToUser;
 	}
 
 	public boolean updateRoleToUserNoMerge(RoleToUserCreate roleToUserCreate, RoleToUser roleToUser) {
-		boolean update = baselinkService.updateBaselinkNoMerge(roleToUserCreate, roleToUser);
-		if(roleToUserCreate.getSecurityUser()!=null&&(roleToUser.getRightside()==null||!roleToUserCreate.getSecurityUser().getId().equals(roleToUser.getRightside().getId()))){
-			roleToUser.setRightside(roleToUserCreate.getSecurityUser());
+		boolean update = basicService.updateBasicNoMerge(roleToUserCreate, roleToUser);
+		if(roleToUserCreate.getSecurityUser()!=null&&(roleToUser.getUser()==null||!roleToUserCreate.getSecurityUser().getId().equals(roleToUser.getUser().getId()))){
+			roleToUser.setUser(roleToUserCreate.getSecurityUser());
 			update=true;
 		}
-		if(roleToUserCreate.getRole()!=null&&(roleToUser.getLeftside()==null||!roleToUserCreate.getRole().getId().equals(roleToUser.getLeftside().getId()))){
+		if(roleToUserCreate.getRole()!=null&&(roleToUser.getRole()==null||!roleToUserCreate.getRole().getId().equals(roleToUser.getRole().getId()))){
 			roleToUser.setRole(roleToUserCreate.getRole());
 			update=true;
 		}
@@ -75,30 +77,7 @@ public class RoleToUserService implements Plugin {
 		return roleToUser;
 	}
 
-	@Deprecated
-	public void validate(RoleToUserCreate roleToUserCreate, SecurityContextBase securityContext) {
-		baselinkService.validate(roleToUserCreate,securityContext);
-	}
 
-	@Deprecated
-	public void validate(RoleToUserFilter roleToUserFilter, SecurityContextBase securityContext) {
-		baselinkService.validate(roleToUserFilter,securityContext);
-		Set<String> roleIds=roleToUserFilter.getRolesIds();
-		Map<String, Role> roleMap=roleIds.isEmpty()?new HashMap<>():listByIds(Role.class,roleIds,securityContext).stream().collect(Collectors.toMap(f->f.getId(),f->f));
-		roleIds.removeAll(roleMap.keySet());
-		if(!roleIds.isEmpty()){
-			throw new HttpClientErrorException(HttpStatus.BAD_REQUEST,"no roles with ids "+roleIds);
-		}
-		roleToUserFilter.setRoles(new ArrayList<>(roleMap.values()));
-
-		Set<String> usersIds=roleToUserFilter.getUsersIds();
-		Map<String, SecurityUser> userMap=usersIds.isEmpty()?new HashMap<>():listByIds(SecurityUser.class,usersIds,securityContext).stream().collect(Collectors.toMap(f->f.getId(), f->f));
-		usersIds.removeAll(userMap.keySet());
-		if(!usersIds.isEmpty()){
-			throw new HttpClientErrorException(HttpStatus.BAD_REQUEST,"no security users with ids "+usersIds);
-		}
-		roleToUserFilter.setSecurityUsers(new ArrayList<>(userMap.values()));
-	}
 
 	public <T extends Baseclass> T getByIdOrNull(String id,Class<T> c, SecurityContextBase securityContext) {
 		return roleToUserRepository.getByIdOrNull(id,c,securityContext);

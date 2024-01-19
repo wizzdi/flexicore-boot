@@ -28,13 +28,6 @@ public class SecurityOperationController implements Plugin {
     @Autowired
     private SecurityOperationService operationService;
 
-    @IOperation(Name = "creates security operation", Description = "creates security operation")
-    @PostMapping("/create")
-    public SecurityOperation create(@RequestBody @Validated(Create.class) SecurityOperationCreate operationCreate, @RequestAttribute SecurityContextBase securityContext) {
-
-        return operationService.createOperation(operationCreate, securityContext);
-    }
-
     @IOperation(Name = "returns security operation", Description = "returns security operation")
     @PostMapping("/getAll")
     public PaginationResponse<SecurityOperation> getAll(@RequestBody @Valid SecurityOperationFilter operationFilter, @RequestAttribute SecurityContextBase securityContext) {
@@ -42,10 +35,4 @@ public class SecurityOperationController implements Plugin {
         return operationService.getAllOperations(operationFilter, securityContext);
     }
 
-    @IOperation(Name = "updates security operation", Description = "updates security operation")
-    @PutMapping("/update")
-    public SecurityOperation update(@RequestBody @Validated(Update.class) SecurityOperationUpdate operationUpdate, @RequestAttribute SecurityContextBase securityContext) {
-
-        return operationService.updateOperation(operationUpdate, securityContext);
-    }
 }

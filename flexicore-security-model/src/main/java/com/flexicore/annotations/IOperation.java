@@ -28,9 +28,9 @@ import static java.lang.annotation.ElementType.METHOD;
 public @interface IOperation {
 	String Name() default "";
 	String Description() default "";
-	String Category() default "General";
+	String Category() default "";
 	boolean auditable() default false;
-	Class<? extends Baseclass>[] relatedClazzes() default {};
+	Class<?>[] relatedClazzes() default {};
 	
 	enum Access {
 		deny, allow

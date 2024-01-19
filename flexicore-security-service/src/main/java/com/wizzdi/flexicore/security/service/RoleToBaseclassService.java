@@ -15,6 +15,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 
 @Extension
 @Component
@@ -44,20 +45,18 @@ public class RoleToBaseclassService implements Plugin {
 
 
 	public RoleToBaseclass createRoleToBaseclassNoMerge(RoleToBaseclassCreate roleToBaseclassCreate, SecurityContextBase securityContext){
-		RoleToBaseclass roleToBaseclass=new RoleToBaseclass(roleToBaseclassCreate.getName(),securityContext);
+		RoleToBaseclass roleToBaseclass=new RoleToBaseclass();
+		roleToBaseclass.setId(UUID.randomUUID().toString());
 		updateRoleToBaseclassNoMerge(roleToBaseclassCreate,roleToBaseclass);
+		BaseclassService.createSecurityObjectNoMerge(roleToBaseclass,securityContext);
 		roleToBaseclassRepository.merge(roleToBaseclass);
 		return roleToBaseclass;
 	}
 
 	public boolean updateRoleToBaseclassNoMerge(RoleToBaseclassCreate roleToBaseclassCreate, RoleToBaseclass roleToBaseclass) {
 		boolean update = securityLinkService.updateSecurityLinkNoMerge(roleToBaseclassCreate, roleToBaseclass);
-		if(roleToBaseclassCreate.getBaseclass()!=null&&(roleToBaseclass.getRightside()==null||!roleToBaseclassCreate.getBaseclass().getId().equals(roleToBaseclass.getRightside().getId()))){
-			roleToBaseclass.setRightside(roleToBaseclassCreate.getBaseclass());
-			update=true;
-		}
-		if(roleToBaseclassCreate.getRole()!=null&&(roleToBaseclass.getLeftside()==null||!roleToBaseclassCreate.getRole().getId().equals(roleToBaseclass.getLeftside().getId()))){
-			roleToBaseclass.setLeftside(roleToBaseclassCreate.getRole());
+		if(roleToBaseclassCreate.getRole()!=null&&(roleToBaseclass.getRole()==null||!roleToBaseclassCreate.getRole().getId().equals(roleToBaseclass.getRole().getId()))){
+			roleToBaseclass.setRole(roleToBaseclassCreate.getRole());
 			update=true;
 		}
 		return update;
@@ -71,15 +70,6 @@ public class RoleToBaseclassService implements Plugin {
 		return roleToBaseclass;
 	}
 
-	@Deprecated
-	public void validate(RoleToBaseclassCreate roleToBaseclassCreate, SecurityContextBase securityContext) {
-		securityLinkService.validate(roleToBaseclassCreate,securityContext);
-	}
-
-	@Deprecated
-	public void validate(RoleToBaseclassFilter roleToBaseclassFilter, SecurityContextBase securityContext) {
-		securityLinkService.validate(roleToBaseclassFilter,securityContext);
-	}
 
 	public <T extends Baseclass> T getByIdOrNull(String id,Class<T> c, SecurityContextBase securityContext) {
 		return roleToBaseclassRepository.getByIdOrNull(id,c,securityContext);

@@ -4,46 +4,46 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.flexicore.annotations.TypeRetention;
 import com.flexicore.model.SecurityTenant;
 import com.flexicore.model.SecurityUser;
-import com.wizzdi.flexicore.security.validation.Create;
 import com.wizzdi.flexicore.security.validation.IdValid;
-import com.wizzdi.flexicore.security.validation.Update;
 
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 @IdValid.List({
-        @IdValid(targetField = "securityUsers", fieldType = SecurityUser.class, field = "usersIds"),
-        @IdValid(targetField = "securityTenants", fieldType = SecurityTenant.class, field = "tenantsIds"),
+        @IdValid(targetField = "users", fieldType = SecurityUser.class, field = "userIds"),
+        @IdValid(targetField = "tenants", fieldType = SecurityTenant.class, field = "tenantsIds"),
 
 })
-public class TenantToUserFilter extends BaselinkFilter {
+public class TenantToUserFilter extends PaginationFilter {
 
-    private Set<String> usersIds = new HashSet<>();
+    private BasicPropertiesFilter basicPropertiesFilter;
+
+    private Set<String> userIds = new HashSet<>();
     @TypeRetention(SecurityUser.class)
     @JsonIgnore
-    private List<SecurityUser> securityUsers;
+    private List<SecurityUser> users;
     private Set<String> tenantsIds = new HashSet<>();
     @JsonIgnore
     @TypeRetention(SecurityTenant.class)
-    private List<SecurityTenant> securityTenants;
+    private List<SecurityTenant> tenants;
 
-    public Set<String> getUsersIds() {
-        return usersIds;
+    public Set<String> getUserIds() {
+        return userIds;
     }
 
-    public <T extends TenantToUserFilter> T setUsersIds(Set<String> usersIds) {
-        this.usersIds = usersIds;
+    public <T extends TenantToUserFilter> T setUserIds(Set<String> userIds) {
+        this.userIds = userIds;
         return (T) this;
     }
 
     @JsonIgnore
-    public List<SecurityUser> getSecurityUsers() {
-        return securityUsers;
+    public List<SecurityUser> getUsers() {
+        return users;
     }
 
-    public <T extends TenantToUserFilter> T setSecurityUsers(List<SecurityUser> securityUsers) {
-        this.securityUsers = securityUsers;
+    public <T extends TenantToUserFilter> T setUsers(List<SecurityUser> users) {
+        this.users = users;
         return (T) this;
     }
 
@@ -57,12 +57,21 @@ public class TenantToUserFilter extends BaselinkFilter {
     }
 
     @JsonIgnore
-    public List<SecurityTenant> getSecurityTenants() {
-        return securityTenants;
+    public List<SecurityTenant> getTenants() {
+        return tenants;
     }
 
-    public <T extends TenantToUserFilter> T setSecurityTenants(List<SecurityTenant> securityTenants) {
-        this.securityTenants = securityTenants;
+    public <T extends TenantToUserFilter> T setTenants(List<SecurityTenant> tenants) {
+        this.tenants = tenants;
+        return (T) this;
+    }
+
+    public BasicPropertiesFilter getBasicPropertiesFilter() {
+        return basicPropertiesFilter;
+    }
+
+    public <T extends TenantToUserFilter> T setBasicPropertiesFilter(BasicPropertiesFilter basicPropertiesFilter) {
+        this.basicPropertiesFilter = basicPropertiesFilter;
         return (T) this;
     }
 }

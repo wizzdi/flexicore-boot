@@ -2,28 +2,28 @@ package com.wizzdi.flexicore.security.service;
 
 import com.flexicore.model.Baseclass;
 import com.flexicore.model.PermissionGroup;
+import com.flexicore.model.PermissionGroupToBaseclass;
 import com.wizzdi.flexicore.boot.base.interfaces.Plugin;
 import com.wizzdi.flexicore.security.data.PermissionGroupRepository;
 import com.flexicore.security.SecurityContextBase;
-import com.wizzdi.flexicore.security.request.PermissionGroupCreate;
-import com.wizzdi.flexicore.security.request.PermissionGroupFilter;
-import com.wizzdi.flexicore.security.request.PermissionGroupUpdate;
+import com.wizzdi.flexicore.security.request.*;
 import com.wizzdi.flexicore.security.response.PaginationResponse;
 import org.pf4j.Extension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Extension
 @Component
 public class PermissionGroupService implements Plugin {
 
 	@Autowired
-	private BaseclassService baseclassService;
+	private BasicService basicService;
 	@Autowired
 	private PermissionGroupRepository permissionGroupRepository;
+	@Autowired
+	private PermissionGroupToBaseclassService permissionGroupToBaseclassService;
 
 
 	public PermissionGroup createPermissionGroup(PermissionGroupCreate permissionGroupCreate, SecurityContextBase securityContext){
@@ -44,14 +44,16 @@ public class PermissionGroupService implements Plugin {
 	}
 
 	public PermissionGroup createPermissionGroupNoMerge(PermissionGroupCreate permissionGroupCreate, SecurityContextBase securityContext){
-		PermissionGroup permissionGroup=new PermissionGroup(permissionGroupCreate.getName(),securityContext);
+		PermissionGroup permissionGroup=new PermissionGroup();
+		permissionGroup.setId(UUID.randomUUID().toString());
 		updatePermissionGroupNoMerge(permissionGroupCreate,permissionGroup);
+		BaseclassService.createSecurityObjectNoMerge(permissionGroup,securityContext);
 		permissionGroupRepository.merge(permissionGroup);
 		return permissionGroup;
 	}
 
 	public boolean updatePermissionGroupNoMerge(PermissionGroupCreate permissionGroupCreate, PermissionGroup permissionGroup) {
-		boolean update = baseclassService.updateBaseclassNoMerge(permissionGroupCreate, permissionGroup);
+		boolean update = basicService.updateBasicNoMerge(permissionGroupCreate, permissionGroup);
 		if(permissionGroupCreate.getExternalId()!=null&&!permissionGroupCreate.getExternalId().equals(permissionGroup.getExternalId())){
 			permissionGroup.setExternalId(permissionGroupCreate.getExternalId());
 			update=true;
@@ -69,7 +71,7 @@ public class PermissionGroupService implements Plugin {
 
 	@Deprecated
 	public void validate(PermissionGroupCreate permissionGroupCreate, SecurityContextBase securityContext) {
-		baseclassService.validate(permissionGroupCreate,securityContext);
+		basicService.validate(permissionGroupCreate,securityContext);
 	}
 
 	@Deprecated
@@ -88,5 +90,26 @@ public class PermissionGroupService implements Plugin {
 
 	public List<PermissionGroup> listAllPermissionGroups(PermissionGroupFilter permissionGroupFilter, SecurityContextBase securityContext) {
 		return permissionGroupRepository.listAllPermissionGroups(permissionGroupFilter, securityContext);
+	}
+
+	public PermissionGroup duplicate(PermissionGroupDuplicate permissionGroupDuplicate, SecurityContextBase securityContext) {
+		PermissionGroup toDuplicate = permissionGroupDuplicate.getPermissionGroup();
+		List<PermissionGroupToBaseclass> links = permissionGroupToBaseclassService.listAllPermissionGroupToBaseclass(new PermissionGroupToBaseclassFilter().setPermissionGroups(Collections.singletonList(toDuplicate)), securityContext);
+		PermissionGroupCreate permissionGroupCreate = new PermissionGroupCreate()
+				.setExternalId(Optional.ofNullable(toDuplicate.getExternalId()).map(f -> f + "(copy)").orElse(null))
+				.setName(toDuplicate.getName() + "(copy)");
+		List<Object> toMerge=new ArrayList<>();
+		PermissionGroup permissionGroup = createPermissionGroupNoMerge(permissionGroupCreate, securityContext);
+		toMerge.add(permissionGroup);
+		for (PermissionGroupToBaseclass link : links) {
+			PermissionGroupToBaseclassCreate permissionGroupToBaseclassCreate = new PermissionGroupToBaseclassCreate()
+					.setPermissionGroup(permissionGroup)
+					.setBaseclass(link.getBaseclass())
+					.setName(link.getName());
+			toMerge.add(permissionGroupToBaseclassService.createPermissionGroupToBaseclassNoMerge(permissionGroupToBaseclassCreate, securityContext));
+		}
+		massMerge(toMerge);
+		return permissionGroup;
+
 	}
 }

@@ -12,18 +12,20 @@ import java.util.Set;
 
 @IdValid.List({
         @IdValid(targetField = "roles", fieldType = Role.class, field = "rolesIds"),
-        @IdValid(targetField = "securityUsers", fieldType = SecurityUser.class, field = "usersIds")
+        @IdValid(targetField = "users", fieldType = SecurityUser.class, field = "userIds")
 })
-public class RoleToUserFilter extends BaselinkFilter {
+public class RoleToUserFilter extends PaginationFilter {
+
+    private BasicPropertiesFilter basicPropertiesFilter;
 
     private Set<String> rolesIds = new HashSet<>();
     @JsonIgnore
     @TypeRetention(Role.class)
     private List<Role> roles;
-    private Set<String> usersIds = new HashSet<>();
+    private Set<String> userIds = new HashSet<>();
     @JsonIgnore
     @TypeRetention(SecurityUser.class)
-    private List<SecurityUser> securityUsers;
+    private List<SecurityUser> users;
 
     public Set<String> getRolesIds() {
         return rolesIds;
@@ -44,22 +46,31 @@ public class RoleToUserFilter extends BaselinkFilter {
         return (T) this;
     }
 
-    public Set<String> getUsersIds() {
-        return usersIds;
+    public Set<String> getUserIds() {
+        return userIds;
     }
 
-    public <T extends RoleToUserFilter> T setUsersIds(Set<String> usersIds) {
-        this.usersIds = usersIds;
+    public <T extends RoleToUserFilter> T setUserIds(Set<String> userIds) {
+        this.userIds = userIds;
         return (T) this;
     }
 
     @JsonIgnore
-    public List<SecurityUser> getSecurityUsers() {
-        return securityUsers;
+    public List<SecurityUser> getUsers() {
+        return users;
     }
 
-    public <T extends RoleToUserFilter> T setSecurityUsers(List<SecurityUser> securityUsers) {
-        this.securityUsers = securityUsers;
+    public <T extends RoleToUserFilter> T setUsers(List<SecurityUser> users) {
+        this.users = users;
+        return (T) this;
+    }
+
+    public BasicPropertiesFilter getBasicPropertiesFilter() {
+        return basicPropertiesFilter;
+    }
+
+    public <T extends RoleToUserFilter> T setBasicPropertiesFilter(BasicPropertiesFilter basicPropertiesFilter) {
+        this.basicPropertiesFilter = basicPropertiesFilter;
         return (T) this;
     }
 }

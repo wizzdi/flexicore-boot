@@ -20,6 +20,7 @@ public class SecurityPolicy extends SecuredBasic {
 	private SecurityTenant policyTenant;
 
 
+
 	@Column(columnDefinition = "timestamp with time zone")
 	public OffsetDateTime getStartTime() {
 		return startTime;

@@ -1,10 +1,13 @@
 package com.wizzdi.flexicore.security.data;
 
 import com.flexicore.model.Baseclass;
+import com.flexicore.model.Basic;
 import com.flexicore.model.Clazz;
+import com.flexicore.model.Clazz_;
 import com.flexicore.security.SecurityContextBase;
 import com.wizzdi.flexicore.boot.base.interfaces.Plugin;
 import com.wizzdi.flexicore.security.request.ClazzFilter;
+import jakarta.persistence.metamodel.SingularAttribute;
 import org.pf4j.Extension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -24,60 +27,83 @@ public class ClazzRepository implements Plugin {
 	@PersistenceContext
 	private EntityManager em;
 	@Autowired
-	private BaseclassRepository baseclassRepository;
-	@Autowired
-	private SecurityEntityRepository securityEntityRepository;
+	private SecuredBasicRepository securedBasicRepository;
 
 
-
-	public List<Clazz> listAllClazzs(ClazzFilter ClazzFilter, SecurityContextBase securityContext){
-		CriteriaBuilder cb=em.getCriteriaBuilder();
-		CriteriaQuery<Clazz> q=cb.createQuery(Clazz.class);
-		Root<Clazz> r=q.from(Clazz.class);
-		List<Predicate> predicates=new ArrayList<>();
-		addClazzPredicates(ClazzFilter,cb,q,r,predicates,securityContext);
-		q.select(r).where(predicates.toArray(Predicate[]::new));
+	public List<Clazz> listAllClazzs(ClazzFilter ClazzFilter, SecurityContextBase securityContext) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Clazz> q = cb.createQuery(Clazz.class);
+		Root<Clazz> r = q.from(Clazz.class);
+		List<Predicate> predicates = new ArrayList<>();
+		addClazzPredicates(ClazzFilter, cb, q, r, predicates, securityContext);
+		q.select(r).where(predicates.toArray(Predicate[]::new)).orderBy(cb.asc(r.get(Clazz_.name)));
 		TypedQuery<Clazz> query = em.createQuery(q);
-		BaseclassRepository.addPagination(ClazzFilter,query);
+		BasicRepository.addPagination(ClazzFilter, query);
 		return query.getResultList();
 
 	}
 
-	public <T extends Clazz> void addClazzPredicates(ClazzFilter ClazzFilter, CriteriaBuilder cb, CommonAbstractCriteria q, From<?,T> r, List<Predicate> predicates, SecurityContextBase securityContext) {
-		securityEntityRepository.addSecurityEntityPredicates(ClazzFilter,cb,q,r,predicates,securityContext);
+	public <T extends Clazz> void addClazzPredicates(ClazzFilter clazzFilter, CriteriaBuilder cb, CommonAbstractCriteria q, From<?, T> r, List<Predicate> predicates, SecurityContextBase securityContext) {
+		securedBasicRepository.addSecuredBasicPredicates(clazzFilter.getBasicPropertiesFilter(), cb, q, r, predicates, securityContext);
 	}
 
-	public long countAllClazzs(ClazzFilter ClazzFilter, SecurityContextBase securityContext){
-		CriteriaBuilder cb=em.getCriteriaBuilder();
-		CriteriaQuery<Long> q=cb.createQuery(Long.class);
-		Root<Clazz> r=q.from(Clazz.class);
-		List<Predicate> predicates=new ArrayList<>();
-		addClazzPredicates(ClazzFilter,cb,q,r,predicates,securityContext);
+	public long countAllClazzs(ClazzFilter ClazzFilter, SecurityContextBase securityContext) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Long> q = cb.createQuery(Long.class);
+		Root<Clazz> r = q.from(Clazz.class);
+		List<Predicate> predicates = new ArrayList<>();
+		addClazzPredicates(ClazzFilter, cb, q, r, predicates, securityContext);
 		q.select(cb.count(r)).where(predicates.toArray(Predicate[]::new));
 		TypedQuery<Long> query = em.createQuery(q);
 		return query.getSingleResult();
 
 	}
 
-		@Transactional
-	public <T> T merge(T o){
-		return baseclassRepository.merge(o);
+	@Transactional
+	public <T> T merge(T base, boolean updateDate, boolean propagateEvents) {
+		return securedBasicRepository.merge(base, updateDate, propagateEvents);
 	}
 
 	@Transactional
-	public void massMerge(List<Object> list){
-		baseclassRepository.massMerge(list);
+	public void massMerge(List<?> toMerge, boolean updatedate, boolean propagateEvents) {
+		securedBasicRepository.massMerge(toMerge, updatedate, propagateEvents);
 	}
 
-	public <T extends Baseclass> List<T> listByIds(Class<T> c,Set<String> ids,  SecurityContextBase securityContext) {
-		return baseclassRepository.listByIds(c, ids, securityContext);
+	public <T extends Baseclass> List<T> listByIds(Class<T> c, Set<String> ids, SecurityContextBase securityContext) {
+		return securedBasicRepository.listByIds(c, ids, securityContext);
 	}
 
 	public <T extends Baseclass> T getByIdOrNull(String id, Class<T> c, SecurityContextBase securityContext) {
-		return baseclassRepository.getByIdOrNull(id, c, securityContext);
+		return securedBasicRepository.getByIdOrNull(id, c, securityContext);
 	}
 
-	public <T extends Baseclass> List<T> findByIds(Class<T> c, Set<String> requested) {
-		return baseclassRepository.findByIds(c, requested);
+	public <D extends Basic, E extends Baseclass, T extends D> T getByIdOrNull(String id, Class<T> c, SingularAttribute<D, E> baseclassAttribute, SecurityContextBase securityContext) {
+		return securedBasicRepository.getByIdOrNull(id, c, baseclassAttribute, securityContext);
+	}
+
+	public <D extends Basic, E extends Baseclass, T extends D> List<T> listByIds(Class<T> c, Set<String> ids, SingularAttribute<D, E> baseclassAttribute, SecurityContextBase securityContext) {
+		return securedBasicRepository.listByIds(c, ids, baseclassAttribute, securityContext);
+	}
+
+	public <D extends Basic, T extends D> List<T> findByIds(Class<T> c, Set<String> ids, SingularAttribute<D, String> idAttribute) {
+		return securedBasicRepository.findByIds(c, ids, idAttribute);
+	}
+
+	public <T extends Basic> List<T> findByIds(Class<T> c, Set<String> requested) {
+		return securedBasicRepository.findByIds(c, requested);
+	}
+
+	public <T> T findByIdOrNull(Class<T> type, String id) {
+		return securedBasicRepository.findByIdOrNull(type, id);
+	}
+
+	@Transactional
+	public <T> T merge(T base) {
+		return securedBasicRepository.merge(base);
+	}
+
+	@Transactional
+	public void massMerge(List<?> toMerge) {
+		securedBasicRepository.massMerge(toMerge);
 	}
 }

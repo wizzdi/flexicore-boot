@@ -28,17 +28,11 @@ public class SecurityLinkController implements Plugin {
     @Autowired
     private SecurityLinkService securityLinkService;
 
-    @IOperation(Name = "creates SecurityLink", Description = "creates SecurityLink")
-    @PostMapping("/create")
-    public SecurityLink create(@RequestBody @Validated(Create.class) SecurityLinkCreate securityLinkCreate, @RequestAttribute SecurityContextBase securityContext) {
-
-        return securityLinkService.createSecurityLink(securityLinkCreate, securityContext);
-    }
 
     @IOperation(Name = "returns SecurityLink", Description = "returns SecurityLink")
     @PostMapping("/getAll")
     public PaginationResponse<SecurityLink> getAll(@RequestBody @Valid SecurityLinkFilter securityLinkFilter, @RequestAttribute SecurityContextBase securityContext) {
-
+        securityLinkService.setRelevant(securityLinkFilter,securityContext);
         return securityLinkService.getAllSecurityLinks(securityLinkFilter, securityContext);
     }
 

@@ -1,5 +1,6 @@
 package com.wizzdi.flexicore.boot.dynamic.invokers.service;
 
+import com.flexicore.model.SecuredBasic_;
 import com.flexicore.model.SecurityOperation;
 import com.flexicore.security.SecurityContextBase;
 import com.wizzdi.flexicore.boot.base.interfaces.Plugin;
@@ -167,7 +168,7 @@ public class DynamicInvokerService implements Plugin {
                         if (bodyIndex > -1) {
 
                             OperationScanContext operationScanContext = operationsMethodScanner.scanOperationOnMethod(method);
-                            SecurityOperation securityOperation = operationScanContext != null ? securityOperationService.getByIdOrNull(operationScanContext.getSecurityOperationCreate().getIdForCreate(), SecurityOperation.class, null) : null;
+                            SecurityOperation securityOperation = operationScanContext != null ? securityOperationService.getByIdOrNull(operationScanContext.getSecurityOperationCreate().getIdForCreate(), SecurityOperation.class, SecuredBasic_.security,null) : null;
                             SecurityOperation original = securityContext.getOperation();
                             try {
                                 if (securityOperation != null) {

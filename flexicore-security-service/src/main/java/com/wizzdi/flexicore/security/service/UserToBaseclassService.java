@@ -1,6 +1,6 @@
 package com.wizzdi.flexicore.security.service;
 
-import com.flexicore.model.UserToBaseClass;
+import com.flexicore.model.UserToBaseclass;
 import com.flexicore.model.Baseclass;
 import com.wizzdi.flexicore.boot.base.interfaces.Plugin;
 import com.wizzdi.flexicore.security.data.UserToBaseclassRepository;
@@ -15,6 +15,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 
 @Extension
 @Component
@@ -26,26 +27,33 @@ public class UserToBaseclassService implements Plugin {
 	private UserToBaseclassRepository userToBaseclassRepository;
 
 
-	public UserToBaseClass createUserToBaseclass(UserToBaseclassCreate userToBaseclassCreate, SecurityContextBase securityContext){
-		UserToBaseClass userToBaseclass= createUserToBaseclassNoMerge(userToBaseclassCreate,securityContext);
+	public UserToBaseclass createUserToBaseclass(UserToBaseclassCreate userToBaseclassCreate, SecurityContextBase securityContext){
+		UserToBaseclass userToBaseclass= createUserToBaseclassNoMerge(userToBaseclassCreate,securityContext);
 		userToBaseclassRepository.merge(userToBaseclass);
 		return userToBaseclass;
 	}
 
 
-	public UserToBaseClass createUserToBaseclassNoMerge(UserToBaseclassCreate userToBaseclassCreate, SecurityContextBase securityContext){
-		UserToBaseClass userToBaseclass=new UserToBaseClass(userToBaseclassCreate.getName(),securityContext);
+	public UserToBaseclass createUserToBaseclassNoMerge(UserToBaseclassCreate userToBaseclassCreate, SecurityContextBase securityContext){
+		UserToBaseclass userToBaseclass=new UserToBaseclass();
+		userToBaseclass.setId(UUID.randomUUID().toString());
 		updateUserToBaseclassNoMerge(userToBaseclassCreate,userToBaseclass);
+		BaseclassService.createSecurityObjectNoMerge(userToBaseclass,securityContext);
 		userToBaseclassRepository.merge(userToBaseclass);
 		return userToBaseclass;
 	}
 
-	public boolean updateUserToBaseclassNoMerge(UserToBaseclassCreate userToBaseclassCreate, UserToBaseClass userToBaseclass) {
-		return securityLinkService.updateSecurityLinkNoMerge(userToBaseclassCreate,userToBaseclass);
+	public boolean updateUserToBaseclassNoMerge(UserToBaseclassCreate userToBaseclassCreate, UserToBaseclass userToBaseclass) {
+		boolean update = securityLinkService.updateSecurityLinkNoMerge(userToBaseclassCreate, userToBaseclass);
+		if(userToBaseclassCreate.getUser()!=null&&(userToBaseclass.getUser()==null||!userToBaseclassCreate.getUser().getId().equals(userToBaseclass.getUser().getId()))){
+			userToBaseclass.setUser(userToBaseclassCreate.getUser());
+			update=true;
+		}
+		return update;
 	}
 
-	public UserToBaseClass updateUserToBaseclass(UserToBaseclassUpdate userToBaseclassUpdate, SecurityContextBase securityContext){
-		UserToBaseClass userToBaseclass=userToBaseclassUpdate.getUserToBaseclass();
+	public UserToBaseclass updateUserToBaseclass(UserToBaseclassUpdate userToBaseclassUpdate, SecurityContextBase securityContext){
+		UserToBaseclass userToBaseclass=userToBaseclassUpdate.getUserToBaseclass();
 		if(updateUserToBaseclassNoMerge(userToBaseclassUpdate,userToBaseclass)){
 			userToBaseclassRepository.merge(userToBaseclass);
 		}
@@ -58,15 +66,7 @@ public class UserToBaseclassService implements Plugin {
 		userToBaseclassRepository.massMerge(list);
 	}
 
-	@Deprecated
-	public void validate(UserToBaseclassCreate userToBaseclassCreate, SecurityContextBase securityContext) {
-		securityLinkService.validate(userToBaseclassCreate,securityContext);
-	}
 
-	@Deprecated
-	public void validate(UserToBaseclassFilter userToBaseclassFilter, SecurityContextBase securityContext) {
-		securityLinkService.validate(userToBaseclassFilter,securityContext);
-	}
 
 	public <T extends Baseclass> T getByIdOrNull(String id,Class<T> c, SecurityContextBase securityContext) {
 		return userToBaseclassRepository.getByIdOrNull(id,c,securityContext);
@@ -76,13 +76,13 @@ public class UserToBaseclassService implements Plugin {
 		return userToBaseclassRepository.listByIds(c, ids, securityContext);
 	}
 
-	public PaginationResponse<UserToBaseClass> getAllUserToBaseclass(UserToBaseclassFilter userToBaseclassFilter, SecurityContextBase securityContext) {
-		List<UserToBaseClass> list= listAllUserToBaseclasss(userToBaseclassFilter, securityContext);
+	public PaginationResponse<UserToBaseclass> getAllUserToBaseclass(UserToBaseclassFilter userToBaseclassFilter, SecurityContextBase securityContext) {
+		List<UserToBaseclass> list= listAllUserToBaseclasss(userToBaseclassFilter, securityContext);
 		long count=userToBaseclassRepository.countAllUserToBaseclasss(userToBaseclassFilter,securityContext);
 		return new PaginationResponse<>(list,userToBaseclassFilter,count);
 	}
 
-	public List<UserToBaseClass> listAllUserToBaseclasss(UserToBaseclassFilter userToBaseclassFilter, SecurityContextBase securityContext) {
+	public List<UserToBaseclass> listAllUserToBaseclasss(UserToBaseclassFilter userToBaseclassFilter, SecurityContextBase securityContext) {
 		return userToBaseclassRepository.listAllUserToBaseclasss(userToBaseclassFilter, securityContext);
 	}
 }

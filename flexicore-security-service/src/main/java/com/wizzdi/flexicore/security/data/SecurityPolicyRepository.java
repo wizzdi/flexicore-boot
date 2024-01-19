@@ -6,7 +6,6 @@ import com.flexicore.model.security.SecurityPolicy_;
 import com.flexicore.security.SecurityContextBase;
 import com.wizzdi.flexicore.boot.base.interfaces.Plugin;
 import com.wizzdi.flexicore.security.request.SecurityPolicyFilter;
-import jakarta.persistence.metamodel.SingularAttribute;
 import org.pf4j.Extension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -62,8 +61,8 @@ public class SecurityPolicyRepository implements Plugin {
 		if (securityPolicyFilter.isIncludeNoRole()) {
 			roleIds.add(null);
 		}
-		if (securityPolicyFilter.getRoles() != null) {
-			roleIds.addAll(securityPolicyFilter.getRoles().stream().map(f -> f.getId()).collect(Collectors.toSet()));
+		if(securityPolicyFilter.getRoles()!=null){
+			roleIds.addAll(securityPolicyFilter.getRoles().stream().map(f->f.getId()).collect(Collectors.toSet()));
 		}
 		if (!roleIds.isEmpty()) {
 			Join<T, Role> join = r.join(SecurityPolicy_.policyRole);
@@ -85,6 +84,16 @@ public class SecurityPolicyRepository implements Plugin {
 
 	}
 
+	@Transactional
+	public <T> T merge(T o){
+		return securedBasicRepository.merge(o);
+	}
+
+	@Transactional
+	public void massMerge(List<Object> list){
+		securedBasicRepository.massMerge(list);
+	}
+
 	public <T extends Baseclass> List<T> listByIds(Class<T> c, Set<String> ids, SecurityContextBase securityContext) {
 		return securedBasicRepository.listByIds(c, ids, securityContext);
 	}
@@ -93,33 +102,17 @@ public class SecurityPolicyRepository implements Plugin {
 		return securedBasicRepository.getByIdOrNull(id, c, securityContext);
 	}
 
-	public <D extends Basic, E extends Baseclass, T extends D> T getByIdOrNull(String id, Class<T> c, SingularAttribute<D, E> baseclassAttribute, SecurityContextBase securityContext) {
-		return securedBasicRepository.getByIdOrNull(id, c, baseclassAttribute, securityContext);
-	}
-
-	public <D extends Basic, E extends Baseclass, T extends D> List<T> listByIds(Class<T> c, Set<String> ids, SingularAttribute<D, E> baseclassAttribute, SecurityContextBase securityContext) {
-		return securedBasicRepository.listByIds(c, ids, baseclassAttribute, securityContext);
-	}
-
-	public <D extends Basic, T extends D> List<T> findByIds(Class<T> c, Set<String> ids, SingularAttribute<D, String> idAttribute) {
-		return securedBasicRepository.findByIds(c, ids, idAttribute);
-	}
-
-	public <T extends Basic> List<T> findByIds(Class<T> c, Set<String> requested) {
+	public <T extends Baseclass> List<T> findByIds(Class<T> c, Set<String> requested) {
 		return securedBasicRepository.findByIds(c, requested);
 	}
 
-	public <T> T findByIdOrNull(Class<T> type, String id) {
-		return securedBasicRepository.findByIdOrNull(type, id);
+	public <T extends SecurityPolicy> T getSecurityPolicyByIdOrNull(String id, Class<T> c, SecurityContextBase securityContext) {
+
+		return securedBasicRepository.getByIdOrNull(id,c,SecurityPolicy_.security,securityContext);
 	}
 
-	@Transactional
-	public void merge(Object base) {
-		securedBasicRepository.merge(base);
-	}
+	public <T extends SecurityPolicy> List<T> listSecurityPolicyByIds( Class<T> c,Set<String> ids, SecurityContextBase securityContext) {
 
-	@Transactional
-	public void massMerge(List<?> toMerge) {
-		securedBasicRepository.massMerge(toMerge);
+		return securedBasicRepository.listByIds(c,ids,SecurityPolicy_.security,securityContext);
 	}
 }

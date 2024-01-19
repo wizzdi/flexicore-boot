@@ -10,7 +10,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.flexicore.annotations.AnnotatedClazz;
 
-import com.flexicore.security.SecurityContextBase;
 import com.wizzdi.flexicore.boot.rest.views.Views;
 import io.swagger.v3.oas.annotations.media.Schema;
 
@@ -19,16 +18,12 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Index;
 import jakarta.persistence.Lob;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import java.time.OffsetDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import com.flexicore.model.SecurityUser;
 
 
 //the table name 'user' isn't allowed in Postgresql
-@SuppressWarnings("serial")
+
 @AnnotatedClazz(Category = "core", Name = "User", Description = "The basic class which uses the system")
 @Table(name = "UserTable", indexes = {
         @Index(name = "user_email_ix", columnList = "email")
@@ -39,7 +34,7 @@ public class User extends SecurityUser {
 
     private String email;
     private String homeDir;
-    private String surName;
+    private String lastName;
     @JsonView(Views.Full.class)
     private String totpSalt;
 
@@ -73,16 +68,6 @@ public class User extends SecurityUser {
     private boolean totpEnabled;
 
 
-    @JsonIgnore
-
-    @OneToMany(targetEntity = RoleToUser.class,mappedBy = "rightside") //users are subscribed to very few roles.
-    private List<RoleToUser> roles = new ArrayList<>();
-
-
-    @OneToMany(targetEntity = TenantToUser.class,mappedBy = "rightside")
-    @JsonIgnore
-    //users are subscribed to very few roles.
-    private List<TenantToUser> tenantToUsers = new ArrayList<>();
 
 
 
@@ -94,14 +79,6 @@ public class User extends SecurityUser {
     @Column(name = "phone_number")
     public String getPhoneNumber() {
         return phoneNumber;
-    }
-
-    public User() {
-        super();
-    }
-
-    public User(String name, SecurityContextBase securityContext) {
-        super(name, securityContext);
     }
 
     public void setPhoneNumber(String phoneNumber) {
@@ -139,25 +116,16 @@ public class User extends SecurityUser {
         this.homeDir = homeDir;
     }
 
-    public String getSurName() {
-        return surName;
+    public String getLastName() {
+        return lastName;
     }
 
-    public void setSurName(String surName) {
-        this.surName = surName;
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
     }
 
 
 
-    @OneToMany(targetEntity = TenantToUser.class,mappedBy = "rightside")
-    @JsonIgnore
-    public List<TenantToUser> getTenantToUsers() {
-        return tenantToUsers;
-    }
-
-    public void setTenantToUsers(List<TenantToUser> tenantToUsers) {
-        this.tenantToUsers = tenantToUsers;
-    }
     @JsonIgnore
     public String getForgotPasswordToken() {
         return forgotPasswordToken;

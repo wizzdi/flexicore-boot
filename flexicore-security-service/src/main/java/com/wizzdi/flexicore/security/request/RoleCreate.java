@@ -1,11 +1,46 @@
 package com.wizzdi.flexicore.security.request;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.flexicore.model.SecurityTenant;
+import com.wizzdi.flexicore.security.validation.Create;
+import com.wizzdi.flexicore.security.validation.IdValid;
+import jakarta.validation.constraints.NotEmpty;
+
+@IdValid.List({
+        @IdValid(targetField = "tenant", fieldType = SecurityTenant.class, field = "tenantId", groups = {Create.class})
+})
 public class RoleCreate extends SecurityEntityCreate {
+
+    @NotEmpty(groups = Create.class)
+    private String tenantId;
+    @JsonIgnore
+    private SecurityTenant tenant;
 
     public RoleCreate(RoleCreate other) {
         super(other);
+        this.tenant=other.tenant;
+        this.tenantId = other.tenantId;
     }
 
     public RoleCreate() {
+    }
+
+    public String getTenantId() {
+        return tenantId;
+    }
+
+    public <T extends RoleCreate> T setTenantId(String tenantId) {
+        this.tenantId = tenantId;
+        return (T) this;
+    }
+
+    @JsonIgnore
+    public SecurityTenant getTenant() {
+        return tenant;
+    }
+
+    public <T extends RoleCreate> T setTenant(SecurityTenant tenant) {
+        this.tenant = tenant;
+        return (T) this;
     }
 }

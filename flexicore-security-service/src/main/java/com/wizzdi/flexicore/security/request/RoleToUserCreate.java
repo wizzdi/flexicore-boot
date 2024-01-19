@@ -13,7 +13,7 @@ import com.wizzdi.flexicore.security.validation.Update;
 
 
 })
-public class RoleToUserCreate extends BaselinkCreate {
+public class RoleToUserCreate extends BasicCreate {
     @JsonIgnore
     private Role role;
     private String roleId;

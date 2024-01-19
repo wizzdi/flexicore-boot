@@ -11,6 +11,6 @@ import java.util.Map;
 
 public interface OperationBuilder {
 
-	SecurityOperation upsertOperationNoMerge(OperationScanContext e, Map<String, SecurityOperation> securityOperationMap, Map<String, Map<String, OperationToClazz>> relatedClazzes, List<Object> toMerge, Map<String, Clazz> clazzes, SecurityContextBase<?, ?, ?, ?> securityContextBase);
+	SecurityOperation upsertOperationNoMerge(OperationScanContext e, Map<String, SecurityOperation> securityOperationMap, Map<String, Map<String, OperationToClazz>> relatedClazzes, List<Object> toMerge, Map<String, Clazz> clazzes, SecurityContextBase securityContextBase);
 
 }

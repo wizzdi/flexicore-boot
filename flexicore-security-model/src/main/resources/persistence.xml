@@ -17,7 +17,6 @@
         <class>com.flexicore.model.Role</class>
         <class>com.flexicore.model.RoleToUser</class>
         <class>com.flexicore.model.PermissionGroup</class>
-        <class>com.flexicore.model.Baselink</class>
         <class>com.flexicore.model.Clazz</class>
         <class>com.flexicore.model.OperationCategory</class>
         <class>com.flexicore.model.OperationToClazz</class>
@@ -27,10 +26,13 @@
         <class>com.flexicore.model.SecurityOperation</class>
         <class>com.flexicore.model.SecurityTenant</class>
         <class>com.flexicore.model.SecurityWildcard</class>
-		<class>com.flexicore.model.TenantToBaseClassPremission</class>
+		<class>com.flexicore.model.TenantToBaseclass</class>
 		<class>com.flexicore.model.TenantToUser</class>
-		<class>com.flexicore.model.UserToBaseClass</class>
+		<class>com.flexicore.model.UserToBaseclass</class>
         <class>com.flexicore.model.security.SecurityPolicy</class>
+        <class>com.flexicore.model.OperationGroup</class>
+        <class>com.flexicore.model.OperationToGroup</class>
+        <class>com.flexicore.model.SecurityLinkGroup</class>
 
 
 

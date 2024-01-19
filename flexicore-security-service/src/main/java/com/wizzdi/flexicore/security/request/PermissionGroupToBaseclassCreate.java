@@ -13,7 +13,7 @@ import com.wizzdi.flexicore.security.validation.Update;
 
 
 })
-public class PermissionGroupToBaseclassCreate extends BaselinkCreate {
+public class PermissionGroupToBaseclassCreate extends BasicCreate {
 
     @JsonIgnore
     private PermissionGroup permissionGroup;

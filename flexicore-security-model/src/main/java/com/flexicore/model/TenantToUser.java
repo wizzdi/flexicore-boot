@@ -14,55 +14,44 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.ManyToOne;
 
 
-@SuppressWarnings("serial")
+
 
 @AnnotatedClazz(Category = "Tenancy", Name = "TenantToUser", Description = "baseClass Tenancy")
 @Entity
-public class TenantToUser extends Baselink {
+public class TenantToUser extends SecuredBasic {
 
-    private boolean defualtTennant;
+    private boolean defaultTenant;
+    @ManyToOne(targetEntity = SecurityTenant.class)
+    private SecurityTenant tenant;
+    @ManyToOne(targetEntity = SecurityUser.class)
+    private SecurityUser user;
+
+    public boolean isDefaultTenant() {
+        return defaultTenant;
+    }
+
+    public <T extends TenantToUser> T setDefaultTenant(boolean defaultTenant) {
+        this.defaultTenant = defaultTenant;
+        return (T) this;
+    }
 
     @ManyToOne(targetEntity = SecurityTenant.class)
-
-    @Override
-    public SecurityTenant getLeftside() {
-        return (SecurityTenant) super.getLeftside();
+    public SecurityTenant getTenant() {
+        return tenant;
     }
 
-    @Override
-    public void setLeftside(Baseclass leftside) {
-        // TODO Auto-generated method stub
-        super.setLeftside(leftside);
-    }
-
-    public TenantToUser() {
-    }
-
-    public TenantToUser(String name, SecurityContextBase securityContext) {
-        super(name, securityContext);
+    public <T extends TenantToUser> T setTenant(SecurityTenant tenant) {
+        this.tenant = tenant;
+        return (T) this;
     }
 
     @ManyToOne(targetEntity = SecurityUser.class)
-    //@JoinColumn(name = "rightside", referencedColumnName = "id")
-
-    @Override
-    public SecurityUser getRightside() {
-        return (SecurityUser) super.getRightside();
+    public SecurityUser getUser() {
+        return user;
     }
 
-    public void setUser(SecurityUser baseclass) {
-        this.rightside = baseclass;
+    public <T extends TenantToUser> T setUser(SecurityUser user) {
+        this.user = user;
+        return (T) this;
     }
-
-    public boolean isDefualtTennant() {
-        return defualtTennant;
-    }
-
-    public void setDefualtTennant(boolean defualtTennant) {
-        this.defualtTennant = defualtTennant;
-    }
-
-
-
-
 }

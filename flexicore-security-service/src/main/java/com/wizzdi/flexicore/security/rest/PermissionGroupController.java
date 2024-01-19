@@ -6,6 +6,7 @@ import com.flexicore.model.PermissionGroup;
 import com.flexicore.security.SecurityContextBase;
 import com.wizzdi.flexicore.boot.base.interfaces.Plugin;
 import com.wizzdi.flexicore.security.request.PermissionGroupCreate;
+import com.wizzdi.flexicore.security.request.PermissionGroupDuplicate;
 import com.wizzdi.flexicore.security.request.PermissionGroupFilter;
 import com.wizzdi.flexicore.security.request.PermissionGroupUpdate;
 import com.wizzdi.flexicore.security.response.PaginationResponse;
@@ -47,5 +48,12 @@ public class PermissionGroupController implements Plugin {
     public PermissionGroup update(@RequestBody @Validated(Update.class) PermissionGroupUpdate permissionGroupUpdate, @RequestAttribute SecurityContextBase securityContext) {
 
         return permissionGroupService.updatePermissionGroup(permissionGroupUpdate, securityContext);
+    }
+
+    @IOperation(Name = "duplicates PermissionGroup", Description = "duplicates PermissionGroup")
+    @PutMapping("/duplicate")
+    public PermissionGroup duplicate(@RequestBody @Valid PermissionGroupDuplicate permissionGroupDuplicate, @RequestAttribute SecurityContextBase securityContext) {
+
+        return permissionGroupService.duplicate(permissionGroupDuplicate, securityContext);
     }
 }

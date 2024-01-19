@@ -23,42 +23,35 @@
 package com.wizzdi.flexicore.common.user.service;
 
 
-import com.wizzdi.flexicore.common.user.data.CommonUserRepository;
 import com.flexicore.model.SecurityTenant;
 import com.flexicore.model.TenantToUser;
 import com.flexicore.model.User;
+import com.flexicore.security.SecurityContextBase;
+import com.wizzdi.flexicore.common.user.data.CommonUserRepository;
 import com.wizzdi.flexicore.common.user.request.CommonUserCreate;
 import com.wizzdi.flexicore.common.user.request.CommonUserFilter;
 import com.wizzdi.flexicore.common.user.request.CommonUserUpdate;
-import com.flexicore.security.SecurityContextBase;
-import com.lambdaworks.crypto.SCryptUtil;
-import com.wizzdi.flexicore.boot.base.interfaces.Plugin;
 import com.wizzdi.flexicore.security.request.TenantToUserCreate;
 import com.wizzdi.flexicore.security.response.PaginationResponse;
+import com.wizzdi.flexicore.security.service.BaseclassService;
 import com.wizzdi.flexicore.security.service.SecurityUserService;
 import com.wizzdi.flexicore.security.service.TenantToUserService;
-import org.pf4j.Extension;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.beans.factory.config.ConfigurableBeanFactory;
-import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Scope;
-import org.springframework.http.HttpStatus;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.io.File;
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 
 
 @Component
-@Extension
-public class CommonUserService implements Plugin {
+public class CommonUserService  {
 
     private static final Logger logger = LoggerFactory.getLogger(CommonUserService.class);
 
@@ -67,37 +60,20 @@ public class CommonUserService implements Plugin {
     private CommonUserRepository commonUserRepository;
 
     @Autowired
+    @Lazy
     private SecurityUserService securityUserService;
 
 
     @Autowired
-    private ApplicationEventPublisher applicationEventPublisher;
-    @Autowired
+    @Lazy
     private TenantToUserService tenantToUserService;
 
-    @Bean
-    @Scope(value = ConfigurableBeanFactory.SCOPE_SINGLETON)
-    @Qualifier("systemAdminId")
-    public static String systemAdminId(){
-        return "UEKbB6XlQhKOtjziJoUQ8w";
-    }
-
     @Autowired
-    @Qualifier("systemAdminId")
-    private String systemAdminId;
+    private PasswordEncoder passwordEncoder;
 
 
     @Value("${flexicore.users.rootDirPath:/home/flexicore/users/}")
     private String usersRootHomeDir;
-
-
-    @Value("${flexicore.security.password.scryptN:16384}")
-    private int scryptN;
-    @Value("${flexicore.security.password.scryptR:8}")
-    private int scryptR;
-    @Value("${flexicore.security.password.scryptP:1}")
-    private int scryptP;
-
 
 
     
@@ -106,20 +82,26 @@ public class CommonUserService implements Plugin {
         SecurityTenant securityTenant =  commonUserCreate.getTenant();
         User user = createUserNoMerge(commonUserCreate, securityContextBase);
         toMerge.add(user);
-        TenantToUserCreate tenantToUserCreate = new TenantToUserCreate().setDefaultTenant(true).setSecurityUser(user).setTenant(securityTenant);
+        TenantToUserCreate tenantToUserCreate = new TenantToUserCreate().setDefaultTenant(true).setUser(user).setTenant(securityTenant);
         TenantToUser tenantToUser = tenantToUserService.createTenantToUserNoMerge(tenantToUserCreate, securityContextBase);
         toMerge.add(tenantToUser);
         commonUserRepository.massMerge(toMerge);
-        user.getTenantToUsers().add(tenantToUser);
+        user.getTenants().add(tenantToUser);
+        return user;
+    }
+    public User createUserPlain(CommonUserCreate commonUserCreate, SecurityContextBase securityContextBase) {
+        User user = createUserNoMerge(commonUserCreate, securityContextBase);
+        commonUserRepository.merge(user);
         return user;
     }
 
 
-
     
     public User createUserNoMerge(CommonUserCreate createUser, SecurityContextBase securityContextBase) {
-        User user = new User(createUser.getName(), securityContextBase);
+        User user = new User();
+        user.setId(UUID.randomUUID().toString());
         updateUserNoMerge(user, createUser);
+        BaseclassService.createSecurityObjectNoMerge(user, securityContextBase);
         return user;
     }
 
@@ -158,8 +140,8 @@ public class CommonUserService implements Plugin {
         }
 
 
-        if (createUser.getLastName() != null && !createUser.getLastName().equals(user.getSurName())) {
-            user.setSurName(createUser.getLastName());
+        if (createUser.getLastName() != null && !createUser.getLastName().equals(user.getLastName())) {
+            user.setLastName(createUser.getLastName());
             update = true;
         }
 
@@ -181,7 +163,7 @@ public class CommonUserService implements Plugin {
 
         if (createUser.getPassword() != null) {
 
-            String hash = hashPassword(createUser.getPassword());
+            String hash = passwordEncoder.encode(createUser.getPassword());
             if (!hash.equals(user.getPassword())) {
                 user.setPassword(hash);
                 update = true;
@@ -190,75 +172,9 @@ public class CommonUserService implements Plugin {
         return update;
     }
 
-    private String hashPassword(String plain) {
-        return SCryptUtil.scrypt(plain, scryptN, scryptR, scryptP);
-    }
-
-
-    public void validateUserForCreate(CommonUserCreate commonUserCreate, SecurityContextBase securityContextBase) {
-        validateUser(commonUserCreate, securityContextBase);
-        CommonUserFilter commonUserFilter = new CommonUserFilter();
-        if(commonUserCreate.getEmail()!=null){
-            commonUserFilter.setEmails(Collections.singleton(commonUserCreate.getEmail()));
-        }
-        else{
-            commonUserFilter.setPhoneNumbers(Collections.singleton(commonUserCreate.getPhoneNumber()));
-
-        }
-        List<User> existing =listAllUsers(commonUserFilter,null);
-        if (!existing.isEmpty()) {
-            String cause = commonUserCreate.getEmail() != null ? "Email" : "PhoneNumber";
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"Cannot create User " + cause + " is not unique");
-        }
-
-    }
-
-    
-    public void validateUserUpdate(CommonUserUpdate userUpdate, SecurityContextBase securityContextBase) {
-        securityUserService.validate(userUpdate, securityContextBase);
-        User user = commonUserRepository.getByIdOrNull(userUpdate.getId(), User.class, null);
-        if (user == null) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"No User With id " + userUpdate.getId());
-        }
-        userUpdate.setUser(user);
-        if(userUpdate.getEmail()!=null||userUpdate.getPassword()!=null){
-            CommonUserFilter commonUserFilter = new CommonUserFilter();
-            if(userUpdate.getEmail()!=null){
-                commonUserFilter.setEmails(Collections.singleton(userUpdate.getEmail()));
-            }
-            else{
-                commonUserFilter.setPhoneNumbers(Collections.singleton(userUpdate.getPhoneNumber()));
-
-            }
-            List<User> existing =listAllUsers(commonUserFilter,null);
-            if (existing.size()==1 && !user.getId().equals(existing.get(0).getId())) {
-                String cause = userUpdate.getEmail() != null ? "Email" : "PhoneNumber";
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"Cannot Update User " + cause + " is not unique");
-            }
-        }
-
-
-    }
-
-    
-    public void validateUser(CommonUserCreate commonUserCreate, SecurityContextBase securityContextBase) {
-        securityUserService.validate(commonUserCreate, securityContextBase);
-        SecurityTenant securityTenant = commonUserCreate.getTenant();
-        if (securityTenant == null) {
-            securityTenant = securityContextBase.getTenantToCreateIn() != null ? securityContextBase.getTenantToCreateIn() : (securityContextBase.getTenants().isEmpty() ? null : (SecurityTenant) securityContextBase.getTenants().get(0));
-        }
-        if (securityTenant == null) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"Could not determine securityTenant to create user in");
-        }
-        commonUserCreate.setTenant(securityTenant);
-        if (commonUserCreate.getPhoneNumber() == null && commonUserCreate.getEmail() == null) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"Phone Number or Email Must Be Provided");
-        }
 
 
 
-
-    }
 
     public User updateUser(CommonUserUpdate userUpdate, SecurityContextBase securityContextBase) {
         User user = userUpdate.getUser();
@@ -280,16 +196,5 @@ public class CommonUserService implements Plugin {
         return commonUserRepository.getAllUsers(commonUserFilter, securityContextBase);
     }
 
-    public void validate(CommonUserFilter commonUserFilter, SecurityContextBase securityContextBase) {
-
-        Set<String> securityTenantIds = commonUserFilter.getUserSecurityTenantsIds();
-        Map<String, SecurityTenant> map = securityTenantIds.isEmpty() ? new HashMap<>() : commonUserRepository.listByIds(SecurityTenant.class, securityTenantIds, securityContextBase).parallelStream().collect(Collectors.toMap(f -> f.getId(), f -> f));
-        securityTenantIds.removeAll(map.keySet());
-        if (!securityTenantIds.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"No SecurityTenant with ids " + securityTenantIds);
-        }
-        commonUserFilter.setUserSecurityTenants(new ArrayList<>(map.values()));
-
-    }
 
 }

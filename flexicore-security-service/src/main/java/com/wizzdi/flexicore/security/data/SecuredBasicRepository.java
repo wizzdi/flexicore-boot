@@ -93,8 +93,8 @@ public class SecuredBasicRepository implements Plugin {
 	}
 
 	@Transactional
-	public void merge(Object base) {
-		baseclassRepository.merge(base);
+	public <T> T merge(T base) {
+		return baseclassRepository.merge(base);
 	}
 
 	@Transactional

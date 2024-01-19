@@ -19,7 +19,7 @@ import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-@SuppressWarnings("serial")
+
 @AnnotatedClazz(Category = "FileResource", Name = "FileResource", Description = "Used to track file based resources")
 @Entity
 

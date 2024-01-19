@@ -7,47 +7,32 @@
 package com.flexicore.model;
 
 import com.flexicore.annotations.AnnotatedClazz;
-import com.flexicore.security.SecurityContextBase;
-
-
 import jakarta.persistence.Entity;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Transient;
 
-@SuppressWarnings("serial")
-@AnnotatedClazz(Category="Premissions", Name="UserToBaseClass", Description="User Premission on Baseclass")
+
+@AnnotatedClazz(Category="Permissions", Name="RoleToBaseclass", Description="User Permission on Baseclass")
 @Entity
 public class RoleToBaseclass extends SecurityLink {
 
 
-	public RoleToBaseclass() {
-	}
+    @ManyToOne(targetEntity = Role.class)
+    private Role role;
 
-	public RoleToBaseclass(String name, SecurityContextBase securityContext) {
-		super(name, securityContext);
-	}
+    @ManyToOne(targetEntity = Role.class)
+    public Role getRole() {
+        return role;
+    }
 
-	@ManyToOne(targetEntity = Role.class)
-	@Override
-	public Role getLeftside() {
-		// TODO Auto-generated method stub
-		return (Role) super.getLeftside();
-	}
-	public void setRole(Role role) {
-		this.leftside=role;
-	}
+    public <T extends RoleToBaseclass> T setRole(Role role) {
+        this.role = role;
+        return (T) this;
+    }
 
-	@ManyToOne(targetEntity = Baseclass.class)
-	@Override
-	public Baseclass getRightside() {
-		// TODO Auto-generated method stub
-		return super.getRightside();
-	}
-
-	public void setBaseclass(Baseclass baseclass) {
-		this.rightside=baseclass;
-	}
-
-
-
-
+    @Transient
+    @Override
+    public SecurityEntity getSecurityEntity() {
+        return role;
+    }
 }

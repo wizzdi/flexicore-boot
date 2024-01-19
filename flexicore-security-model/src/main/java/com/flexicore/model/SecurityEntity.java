@@ -6,23 +6,14 @@
  ******************************************************************************/
 package com.flexicore.model;
 
-import com.flexicore.security.SecurityContextBase;
 
-import jakarta.persistence.Entity;
-
-
-@SuppressWarnings("serial")
-@Entity
-
-public class SecurityEntity extends Baseclass {
+import jakarta.persistence.MappedSuperclass;
 
 
-	public SecurityEntity() {
-	}
+@MappedSuperclass
+public abstract class SecurityEntity extends SecuredBasic {
 
-	public SecurityEntity(String name, SecurityContextBase securityContext) {
-		super(name, securityContext);
-	}
+
 
 
 }

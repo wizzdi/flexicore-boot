@@ -1,455 +1,373 @@
 package com.wizzdi.flexicore.security.data;
 
-import com.flexicore.annotations.IOperation;
-import com.flexicore.annotations.rest.All;
 import com.flexicore.model.*;
 import com.flexicore.security.SecurityContextBase;
+import com.flexicore.security.SecurityPermissionEntry;
+import com.flexicore.security.SecurityPermissions;
 import com.wizzdi.flexicore.boot.base.interfaces.Plugin;
+import com.wizzdi.flexicore.security.events.BasicCreated;
+import com.wizzdi.flexicore.security.events.BasicUpdated;
 import com.wizzdi.flexicore.security.request.BaseclassFilter;
 import com.wizzdi.flexicore.security.request.BasicPropertiesFilter;
+import com.wizzdi.flexicore.security.request.OperationToGroupFilter;
 import com.wizzdi.flexicore.security.request.SoftDeleteOption;
-import org.pf4j.Extension;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.util.Pair;
-import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
-
+import com.wizzdi.flexicore.security.service.OperationToGroupService;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.TypedQuery;
 import jakarta.persistence.criteria.*;
 import jakarta.persistence.metamodel.SingularAttribute;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import org.pf4j.Extension;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.cache.Cache;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.context.event.EventListener;
+import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.*;
+import java.util.concurrent.Callable;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 @Component
 @Extension
 public class BaseclassRepository implements Plugin {
 
-	private static final Logger logger= LoggerFactory.getLogger(BaseclassRepository.class);
+	private static final Logger logger = LoggerFactory.getLogger(BaseclassRepository.class);
 	@PersistenceContext
 	private EntityManager em;
+
+	@Autowired
+	@Qualifier("allOps")
+	@Lazy
 	private SecurityOperation allOp;
 
 	@Autowired
-	private BasicRepository basicRepository;
+	@Lazy
+	private OperationToGroupService operationToGroupService;
 
+	@Autowired
+	private BasicRepository basicRepository;
+	@Autowired
+	@Qualifier("dataAccessControlCache")
+	private Cache dataAccessControlCache;
+
+	@Autowired
+	@Qualifier("operationToOperationGroupCache")
+	private Cache operationToOperationGroupCache;
+
+	public List<Baseclass> listAllBaseclass(BaseclassFilter baseclassFilter,SecurityContextBase securityContextBase){
+		CriteriaBuilder cb=em.getCriteriaBuilder();
+		CriteriaQuery<Baseclass> q=cb.createQuery(Baseclass.class);
+		Root<Baseclass> r=q.from(Baseclass.class);
+		List<Predicate> predicates=new ArrayList<>();
+		addBaseclassPredicates(baseclassFilter,cb,q,r,predicates,securityContextBase);
+		q.select(r).where(predicates.toArray(Predicate[]::new)).orderBy(cb.asc(r.get(Baseclass_.name)));
+		TypedQuery<Baseclass> query = em.createQuery(q);
+		BasicRepository.addPagination(baseclassFilter,query);
+		return query.getResultList();
+
+	}
+
+	private <T extends Baseclass> void addBaseclassPredicates(BaseclassFilter baseclassFilter, CriteriaBuilder cb, CommonAbstractCriteria q, From<?,T> r, List<Predicate> predicates, SecurityContextBase securityContextBase) {
+		addBaseclassPredicates(baseclassFilter.getBasicPropertiesFilter(),cb,q,r,predicates,securityContextBase);
+		if(baseclassFilter.getClazzes()!=null&&!baseclassFilter.getClazzes().isEmpty()){
+			predicates.add(r.get(Baseclass_.clazz).in(baseclassFilter.getClazzes()));
+		}
+	}
+
+	public long countAllBaseclass(BaseclassFilter baseclassFilter,SecurityContextBase securityContextBase){
+		CriteriaBuilder cb=em.getCriteriaBuilder();
+		CriteriaQuery<Long> q=cb.createQuery(Long.class);
+		Root<Baseclass> r=q.from(Baseclass.class);
+		List<Predicate> predicates=new ArrayList<>();
+		addBaseclassPredicates(baseclassFilter,cb,q,r,predicates,securityContextBase);
+		q.select(cb.count(r)).where(predicates.toArray(Predicate[]::new));
+		TypedQuery<Long> query = em.createQuery(q);
+		return query.getSingleResult();
+
+	}
+
+
+	@EventListener
+	public void invalidateUserCache(BasicCreated<UserToBaseclass> securityLink) {
+		SecurityLink link = securityLink.getBaseclass();
+		invalidateCache(link);
+	}
+
+	@EventListener
+	public void invalidateRoleCache(BasicCreated<RoleToBaseclass> securityLink) {
+		SecurityLink link = securityLink.getBaseclass();
+		invalidateCache(link);
+	}
+
+	@EventListener
+	public void invalidateTenantCache(BasicCreated<TenantToBaseclass> securityLink) {
+		SecurityLink link = securityLink.getBaseclass();
+		invalidateCache(link);
+	}
+
+	@EventListener
+	public void invalidateUserCache(BasicUpdated<UserToBaseclass> securityLink) {
+		SecurityLink link = securityLink.getBaseclass();
+		invalidateCache(link);
+	}
+
+	@EventListener
+	public void invalidateRoleCache(BasicUpdated<RoleToBaseclass> securityLink) {
+		SecurityLink link = securityLink.getBaseclass();
+		invalidateCache(link);
+	}
+
+	@EventListener
+	public void invalidateTenantCache(BasicUpdated<TenantToBaseclass> securityLink) {
+		SecurityLink link = securityLink.getBaseclass();
+		invalidateCache(link);
+	}
+
+	@EventListener
+	public void invalidateOperationGroupCache(BasicUpdated<OperationToGroup> operationToGroup){
+		invalidateCache(operationToGroup.getBaseclass());
+	}
+
+	@EventListener
+	public void invalidateOperationGroupCache(BasicCreated<OperationToGroup> operationToGroup){
+		invalidateCache(operationToGroup.getBaseclass());
+	}
+
+	private void invalidateCache(OperationToGroup operationToGroup) {
+		if(operationToGroup.getOperation()==null){
+			return;
+		}
+		operationToOperationGroupCache.evict(operationToGroup.getOperation().getId());
+	}
+
+
+	private void invalidateCache(SecurityLink link) {
+		if (link.getSecurityEntity() != null) {
+			dataAccessControlCache.evict(link.getSecurityEntity().getId());
+			logger.debug("evicted security entity " + link.getSecurityEntity().getId());
+		}
+	}
 
 	public static <T> boolean addPagination(BaseclassFilter baseclassFilter, TypedQuery<T> q) {
 		return BasicRepository.addPagination(baseclassFilter, q);
 	}
 
 	public <T extends Baseclass> void addBaseclassPredicates(BasicPropertiesFilter basicPropertiesFilter, CriteriaBuilder cb, CommonAbstractCriteria q, From<?, T> r, List<Predicate> predicates, SecurityContextBase securityContextBase) {
-		if(basicPropertiesFilter!=null){
-			BasicRepository.addBasicPropertiesFilter(basicPropertiesFilter,cb,q,r,predicates);
+		if (basicPropertiesFilter != null) {
+			BasicRepository.addBasicPropertiesFilter(basicPropertiesFilter, cb, q, r, predicates);
+		} else {
+			BasicRepository.addBasicPropertiesFilter(new BasicPropertiesFilter().setSoftDelete(SoftDeleteOption.DEFAULT), cb, q, r, predicates);
 		}
-		else{
-			BasicRepository.addBasicPropertiesFilter(new BasicPropertiesFilter().setSoftDelete(SoftDeleteOption.DEFAULT),cb,q,r,predicates);
-		}
-		if(securityContextBase!=null){
-			addBaseclassPredicates(cb,q,r,predicates,securityContextBase);
+		if (securityContextBase != null) {
+			addBaseclassPredicates(cb, q, r, predicates, securityContextBase);
 		}
 	}
 
-	public <T extends Baseclass> void addBaseclassPredicates(CriteriaBuilder cb, CommonAbstractCriteria q, Path<T> r, List<Predicate> predicates, SecurityContextBase securityContext) {
+	record SecurityLinkHolder(List<UserToBaseclass> users, List<RoleToBaseclass> roles,
+							  List<TenantToBaseclass> tenants) {
+	}
+
+
+	public SecurityPermissions getSecurityPermissions(SecurityContextBase securityContextBase) {
+		SecurityLinkHolder securityLinkHolder = getSecurityLinkHolder(securityContextBase);
+		List<UserToBaseclass> userLinks = securityLinkHolder.users();
+		List<RoleToBaseclass> roleLinks = securityLinkHolder.roles();
+		List<TenantToBaseclass> tenantLinks = securityLinkHolder.tenants();
+		Map<String, Role> allRoles = securityContextBase.getAllRoles().stream().collect(Collectors.toMap(f -> f.getId(), f -> f, (a, b) -> a));
+		Map<String, SecurityTenant> allTenants = securityContextBase.getTenants().stream().collect(Collectors.toMap(f -> f.getId(), f -> f, (a, b) -> a));
+		Set<String> relevantOps = securityContextBase.getOperation() != null ? Set.of(allOp.getId(), securityContextBase.getOperation().getId()) : null;
+		Set<String> relevantOpGroups=securityContextBase.getOperation()!=null?getRelevantOpGroups(securityContextBase.getOperation()):null;
+		List<UserToBaseclass> user = userLinks.stream().filter(f -> filterSecurityLinkForOperation(f, relevantOps, relevantOpGroups)).toList();
+		Map<String, List<RoleToBaseclass>> role = roleLinks.stream().filter(f ->filterSecurityLinkForOperation(f,relevantOps,relevantOpGroups)).collect(Collectors.groupingBy(f -> f.getRole().getId()));
+		Map<String, List<TenantToBaseclass>> tenant = tenantLinks.stream().filter(f -> filterSecurityLinkForOperation(f,relevantOps,relevantOpGroups)).collect(Collectors.groupingBy(f -> f.getTenant().getId()));
+		return new SecurityPermissions(SecurityPermissionEntry.of(securityContextBase.getUser(), user), role.entrySet().stream().map(f -> SecurityPermissionEntry.of(allRoles.get(f.getKey()), f.getValue())).toList(), tenant.entrySet().stream().map(f -> SecurityPermissionEntry.of(allTenants.get(f.getKey()), f.getValue())).toList());
+
+	}
+
+	private static boolean filterSecurityLinkForOperation(SecurityLink f, Set<String> relevantOps, Set<String> relevantOpGroups) {
+		return relevantOps == null || relevantOpGroups == null || (f.getOperation() != null && relevantOps.contains(f.getOperation().getId())) || (f.getOperationGroup() != null && relevantOpGroups.contains(f.getOperationGroup().getId()));
+	}
+
+	private Set<String> getRelevantOpGroups(SecurityOperation op) {
+		return operationToOperationGroupCache.get(op.getId(), new Callable<Set<String>>() {
+			@Override
+			public Set<String> call() throws Exception {
+				return operationToGroupService.listAllOperationToGroups(new OperationToGroupFilter().setOperations(Collections.singletonList(op)),null).stream().map(f->f.getOperationGroup().getId()).collect(Collectors.toSet());
+			}
+		});
+	}
+
+	private SecurityLinkHolder getSecurityLinkHolder(SecurityContextBase securityContextBase) {
+		List<UserToBaseclass> userPermissions = dataAccessControlCache.get(securityContextBase.getUser().getId(), List.class);
+		List<List<RoleToBaseclass>> rolePermissions = securityContextBase.getAllRoles().stream().map(f -> (List<RoleToBaseclass>) dataAccessControlCache.get(f.getId(), List.class)).toList();
+		List<List<TenantToBaseclass>> tenantPermissions = securityContextBase.getTenants().stream().map(f -> (List<TenantToBaseclass>) dataAccessControlCache.get(f.getId(), List.class)).toList();
+		if (userPermissions != null && rolePermissions.stream().allMatch(f -> f != null) && tenantPermissions.stream().allMatch(f -> f != null)) {
+			List<RoleToBaseclass> roleLinks = rolePermissions.stream().flatMap(f -> f.stream()).toList();
+			List<TenantToBaseclass> tenantLinks = tenantPermissions.stream().flatMap(f -> f.stream()).toList();
+			logger.info("cache hit users: {} , roles: {} , tenants: {}", userPermissions.size(), roleLinks.size(), tenantLinks.size());
+			return new SecurityLinkHolder(userPermissions, roleLinks, tenantLinks);
+
+		}
+		List<SecurityLink> securityLinks = getSecurityLinks(securityContextBase);
+		List<UserToBaseclass> userLinks = securityLinks.stream().filter(f -> f instanceof UserToBaseclass).map(f -> (UserToBaseclass) f).toList();
+		List<RoleToBaseclass> roleLinks = securityLinks.stream().filter(f -> f instanceof RoleToBaseclass).map(f -> (RoleToBaseclass) f).toList();
+		List<TenantToBaseclass> tenantLinks = securityLinks.stream().filter(f -> f instanceof TenantToBaseclass).map(f -> (TenantToBaseclass) f).toList();
+		dataAccessControlCache.put(securityContextBase.getUser().getId(), userLinks);
+		for (Role role : securityContextBase.getAllRoles()) {
+			dataAccessControlCache.put(role.getId(), roleLinks.stream().filter(f -> f.getRole().getId().equals(role.getId())).toList());
+		}
+		for (SecurityTenant tenant : securityContextBase.getTenants()) {
+			dataAccessControlCache.put(tenant.getId(), tenantLinks.stream().filter(f -> f.getTenant().getId().equals(tenant.getId())).toList());
+		}
+		return new SecurityLinkHolder(userLinks, roleLinks, tenantLinks);
+
+	}
+
+	public List<SecurityLink> getSecurityLinks(SecurityContextBase securityContextBase) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<SecurityLink> q = cb.createQuery(SecurityLink.class);
+		Root<SecurityLink> r = q.from(SecurityLink.class);
+		Root<UserToBaseclass> user = cb.treat(r, UserToBaseclass.class);
+		Root<RoleToBaseclass> role = cb.treat(r, RoleToBaseclass.class);
+		Root<TenantToBaseclass> tenant = cb.treat(r, TenantToBaseclass.class);
+		Map<String, List<Role>> roleMap = securityContextBase.getRoleMap();
+		List<Role> roles = roleMap.values()
+				.stream()
+				.flatMap(List::stream).toList();
+		q.select(r).where(cb.or(
+				user.get(UserToBaseclass_.user).in(securityContextBase.getUser()),
+				roles.isEmpty()?cb.or():role.get(RoleToBaseclass_.role).in(roles),
+				securityContextBase.getTenants().isEmpty()?cb.or():tenant.get(TenantToBaseclass_.tenant).in(securityContextBase.getTenants())
+		));
+		return em.createQuery(q).getResultList();
+	}
+
+	public static <T extends Baseclass> Predicate permissionGroupPredicate(From<?, T> r, List<PermissionGroup> denied, AtomicReference<Join<T, PermissionGroupToBaseclass>> atomicReference){
+		if(atomicReference.get()==null){
+			atomicReference.set(r.join(Baseclass_.permissionGroupToBaseclasses));
+		}
+		Join<T, PermissionGroupToBaseclass> join = atomicReference.get();
+		return join.get(PermissionGroupToBaseclass_.permissionGroup).in(denied);
+	}
+	public <T extends Baseclass> void addBaseclassPredicates(CriteriaBuilder cb, CommonAbstractCriteria q, From<?, T> r, List<Predicate> predicates, SecurityContextBase securityContext) {
 		if (securityContext == null) {
 			return;
 		}
-
-		List<? extends SecurityTenant> tenants = securityContext.getTenants();
-		SecurityUser securityUser = securityContext.getUser();
-		SecurityOperation op = securityContext.getOperation();
-		boolean impersonated = securityContext.isImpersonated();
-		Set<String> tenantIds = tenants.parallelStream().map(f -> f.getId()).collect(Collectors.toSet());
-
-		Map<String, List<Role>> rolesInTenants = securityContext.getRoleMap();
-
-		List<Role> roles = rolesInTenants.values().stream().flatMap(List::stream).collect(Collectors.toList());
-		if (isSuperAdmin(roles)) {
+		Map<String,List<Role>> roles= securityContext.getRoleMap();
+		List<Role> allRoles = roles.values().stream().flatMap(f->f.stream()).toList();
+		if(isSuperAdmin(allRoles)){
 			return;
 		}
-		Pair<List<Baseclass>, List<Baseclass>> denied = getDenied(securityUser, op);
-		List<Baseclass> userDenied = denied.getFirst();
-		List<Baseclass> roleDenied = denied.getSecond();
-		roleDenied.addAll(userDenied);
 
+		SecurityPermissions securityPermissions = getSecurityPermissions(securityContext);
+		List<Predicate> securityPreds = new ArrayList<>();
+		AtomicReference<Join<T, PermissionGroupToBaseclass>> join = new AtomicReference<>(null);
+		securityPreds.add(cb.equal(r.get(Baseclass_.creator), securityContext.getUser()));//creator
+		//user
+		SecurityPermissionEntry<SecurityUser> user = securityPermissions.userPermissions();
+		if (!user.allowed().isEmpty()) {
+			securityPreds.add(r.in(user.allowed()));
+		}
+		List<Baseclass> userDenied = user.denied();
+		if (!user.allowedTypes().isEmpty()) {
+			securityPreds.add(cb.and(
+					user.allowAll()?cb.or():r.get(Baseclass_.clazz).in(user.allowedTypes()),
+					r.get(Baseclass_.tenant).in(securityContext.getTenants()),
+					userDenied.isEmpty() ? cb.and() : cb.not(r.in(userDenied)),
+					user.deniedPermissionGroups().isEmpty()?cb.and(): cb.not(permissionGroupPredicate(r,user.deniedPermissionGroups(),join))
+			));
 
-		Clazz clazz = Baseclass.getClazzByName(r.getJavaType().getCanonicalName());
-		Subquery<String> sub = getBaseclassSpecificSubQeury(q, cb, roles, securityUser, tenants, op, clazz, userDenied, roleDenied);
-		Subquery<String> subPermissionGroup = getPermissionGroupSubQuery(q, cb, roles, securityUser, tenants, op, clazz, userDenied, roleDenied);
-
-		Predicate premissive = cb.or();
-		Predicate all = cb.or();
-		//check for allow all links for tenants or securityUser - if link is for securityUser grant permission for all objects in all tenants , if allow link
-		List<SecurityLink> hasAllLink = getAllowAllLinks(cb, roles, securityUser, tenants, op);
-		for (SecurityLink securityLink : hasAllLink) {
-			Predicate mid = cb.or();
-			if (!tenants.isEmpty() && securityLink.getLeftside() instanceof SecurityUser) {
-				mid = r.get(Baseclass_.tenant).in(tenants);
-			} else {
-				if (securityLink.getLeftside() instanceof SecurityTenant) {
-					mid = cb.equal(r.get(Baseclass_.tenant), securityLink.getLeftside());
-				} else {
-					if (securityLink.getLeftside() instanceof Role) {
-						Role role = (Role) securityLink.getLeftside();
-						if (role.getTenant() != null && rolesInTenants.get(role.getTenant().getId()) != null) {
-							mid = cb.equal(r.get(Baseclass_.tenant), role.getTenant());
-
-						}
-					}
-				}
+		}
+		if (!user.allowedPermissionGroups().isEmpty()) {
+			securityPreds.add(permissionGroupPredicate(r,user.allowedPermissionGroups(),join));
+		}
+		//role
+		for (SecurityPermissionEntry<Role> role : securityPermissions.rolePermissions()) {
+			Role roleEntity = role.entity();
+			SecurityTenant securityTenant = roleEntity.getSecurity().getTenant();
+			if (!role.allowed().isEmpty()) {
+				securityPreds.add(cb.and(
+						r.in(role.allowed()),
+						userDenied.isEmpty() ? cb.and() : cb.not(r.in(userDenied)),
+						user.deniedPermissionGroups().isEmpty()?cb.and():cb.not(permissionGroupPredicate(r,user.deniedPermissionGroups(),join))
+				));
 			}
-			if (!roleDenied.isEmpty()) {
-				mid = cb.and(mid, cb.not(r.in(roleDenied)));
+			if (!role.allowedTypes().isEmpty()) {
+				securityPreds.add(cb.and(
+						cb.equal(r.get(Baseclass_.tenant), securityTenant),
+						role.allowAll()?cb.or():r.get(Baseclass_.clazz).in(role.allowedTypes()),
+						userDenied.isEmpty() ? cb.and() : cb.not(r.in(userDenied)),
+						role.denied().isEmpty() ? cb.and() : cb.not(r.in(role.denied())),
+						user.deniedPermissionGroups().isEmpty()?cb.and():cb.not(permissionGroupPredicate(r,user.deniedPermissionGroups(),join)),
+						role.deniedPermissionGroups().isEmpty()?cb.and():cb.not(permissionGroupPredicate(r,role.deniedPermissionGroups(),join))
+
+				));
 			}
-			premissive = cb.or(premissive, mid);
-		}
+			if (!role.allowedPermissionGroups().isEmpty()) {
+				securityPreds.add(cb.and(
+						permissionGroupPredicate(r,role.allowedPermissionGroups(),join),
+						userDenied.isEmpty() ? cb.and() : cb.not(r.in(userDenied)),
+						user.deniedPermissionGroups().isEmpty()?cb.and():cb.not(permissionGroupPredicate(r,user.deniedPermissionGroups(),join))
 
-		Subquery<String> subPremissive = getPremissiveSubQueryForTenantAndUser(q, cb, securityUser, tenants, op);
-		premissive = cb.or(
-				premissive,
-				cb.and(r.get(Baseclass_.clazz).get(Clazz_.id).in(subPremissive),
-						r.get(Baseclass_.tenant).in(tenants)));
-
-
-		Map<String, SecurityTenant> tenantMap = tenants.parallelStream().collect(Collectors.toMap(f -> f.getId(), f -> f, (a, b) -> a));
-		for (Map.Entry<String, List<Role>> entry : rolesInTenants.entrySet()) {
-			SecurityTenant tenant = tenantMap.get(entry.getKey());
-			if (tenant != null) {
-				Subquery<String> subPremissiveRole = getPremissiveSubQueryForRole(q, cb, entry.getValue(), op);
-				premissive = cb.or(premissive, cb.and(r.get(Baseclass_.clazz).get(Clazz_.id).in(subPremissiveRole), cb.equal(r.get(Baseclass_.tenant), tenant)));
-
-
+				));
 			}
 
 		}
+		//tenant
+		List<SecurityPermissionEntry<SecurityTenant>> tenants = securityPermissions.tenantPermissions();
+		List<PermissionGroup> tenantAllowedPermissionGroups = tenants.stream().map(f -> f.allowedPermissionGroups()).flatMap(f -> f.stream()).collect(Collectors.toList());
+		List<Baseclass> tenantAllowed = tenants.stream().map(f -> f.allowed()).flatMap(f -> f.stream()).collect(Collectors.toList());
 
+		List<Baseclass> roleDenied = securityPermissions.rolePermissions().stream().map(f -> f.denied()).flatMap(f -> f.stream()).collect(Collectors.toList());
+		List<PermissionGroup> rolePermissionGroupDenied = securityPermissions.rolePermissions().stream().map(f -> f.deniedPermissionGroups()).flatMap(f -> f.stream()).collect(Collectors.toList());
 
-		Predicate creatorPred = cb.equal(r.get(Baseclass_.creator), securityUser);
-		if (impersonated) {
-			creatorPred = cb.and(creatorPred, r.get(Baseclass_.tenant).in(tenants));
+		if (!tenantAllowed.isEmpty()) {
+			securityPreds.add(cb.and(
+					r.in(tenantAllowed),
+					userDenied.isEmpty() ? cb.and() : cb.not(r.in(userDenied)),
+					roleDenied.isEmpty() ? cb.and() : cb.not(r.in(roleDenied)),
+					user.deniedPermissionGroups().isEmpty()?cb.and():cb.not(permissionGroupPredicate(r,user.deniedPermissionGroups(),join)),
+					rolePermissionGroupDenied.isEmpty()?cb.and():cb.not(permissionGroupPredicate(r,rolePermissionGroupDenied,join))
+
+			));
 		}
-		Predicate predicate = cb.or(
+		if (!tenantAllowedPermissionGroups.isEmpty()) {
+			securityPreds.add(cb.and(
+					permissionGroupPredicate(r,tenantAllowedPermissionGroups,join),
+					userDenied.isEmpty() ? cb.and() : cb.not(r.in(userDenied)),
+					roleDenied.isEmpty() ? cb.and() : cb.not(r.in(roleDenied))
 
-				r.get(Baseclass_.id).in(sub),
-				r.get(Baseclass_.id).in(subPermissionGroup),
-				premissive,
-				all,
-
-
-				//creator
-				creatorPred,
-				//enforce tenancy on Premissive Creator value
-				cb.and(cb.isNull(r.get(Baseclass_.creator)), r.get(Baseclass_.tenant).in(tenants))
-
-
-		);
-
-
-		List<Predicate> ors = new ArrayList<>();
-		ors.add(predicate);
-
-
-		//ors.add(predicate);
-
-		Predicate[] preds = new Predicate[ors.size()];
-		preds = ors.toArray(preds);
-		Predicate securityPredicates = cb.or(preds);
-		predicates.add(securityPredicates);
-
-	}
-
-	/**
-	 * @param securityUser securityUser
-	 * @param op           operation
-	 * @return a list of denied baseclasses  for securityUser using SecurityOperation
-	 */
-	private Pair<List<Baseclass>, List<Baseclass>> getDenied(SecurityUser securityUser, SecurityOperation op) {
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<UserToBaseClass> q = cb.createQuery(UserToBaseClass.class);
-		Root<UserToBaseClass> r = q.from(UserToBaseClass.class);
-
-		Predicate p1 = cb.and(
-				cb.isFalse(r.get(SecurityLink_.softDelete)),
-				cb.equal(r.get(UserToBaseClass_.leftside), securityUser),
-				cb.equal(r.get(UserToBaseClass_.value), op),
-				cb.equal(r.get(UserToBaseClass_.simplevalue), IOperation.Access.deny.name())
-		);
-
-		//p1=cb.or(p1,p2);
-		List<Predicate> preds = new ArrayList<>();
-		preds.add(p1);
-		q.select(r).where(preds.toArray(Predicate[]::new));
-		TypedQuery<UserToBaseClass> query = em.createQuery(q);
-
-		List<UserToBaseClass> deniedUsers = query.getResultList();
-		CriteriaQuery<RoleToBaseclass> q1 = cb.createQuery(RoleToBaseclass.class);
-		Root<RoleToBaseclass> r1 = q1.from(RoleToBaseclass.class);
-		Join<RoleToBaseclass, Role> j1 = cb.treat(r1.join(RoleToBaseclass_.leftside, JoinType.LEFT), Role.class);
-		Join<Role, RoleToUser> j2 = j1.join(Role_.roleToUser, JoinType.INNER);
-
-		Predicate p2 = cb.and(
-				cb.isFalse(r1.get(SecurityLink_.softDelete)),
-
-				cb.equal(j2.get(RoleToUser_.rightside), securityUser),
-				cb.equal(r1.get(RoleToBaseclass_.value), op),
-				cb.equal(r1.get(RoleToBaseclass_.simplevalue), IOperation.Access.deny.name())
-		);
-		List<Predicate> preds1 = new ArrayList<>();
-		preds1.add(p2);
-		q1.select(r1).where(preds1.toArray(Predicate[]::new));
-		TypedQuery<RoleToBaseclass> query1 = em.createQuery(q1);
-		List<RoleToBaseclass> deniedRoles = query1.getResultList();
-		List<Baseclass> deniedUsersBase = new ArrayList<>();
-		List<Baseclass> deniedRolesBase = new ArrayList<>();
-		for (RoleToBaseclass roleToBaseclass : deniedRoles) {
-			deniedRolesBase.add(roleToBaseclass.getRightside());
+			));
 		}
-		for (UserToBaseClass userToBaseClass : deniedUsers) {
-			deniedUsersBase.add(userToBaseClass.getRightside());
-		}
+		for (SecurityPermissionEntry<SecurityTenant> tenant : tenants) {
+			if (!tenant.allowedTypes().isEmpty()) {
+				SecurityTenant tenantEntity = tenant.entity();
+				securityPreds.add(cb.and(
+						cb.equal(r.get(Baseclass_.tenant), tenantEntity),
 
-		return Pair.of(deniedUsersBase, deniedRolesBase);
-	}
-
-	//temporary solution to solve issues before new permission model is implemented
-	private Subquery<String> getPermissionGroupSubQuery(CommonAbstractCriteria query, CriteriaBuilder cb, List<Role> roles, SecurityUser securityUser, List<? extends SecurityTenant> tenants, SecurityOperation op, Clazz clazz, List<Baseclass> userDenied, List<Baseclass> roleDenied) {
-	if(em.getDelegate().getClass().getCanonicalName().contains("eclipse")){
-		return getPermissionGroupSubQueryEclipselink(query, cb, roles, securityUser, tenants, op, clazz, userDenied, roleDenied);
-	}
-	return getPermissionGroupSubQueryHibernate(query, cb, roles, securityUser, tenants, op, clazz, userDenied, roleDenied);
-	}
-
-	private Subquery<String> getPermissionGroupSubQueryEclipselink(CommonAbstractCriteria query, CriteriaBuilder cb, List<Role> roles, SecurityUser securityUser, List<? extends SecurityTenant> tenants, SecurityOperation op, Clazz clazz, List<Baseclass> userDenied, List<Baseclass> roleDenied) {
-		Subquery<String> sub = query.subquery(String.class);
-		Root<SecurityLink> securityLinkRoot = sub.from(SecurityLink.class);
-		Join<SecurityLink, PermissionGroup> rightsideJoin = cb.treat(securityLinkRoot.join(SecurityLink_.rightside), PermissionGroup.class);
-		Root<UserToBaseClass> userToBaseClassRoot = cb.treat(securityLinkRoot, UserToBaseClass.class);
-		Root<RoleToBaseclass> roleToBaseclassRoot = cb.treat(securityLinkRoot, RoleToBaseclass.class);
-		Root<TenantToBaseClassPremission> tenantToBaseClassPremissionRoot = cb.treat(securityLinkRoot, TenantToBaseClassPremission.class);
-		Join<PermissionGroup, PermissionGroupToBaseclass> permissionGroupLinkJoin = rightsideJoin.join(PermissionGroup_.links);
-		Join<PermissionGroupToBaseclass, Baseclass> permissionGroupTargetJoin = permissionGroupLinkJoin.join(PermissionGroupToBaseclass_.rightside);
-
-
-		Predicate linkPredicate = cb.and(
-				createBaseclassSpecificPredicate(cb, roles, securityUser, tenants, op, userDenied, roleDenied, securityLinkRoot, userToBaseClassRoot, roleToBaseclassRoot, tenantToBaseClassPremissionRoot),
-				cb.isFalse(permissionGroupLinkJoin.get(PermissionGroupToBaseclass_.softDelete)),
-				cb.isFalse(rightsideJoin.get(PermissionGroup_.softDelete))
-		);
-
-		sub.select(permissionGroupTargetJoin.get(Baseclass_.id)).where(linkPredicate);
-		return sub;
-
-	}
-
-	private Subquery<String> getPermissionGroupSubQueryHibernate(CommonAbstractCriteria query, CriteriaBuilder cb, List<Role> roles, SecurityUser securityUser, List<? extends SecurityTenant> tenants, SecurityOperation op, Clazz clazz, List<Baseclass> userDenied, List<Baseclass> roleDenied) {
-		Subquery<String> sub = query.subquery(String.class);
-		Root<SecurityLink> securityLinkRoot = sub.from(SecurityLink.class);
-		Join<SecurityLink, Baseclass> rightsideJoin = securityLinkRoot.join(SecurityLink_.rightside);
-		Root<UserToBaseClass> userToBaseClassRoot = cb.treat(securityLinkRoot, UserToBaseClass.class);
-		Root<RoleToBaseclass> roleToBaseclassRoot = cb.treat(securityLinkRoot, RoleToBaseclass.class);
-		Root<TenantToBaseClassPremission> tenantToBaseClassPremissionRoot = cb.treat(securityLinkRoot, TenantToBaseClassPremission.class);
-		Join<PermissionGroup, PermissionGroupToBaseclass> permissionGroupLinkJoin = rightsideJoin.join("links");
-		Join<PermissionGroupToBaseclass, Baseclass> permissionGroupTargetJoin = permissionGroupLinkJoin.join(PermissionGroupToBaseclass_.rightside);
-
-
-		Predicate linkPredicate = cb.and(
-				createBaseclassSpecificPredicate(cb, roles, securityUser, tenants, op, userDenied, roleDenied, securityLinkRoot, userToBaseClassRoot, roleToBaseclassRoot, tenantToBaseClassPremissionRoot),
-				cb.isFalse(permissionGroupLinkJoin.get(PermissionGroupToBaseclass_.softDelete)),
-				cb.isFalse(rightsideJoin.get(PermissionGroup_.softDelete)),
-				cb.equal(rightsideJoin.get(Baseclass_.dtype), PermissionGroup.class.getSimpleName())
-		);
-
-		sub.select(permissionGroupTargetJoin.get(Baseclass_.id)).where(linkPredicate);
-		return sub;
-
-	}
-
-	private Subquery<String> getBaseclassSpecificSubQeury(CommonAbstractCriteria query, CriteriaBuilder cb, List<Role> roles, SecurityUser securityUser
-			, List<? extends SecurityTenant> tenants, SecurityOperation op, Clazz clazz, List<Baseclass> userDenied, List<Baseclass> roleDenied) {
-		Subquery<String> sub = query.subquery(String.class);
-		Root<SecurityLink> securityLinkRoot = sub.from(SecurityLink.class);
-		Join<SecurityLink, Baseclass> rightsideJoin = securityLinkRoot.join(SecurityLink_.rightside);
-		Root<UserToBaseClass> userToBaseClassRoot = cb.treat(securityLinkRoot, UserToBaseClass.class);
-		Root<RoleToBaseclass> roleToBaseclassRoot = cb.treat(securityLinkRoot, RoleToBaseclass.class);
-		Root<TenantToBaseClassPremission> tenantToBaseClassPremissionRoot = cb.treat(securityLinkRoot, TenantToBaseClassPremission.class);
-
-
-		Predicate linkPredicate = createBaseclassSpecificPredicate(cb, roles, securityUser, tenants, op, userDenied, roleDenied, securityLinkRoot, userToBaseClassRoot, roleToBaseclassRoot, tenantToBaseClassPremissionRoot);
-		sub.select(rightsideJoin.get(Baseclass_.id)).where(linkPredicate);
-		return sub;
-
-	}
-
-	private Predicate createBaseclassSpecificPredicate(CriteriaBuilder cb, List<Role> roles, SecurityUser securityUser, List<? extends SecurityTenant> tenants, SecurityOperation op, List<Baseclass> userDenied, List<Baseclass> roleDenied, Root<SecurityLink> securityLinkRoot, Root<UserToBaseClass> userToBaseClassRoot, Root<RoleToBaseclass> roleToBaseclassRoot, Root<TenantToBaseClassPremission> tenantToBaseClassPremissionRoot) {
-		SecurityOperation allOpId = getAllOperation();
-
-		Predicate rolesPredicate = cb.or();
-		if (!roles.isEmpty()) {
-			rolesPredicate = cb.and(
-					roleToBaseclassRoot.get(RoleToBaseclass_.leftside).in(roles));
-
+						tenant.allowAll()?cb.or():r.get(Baseclass_.clazz).in(tenant.allowedTypes()),
+						userDenied.isEmpty() ? cb.and() : cb.not(r.in(userDenied)),
+						roleDenied.isEmpty() ? cb.and() : cb.not(r.in(roleDenied)),
+						tenant.denied().isEmpty() ? cb.and() : cb.not(r.in(tenant.denied())),
+						user.deniedPermissionGroups().isEmpty()?cb.and():cb.not(permissionGroupPredicate(r,user.deniedPermissionGroups(),join)),
+						rolePermissionGroupDenied.isEmpty()?cb.and():cb.not(permissionGroupPredicate(r,rolePermissionGroupDenied,join)),
+						tenant.deniedPermissionGroups().isEmpty()?cb.and():cb.not(permissionGroupPredicate(r,tenant.deniedPermissionGroups(),join))
+				));
+			}
 		}
 
 
-		Predicate userPredicate = cb.and(
-				cb.equal(userToBaseClassRoot.get(UserToBaseClass_.leftside), securityUser));
-
-		Predicate tenantPredicate = cb.and(
-				tenantToBaseClassPremissionRoot.get(TenantToBaseClassPremission_.leftside).in(tenants));
-
-
-		if (!userDenied.isEmpty()) {
-			userPredicate = cb.and(userPredicate, cb.not(securityLinkRoot.get(SecurityLink_.rightside).in(userDenied)));
-		}
-
-
-		if (!roleDenied.isEmpty()) {
-			rolesPredicate = cb.and(rolesPredicate, cb.not(securityLinkRoot.get(SecurityLink_.rightside).in(roleDenied)));
-			tenantPredicate = cb.and(tenantPredicate, cb.not(securityLinkRoot.get(SecurityLink_.rightside).in(roleDenied)));
-		}
-
-		return cb.and(
-				cb.isFalse(securityLinkRoot.get(SecurityLink_.softDelete)),
-				cb.or(cb.equal(securityLinkRoot.get(SecurityLink_.value), op), cb.equal(securityLinkRoot.get(SecurityLink_.value), allOpId)),
-				//cb.or(cb.equal(securityLinkRoot.get(SecurityLink_.rightside).get(Baseclass_.clazz),clazz)),
-				cb.equal(securityLinkRoot.get(SecurityLink_.simplevalue), IOperation.Access.allow.name()),
-				cb.or(
-						userPredicate,
-						rolesPredicate,
-						tenantPredicate
-
-
-				)
-
-
-		);
-	}
-
-	private SecurityOperation getAllOperation() {
-		if (allOp == null) {
-			allOp = em.find(SecurityOperation.class, Baseclass.generateUUIDFromString(All.class.getCanonicalName()));
-		}
-		return allOp;
-	}
-
-	private Subquery<String> getPremissiveSubQueryForRole(CommonAbstractCriteria query, CriteriaBuilder cb, List<Role> roles, SecurityOperation op) {
-
-		Subquery<String> subPremissive = query.subquery(String.class);
-		Root<SecurityLink> securityLinkRootPremissive = subPremissive.from(SecurityLink.class);
-		Join<SecurityLink, Clazz> rightside = cb.treat(securityLinkRootPremissive.join(SecurityLink_.rightside), Clazz.class);
-		Root<RoleToBaseclass> roleToBaseclassRoot = cb.treat(securityLinkRootPremissive, RoleToBaseclass.class);
-		SecurityOperation allOpId = getAllOperation();
-		Predicate rolesPredicatePremissive = cb.or();
-		if (!roles.isEmpty()) {
-			rolesPredicatePremissive = cb.and(
-					roleToBaseclassRoot.get(RoleToBaseclass_.leftside).in(roles));
-
-		}
-
-
-		Predicate premissive = cb.and(
-				cb.isFalse(securityLinkRootPremissive.get(SecurityLink_.softDelete)),
-				cb.or(cb.equal(securityLinkRootPremissive.get(SecurityLink_.value), op), cb.equal(securityLinkRootPremissive.get(SecurityLink_.value), allOpId)),
-				cb.equal(securityLinkRootPremissive.get(SecurityLink_.rightside).type(), Clazz.class),
-				cb.equal(securityLinkRootPremissive.get(SecurityLink_.simplevalue), IOperation.Access.allow.name()),
-				rolesPredicatePremissive
-
-
-		);
-
-		subPremissive.select(rightside.get(Clazz_.id)).where(premissive);
-		return subPremissive;
+		predicates.add(cb.or(securityPreds.toArray(new Predicate[0])));
 
 	}
 
-	private Subquery<String> getPremissiveSubQueryForTenantAndUser(CommonAbstractCriteria query, CriteriaBuilder cb, SecurityUser securityUser, List<? extends SecurityTenant> tenants, SecurityOperation op) {
 
-		Subquery<String> subPremissive = query.subquery(String.class);
-		Root<SecurityLink> securityLinkRootPremissive = subPremissive.from(SecurityLink.class);
-		Join<SecurityLink, Clazz> rightside = cb.treat(securityLinkRootPremissive.join(SecurityLink_.rightside), Clazz.class);
-		Root<UserToBaseClass> userToBaseClassRoot = cb.treat(securityLinkRootPremissive, UserToBaseClass.class);
-		Root<TenantToBaseClassPremission> tenantToBaseClassPremissionRoot = cb.treat(securityLinkRootPremissive, TenantToBaseClassPremission.class);
-		SecurityOperation allOpId = getAllOperation();
-
-
-		Predicate userPredicatePremissive = cb.and(
-				cb.equal(userToBaseClassRoot.get(UserToBaseClass_.leftside), securityUser));
-		Predicate tenantPredicatePremissive = cb.and(
-				tenantToBaseClassPremissionRoot.get(TenantToBaseClassPremission_.leftside).in(tenants));
-		Predicate premissive = cb.and(
-				cb.isFalse(securityLinkRootPremissive.get(SecurityLink_.softDelete)),
-				cb.or(cb.equal(securityLinkRootPremissive.get(SecurityLink_.value), op), cb.equal(securityLinkRootPremissive.get(SecurityLink_.value), allOpId)),
-				cb.equal(securityLinkRootPremissive.get(SecurityLink_.rightside).type(), Clazz.class),
-				cb.equal(securityLinkRootPremissive.get(SecurityLink_.simplevalue), IOperation.Access.allow.name()),
-				cb.or(
-						userPredicatePremissive,
-						tenantPredicatePremissive
-
-				)
-
-
-		);
-
-		subPremissive.select(rightside.get(Clazz_.id)).where(premissive);
-		return subPremissive;
-
-	}
-
-	private List<SecurityLink> getAllowAllLinks(CriteriaBuilder cb, List<Role> roles, SecurityUser securityUser, List<? extends SecurityTenant> tenants, SecurityOperation op) {
-     /*   Clazz tenantToBaseClassClazz = Baseclass.getClazzbyname(TenantToBaseClassPremission.class.getCanonicalName());
-        Clazz roleToBaseClassClazz = Baseclass.getClazzbyname(RoleToBaseclass.class.getCanonicalName());
-        Clazz userToBaseClassClazz = Baseclass.getClazzbyname(UserToBaseClass.class.getCanonicalName());*/
-		CriteriaQuery<SecurityLink> subPremissive = cb.createQuery(SecurityLink.class);
-		Root<SecurityLink> securityLinkRootPremissive = subPremissive.from(SecurityLink.class);
-		Root<UserToBaseClass> userToBaseClassRoot = cb.treat(securityLinkRootPremissive, UserToBaseClass.class);
-		Root<RoleToBaseclass> roleToBaseclassRoot = cb.treat(securityLinkRootPremissive, RoleToBaseclass.class);
-		Root<TenantToBaseClassPremission> tenantToBaseClassPremissionRoot = cb.treat(securityLinkRootPremissive, TenantToBaseClassPremission.class);
-		SecurityOperation allOpId = getAllOperation();
-
-		Predicate rolesPredicatePremissive = cb.or();
-		if (!roles.isEmpty()) {
-			rolesPredicatePremissive = cb.and(
-					roleToBaseclassRoot.get(RoleToBaseclass_.leftside).in(roles));
-
-		}
-
-
-		Predicate userPredicatePremissive = cb.and(
-				cb.equal(userToBaseClassRoot.get(UserToBaseClass_.leftside), securityUser));
-		Predicate tenantPredicatePremissive = cb.or();
-		if (!tenants.isEmpty()) {
-			tenantPredicatePremissive = cb.and(
-					tenantToBaseClassPremissionRoot.get(TenantToBaseClassPremission_.leftside).in(tenants));
-		}
-
-		Clazz securityWildcard = Baseclass.getClazzByName(SecurityWildcard.class.getCanonicalName());
-		Predicate premissive = cb.and(
-				cb.or(cb.equal(securityLinkRootPremissive.get(SecurityLink_.value), op), cb.equal(securityLinkRootPremissive.get(SecurityLink_.value), allOpId)),
-				cb.equal(securityLinkRootPremissive.get(SecurityLink_.rightside), securityWildcard),
-				cb.or(
-						userPredicatePremissive,
-						tenantPredicatePremissive,
-						rolesPredicatePremissive
-
-				),
-				cb.isFalse(securityLinkRootPremissive.get(SecurityLink_.softDelete))
-
-
-		);
-
-		subPremissive.select(securityLinkRootPremissive).where(premissive);
-		TypedQuery<SecurityLink> query = em.createQuery(subPremissive);
-		List<SecurityLink> all = query.getResultList();
-
-		return all;
-
-	}
 
 	private boolean isSuperAdmin(List<Role> roles) {
 		for (Role role : roles) {
@@ -494,7 +412,7 @@ public class BaseclassRepository implements Plugin {
 		Root<T> r = q.from(c);
 		List<Predicate> predicates = new ArrayList<>();
 		predicates.add(cb.equal(r.get(Basic_.id), id));
-		addBaseclassPredicates(cb, q, r.get(baseclassAttribute), predicates, securityContext);
+		addBaseclassPredicates(cb, q, r.join(baseclassAttribute), predicates, securityContext);
 		q.select(r).where(predicates.toArray(Predicate[]::new));
 		TypedQuery<T> query = em.createQuery(q);
 		List<T> resultList = query.getResultList();
@@ -507,7 +425,7 @@ public class BaseclassRepository implements Plugin {
 		Root<T> r = q.from(c);
 		List<Predicate> predicates = new ArrayList<>();
 		predicates.add(r.get(Basic_.id).in(ids));
-		addBaseclassPredicates(cb, q, r.get(baseclassAttribute), predicates, securityContext);
+		addBaseclassPredicates(cb, q, r.join(baseclassAttribute), predicates, securityContext);
 		q.select(r).where(predicates.toArray(Predicate[]::new));
 		TypedQuery<T> query = em.createQuery(q);
 		return query.getResultList();

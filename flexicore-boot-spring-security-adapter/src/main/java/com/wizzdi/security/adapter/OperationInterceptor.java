@@ -1,6 +1,7 @@
 package com.wizzdi.security.adapter;
 
 import com.flexicore.model.Baseclass;
+import com.flexicore.model.SecuredBasic_;
 import com.flexicore.model.SecurityOperation;
 import com.flexicore.security.SecurityContextBase;
 import com.wizzdi.flexicore.security.service.SecurityOperationService;
@@ -41,7 +42,7 @@ public class OperationInterceptor implements HandlerInterceptor {
 				Method method = handlerMethod.getMethod();
 				if(!BasicErrorController.class.equals(method.getDeclaringClass())){
 					String operationId = Baseclass.generateUUIDFromString(method.toString());
-					SecurityOperation securityOperation=securityOperationService.getByIdOrNull(operationId,SecurityOperation.class,null);
+					SecurityOperation securityOperation=securityOperationService.getByIdOrNull(operationId,SecurityOperation.class, SecuredBasic_.security,null);
 					if(securityOperation==null){
 						logger.error("could not find io operation annotation on method: " + method.getName());
 						response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);

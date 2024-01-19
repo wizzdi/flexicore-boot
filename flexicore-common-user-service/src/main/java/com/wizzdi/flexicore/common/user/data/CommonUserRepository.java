@@ -22,18 +22,13 @@
  */
 package com.wizzdi.flexicore.common.user.data;
 
-import com.flexicore.model.Baseclass;
-import com.flexicore.model.SecurityTenant;
-import com.flexicore.model.SecurityTenant_;
-import com.flexicore.model.TenantToUser;
-import com.flexicore.model.TenantToUser_;
-import com.flexicore.model.User;
-import com.flexicore.model.User_;
+import com.flexicore.model.*;
 import com.wizzdi.flexicore.common.user.request.CommonUserFilter;
 import com.flexicore.security.SecurityContextBase;
 import com.wizzdi.flexicore.boot.base.interfaces.Plugin;
 import com.wizzdi.flexicore.security.data.BasicRepository;
 import com.wizzdi.flexicore.security.data.SecurityUserRepository;
+import jakarta.persistence.metamodel.SingularAttribute;
 import org.pf4j.Extension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -50,8 +45,7 @@ import java.util.stream.Collectors;
 
 
 @Component
-@Extension
-public class CommonUserRepository implements Plugin {
+public class CommonUserRepository{
 
     @PersistenceContext
     private EntityManager em;
@@ -101,32 +95,21 @@ public class CommonUserRepository implements Plugin {
 
 
         if (commonUserFilter.getLastNameLike() != null) {
-            preds.add(cb.like(r.get(User_.surName), commonUserFilter.getLastNameLike()));
+            preds.add(cb.like(r.get(User_.lastName), commonUserFilter.getLastNameLike()));
         }
 
 
         if (commonUserFilter.getUserIds() != null && !commonUserFilter.getUserIds().isEmpty()) {
-            preds.add(r.get(User_.id).in(commonUserFilter.getUserIds()));
+            preds.add(r.get(SecurityUser_.id).in(commonUserFilter.getUserIds()));
         }
         if (commonUserFilter.getUserSecurityTenants() != null && !commonUserFilter.getUserSecurityTenants().isEmpty()) {
-            Set<String> ids = commonUserFilter.getUserSecurityTenants().parallelStream().map(Baseclass::getId).collect(Collectors.toSet());
-            Join<T, TenantToUser> join = r.join(User_.tenantToUsers);
+            Set<String> ids = commonUserFilter.getUserSecurityTenants().parallelStream().map(Basic::getId).collect(Collectors.toSet());
+            Join<T, TenantToUser> join = r.join(SecurityUser_.tenants);
             Join<TenantToUser, SecurityTenant> securityTenantJoin = join.join(TenantToUser_.tenant);
             preds.add(securityTenantJoin.get(SecurityTenant_.id).in(ids));
         }
 
 
-    }
-
-
-    @Transactional
-    public <T> T merge(T o) {
-        return securityUserRepository.merge(o);
-    }
-
-    @Transactional
-    public void massMerge(List<Object> list) {
-        securityUserRepository.massMerge(list);
     }
 
     public <T extends Baseclass> List<T> listByIds(Class<T> c, Set<String> ids, SecurityContextBase securityContext) {
@@ -137,11 +120,53 @@ public class CommonUserRepository implements Plugin {
         return securityUserRepository.getByIdOrNull(id, c, securityContext);
     }
 
-    public <T extends Baseclass> List<T> findByIds(Class<T> c, Set<String> requested) {
+    public <D extends Basic, E extends Baseclass, T extends D> T getByIdOrNull(String id, Class<T> c, SingularAttribute<D, E> baseclassAttribute, SecurityContextBase securityContext) {
+        return securityUserRepository.getByIdOrNull(id, c, baseclassAttribute, securityContext);
+    }
+
+    public <D extends Basic, E extends Baseclass, T extends D> List<T> listByIds(Class<T> c, Set<String> ids, SingularAttribute<D, E> baseclassAttribute, SecurityContextBase securityContext) {
+        return securityUserRepository.listByIds(c, ids, baseclassAttribute, securityContext);
+    }
+
+    public <D extends Basic, T extends D> List<T> findByIds(Class<T> c, Set<String> ids, SingularAttribute<D, String> idAttribute) {
+        return securityUserRepository.findByIds(c, ids, idAttribute);
+    }
+
+    public <T extends Basic> List<T> findByIds(Class<T> c, Set<String> requested) {
         return securityUserRepository.findByIds(c, requested);
     }
 
     public <T> T findByIdOrNull(Class<T> type, String id) {
         return securityUserRepository.findByIdOrNull(type, id);
+    }
+
+    @Transactional
+    public <T> T merge(T base) {
+        return securityUserRepository.merge(base);
+    }
+
+    @Transactional
+    public <T> T merge(T base, boolean updateDate, boolean propagateEvents) {
+        return securityUserRepository.merge(base, updateDate, propagateEvents);
+    }
+
+    @Transactional
+    public void massMerge(List<?> toMerge, boolean updatedate, boolean propagateEvents) {
+        securityUserRepository.massMerge(toMerge, updatedate, propagateEvents);
+    }
+
+    @Transactional
+    public <T> T merge(T base, boolean updateDate) {
+        return securityUserRepository.merge(base, updateDate);
+    }
+
+    @Transactional
+    public void massMerge(List<?> toMerge) {
+        securityUserRepository.massMerge(toMerge);
+    }
+
+    @Transactional
+    public void massMerge(List<?> toMerge, boolean updatedate) {
+        securityUserRepository.massMerge(toMerge, updatedate);
     }
 }

@@ -7,9 +7,7 @@
 package com.flexicore.model;
 
 import com.fasterxml.jackson.annotation.*;
-import com.fasterxml.jackson.databind.annotation.JsonTypeResolver;
 import com.flexicore.annotations.AnnotatedClazz;
-import com.flexicore.data.jsoncontainers.FCTypeResolver;
 import com.flexicore.interfaces.Syncable;
 import com.flexicore.security.SecurityContextBase;
 import com.wizzdi.flexicore.boot.rest.views.Views;
@@ -77,10 +75,13 @@ public class Baseclass extends Basic implements Syncable {
 	// this field is added to to trigger metadatamodel generation , sometimes _.clazz field isn't created.
 
 
+	@OneToMany(targetEntity = SecurityLink.class, mappedBy = "baseclass")
+	@JsonIgnore
+	private List<SecurityLink> securityLinks = new ArrayList<>();
 
 
 	@JsonIgnore
-	@OneToMany(targetEntity = PermissionGroupToBaseclass.class, mappedBy = "rightside")
+	@OneToMany(targetEntity = PermissionGroupToBaseclass.class, mappedBy = "baseclass")
 	private List<PermissionGroupToBaseclass> permissionGroupToBaseclasses = new ArrayList<>();
 
 
@@ -105,7 +106,7 @@ public class Baseclass extends Basic implements Syncable {
 
 
 		String typeName = javaClass.getCanonicalName();
-		Clazz clazz = Clazz.class.equals(javaClass) && this.name.equals("com.flexicore.model.Clazz") ? (Clazz) this : allclazzes.get(typeName);
+		Clazz clazz = allclazzes.get(typeName);
 		this.setClazz(clazz);
 
 	}
@@ -155,9 +156,16 @@ public class Baseclass extends Basic implements Syncable {
 	}
 
 
-	@JsonIgnore
-	@OneToMany(targetEntity = SecurityLink.class, mappedBy = "rightside")
-	public List<SecurityLink> securityLinks = new ArrayList<>();
+	@OneToMany(targetEntity = SecurityLink.class, mappedBy = "baseclass")
+
+	public List<SecurityLink> getSecurityLinks() {
+		return securityLinks;
+	}
+
+	public <T extends Baseclass> T setSecurityLinks(List<SecurityLink> securityLinks) {
+		this.securityLinks = securityLinks;
+		return (T) this;
+	}
 
 	public Baseclass(String name, SecurityContextBase securityContext) {
 		this(name,null,securityContext);
@@ -206,21 +214,12 @@ public class Baseclass extends Basic implements Syncable {
 	 */
 	public static String generateUUIDFromString(String input) {
 
-		return UUID.nameUUIDFromBytes(input.getBytes()).toString()
-				.replaceAll("-", "")
-				.substring(0, 22);
+		return UUID.nameUUIDFromBytes(input.getBytes()).toString();
 
 	}
 
-	@JsonIgnore
-	@OneToMany(targetEntity = SecurityLink.class, mappedBy = "rightside")
-	public List<SecurityLink> getSecurityLinks() {
-		return securityLinks;
-	}
 
-	public void setSecurityLinks(List<SecurityLink> securityLinks) {
-		this.securityLinks = securityLinks;
-	}
+
 
 	public boolean isSystemObject() {
 		return systemObject;
@@ -229,18 +228,6 @@ public class Baseclass extends Basic implements Syncable {
 	public Baseclass setSystemObject(boolean systemObject) {
 		this.systemObject = systemObject;
 		return this;
-	}
-
-
-	@Column(name = "dtype", insertable = false, updatable = false)
-
-	public String getDtype() {
-		return dtype;
-	}
-
-	public <T extends Baseclass> T setDtype(String dtype) {
-		this.dtype = dtype;
-		return (T) this;
 	}
 
 	@Lob
@@ -255,7 +242,7 @@ public class Baseclass extends Basic implements Syncable {
 	}
 
 	@JsonIgnore
-	@OneToMany(targetEntity = PermissionGroupToBaseclass.class, mappedBy = "rightside")
+	@OneToMany(targetEntity = PermissionGroupToBaseclass.class, mappedBy = "baseclass")
 	public List<PermissionGroupToBaseclass> getPermissionGroupToBaseclasses() {
 		return permissionGroupToBaseclasses;
 	}

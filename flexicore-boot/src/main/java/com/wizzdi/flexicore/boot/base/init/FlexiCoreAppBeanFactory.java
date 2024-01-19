@@ -5,6 +5,7 @@ import org.springframework.beans.TypeConverter;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.beans.factory.config.DependencyDescriptor;
+import org.springframework.beans.factory.config.NamedBeanHolder;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.context.ApplicationContext;
 
@@ -82,7 +83,7 @@ public class FlexiCoreAppBeanFactory extends DefaultListableBeanFactory {
             for (ApplicationContext applicationContext : dependenciesContext) {
                 try {
                     AutowireCapableBeanFactory autowireCapableBeanFactory = applicationContext.getAutowireCapableBeanFactory();
-                    return autowireCapableBeanFactory instanceof FlexiCorePluginBeanFactory ? ((FlexiCorePluginBeanFactory) autowireCapableBeanFactory).resolveDependencyDirect(descriptor, requestingBeanName, autowiredBeanNames, typeConverter) : autowireCapableBeanFactory.resolveDependency(descriptor, requestingBeanName, autowiredBeanNames, typeConverter);
+                    return PluginResolveUtils.resolveDependency(autowireCapableBeanFactory,descriptor, requestingBeanName, autowiredBeanNames, typeConverter);
                 } catch (BeansException ignored) {
 
                 }
@@ -92,6 +93,9 @@ public class FlexiCoreAppBeanFactory extends DefaultListableBeanFactory {
             throw e;
         }
 
+    }
+    public <T> NamedBeanHolder<T> resolveNamedBeanDirect(Class<T> requiredType) throws BeansException {
+        return super.resolveNamedBean(requiredType);
     }
 
     @Override

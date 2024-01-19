@@ -4,6 +4,7 @@ import com.flexicore.model.*;
 import com.wizzdi.flexicore.boot.base.interfaces.Plugin;
 import com.flexicore.security.SecurityContextBase;
 import com.wizzdi.flexicore.security.request.SecurityUserFilter;
+import jakarta.persistence.metamodel.SingularAttribute;
 import org.pf4j.Extension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -56,17 +57,7 @@ public class SecurityUserRepository implements Plugin {
 
 	}
 
-	@Transactional
-	public <T> T merge(T o){
-		return baseclassRepository.merge(o);
-	}
-
-	@Transactional
-	public void massMerge(List<Object> list){
-		baseclassRepository.massMerge(list);
-	}
-
-	public <T extends Baseclass> List<T> listByIds(Class<T> c,Set<String> ids,  SecurityContextBase securityContext) {
+	public <T extends Baseclass> List<T> listByIds(Class<T> c, Set<String> ids, SecurityContextBase securityContext) {
 		return baseclassRepository.listByIds(c, ids, securityContext);
 	}
 
@@ -74,11 +65,53 @@ public class SecurityUserRepository implements Plugin {
 		return baseclassRepository.getByIdOrNull(id, c, securityContext);
 	}
 
-	public <T extends Baseclass> List<T> findByIds(Class<T> c, Set<String> requested) {
+	public <D extends Basic, E extends Baseclass, T extends D> T getByIdOrNull(String id, Class<T> c, SingularAttribute<D, E> baseclassAttribute, SecurityContextBase securityContext) {
+		return baseclassRepository.getByIdOrNull(id, c, baseclassAttribute, securityContext);
+	}
+
+	public <D extends Basic, E extends Baseclass, T extends D> List<T> listByIds(Class<T> c, Set<String> ids, SingularAttribute<D, E> baseclassAttribute, SecurityContextBase securityContext) {
+		return baseclassRepository.listByIds(c, ids, baseclassAttribute, securityContext);
+	}
+
+	public <D extends Basic, T extends D> List<T> findByIds(Class<T> c, Set<String> ids, SingularAttribute<D, String> idAttribute) {
+		return baseclassRepository.findByIds(c, ids, idAttribute);
+	}
+
+	public <T extends Basic> List<T> findByIds(Class<T> c, Set<String> requested) {
 		return baseclassRepository.findByIds(c, requested);
 	}
 
 	public <T> T findByIdOrNull(Class<T> type, String id) {
 		return baseclassRepository.findByIdOrNull(type, id);
+	}
+
+	@Transactional
+	public <T> T merge(T base) {
+		return baseclassRepository.merge(base);
+	}
+
+	@Transactional
+	public <T> T merge(T base, boolean updateDate, boolean propagateEvents) {
+		return baseclassRepository.merge(base, updateDate, propagateEvents);
+	}
+
+	@Transactional
+	public void massMerge(List<?> toMerge, boolean updatedate, boolean propagateEvents) {
+		baseclassRepository.massMerge(toMerge, updatedate, propagateEvents);
+	}
+
+	@Transactional
+	public <T> T merge(T base, boolean updateDate) {
+		return baseclassRepository.merge(base, updateDate);
+	}
+
+	@Transactional
+	public void massMerge(List<?> toMerge) {
+		baseclassRepository.massMerge(toMerge);
+	}
+
+	@Transactional
+	public void massMerge(List<?> toMerge, boolean updatedate) {
+		baseclassRepository.massMerge(toMerge, updatedate);
 	}
 }
