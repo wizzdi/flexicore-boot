@@ -73,7 +73,6 @@
 
         <flexicore-boot-swagger.version>${project.version}</flexicore-boot-swagger.version>
 
-        <flexicore-boot-vintage.version>${project.version}</flexicore-boot-vintage.version>
         <flexicore-boot-dynamic-invokers-model.version>${project.version}
         </flexicore-boot-dynamic-invokers-model.version>
         <flexicore-security-service.version>${project.version}</flexicore-security-service.version>
@@ -81,8 +80,6 @@
         <flexicore-boot-dynamic-invokers-service.version>${project.version}
         </flexicore-boot-dynamic-invokers-service.version>
 
-        <flexicore-base-model.version>${project.version}</flexicore-base-model.version>
-        <flexicore-base-service.version>${project.version}</flexicore-base-service.version>
 
         <!--<flexicore-boot-starter-data-rest.version>1.0.1</flexicore-boot-starter-data-rest.version>-->
         <flexicore-common-user-model.version>${project.version}</flexicore-common-user-model.version>
@@ -396,23 +393,8 @@
             </dependency>
             <dependency>
                 <groupId>com.wizzdi</groupId>
-                <artifactId>flexicore-base-model</artifactId>
-                <version>${flexicore-base-model.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.wizzdi</groupId>
-                <artifactId>flexicore-base-service</artifactId>
-                <version>${flexicore-base-service.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.wizzdi</groupId>
                 <artifactId>flexicore-boot</artifactId>
                 <version>${flexicore-boot.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.wizzdi</groupId>
-                <artifactId>flexicore-boot-vintage</artifactId>
-                <version>${flexicore-boot-vintage.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.wizzdi</groupId>
