@@ -36,6 +36,11 @@ public class FlexiCorePluginManager extends SpringPluginManager {
 		return new FlexiCoreExtensionFactory(this);
 	}
 
+	@Override
+	protected VersionManager createVersionManager() {
+		return new ImprovedVersionManager();
+	}
+
 	public Iterable<ContextCustomizer> getApplicationCustomizers() {
 		return applicationCustomizers;
 	}

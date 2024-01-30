@@ -1,6 +1,6 @@
 package com.wizzdi.flexicore.security.migrations;
 
-import com.flexicore.model.SecurityUser;
+import jakarta.persistence.Column;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
@@ -11,9 +11,7 @@ import java.lang.reflect.Field;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.MessageFormat;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class FlexiCoreV4ToV5Migration {
@@ -23,21 +21,21 @@ public class FlexiCoreV4ToV5Migration {
     public static final List<FieldMigration> SECURITY_LINK_FIELD_MIGRATIONS = List.of(new FieldMigration("value_id", "operation_id"), new FieldMigration("simplevalue", "access"));
     private static final List<TypeMigration> toMigrate = List.of(
             new TypeMigration("Clazz", Collections.emptyList()),
-            new TypeMigration("SecurityUser", "UserTable", "SecurityUser", false, true, Collections.emptyList()),
+            new TypeMigration("SecurityUser", "UserTable", "SecurityUser",  true, Collections.emptyList()),
             new TypeMigration("SecurityOperation", List.of(new FieldMigration("defaultaccess", "defaultAccess"))),
             new TypeMigration("SecurityTenant", Collections.emptyList()),
             new TypeMigration("Role", Collections.emptyList()),
-            new TypeMigration("SecurityWildcard", "SecurityWildcard", "SecurityWildcard", false, false, Collections.emptyList()),
-            new TypeMigration("OperationCategory", "OperationCategory", "OperationCategory", false, false, Collections.emptyList()),
+            new TypeMigration("SecurityWildcard", "SecurityWildcard", "SecurityWildcard",  false, Collections.emptyList()),
+            new TypeMigration("OperationCategory", "OperationCategory", "OperationCategory",  false, Collections.emptyList()),
             new TypeMigration("PermissionGroup", Collections.emptyList()),
-            new TypeMigration("OperationToClazz", "OperationToClazz", "OperationToClazz", false, false, List.of(new FieldMigration("leftside_id", "operation_id"), new FieldMigration("rightside_id", "clazz_id"))),
+            new TypeMigration("OperationToClazz", "OperationToClazz", "OperationToClazz",  false, List.of(new FieldMigration("leftside_id", "operation_id"), new FieldMigration("rightside_id", "clazz_id"))),
             new TypeMigration("PermissionGroupToBaseclass", List.of(new FieldMigration("leftside_id", "permissionGroup_id"), new FieldMigration("rightside_id", "baseclass_id"))),
             new TypeMigration("TenantToUser", List.of(new FieldMigration("leftside_id", "tenant_id"), new FieldMigration("rightside_id", "user_id"), new FieldMigration("defualtTennant", "defaultTenant"))),
             new TypeMigration("RoleToUser", List.of(new FieldMigration("leftside_id", "role_id"), new FieldMigration("rightside_id", "user_id"))),
-            new TypeMigration("SecurityLink", "SecurityLink", true, SECURITY_LINK_FIELD_MIGRATIONS), //special case
-            new TypeMigration("RoleToBaseclass", "SecurityLink", true, join(SECURITY_LINK_FIELD_MIGRATIONS, List.of(new FieldMigration("leftside_id", "role_id")))),//special case
-            new TypeMigration("TenantToBaseClassPremission", "SecurityLink", "TenantToBaseclass", true, true, join(SECURITY_LINK_FIELD_MIGRATIONS, List.of(new FieldMigration("leftside_id", "tenant_id")))),//special case
-            new TypeMigration("UserToBaseClass", "SecurityLink", true, join(SECURITY_LINK_FIELD_MIGRATIONS, List.of(new FieldMigration("leftside_id", "user_id")))));//special case
+            new TypeMigration("SecurityLink", "SecurityLink",  SECURITY_LINK_FIELD_MIGRATIONS), //special case
+            new TypeMigration("RoleToBaseclass", "SecurityLink",  join(SECURITY_LINK_FIELD_MIGRATIONS, List.of(new FieldMigration("leftside_id", "role_id")))),//special case
+            new TypeMigration("TenantToBaseClassPremission", "SecurityLink", "TenantToBaseclass",  true, join(SECURITY_LINK_FIELD_MIGRATIONS, List.of(new FieldMigration("leftside_id", "tenant_id")))),//special case
+            new TypeMigration("UserToBaseClass", "SecurityLink",  join(SECURITY_LINK_FIELD_MIGRATIONS, List.of(new FieldMigration("leftside_id", "user_id")))));//special case
     public static final String MIGRATE_WITHOUT_DTYPE =
             """
             insert into {0}(id,name,description,security_id,creationDate,updateDate,softDelete)
@@ -58,7 +56,7 @@ public class FlexiCoreV4ToV5Migration {
     }
 
 
-    public static void migrateToFCV5(Statement select, Class<? extends SecurityUser>... classesExtendingUser) throws SQLException {
+    public static void migrateToFCV5(Statement select, ExternalTypeMigration... classesExtendingUser) throws SQLException {
         List<TypeMigration> additional = getAdditionalTypes(classesExtendingUser);
         migrateTypes(select, additional);
         migrateTypeFields(select, additional);
@@ -108,19 +106,32 @@ public class FlexiCoreV4ToV5Migration {
             logger.info("dropping unnecessary columns {}", sql);
             select.execute(sql);
         }
-        if(additional.isEmpty()){
-            return;
-        }
-        {
-            String sql = additional.stream().map(f -> "drop column if exists " + f.oldClassName()).collect(Collectors.joining(",", "alter table baseclass ", ""));
+        for (TypeMigration typeMigration : additional) {
+            if(typeMigration.fieldMigrations().isEmpty()){
+                continue;
+            }
+            String sql = typeMigration.fieldMigrations().stream().map(f -> "drop column if exists " + f.oldName()).collect(Collectors.joining(",", "alter table baseclass ", ""));
             logger.info("dropping additional columns {}", sql);
             select.execute(sql);
+        }
 
+    }
 
+    private static boolean fieldExist(Statement select,String tableName,String fieldName)  {
+        try {
+            String sql = "select column_name from information_schema.columns where table_name='" + tableName + "' and column_name='" + fieldName + "'";
+            logger.info("checking if field {} exist SQL: {}", fieldName, sql);
+            return select.executeQuery(sql).next();
+        }
+        catch (Exception e){
+            logger.error("failed checking if field {} exist",fieldName,e);
+            return false;
         }
     }
 
     private static void migrateFK(Statement select) throws SQLException {
+        //check if field dtype exist for table UserTable
+
         {  //drop constraints
             String sql = """
                     alter table baseclass 
@@ -145,24 +156,31 @@ public class FlexiCoreV4ToV5Migration {
         }
     }
 
-    private static List<TypeMigration> getAdditionalTypes(Class<? extends SecurityUser>[] classesExtendingUser) {
+    private static List<TypeMigration> getAdditionalTypes(ExternalTypeMigration[] classesExtendingUser) {
         return Arrays.stream(classesExtendingUser).map(f -> getType(f)).toList();
     }
 
-    private static TypeMigration getType(Class<? extends SecurityUser> aClass) {
-        List<FieldMigration> fieldMigrations = Arrays.stream(aClass.getDeclaredFields()).map(f -> getFieldMigration(f)).filter(f -> f != null).toList();
+    private static TypeMigration getType(ExternalTypeMigration externalTypeMigration) {
+        Class<?> aClass = externalTypeMigration.type();
+        Map<String, FieldMigration> fieldMigrationOverride = externalTypeMigration.fieldMigrationsOverride().stream().collect(Collectors.toMap(f -> f.newName().toLowerCase(), f -> f, (a, b) -> a));
+        List<FieldMigration> fieldMigrations = Arrays.stream(aClass.getDeclaredFields()).map(f -> getFieldMigration(fieldMigrationOverride,f)).filter(f -> f != null).toList();
         String simpleName = aClass.getSimpleName();
-        return new TypeMigration(simpleName, "UserTable", simpleName, true, true, fieldMigrations);
+        return new TypeMigration(simpleName, "UserTable", simpleName, true, fieldMigrations);
     }
 
-    private static FieldMigration getFieldMigration(Field f) {
+    private static FieldMigration getFieldMigration(Map<String, FieldMigration> fieldMigrationOverride, Field f) {
+        FieldMigration override = fieldMigrationOverride.get(f.getName().toLowerCase());
+        if(override!=null){
+            return override;
+        }
         if (f.isAnnotationPresent(OneToMany.class)) {
             return null;
         }
         if (f.isAnnotationPresent(ManyToOne.class) || f.isAnnotationPresent(OneToOne.class)) {
             return new FieldMigration(f.getName() + "_id");
         }
-        return new FieldMigration(f.getName());
+        String columnName = Optional.ofNullable(f.getAnnotation(Column.class)).map(e -> e.name()).filter(e -> !e.isBlank()).orElse(f.getName());
+        return new FieldMigration(columnName);
     }
 
     private static void migrateSecurityLinksSpecific(Statement select) throws SQLException {
@@ -224,7 +242,7 @@ public class FlexiCoreV4ToV5Migration {
     }
 
     private static void migrateType(Statement select, TypeMigration typeMigration) throws SQLException {
-        String template = getTemplate(typeMigration);
+        String template = getTemplate(select,typeMigration);
         String sql = MessageFormat.format(template,
                 typeMigration.tableName(),
                 typeMigration.newClassName(),
@@ -234,11 +252,12 @@ public class FlexiCoreV4ToV5Migration {
         int updatedEntries = select.executeUpdate(sql);
     }
 
-    private static String getTemplate(TypeMigration typeMigration) {
+    private static String getTemplate(Statement select, TypeMigration typeMigration) {
         if (!typeMigration.hasSecurity()) {
             return MIGRATE_WITHOUT_SECURITY;
         }
-        return typeMigration.hasDtype() ? MIGRATE_WITH_DTYPE : MIGRATE_WITHOUT_DTYPE;
+        boolean dtype = fieldExist(select, typeMigration.tableName(), "dtype");
+        return dtype ? MIGRATE_WITH_DTYPE : MIGRATE_WITHOUT_DTYPE;
     }
 
     public record FieldMigration(String oldName, String newName) {
@@ -250,24 +269,23 @@ public class FlexiCoreV4ToV5Migration {
         }
     }
 
-    public record TypeMigration(String oldClassName, String tableName, String newClassName, boolean hasDtype,
+    public record TypeMigration(String oldClassName, String tableName, String newClassName,
                                 boolean hasSecurity, List<FieldMigration> fieldMigrations) {
         public TypeMigration {
         }
 
 
         public TypeMigration(String oldClassName, List<FieldMigration> fieldMigrations) {
-            this(oldClassName, oldClassName, oldClassName, false, true, fieldMigrations);
+            this(oldClassName, oldClassName, oldClassName,  true, fieldMigrations);
         }
 
-        public TypeMigration(String oldClassName, String tableName, boolean hasDtype, List<FieldMigration> fieldMigrations) {
-            this(oldClassName, tableName, oldClassName, hasDtype, true, fieldMigrations);
+        public TypeMigration(String oldClassName, String tableName,  List<FieldMigration> fieldMigrations) {
+            this(oldClassName, tableName, oldClassName,  true, fieldMigrations);
         }
 
-        public TypeMigration(String oldClassName, String tableName, List<FieldMigration> fieldMigrations) {
-            this(oldClassName, tableName, oldClassName, false, true, fieldMigrations);
-        }
     }
 
+
+    public record ExternalTypeMigration(List<FieldMigration> fieldMigrationsOverride,Class<?> type){};
 
 }
