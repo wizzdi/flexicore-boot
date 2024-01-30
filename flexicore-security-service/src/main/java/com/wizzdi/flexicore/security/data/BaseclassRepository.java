@@ -250,7 +250,7 @@ public class BaseclassRepository implements Plugin {
 
 	public static <T extends Baseclass> Predicate permissionGroupPredicate(From<?, T> r, List<PermissionGroup> denied, AtomicReference<Join<T, PermissionGroupToBaseclass>> atomicReference){
 		if(atomicReference.get()==null){
-			atomicReference.set(r.join(Baseclass_.permissionGroupToBaseclasses));
+			atomicReference.set(r.join(Baseclass_.permissionGroupToBaseclasses,JoinType.LEFT));
 		}
 		Join<T, PermissionGroupToBaseclass> join = atomicReference.get();
 		return join.get(PermissionGroupToBaseclass_.permissionGroup).in(denied);

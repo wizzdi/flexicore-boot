@@ -119,7 +119,7 @@ public class FlexiCoreV4ToV5Migration {
 
     private static boolean fieldExist(Statement select,String tableName,String fieldName)  {
         try {
-            String sql = "select column_name from information_schema.columns where table_name='" + tableName + "' and column_name='" + fieldName + "'";
+            String sql = "select column_name from information_schema.columns where table_name='" + tableName.toLowerCase() + "' and column_name='" + fieldName.toLowerCase() + "'";
             logger.info("checking if field {} exist SQL: {}", fieldName, sql);
             return select.executeQuery(sql).next();
         }
