@@ -8,6 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Field;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.MessageFormat;
@@ -57,10 +58,12 @@ public class FlexiCoreV4ToV5Migration {
 
 
     public static void migrateToFCV5(Statement select, ExternalTypeMigration... classesExtendingUser) throws SQLException {
+        Map<String, Set<String>> fields = getFields(select, Set.of("baseclass"));
+        Set<String> baseclassFields = fields.computeIfAbsent("baseclass", f -> new HashSet<>());
         List<TypeMigration> additional = getAdditionalTypes(classesExtendingUser);
         migrateTypes(select, additional);
-        migrateTypeFields(select, additional);
-        migrateSecurityLinksSpecific(select);
+        migrateTypeFields(select, additional,baseclassFields);
+        migrateSecurityLinksSpecific(select,baseclassFields);
         migrateFK(select);
         dropUnnecessaryColumns(select, additional);
         migrateDtypes(select, additional);
@@ -114,6 +117,21 @@ public class FlexiCoreV4ToV5Migration {
             logger.info("dropping additional columns {}", sql);
             select.execute(sql);
         }
+
+    }
+
+    private static Map<String,Set<String>> getFields(Statement select,Set<String> tableName) throws SQLException {
+
+            String sql = "select table_name,column_name from information_schema.columns where table_name in (%s)".formatted(tableName.stream().map(f->"'"+f+"'").collect(Collectors.joining(",")));
+            logger.info("getting fields for tables SQL: {}", sql);
+            ResultSet resultSet = select.executeQuery(sql);
+            Map<String,Set<String>> tables=new HashMap<>();
+            while (resultSet.next()) {
+                Set<String> fields = tables.computeIfAbsent(resultSet.getString(1), f -> new HashSet<>());
+                fields.add(resultSet.getString(2));
+            }
+            return tables;
+
 
     }
 
@@ -183,7 +201,18 @@ public class FlexiCoreV4ToV5Migration {
         return new FieldMigration(columnName);
     }
 
-    private static void migrateSecurityLinksSpecific(Statement select) throws SQLException {
+    private static void migrateSecurityLinksSpecific(Statement select, Set<String> baseclassFields) throws SQLException {
+        if(!baseclassFields.contains("leftside_id")){
+            logger.info("leftside_id does not exist");
+            return;
+        }
+        if(!baseclassFields.contains("rightside_id")){
+            logger.info("rightside_id does not exist");
+            return;
+        }
+
+
+
         {
             String sql = "update securitylink set permissionGroup_id=l.rightside_id  from baseclass as l join baseclass as t on t.id=l.rightside_id where securitylink.id=l.id and t.dtype='PermissionGroup'";
 
@@ -209,17 +238,23 @@ public class FlexiCoreV4ToV5Migration {
         }
     }
 
-    private static void migrateTypeFields(Statement select, List<TypeMigration> additional) throws SQLException {
+    private static void migrateTypeFields(Statement select, List<TypeMigration> additional, Set<String> baseclassFields) throws SQLException {
+
+
         for (TypeMigration typeMigration : toMigrate) {
-            fieldMigration(select, typeMigration);
+            fieldMigration(select, typeMigration,baseclassFields);
         }
         for (TypeMigration typeMigration : additional) {
-            fieldMigration(select, typeMigration);
+            fieldMigration(select, typeMigration, baseclassFields);
         }
     }
 
-    private static void fieldMigration(Statement select, TypeMigration typeMigration) throws SQLException {
+    private static void fieldMigration(Statement select, TypeMigration typeMigration, Set<String> baseclassFields) throws SQLException {
         for (FieldMigration fieldMigration : typeMigration.fieldMigrations()) {
+            if(!baseclassFields.contains(fieldMigration.oldName())){
+                logger.info("field {} does not exist",fieldMigration.oldName());
+                continue;
+            }
             String sql = MessageFormat.format(
                     "update {0} set {1}=baseclass.{2} from baseclass where {0}.id=baseclass.id and baseclass.dtype=''{3}''",
                     typeMigration.tableName(),
