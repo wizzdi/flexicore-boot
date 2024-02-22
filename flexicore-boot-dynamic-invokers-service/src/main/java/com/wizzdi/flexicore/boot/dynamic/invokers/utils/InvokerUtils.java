@@ -256,6 +256,16 @@ public class InvokerUtils {
 			}
 
 			@Override
+			public String dynamicFilterForField() {
+				return null;
+			}
+
+			@Override
+			public boolean dynamicFilterForStatic() {
+				return false;
+			}
+
+			@Override
 			public Class<? extends Annotation> annotationType() {
 				return FieldInfo.class;
 			}

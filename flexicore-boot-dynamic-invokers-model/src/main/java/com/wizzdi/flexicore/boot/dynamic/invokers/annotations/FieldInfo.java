@@ -18,6 +18,9 @@ public @interface FieldInfo {
     boolean actionIdHolder() default false;
     boolean ignoreSubParameters() default false;
 
+    String dynamicFilterForField() default "";
+    boolean dynamicFilterForStatic() default false;
+
 
 
 }
