@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -26,14 +27,42 @@ public class AuthorRepository {
        return em.merge(author);
     }
 
-    public List<Author> getAuthors(Map<String, DynamicFilterItem> filter) {
+    public List<Author> getAuthors(AuthorFilter filter) {
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery<Author> q = cb.createQuery(Author.class);
         Root<Author> r = q.from(Author.class);
-        List<Predicate> preds = FilterDynamicPropertiesUtils.filterDynamic(filter,cb,r,"dynamicProperties");
+        List<Predicate> preds = getPredicates(filter, cb, r);
 
-        q.select(r).where(preds.toArray(Predicate[]::new));
+        q.select(r).where(preds.toArray(Predicate[]::new)).distinct(true);
         TypedQuery<Author> query = em.createQuery(q);
+        return query.getResultList();
+    }
+
+    private static List<Predicate> getPredicates(AuthorFilter filter, CriteriaBuilder cb, Root<Author> r) {
+        List<Predicate> preds=new ArrayList<>();
+        if(filter.getDynamicPropertiesFilter()!=null){
+            preds.addAll(FilterDynamicPropertiesUtils.filterDynamic(filter.getDynamicPropertiesFilter(), cb, r, "dynamicProperties"));
+        }
+        if(filter.getStaticPropertiesFilter()!=null){
+            preds.addAll(FilterStaticPropertiesUtils.filterStatic(filter.getStaticPropertiesFilter(),cb,r));
+        }
+        return preds;
+    }
+
+    @Transactional
+    public Book mergeBook(Book book) {
+        return em.merge(book);
+
+    }
+
+    public List<Book> getAuthorsBooks(Author author) {
+        CriteriaBuilder cb = em.getCriteriaBuilder();
+        CriteriaQuery<Book> q = cb.createQuery(Book.class);
+        Root<Book> r = q.from(Book.class);
+        List<Predicate> preds = new ArrayList<>();
+        preds.add(cb.equal(r.get("author"),author));
+        q.select(r).where(preds.toArray(Predicate[]::new));
+        TypedQuery<Book> query = em.createQuery(q);
         return query.getResultList();
     }
 }
