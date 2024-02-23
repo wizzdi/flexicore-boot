@@ -3,9 +3,11 @@ package com.wizzdi.flexicore.boot.dynamic.invokers.service;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.wizzdi.flexicore.boot.base.interfaces.Plugin;
 import com.wizzdi.flexicore.boot.dynamic.invokers.annotations.ListFieldInfo;
+import org.checkerframework.checker.units.qual.A;
 import org.pf4j.Extension;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.core.annotation.AnnotatedElementUtils;
@@ -32,10 +34,13 @@ public class ExampleService implements Plugin {
 
 	private static final Logger logger= LoggerFactory.getLogger(ExampleService.class);
 
+	@Autowired
+	private ExampleCacheService exampleCacheService;
+
 
 	public Object getExample(Class<?> c) {
 
-		Object exampleCached = getExampleCached(c);
+		Object exampleCached = exampleCacheService.getExampleCached(c);
 		if (exampleCached == null) {
 			throw new HttpServerErrorException(HttpStatus.SERVICE_UNAVAILABLE,"Class " + c + " is not suitable for examples");
 		}
@@ -43,15 +48,7 @@ public class ExampleService implements Plugin {
 
 	}
 
-	@Cacheable(value = "exampleCache", key = "#c.getCanonicalName()", unless = "#result==null",cacheManager = "exampleCacheManager")
-	public Object getExampleCached(Class<?> c) {
-		return generateExample(c);
-	}
 
-	@CachePut(value = "exampleCache", key = "#c.getCanonicalName()", unless = "#result==null",cacheManager = "exampleCacheManager")
-	public Object updateExampleCache(Class<?> c,Object value){
-		return value;
-	}
 
 	private String getSetterName(String name) {
 		if (name.startsWith("get")) {
@@ -65,7 +62,7 @@ public class ExampleService implements Plugin {
 	}
 
 
-	private Object generateExample(Class<?> c) {
+	Object generateExample(Class<?> c) {
 		if (ClassUtils.isPrimitiveOrWrapper(c) || c.equals(String.class)) {
 			return getPrimitiveValue(c);
 		}
@@ -75,12 +72,16 @@ public class ExampleService implements Plugin {
 		if (isKnownType(c)) {
 			return getKnownTypeValue(c);
 		}
+		if(c.isEnum()){
+			return c.getEnumConstants()[0];
+		}
+		logger.debug("generating example value for " + c.getCanonicalName());
 
 
 		Object example = null;
 		try {
 			example = c.getConstructor().newInstance();
-			updateExampleCache(c, example);
+			exampleCacheService.updateExampleCache(c, example);
 			BeanInfo beanInfo = Introspector.getBeanInfo(c, Object.class);
 			for (PropertyDescriptor propertyDescriptor : beanInfo.getPropertyDescriptors()) {
 				try {
@@ -96,14 +97,14 @@ public class ExampleService implements Plugin {
 										ListFieldInfo listFieldInfo = AnnotatedElementUtils.findMergedAnnotation(getter,ListFieldInfo.class);
 										if (listFieldInfo != null) {
 											Class<?> collectionType = listFieldInfo.listType();
-											Object o = getExampleCached(collectionType);
+											Object o = exampleCacheService.getExampleCached(collectionType);
 											Collection collection = (Collection) toRet.newInstance();
 											collection.add(o);
 											setter.invoke(example, collection);
 
 										}
 									} else {
-										setter.invoke(example, getExampleCached(toRet));
+										setter.invoke(example, exampleCacheService.getExampleCached(toRet));
 									}
 								}
 								catch (NoSuchMethodException e){
