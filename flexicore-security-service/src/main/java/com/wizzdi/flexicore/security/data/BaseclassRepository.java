@@ -221,11 +221,12 @@ public class BaseclassRepository implements Plugin {
 	private Subquery<String> getPermissionGroupSubQuery(CommonAbstractCriteria query, CriteriaBuilder cb, List<Role> roles, SecurityUser securityUser, List<? extends SecurityTenant> tenants, SecurityOperation op, Clazz clazz, List<Baseclass> userDenied, List<Baseclass> roleDenied) {
 		Subquery<String> sub = query.subquery(String.class);
 		Root<SecurityLink> securityLinkRoot = sub.from(SecurityLink.class);
-		Join<SecurityLink, Baseclass> rightsideJoin = securityLinkRoot.join(SecurityLink_.rightside);
+		boolean hibernate = em.getDelegate().getClass().getCanonicalName().contains("hibernate");
+		Join<SecurityLink, ? extends Baseclass> rightsideJoin = hibernate ? securityLinkRoot.join(SecurityLink_.rightside):cb.treat(securityLinkRoot.join(SecurityLink_.rightside),PermissionGroup.class);
 		Root<UserToBaseClass> userToBaseClassRoot = cb.treat(securityLinkRoot, UserToBaseClass.class);
 		Root<RoleToBaseclass> roleToBaseclassRoot = cb.treat(securityLinkRoot, RoleToBaseclass.class);
 		Root<TenantToBaseClassPremission> tenantToBaseClassPremissionRoot = cb.treat(securityLinkRoot, TenantToBaseClassPremission.class);
-		Join<PermissionGroup, PermissionGroupToBaseclass> permissionGroupLinkJoin = rightsideJoin.join("links");
+		Join<PermissionGroup, PermissionGroupToBaseclass> permissionGroupLinkJoin = hibernate?rightsideJoin.join("links"):((Join<SecurityLink, PermissionGroup>)rightsideJoin).join(PermissionGroup_.links);
 		Join<PermissionGroupToBaseclass, Baseclass> permissionGroupTargetJoin = permissionGroupLinkJoin.join(PermissionGroupToBaseclass_.rightside);
 
 

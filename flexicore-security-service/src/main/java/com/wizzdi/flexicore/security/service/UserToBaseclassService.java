@@ -41,7 +41,16 @@ public class UserToBaseclassService implements Plugin {
 	}
 
 	public boolean updateUserToBaseclassNoMerge(UserToBaseclassCreate userToBaseclassCreate, UserToBaseClass userToBaseclass) {
-		return securityLinkService.updateSecurityLinkNoMerge(userToBaseclassCreate,userToBaseclass);
+		boolean updated = securityLinkService.updateSecurityLinkNoMerge(userToBaseclassCreate, userToBaseclass);
+		if(userToBaseclassCreate.getBaseclass()!=null && (userToBaseclass.getRightside()==null||!userToBaseclassCreate.getBaseclass().getId().equals(userToBaseclass.getRightside().getId()))){
+			userToBaseclass.setBaseclass(userToBaseclassCreate.getBaseclass());
+			updated=true;
+		}
+		if(userToBaseclassCreate.getUser()!=null&&(userToBaseclass.getLeftside()==null||!userToBaseclassCreate.getUser().getId().equals(userToBaseclass.getLeftside().getId()))){
+			userToBaseclass.setLeftside(userToBaseclassCreate.getUser());
+			updated=true;
+		}
+		return updated;
 	}
 
 	public UserToBaseClass updateUserToBaseclass(UserToBaseclassUpdate userToBaseclassUpdate, SecurityContextBase securityContext){

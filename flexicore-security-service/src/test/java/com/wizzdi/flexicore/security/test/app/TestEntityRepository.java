@@ -36,6 +36,7 @@ public class TestEntityRepository {
         CriteriaQuery<TestEntity> q = cb.createQuery(TestEntity.class);
         Root<TestEntity> r = q.from(TestEntity.class);
         List<Predicate> preds = new ArrayList<>();
+        securedBasicRepository.addSecuredBasicPredicates(filtering.getBasicPropertiesFilter(), cb, q,r, preds, securityContext);
         q.select(r).where(preds.toArray(new Predicate[0]));
         TypedQuery<TestEntity> query = em.createQuery(q);
         BasicRepository.addPagination(filtering, query);
