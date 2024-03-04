@@ -29,6 +29,6 @@ public @interface InvokerMethodInfo {
     IOperation.Access access() default IOperation.Access.allow;
     @AliasFor(annotation = com.wizzdi.flexicore.boot.dynamic.invokers.annotations.InvokerMethodInfo.class,attribute = "relatedClasses")
 
-    Class<? extends Baseclass>[] relatedClasses() default {};
+    Class<?>[] relatedClasses() default {};
 
 }

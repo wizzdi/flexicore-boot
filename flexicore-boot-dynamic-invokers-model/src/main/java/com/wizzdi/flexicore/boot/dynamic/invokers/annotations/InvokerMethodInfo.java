@@ -22,6 +22,6 @@ public @interface InvokerMethodInfo {
     @AliasFor(annotation = IOperation.class,attribute = "access")
     IOperation.Access access() default IOperation.Access.allow;
     @AliasFor(annotation = IOperation.class,attribute = "relatedClazzes")
-    Class<? extends Baseclass>[] relatedClasses() default {};
+    Class<?>[] relatedClasses() default {};
 
 }

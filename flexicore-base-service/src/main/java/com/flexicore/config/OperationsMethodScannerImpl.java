@@ -33,9 +33,9 @@ public class OperationsMethodScannerImpl implements OperationsMethodScanner, Plu
 		}
 
 		if (ioperation != null) {
-			Class<? extends Baseclass>[] relatedClasses = ioperation.relatedClazzes();
-			if (relatedClasses.length == 0 && method.getReturnType() != null && Baseclass.class.isAssignableFrom(method.getReturnType())) {
-				relatedClasses =  (Class<? extends Baseclass>[]) new Class<?>[]{method.getReturnType()};
+			Class<?>[] relatedClasses = ioperation.relatedClazzes();
+			if (relatedClasses.length == 0) {
+				relatedClasses =   new Class<?>[]{method.getReturnType()};
 			}
 			String id = Baseclass.generateUUIDFromString(method.toString());
 			return new OperationScanContext(new OperationCreate()

@@ -50,7 +50,7 @@ public class InvokerUtils {
 			}
 
 			@Override
-			public Class<? extends Baseclass>[] relatedClazzes() {
+			public Class<?>[] relatedClazzes() {
 				return Baseclass.class.isAssignableFrom(methodSubject) ? new Class[]{methodSubject} : new Class[0];
 			}
 
@@ -101,7 +101,7 @@ public class InvokerUtils {
 			}
 
 			@Override
-			public Class<? extends Baseclass>[] relatedClasses() {
+			public Class<?>[] relatedClasses() {
 				return iOperation.relatedClazzes();
 			}
 

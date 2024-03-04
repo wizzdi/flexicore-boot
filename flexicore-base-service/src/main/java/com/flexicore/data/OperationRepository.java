@@ -124,14 +124,8 @@ public class OperationRepository extends BaseclassRepository {
             }
 
             @Override
-            public Class<? extends Baseclass>[] relatedClazzes() {
-                if(method.getReturnType()!=null && Baseclass.class.isAssignableFrom(method.getReturnType())){
-                    return new Class[]{method.getReturnType()};
-                }
-                else{
-                    return new Class[0];
-
-                }
+            public Class<?>[] relatedClazzes() {
+                return new Class[]{method.getReturnType()};
             }
 
             @Override

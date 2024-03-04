@@ -224,9 +224,9 @@ public class ClassScannerService implements Plugin {
     private OperationScanContext scanOperationOnMethod(Method method, ObjectProvider<OperationAnnotationConverter> converters) {
         IOperation ioperation = converters.orderedStream().map(f -> f.getIOperation(method)).filter(Objects::nonNull).findFirst().orElse(null);
         if (ioperation != null) {
-            Class<? extends Baseclass>[] relatedClasses = ioperation.relatedClazzes();
-            if (relatedClasses.length == 0 && method.getReturnType() != null && Baseclass.class.isAssignableFrom(method.getReturnType())) {
-                relatedClasses = (Class<? extends Baseclass>[]) new Class<?>[]{method.getReturnType()};
+            Class<?>[] relatedClasses = ioperation.relatedClazzes();
+            if (relatedClasses.length == 0 ) {
+                relatedClasses = new Class<?>[]{method.getReturnType()};
             }
             String id = Baseclass.generateUUIDFromString(method.toString());
             return new OperationScanContext(new SecurityOperationCreate()
@@ -263,7 +263,7 @@ public class ClassScannerService implements Plugin {
             }
 
             @Override
-            public Class<? extends Baseclass>[] relatedClazzes() {
+            public Class<?>[] relatedClazzes() {
                 return classes;
             }
 

@@ -45,7 +45,7 @@ public class SwaggerOperationExtractor implements OperationAnnotationConverter {
             }
 
             @Override
-            public Class<? extends Baseclass>[] relatedClazzes() {
+            public Class<?>[] relatedClazzes() {
                 if(method.getReturnType()!=null && Baseclass.class.isAssignableFrom(method.getReturnType())){
                     return new Class[]{method.getReturnType()};
                 }
