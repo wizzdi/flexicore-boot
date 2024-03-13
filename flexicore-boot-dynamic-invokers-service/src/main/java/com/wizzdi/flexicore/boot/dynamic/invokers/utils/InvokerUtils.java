@@ -51,7 +51,7 @@ public class InvokerUtils {
 			}
 
 			@Override
-			public Class<? extends Baseclass>[] relatedClazzes() {
+			public Class<?>[] relatedClazzes() {
 				return Baseclass.class.isAssignableFrom(methodSubject) ? new Class[]{methodSubject} : new Class[0];
 			}
 
@@ -253,6 +253,16 @@ public class InvokerUtils {
 
 			@Override
 			public boolean ignoreSubParameters() {
+				return false;
+			}
+
+			@Override
+			public String dynamicFilterForField() {
+				return null;
+			}
+
+			@Override
+			public boolean dynamicFilterForStatic() {
 				return false;
 			}
 

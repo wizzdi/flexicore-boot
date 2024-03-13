@@ -1,6 +1,7 @@
 package com.wizzdi.flexicore.security.test.rest;
 
 import com.flexicore.annotations.IOperation;
+import com.flexicore.annotations.rest.All;
 import com.flexicore.model.*;
 import com.flexicore.security.SecurityContextBase;
 import com.wizzdi.flexicore.security.interfaces.SecurityContextProvider;
@@ -88,6 +89,10 @@ private SecurityUserService securityUserService;
 
     private Set<String> othersInTenantIds=new HashSet<>();
     private Set<String> othersInOtherTenantIds =new HashSet<>();
+    @Autowired
+    private SecurityOperationService securityOperationService;
+
+    private SecurityOperation allOperation;
 
 
     @BeforeAll
@@ -107,6 +112,8 @@ private SecurityUserService securityUserService;
             testEntityService.merge(testEntity);
         }
         othersInTenantIds= list.stream().map(f->f.getId()).collect(Collectors.toSet());
+        allOperation=securityOperationService.getByIdOrNull(Baseclass.generateUUIDFromString(All.class.getCanonicalName()),SecurityOperation.class,adminSecurityContext);
+        Assertions.assertNotNull(allOperation);
 
     }
 
@@ -132,7 +139,7 @@ private SecurityUserService securityUserService;
     @Test
     @Order(2)
     public void testForUser() {
-        TestEntity forUser = testEntityService.createTestEntity(new TestEntityCreate().setName("forUser"), adminSecurityContext);
+        TestEntity forUser = testEntityService.createTestEntityNoMerge(new TestEntityCreate().setName("forUser"), adminSecurityContext);
         forUser.getSecurity().setTenant(testTenant);
         testEntityService.merge(forUser);
         userToBaseclassService.createUserToBaseclass(new UserToBaseclassCreate().setUser(testUser).setAccess(IOperation.Access.allow).setBaseclass(forUser.getSecurity()),null);

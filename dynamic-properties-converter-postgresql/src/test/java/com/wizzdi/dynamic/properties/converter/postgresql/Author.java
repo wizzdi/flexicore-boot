@@ -1,12 +1,12 @@
 package com.wizzdi.dynamic.properties.converter.postgresql;
 
-import com.wizzdi.dynamic.properties.converter.JsonConverter;
-import jakarta.persistence.Column;
-import jakarta.persistence.Convert;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.persistence.*;
 
+import java.time.OffsetDateTime;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Entity
@@ -16,6 +16,16 @@ public class Author {
     private String id;
 
     private String name;
+
+    private OffsetDateTime birthDate;
+
+    private int age;
+
+    private boolean oddYear;
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "author",targetEntity = Book.class)
+    private List<Book> books=new ArrayList<>();
 
 
     @Column(columnDefinition = "jsonb")
@@ -49,6 +59,44 @@ public class Author {
 
     public <T extends Author> T setName(String name) {
         this.name = name;
+        return (T) this;
+    }
+
+    public OffsetDateTime getBirthDate() {
+        return birthDate;
+    }
+
+    public <T extends Author> T setBirthDate(OffsetDateTime birthDate) {
+        this.birthDate = birthDate;
+        return (T) this;
+    }
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "author",targetEntity = Book.class)
+    public List<Book> getBooks() {
+        return books;
+    }
+
+    public <T extends Author> T setBooks(List<Book> books) {
+        this.books = books;
+        return (T) this;
+    }
+
+    public int getAge() {
+        return age;
+    }
+
+    public <T extends Author> T setAge(int age) {
+        this.age = age;
+        return (T) this;
+    }
+
+    public boolean isOddYear() {
+        return oddYear;
+    }
+
+    public <T extends Author> T setOddYear(boolean post2010) {
+        this.oddYear = post2010;
         return (T) this;
     }
 }

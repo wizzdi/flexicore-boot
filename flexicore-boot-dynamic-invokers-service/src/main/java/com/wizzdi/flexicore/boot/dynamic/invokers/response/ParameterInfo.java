@@ -38,6 +38,8 @@ public class ParameterInfo {
     private Set<String> possibleValues;
     private Class<?> iterationType;
     private boolean ignoreSubParameters;
+    private String dynamicFilterForField;
+    private boolean dynamicFilterForStatic;
 
     public ParameterInfo() {
     }
@@ -58,6 +60,8 @@ public class ParameterInfo {
                 this.rangeMax = fieldInfo.rangeMax();
                 this.valueSteps = fieldInfo.valueSteps();
             }
+            this.dynamicFilterForField=fieldInfo.dynamicFilterForField();
+            this.dynamicFilterForStatic=fieldInfo.dynamicFilterForStatic();
 
         }
 
@@ -291,6 +295,24 @@ public class ParameterInfo {
         return ignoreSubParameters;
     }
 
+    public String getDynamicFilterForField() {
+        return dynamicFilterForField;
+    }
+
+    public <T extends ParameterInfo> T setDynamicFilterForField(String dynamicFilterForField) {
+        this.dynamicFilterForField = dynamicFilterForField;
+        return (T) this;
+    }
+
+    public boolean isDynamicFilterForStatic() {
+        return dynamicFilterForStatic;
+    }
+
+    public <T extends ParameterInfo> T setDynamicFilterForStatic(boolean dynamicFilterForStatic) {
+        this.dynamicFilterForStatic = dynamicFilterForStatic;
+        return (T) this;
+    }
+
     @Override
     public String toString() {
         return "ParameterInfo{" +
@@ -308,7 +330,8 @@ public class ParameterInfo {
                 ", mandatory=" + mandatory +
                 ", actionId=" + actionId +
                 ", actionIdHolder=" + actionIdHolder +
-
+                ", dynamicFilterForField='" + dynamicFilterForField + '\'' +
+                ", dynamicFilterForStatic=" + dynamicFilterForStatic +
                 ", idRefType=" + idRefType +
                 ", subParameters=" + subParameters +
                 '}';
