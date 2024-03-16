@@ -38,7 +38,7 @@ public class SecurityRepository implements Plugin {
 				cb.isFalse(roleToUser.get(RoleToUser_.softDelete)),
 				cb.isFalse(roleToBaseClass.get(RoleToBaseclass_.softDelete)),
 				cb.equal(users.get(SecurityUser_.id), securityUser.getId()),
-				cb.equal(roleToBaseClass.get(RoleToBaseclass_.baseclass), securityOperation),
+				cb.equal(roleToBaseClass.get(RoleToBaseclass_.baseclass), securityOperation.getSecurity()),
 				cb.equal(roleToBaseClass.get(RoleToBaseclass_.access), access)
 		);
 		List<Predicate> preds = new ArrayList<>();
@@ -61,7 +61,7 @@ public class SecurityRepository implements Plugin {
 		Predicate directPredicate = cb.and(
 				cb.isFalse(direct.get(UserToBaseclass_.softDelete)),
 				cb.equal(users.get(SecurityUser_.id), securityUser.getId()),
-				cb.equal(direct.get(UserToBaseclass_.baseclass), securityOperation),
+				cb.equal(direct.get(UserToBaseclass_.baseclass), securityOperation.getSecurity()),
 				cb.equal(direct.get(UserToBaseclass_.access), access));
 
 		List<Predicate> preds = new ArrayList<>();

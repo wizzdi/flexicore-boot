@@ -11,8 +11,10 @@ import com.wizzdi.flexicore.security.test.app.*;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
@@ -92,7 +94,10 @@ private SecurityUserService securityUserService;
     @Autowired
     private SecurityOperationService securityOperationService;
 
-    private SecurityOperation allOperation;
+    @Autowired
+    @Qualifier("allOps")
+    @Lazy
+    private SecurityOperation allOps;
 
 
     @BeforeAll
@@ -112,8 +117,6 @@ private SecurityUserService securityUserService;
             testEntityService.merge(testEntity);
         }
         othersInTenantIds= list.stream().map(f->f.getId()).collect(Collectors.toSet());
-        allOperation=securityOperationService.getByIdOrNull(Baseclass.generateUUIDFromString(All.class.getCanonicalName()),SecurityOperation.class,adminSecurityContext);
-        Assertions.assertNotNull(allOperation);
 
     }
 

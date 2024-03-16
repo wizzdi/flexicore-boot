@@ -49,11 +49,7 @@ public class FlexicoreJwtTokenFilter extends OncePerRequestFilter implements Fle
             throws ServletException, IOException {
         // Get authorization header and validate
         String token=tokenExtractor.extractToken(request);
-        if(token==null){
-            chain.doFilter(request,response);
-            return;
-        }
-        FlexiCoreAuthentication authentication= JWTSecurityContextCreator.getSecurityContext(token);
+        FlexiCoreAuthentication authentication= token!=null?JWTSecurityContextCreator.getSecurityContext(token):null;
         if(authentication==null){
             if(isProtected(request)){
                 response.sendError(HttpServletResponse.SC_UNAUTHORIZED,"Invalid token");
@@ -66,9 +62,7 @@ public class FlexicoreJwtTokenFilter extends OncePerRequestFilter implements Fle
         }
         SecurityContextBase securityContext=authentication.getSecurityContextBase();
 
-        authentication.setDetails(
-                new WebAuthenticationDetailsSource().buildDetails(request)
-        );
+        authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
         request.setAttribute(OperationInterceptor.SECURITY_CONTEXT,securityContext);
