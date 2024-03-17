@@ -54,10 +54,10 @@ public class DownloadController implements Plugin {
      */
     @GetMapping("{authenticationkey}/{id}")
     @IOperation(access = Access.allow, Name = "downloadFile", Description = "downloads file by its fileResource ID")
-    public ResponseEntity<Resource> download(@PathVariable(value = "authenticationkey",required = false) String authenticationkey,
+    public ResponseEntity<Resource> download(@PathVariable(value = "authenticationkey") String authenticationkey,
                                              @Parameter(description = "id of the FileResource Object to Download")
-                             @RequestHeader(value = "offset",required = false) long offset,
-                                             @RequestHeader(value = "size",required = false) long size,
+                                             @RequestHeader(value = "offset", defaultValue = "0", required = false) long offset,
+                                             @RequestHeader(value = "size", defaultValue = "0", required = false) long size,
                                              @PathVariable("id") String id, HttpServletRequest req, @RequestAttribute SecurityContextBase securityContext) {
         return fileResourceService.download(offset, size, id, req.getRemoteAddr(), securityContext);
 
