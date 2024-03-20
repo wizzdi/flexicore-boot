@@ -128,7 +128,7 @@ public class FlexiCoreV4ToV5Migration {
             Map<String,Set<String>> tables=new HashMap<>();
             while (resultSet.next()) {
                 Set<String> fields = tables.computeIfAbsent(resultSet.getString(1), f -> new HashSet<>());
-                fields.add(resultSet.getString(2));
+                fields.add(resultSet.getString(2).toLowerCase());
             }
             return tables;
 
@@ -251,7 +251,7 @@ public class FlexiCoreV4ToV5Migration {
 
     private static void fieldMigration(Statement select, TypeMigration typeMigration, Set<String> baseclassFields) throws SQLException {
         for (FieldMigration fieldMigration : typeMigration.fieldMigrations()) {
-            if(!baseclassFields.contains(fieldMigration.oldName())){
+            if(!baseclassFields.contains(fieldMigration.oldName().toLowerCase())){
                 logger.info("field {} does not exist",fieldMigration.oldName());
                 continue;
             }
