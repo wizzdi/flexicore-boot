@@ -36,7 +36,7 @@ public class FlexiCoreV4ToV5Migration {
             new TypeMigration("SecurityLink", "SecurityLink",  SECURITY_LINK_FIELD_MIGRATIONS), //special case
             new TypeMigration("RoleToBaseclass", "SecurityLink",  join(SECURITY_LINK_FIELD_MIGRATIONS, List.of(new FieldMigration("leftside_id", "role_id")))),//special case
             new TypeMigration("TenantToBaseClassPremission", "SecurityLink", "TenantToBaseclass",  true, join(SECURITY_LINK_FIELD_MIGRATIONS, List.of(new FieldMigration("leftside_id", "tenant_id")))),//special case
-            new TypeMigration("UserToBaseClass", "SecurityLink",  join(SECURITY_LINK_FIELD_MIGRATIONS, List.of(new FieldMigration("leftside_id", "user_id")))));//special case
+            new TypeMigration("UserToBaseClass", "SecurityLink","UserToBaseclass",true,  join(SECURITY_LINK_FIELD_MIGRATIONS, List.of(new FieldMigration("leftside_id", "user_id")))));//special case
     public static final String MIGRATE_WITHOUT_DTYPE =
             """
             insert into {0}(id,name,description,security_id,creationDate,updateDate,softDelete)
@@ -202,15 +202,35 @@ public class FlexiCoreV4ToV5Migration {
     }
 
     private static void migrateSecurityLinksSpecific(Statement select, Set<String> baseclassFields) throws SQLException {
+        migrateLeftRight(select, baseclassFields);
+        migrateSecurityLinkGroup(select);
+    }
+
+    private static void migrateSecurityLinkGroup(Statement select) throws SQLException {
+        {
+            //insert into securityLinkGroup where securityLinkGroup_id is null
+            String sql = """
+                    insert into securitylinkgroup(id,name,description,security_id,creationDate,updateDate,softDelete)
+                                           select CONCAT(id,'_group'),name,description,id,creationDate,updateDate,softDelete from securityLink where securityLinkGroup_id is null on conflict(id) do nothing""";
+            logger.info("migrating securityLinkGroup: {} ", sql);
+            select.execute(sql);
+
+        }
+        {
+            //update securityLinkGroup_id
+            String sql = "update securitylink set securityLinkGroup_id=CONCAT(id,'_group') where securityLinkGroup_id is null";
+            logger.info("updating securityLinkGroup_id: {} ", sql);
+            int updatedEntries = select.executeUpdate(sql);
+        }
+    }
+
+    private static void migrateLeftRight(Statement select, Set<String> baseclassFields) throws SQLException {
         if(!baseclassFields.contains("leftside_id")){
             logger.info("leftside_id does not exist");
-            return;
         }
         if(!baseclassFields.contains("rightside_id")){
             logger.info("rightside_id does not exist");
-            return;
         }
-
 
 
         {

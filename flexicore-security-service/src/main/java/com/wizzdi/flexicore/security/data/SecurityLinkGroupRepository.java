@@ -33,20 +33,26 @@ public class SecurityLinkGroupRepository implements Plugin {
 		CriteriaQuery<SecurityLinkGroup> q=cb.createQuery(SecurityLinkGroup.class);
 		Root<SecurityLinkGroup> r=q.from(SecurityLinkGroup.class);
 		List<Predicate> predicates=new ArrayList<>();
-		addSecurityLinkGroupPredicates(securityLinkGroupFilter,cb,q,r,predicates,securityContext);
+		Join<SecurityLinkGroup, SecurityLink> join = addSecurityLinkGroupPredicates(securityLinkGroupFilter, cb, q, r, predicates, securityContext);
 		q.select(r).where(predicates.toArray(Predicate[]::new));
+		if(securityLinkGroupFilter.getSecurityLinkFilter()!=null&&securityLinkGroupFilter.getSecurityLinkFilter().getSorting()!=null&&join!=null){
+			Order order=securityLinkRepository.getOrder(cb,join,securityLinkGroupFilter.getSecurityLinkFilter().getSorting());
+			q=q.orderBy(order);
+		}
 		TypedQuery<SecurityLinkGroup> query = em.createQuery(q);
 		BasicRepository.addPagination(securityLinkGroupFilter,query);
 		return query.getResultList();
 
 	}
 
-	public <T extends SecurityLinkGroup> void addSecurityLinkGroupPredicates(SecurityLinkGroupFilter securityLinkGroupFilter, CriteriaBuilder cb, CommonAbstractCriteria q, From<?,T> r, List<Predicate> predicates, SecurityContextBase securityContext) {
+	public <T extends SecurityLinkGroup> Join<T,SecurityLink> addSecurityLinkGroupPredicates(SecurityLinkGroupFilter securityLinkGroupFilter, CriteriaBuilder cb, CommonAbstractCriteria q, From<?,T> r, List<Predicate> predicates, SecurityContextBase securityContext) {
 		securedBasicRepository.addSecuredBasicPredicates(securityLinkGroupFilter.getBasicPropertiesFilter(),cb,q,r,predicates,securityContext);
 		if(securityLinkGroupFilter.getSecurityLinkFilter()!=null){
 			Join<T,SecurityLink> join=r.join(SecurityLinkGroup_.securityLinks);
 			securityLinkRepository.addSecurityLinkPredicates(securityLinkGroupFilter.getSecurityLinkFilter(),cb,q,join,predicates,securityContext);
+			return join;
 		}
+		return null;
 
 	}
 

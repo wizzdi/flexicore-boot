@@ -42,6 +42,8 @@ public class SecurityLinkFilter extends PaginationFilter {
     private Set<String> operationIds=new HashSet<>();
     private Set<IOperation.Access> accesses;
 
+    private List<SecurityLinkOrder> sorting;
+
     public BasicPropertiesFilter getBasicPropertiesFilter() {
         return basicPropertiesFilter;
     }
@@ -153,6 +155,15 @@ public class SecurityLinkFilter extends PaginationFilter {
 
     public <T extends SecurityLinkFilter> T setSecurityLinkGroups(List<SecurityLinkGroup> securityLinkGroups) {
         this.securityLinkGroups = securityLinkGroups;
+        return (T) this;
+    }
+
+    public List<SecurityLinkOrder> getSorting() {
+        return sorting;
+    }
+
+    public <T extends SecurityLinkFilter> T setSorting(List<SecurityLinkOrder> sorting) {
+        this.sorting = sorting;
         return (T) this;
     }
 }

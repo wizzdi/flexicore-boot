@@ -57,7 +57,8 @@ public class InvokerInfo {
 
 
     private Class<?> getAutomatically(Class<?> invokerClass) {
-		Map<Class<?>, List<Class<?>>> collect = Arrays.stream(invokerClass.getDeclaredMethods()).filter(f -> !f.isBridge()).map(f -> getMethodSubject(f)).collect(Collectors.groupingBy(f -> f));
+		Map<Class<?>, List<Class<?>>> collect = Arrays.stream(invokerClass.getDeclaredMethods()).filter(f -> !f.isBridge()).map(f -> getMethodSubject(f))
+				.filter(f->f!=null&&!f.equals(PaginationResponse.class)).collect(Collectors.groupingBy(f -> f));
 		return collect.entrySet().stream().max(Comparator.comparing(e -> e.getValue().size())).map(f -> f.getKey()).orElse(null);
 	}
 

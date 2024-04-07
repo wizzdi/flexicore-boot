@@ -4,6 +4,7 @@ import com.flexicore.model.*;
 import com.wizzdi.flexicore.boot.base.interfaces.Plugin;
 import com.flexicore.security.SecurityContextBase;
 import com.wizzdi.flexicore.security.request.SecurityLinkFilter;
+import com.wizzdi.flexicore.security.request.SecurityLinkOrder;
 import org.pf4j.Extension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -33,10 +34,32 @@ public class SecurityLinkRepository implements Plugin {
 		List<Predicate> predicates=new ArrayList<>();
 		addSecurityLinkPredicates(securityLinkFilter,cb,q,r,predicates,securityContext);
 		q.select(r).where(predicates.toArray(Predicate[]::new));
+		if(securityLinkFilter.getSorting()!=null){
+			Order order=getOrder(cb,r, securityLinkFilter.getSorting());
+			q=q.orderBy(order);
+		}
 		TypedQuery<SecurityLink> query = em.createQuery(q);
 		BasicRepository.addPagination(securityLinkFilter,query);
 		return query.getResultList();
 
+	}
+
+	public Order getOrder(CriteriaBuilder cb, From<?,SecurityLink> r, List<SecurityLinkOrder> sorting) {
+		if(sorting.isEmpty()){
+			return null;
+		}
+		CriteriaBuilder.SimpleCase<String, Object> switchCase = cb.selectCase(r.get(SecurityLink_.dtype));
+		int index=0;
+		for (SecurityLinkOrder securityLinkOrder : sorting) {
+			switch (securityLinkOrder){
+				case ROLE -> switchCase=switchCase.when(RoleToBaseclass.class.getSimpleName(),index);
+				case USER -> switchCase=switchCase.when(UserToBaseclass.class.getSimpleName(),index);
+				case TENANT -> switchCase=switchCase.when(TenantToBaseclass.class.getSimpleName(),index);
+			}
+			index++;
+		}
+		switchCase.otherwise(SecurityLinkOrder.values().length);
+		return cb.asc(switchCase);
 	}
 
 	public <T extends SecurityLink> void addSecurityLinkPredicates(SecurityLinkFilter securityLinkFilter, CriteriaBuilder cb, CommonAbstractCriteria q, From<?,T> r, List<Predicate> predicates, SecurityContextBase securityContext) {

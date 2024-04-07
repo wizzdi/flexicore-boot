@@ -41,7 +41,7 @@ public class OperationInterceptor implements HandlerInterceptor {
 				HandlerMethod handlerMethod= (HandlerMethod) handler;
 				Method method = handlerMethod.getMethod();
 				if(!BasicErrorController.class.equals(method.getDeclaringClass())){
-					String operationId = Baseclass.generateUUIDFromString(method.toString());
+					String operationId = Baseclass.generateUUIDFromStringCompt(method.toString());
 					SecurityOperation securityOperation=securityOperationService.getByIdOrNull(operationId,SecurityOperation.class, SecuredBasic_.security,null);
 					if(securityOperation==null){
 						logger.error("could not find io operation annotation on method: " + method.getName());

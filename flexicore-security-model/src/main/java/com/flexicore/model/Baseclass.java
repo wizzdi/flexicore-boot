@@ -212,6 +212,13 @@ public class Baseclass extends Basic implements Syncable {
 	 * @param input
 	 * @return generated/cached id
 	 */
+	public static String generateUUIDFromStringCompt(String input) {
+
+		return UUID.nameUUIDFromBytes(input.getBytes()).toString()
+				.replaceAll("-", "")
+				.substring(0, 22);
+
+	}
 	public static String generateUUIDFromString(String input) {
 
 		return UUID.nameUUIDFromBytes(input.getBytes()).toString();

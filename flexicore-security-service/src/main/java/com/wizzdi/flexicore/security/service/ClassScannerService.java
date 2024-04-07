@@ -110,7 +110,7 @@ public class ClassScannerService implements Plugin {
         Class<?>[] relatedClasses = operationScanContext.getRelatedClasses();
         if (relatedClasses != null) {
             for (Class<?> relatedClass : relatedClasses) {
-                String clazzId = Baseclass.generateUUIDFromString(relatedClass.getCanonicalName());
+                String clazzId = Baseclass.generateUUIDFromStringCompt(relatedClass.getCanonicalName());
                 Clazz clazz = clazzes.get(clazzId);
                 Map<String, OperationToClazz> operationClazzes = relatedClazzes.computeIfAbsent(securityOperation.getId(), f -> new HashMap<>());
                 OperationToClazz existingOperationToClazz = operationClazzes.get(clazzId);
@@ -140,14 +140,14 @@ public class ClassScannerService implements Plugin {
     @Qualifier("allOps")
     @ConditionalOnMissingBean
     public SecurityOperation allOps(Operations operations){
-        return operations.getOperations().stream().filter(f->f.getId().equals(Baseclass.generateUUIDFromString(All.class.getCanonicalName()))).findFirst().orElseThrow(()->new RuntimeException("could not find all operation"));
+        return operations.getOperations().stream().filter(f->f.getId().equals(Baseclass.generateUUIDFromStringCompt(All.class.getCanonicalName()))).findFirst().orElseThrow(()->new RuntimeException("could not find all operation"));
     }
 
     @Bean
     @Qualifier("securityWildcard")
     @ConditionalOnMissingBean
     public Clazz securityWildcard(Clazzes clazzes){
-        return clazzes.getClazzes().stream().filter(f->f.getId().equals(Baseclass.generateUUIDFromString(SecurityWildcard.class.getCanonicalName()))).findFirst().orElseThrow(()->new RuntimeException("could not find SecurityWildcard"));
+        return clazzes.getClazzes().stream().filter(f->f.getId().equals(Baseclass.generateUUIDFromStringCompt(SecurityWildcard.class.getCanonicalName()))).findFirst().orElseThrow(()->new RuntimeException("could not find SecurityWildcard"));
     }
 
     @Bean
@@ -262,7 +262,7 @@ public class ClassScannerService implements Plugin {
                 .setDefaultAccess(ioperation.access())
                 .setDescription(ioperation.Description())
                 .setName(ioperation.Name())
-                .setIdForCreate(Baseclass.generateUUIDFromString(standardAccess.getCanonicalName()))
+                .setIdForCreate(Baseclass.generateUUIDFromStringCompt(standardAccess.getCanonicalName()))
                 , null);
     }
 
@@ -314,7 +314,7 @@ public class ClassScannerService implements Plugin {
             if (relatedClasses.length == 0 && method.getReturnType() != null && Basic.class.isAssignableFrom(method.getReturnType())) {
                 relatedClasses =new Class<?>[]{method.getReturnType()};
             }
-            String id = Baseclass.generateUUIDFromString(method.toString());
+            String id = Baseclass.generateUUIDFromStringCompt(method.toString());
             return new OperationScanContext(new SecurityOperationCreate()
                     .setDefaultAccess(ioperation.access())
                     .setDescription(ioperation.Description())
@@ -388,7 +388,7 @@ public class ClassScannerService implements Plugin {
     private void handleOperationRelatedClasses(SecurityOperation operation, Class<? extends Baseclass>[] related, List<Object> toMerge, Map<String, OperationToClazz> existing) {
 
         for (Class<? extends Baseclass> relatedClazz : related) {
-            String linkId = Baseclass.generateUUIDFromString(operation.getId() + relatedClazz.getCanonicalName());
+            String linkId = Baseclass.generateUUIDFromStringCompt(operation.getId() + relatedClazz.getCanonicalName());
             OperationToClazz operationToClazz = existing.get(linkId);
             Clazz clazz = Baseclass.getClazzByName(relatedClazz.getCanonicalName());
 
@@ -425,8 +425,8 @@ public class ClassScannerService implements Plugin {
         Set<Class<?>> entities = entityManager.getMetamodel().getEntities().stream().map(f -> f.getJavaType()).collect(Collectors.toSet());
         logger.debug("detected classes:  " + entities.parallelStream().map(e -> e.getCanonicalName()).collect(Collectors.joining(System.lineSeparator())));
 
-        Set<String> ids = entities.parallelStream().map(f -> Baseclass.generateUUIDFromString(f.getCanonicalName())).collect(Collectors.toSet());
-        ids.add(Baseclass.generateUUIDFromString(Clazz.class.getCanonicalName()));
+        Set<String> ids = entities.parallelStream().map(f -> Baseclass.generateUUIDFromStringCompt(f.getCanonicalName())).collect(Collectors.toSet());
+        ids.add(Baseclass.generateUUIDFromStringCompt(Clazz.class.getCanonicalName()));
         Map<String, Clazz> existing = new HashMap<>();
         for (List<String> part : partition(new ArrayList<>(ids), 50)) {
             if (!part.isEmpty()) {
@@ -463,7 +463,7 @@ public class ClassScannerService implements Plugin {
             if (annotatedclazz == null) {
                 annotatedclazz = generateAnnotatedClazz(claz);
             }
-            String id = Baseclass.generateUUIDFromString(classname);
+            String id = Baseclass.generateUUIDFromStringCompt(classname);
 
 
             Clazz clazz = existing.get(id);

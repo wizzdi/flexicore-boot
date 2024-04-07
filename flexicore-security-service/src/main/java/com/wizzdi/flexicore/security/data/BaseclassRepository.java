@@ -240,11 +240,14 @@ public class BaseclassRepository implements Plugin {
 		List<Role> roles = roleMap.values()
 				.stream()
 				.flatMap(List::stream).toList();
-		q.select(r).where(cb.or(
+		q.select(r).where(
+				cb.and(
+						cb.isFalse(r.get(SecurityLink_.softDelete)),
+						cb.or(
 				user.get(UserToBaseclass_.user).in(securityContextBase.getUser()),
 				roles.isEmpty()?cb.or():role.get(RoleToBaseclass_.role).in(roles),
 				securityContextBase.getTenants().isEmpty()?cb.or():tenant.get(TenantToBaseclass_.tenant).in(securityContextBase.getTenants())
-		));
+						)));
 		return em.createQuery(q).getResultList();
 	}
 
@@ -277,7 +280,7 @@ public class BaseclassRepository implements Plugin {
 		List<Baseclass> userDenied = user.denied();
 		if (!user.allowedTypes().isEmpty()) {
 			securityPreds.add(cb.and(
-					user.allowAll()?cb.or():r.get(Baseclass_.clazz).in(user.allowedTypes()),
+					user.allowAll() ? cb.and() : r.get(Baseclass_.clazz).in(user.allowedTypes()),
 					r.get(Baseclass_.tenant).in(securityContext.getTenants()),
 					userDenied.isEmpty() ? cb.and() : cb.not(r.in(userDenied)),
 					user.deniedPermissionGroups().isEmpty()?cb.and(): cb.not(permissionGroupPredicate(r,user.deniedPermissionGroups(),join))
@@ -301,7 +304,7 @@ public class BaseclassRepository implements Plugin {
 			if (!role.allowedTypes().isEmpty()) {
 				securityPreds.add(cb.and(
 						cb.equal(r.get(Baseclass_.tenant), securityTenant),
-						role.allowAll()?cb.or():r.get(Baseclass_.clazz).in(role.allowedTypes()),
+						role.allowAll() ? cb.and() : r.get(Baseclass_.clazz).in(role.allowedTypes()),
 						userDenied.isEmpty() ? cb.and() : cb.not(r.in(userDenied)),
 						role.denied().isEmpty() ? cb.and() : cb.not(r.in(role.denied())),
 						user.deniedPermissionGroups().isEmpty()?cb.and():cb.not(permissionGroupPredicate(r,user.deniedPermissionGroups(),join)),
@@ -351,7 +354,7 @@ public class BaseclassRepository implements Plugin {
 				securityPreds.add(cb.and(
 						cb.equal(r.get(Baseclass_.tenant), tenantEntity),
 
-						tenant.allowAll()?cb.or():r.get(Baseclass_.clazz).in(tenant.allowedTypes()),
+						tenant.allowAll() ? cb.and() : r.get(Baseclass_.clazz).in(tenant.allowedTypes()),
 						userDenied.isEmpty() ? cb.and() : cb.not(r.in(userDenied)),
 						roleDenied.isEmpty() ? cb.and() : cb.not(r.in(roleDenied)),
 						tenant.denied().isEmpty() ? cb.and() : cb.not(r.in(tenant.denied())),

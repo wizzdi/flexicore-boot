@@ -1,19 +1,16 @@
 package com.wizzdi.flexicore.security.service;
 
-import com.flexicore.model.Baseclass;
-import com.flexicore.model.SecurityLink;
-import com.flexicore.model.SecurityLinkGroup;
+import com.flexicore.model.*;
 import com.flexicore.security.SecurityContextBase;
 import com.wizzdi.flexicore.boot.base.interfaces.Plugin;
 import com.wizzdi.flexicore.security.data.SecurityLinkGroupRepository;
-import com.wizzdi.flexicore.security.request.SecurityLinkFilter;
-import com.wizzdi.flexicore.security.request.SecurityLinkGroupCreate;
-import com.wizzdi.flexicore.security.request.SecurityLinkGroupFilter;
-import com.wizzdi.flexicore.security.request.SecurityLinkGroupUpdate;
+import com.wizzdi.flexicore.security.events.BasicUpdated;
+import com.wizzdi.flexicore.security.request.*;
 import com.wizzdi.flexicore.security.response.PaginationResponse;
 import com.wizzdi.flexicore.security.response.SecurityLinkGroupContainer;
 import org.pf4j.Extension;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
@@ -29,6 +26,10 @@ public class SecurityLinkGroupService implements Plugin {
 	private SecurityLinkGroupRepository securityLinkGroupRepository;
 	@Autowired
 	private SecurityLinkService securityLinkService;
+	@Autowired
+	private RoleService roleService;
+	@Autowired
+	private SecurityTenantService securityTenantService;
 
 
 
@@ -88,10 +89,46 @@ public class SecurityLinkGroupService implements Plugin {
 	}
 
 	public PaginationResponse<SecurityLinkGroupContainer> getAllSecurityLinkGroupContainers(SecurityLinkGroupFilter securityLinkGroupFilter, SecurityContextBase securityContext) {
+		SecurityLinkFilter securityLinkFilter = securityLinkGroupFilter.getSecurityLinkFilter();
+		List<SecurityLinkOrder> sorting = null;
+		if (securityLinkFilter != null) {
+			sorting=securityLinkFilter.getSorting();
+			List<SecurityUser> relevantUsers = securityLinkFilter.getRelevantUsers();
+			if (relevantUsers != null && !relevantUsers.isEmpty()) {
+				if (securityLinkFilter.getRelevantRoles() == null || securityLinkFilter.getRelevantRoles().isEmpty()) {
+					List<Role> roles = roleService.listAllRoles(new RoleFilter().setUsers(relevantUsers), null);
+					securityLinkFilter.setRelevantRoles(roles);
+				}
+				if (securityLinkFilter.getRelevantTenants() == null || securityLinkFilter.getRelevantTenants().isEmpty()) {
+					List<SecurityTenant> securityTenants = securityTenantService.listAllTenants(new SecurityTenantFilter().setUsers(relevantUsers), null);
+					securityLinkFilter.setRelevantTenants(securityTenants);
+				}
+
+
+			}
+			if (sorting == null || sorting.isEmpty()) {
+				securityLinkFilter.setSorting(Arrays.stream(SecurityLinkOrder.values()).toList());
+			}
+		}
+
 		PaginationResponse<SecurityLinkGroup> paginationResponse = getAllSecurityLinkGroups(securityLinkGroupFilter, securityContext);
-		List<SecurityLinkGroup> list= paginationResponse.getList();
-		Map<String,List<SecurityLink>> links=list.isEmpty()?new HashMap<>():securityLinkService.listAllSecurityLinks(new SecurityLinkFilter().setSecurityLinkGroups(list),securityContext).stream().collect(Collectors.groupingBy(f->f.getSecurityLinkGroup().getId()));
-		List<SecurityLinkGroupContainer> containers=list.stream().map(f->new SecurityLinkGroupContainer(f,links.getOrDefault(f.getId(),new ArrayList<>()))).toList();
+		List<SecurityLinkGroup> linkGroups = paginationResponse.getList();
+		List<SecurityLink> links = linkGroups.isEmpty() ? new ArrayList<>() : securityLinkService.listAllSecurityLinks(new SecurityLinkFilter().setSorting(sorting).setSecurityLinkGroups(linkGroups), securityContext);
+		Map<String, List<SecurityLink>> linksGrouped = links.stream().collect(Collectors.groupingBy(f -> f.getSecurityLinkGroup().getId(), LinkedHashMap::new, Collectors.toList()));
+		List<SecurityLinkGroupContainer> containers = linkGroups.stream().map(f -> new SecurityLinkGroupContainer(f, linksGrouped.getOrDefault(f.getId(), new ArrayList<>()))).toList();
 		return new PaginationResponse<>(containers,securityLinkGroupFilter,paginationResponse.getTotalRecords());
+	}
+
+	@EventListener
+	public void onSecurityLinkGroupUpdate(BasicUpdated<SecurityLinkGroup> securityLinkGroupBasicUpdated) {
+		SecurityLinkGroup securityLinkGroup = securityLinkGroupBasicUpdated.getBaseclass();
+		if (securityLinkGroup.isSoftDelete()) {
+			List<SecurityLink> securityLinks = securityLinkService.listAllSecurityLinks(new SecurityLinkFilter().setSecurityLinkGroups(Collections.singletonList(securityLinkGroup)), null);
+			List<Object> toMerge = new ArrayList<>();
+			for (SecurityLink securityLink : securityLinks) {
+				securityLinkService.updateSecurityLinkNoMerge(new SecurityLinkCreate().setSoftDelete(true), securityLink);
+			}
+			securityLinkService.massMerge(toMerge);
+		}
 	}
 }

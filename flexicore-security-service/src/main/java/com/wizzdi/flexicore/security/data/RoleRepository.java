@@ -52,7 +52,7 @@ public class RoleRepository implements Plugin {
 		}
 		if(roleFilter.getUsers()!=null &&!roleFilter.getUsers().isEmpty()){
 			Join<T,RoleToUser> roleToUserJoin=r.join(Role_.roleToUser);
-			predicates.add(roleToUserJoin.get(SecurityUser_.id).in(roleFilter.getUsers()));
+			predicates.add(roleToUserJoin.get(RoleToUser_.user).in(roleFilter.getUsers()));
 		}
 	}
 
