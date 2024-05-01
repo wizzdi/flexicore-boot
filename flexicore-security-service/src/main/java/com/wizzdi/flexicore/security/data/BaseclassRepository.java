@@ -259,12 +259,7 @@ public class BaseclassRepository implements Plugin {
 		return join.get(PermissionGroupToBaseclass_.permissionGroup).in(denied);
 	}
 	public <T extends Baseclass> void addBaseclassPredicates(CriteriaBuilder cb, CommonAbstractCriteria q, From<?, T> r, List<Predicate> predicates, SecurityContextBase securityContext) {
-		if (securityContext == null) {
-			return;
-		}
-		Map<String,List<Role>> roles= securityContext.getRoleMap();
-		List<Role> allRoles = roles.values().stream().flatMap(f->f.stream()).toList();
-		if(isSuperAdmin(allRoles)){
+		if (!requiresSecurityPredicates(securityContext)) {
 			return;
 		}
 
@@ -370,6 +365,14 @@ public class BaseclassRepository implements Plugin {
 
 	}
 
+	public boolean requiresSecurityPredicates(SecurityContextBase securityContext) {
+		if (securityContext == null) {
+			return false;
+		}
+		Map<String, List<Role>> roles = securityContext.getRoleMap();
+		List<Role> allRoles = roles.values().stream().flatMap(f -> f.stream()).toList();
+        return !isSuperAdmin(allRoles);
+    }
 
 
 	private boolean isSuperAdmin(List<Role> roles) {

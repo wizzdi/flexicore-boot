@@ -36,7 +36,7 @@ public class SecuredBasicRepository implements Plugin {
 		else{
 			BasicRepository.addBasicPropertiesFilter(new BasicPropertiesFilter().setSoftDelete(SoftDeleteOption.DEFAULT),cb,q,r,predicates);
 		}
-		if(securityContextBase!=null){
+		if(baseclassRepository.requiresSecurityPredicates(securityContextBase)){
 			Join<T, Baseclass> join= r.join(SecuredBasic_.security);
 			baseclassRepository.addBaseclassPredicates(cb,q,join,predicates,securityContextBase);
 		}
