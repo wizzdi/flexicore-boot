@@ -227,9 +227,11 @@ public class FlexiCoreV4ToV5Migration {
     private static void migrateLeftRight(Statement select, Set<String> baseclassFields) throws SQLException {
         if(!baseclassFields.contains("leftside_id")){
             logger.info("leftside_id does not exist");
+            return;
         }
         if(!baseclassFields.contains("rightside_id")){
             logger.info("rightside_id does not exist");
+            return;
         }
 
 
