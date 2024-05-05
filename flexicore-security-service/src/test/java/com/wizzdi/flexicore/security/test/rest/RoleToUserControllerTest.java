@@ -77,7 +77,7 @@ public class RoleToUserControllerTest {
         RoleToUserCreate request = new RoleToUserCreate()
                 .setName(name);
         ResponseEntity<RoleToUser> roleToUserResponse = this.restTemplate.postForEntity("/roleToUser/create", request, RoleToUser.class);
-        Assertions.assertEquals(200, roleToUserResponse.getStatusCodeValue());
+        Assertions.assertEquals(200, roleToUserResponse.getStatusCode().value());
         roleToUser = roleToUserResponse.getBody();
         assertRoleToUser(request, roleToUser);
 
@@ -90,7 +90,7 @@ public class RoleToUserControllerTest {
         ParameterizedTypeReference<PaginationResponse<RoleToUser>> t=new ParameterizedTypeReference<PaginationResponse<RoleToUser>>() {};
 
         ResponseEntity<PaginationResponse<RoleToUser>> roleToUserResponse = this.restTemplate.exchange("/roleToUser/getAll", HttpMethod.POST, new HttpEntity<>(request), t);
-        Assertions.assertEquals(200, roleToUserResponse.getStatusCodeValue());
+        Assertions.assertEquals(200, roleToUserResponse.getStatusCode().value());
         PaginationResponse<RoleToUser> body = roleToUserResponse.getBody();
         Assertions.assertNotNull(body);
         List<RoleToUser> roleToUsers = body.getList();
@@ -113,7 +113,7 @@ public class RoleToUserControllerTest {
                 .setId(roleToUser.getId())
                 .setName(name);
         ResponseEntity<RoleToUser> roleToUserResponse = this.restTemplate.exchange("/roleToUser/update",HttpMethod.PUT, new HttpEntity<>(request), RoleToUser.class);
-        Assertions.assertEquals(200, roleToUserResponse.getStatusCodeValue());
+        Assertions.assertEquals(200, roleToUserResponse.getStatusCode().value());
         roleToUser = roleToUserResponse.getBody();
         assertRoleToUser(request, roleToUser);
 

@@ -55,8 +55,8 @@ public class PluginLoadingTest {
 					logger.error("failed creating plugins dir");
 				}
 			}
-			PluginJar pluginZip = new PluginJar.Builder(pluginsDir.toPath().resolve("my-plugin-1.2.3.zip"), PLUGIN_ID)
-					.extension("com.wizzdi.flexicore.boot.jaxrs.pluginA.PluginAService")
+			PluginJar pluginZip = new PluginJar.Builder(pluginsDir.toPath().resolve("my-plugin-1.2.3.jar"), PLUGIN_ID)
+					.extension("plugins.PluginAService")
 					.pluginVersion("1.2.3")
 					.build();
 		}
@@ -90,7 +90,7 @@ public class PluginLoadingTest {
 	@Test
 	public void testJAXRSPlugins() {
 		ResponseEntity<String> test = restTemplate.getForEntity("/FlexiCore/rest/testEntity/test", String.class);
-		Assertions.assertEquals(200,test.getStatusCodeValue());
+		Assertions.assertEquals(200,test.getStatusCode().value());
 		String body = test.getBody();
 		Assertions.assertNotNull(body);
 		logger.info("received "+body+" from plugin controller");

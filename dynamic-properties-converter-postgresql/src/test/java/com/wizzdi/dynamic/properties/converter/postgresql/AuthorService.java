@@ -59,4 +59,8 @@ public class AuthorService {
     public List<Author> getAuthorsStaticFilter(Map<String, DynamicFilterItem> filter) {
         return authorRepository.getAuthors(new AuthorFilter().setStaticPropertiesFilter(filter));
     }
+
+    public void deleteAll() {
+        authorRepository.deleteAll();
+    }
 }

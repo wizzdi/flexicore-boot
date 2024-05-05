@@ -55,7 +55,7 @@ public class PluginLoadingTest {
 					logger.error("failed creating plugins dir");
 				}
 			}
-			PluginJar pluginZip = new PluginJar.Builder(pluginsDir.toPath().resolve("my-plugin-1.2.3.zip"), PLUGIN_ID)
+			PluginJar pluginZip = new PluginJar.Builder(pluginsDir.toPath().resolve("my-plugin-1.2.3.jar"), PLUGIN_ID)
 					.extension("plugins.TestHealth")
 					.pluginVersion("1.2.3")
 					.build();
@@ -88,8 +88,8 @@ public class PluginLoadingTest {
 
 	@Test
 	public void testHealthPlugins() {
-		ResponseEntity<String> test = restTemplate.getForEntity("/actuator/health/testHealth", String.class);
-		Assertions.assertEquals(200,test.getStatusCodeValue());
+		ResponseEntity<String> test = restTemplate.getForEntity("/actuator/health/TestHealth", String.class);
+		Assertions.assertEquals(200,test.getStatusCode().value());
 		String body = test.getBody();
 		Assertions.assertNotNull(body);
 		logger.info("received "+body+" from health check");

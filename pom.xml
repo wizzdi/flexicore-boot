@@ -50,10 +50,10 @@
     <properties>
         <revision>0.0.0-dev</revision> <!-- version is set during CI , 99.99.9 is a placeholder for local builds-->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <maven.compiler.source>17</maven.compiler.source>
-        <maven.compiler.target>17</maven.compiler.target>
+        <maven.compiler.source>21</maven.compiler.source>
+        <maven.compiler.target>21</maven.compiler.target>
 
-        <spring-boot.version>3.1.1</spring-boot.version>
+        <spring-boot.version>3.2.5</spring-boot.version>
         <pf4j-spring.version>0.8.0</pf4j-spring.version>
 
         <flexicore-boot.version>${project.version}</flexicore-boot.version>
@@ -67,9 +67,8 @@
         <dynamic-properties-converter-postgresql.version>${project.version}</dynamic-properties-converter-postgresql.version>
         <dynamic-properties-database-converter.version>${project.version}</dynamic-properties-database-converter.version>
         <flexicore-boot-starter-data-jpa-hibernate.version>${project.version}</flexicore-boot-starter-data-jpa-hibernate.version>
-        <!--
-                <graphql-flexicore-boot-starter.version>1.2.0</graphql-flexicore-boot-starter.version>
-        -->
+        <resteasy-spring-boot-starter.version>6.1.1.Final</resteasy-spring-boot-starter.version>
+
 
         <flexicore-boot-swagger.version>${project.version}</flexicore-boot-swagger.version>
 
@@ -89,49 +88,40 @@
         <flexicore-boot-test-helper.version>${project.version}</flexicore-boot-test-helper.version>
 
 
-        <maven-compiler-plugin.version>3.11.0</maven-compiler-plugin.version>
-        <maven-surefire-plugin.version>3.0.0</maven-surefire-plugin.version>
-        <maven-javadoc-plugin.version>3.5.0</maven-javadoc-plugin.version>
-        <maven-source-plugin.version>3.2.1</maven-source-plugin.version>
+        <maven-compiler-plugin.version>3.13.0</maven-compiler-plugin.version>
+        <maven-surefire-plugin.version>3.2.5</maven-surefire-plugin.version>
+        <maven-javadoc-plugin.version>3.6.3</maven-javadoc-plugin.version>
+        <maven-source-plugin.version>3.3.1</maven-source-plugin.version>
         <maven-release-plugin.version>3.0.1</maven-release-plugin.version>
         <nexus-staging-maven-plugin.version>1.6.13</nexus-staging-maven-plugin.version>
-        <maven-gpg-plugin.version>1.6</maven-gpg-plugin.version>
-        <pf4j.version>3.8.0</pf4j.version>
+        <maven-gpg-plugin.version>3.2.4</maven-gpg-plugin.version>
+        <pf4j.version>3.11.0</pf4j.version>
         <reflections.version>0.10.2</reflections.version>
         <org.eclipse.persistence.jpa.version>4.0.2</org.eclipse.persistence.jpa.version>
-        <jjwt-api.version>0.11.5</jjwt-api.version>
-        <swagger.version>2.2.15</swagger.version>
-        <springdoc-openapi-starter-webmvc-api.version>2.2.0</springdoc-openapi-starter-webmvc-api.version>
+        <jjwt-api.version>0.12.5</jjwt-api.version>
+        <swagger.version>2.2.21</swagger.version>
+        <springdoc-openapi-starter-webmvc-api.version>2.5.0</springdoc-openapi-starter-webmvc-api.version>
 
-        <commons-io.version>2.13.0</commons-io.version>
-        <commons-codec.version>1.16.0</commons-codec.version>
+        <commons-io.version>2.16.1</commons-io.version>
+        <commons-codec.version>1.17.0</commons-codec.version>
 
         <metamodel-inheritence-fix-processor.version>${project.version}</metamodel-inheritence-fix-processor.version>
-        <scrypt.version>1.4.0</scrypt.version>
-        <maven-shade-plugin.version>3.5.0</maven-shade-plugin.version>
-        <maven-core.version>3.9.3</maven-core.version>
-        <maven-plugin-annotations.version>3.9.0</maven-plugin-annotations.version>
+        <maven-shade-plugin.version>3.5.3</maven-shade-plugin.version>
+        <maven-core.version>3.9.6</maven-core.version>
+        <maven-plugin-annotations.version>3.12.0</maven-plugin-annotations.version>
 
-        <roaster.version>2.28.0.Final</roaster.version>
-        <jakarta.interceptor-api.version>2.1.0</jakarta.interceptor-api.version>
-        <jakarta.enterprise.cdi-api.version>4.0.1</jakarta.enterprise.cdi-api.version>
+        <roaster.version>2.29.0.Final</roaster.version>
         <flexicore-file-model.version>${project.version}</flexicore-file-model.version>
         <flexicore-file-service.version>${project.version}</flexicore-file-service.version>
-        <zt-zip.version>1.15</zt-zip.version>
+        <zt-zip.version>1.17</zt-zip.version>
         <eclipselink.version>4.0.2</eclipselink.version>
-        <jakarta.batch-api.version>2.1.1</jakarta.batch-api.version>
         <totp-spring-boot-starter.version>1.7.1</totp-spring-boot-starter.version>
 
-        <mongodb-crypt.version>1.8.0</mongodb-crypt.version>
-        <javassist.version>3.29.2-GA</javassist.version>
-        <commons-csv.version>1.10.0</commons-csv.version>
-        <resteasy-spring-boot-starter.version>6.0.3.Final</resteasy-spring-boot-starter.version>
-
-        <maven-scm-api.version>2.0.1</maven-scm-api.version>
-        <maven-scm-provider-gitexe.version>2.0.1</maven-scm-provider-gitexe.version>
-        <maven-processor-plugin.version>4.5</maven-processor-plugin.version>
-        <ci-friendly-flatten-maven-plugin.version>1.0.18</ci-friendly-flatten-maven-plugin.version>
-        <testcontainers.version>1.18.3</testcontainers.version>
+        <maven-scm-api.version>2.1.0</maven-scm-api.version>
+        <maven-scm-provider-gitexe.version>2.1.0</maven-scm-provider-gitexe.version>
+        <maven-processor-plugin.version>5.1</maven-processor-plugin.version>
+        <ci-friendly-flatten-maven-plugin.version>1.0.19</ci-friendly-flatten-maven-plugin.version>
+        <testcontainers.version>1.19.7</testcontainers.version>
     </properties>
     <distributionManagement>
         <snapshotRepository>
@@ -178,37 +168,15 @@
             </dependency>
 
             <dependency>
-                <groupId>org.jboss.resteasy</groupId>
-                <artifactId>resteasy-servlet-spring-boot-starter</artifactId>
-                <version>${resteasy-spring-boot-starter.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.mongodb</groupId>
-                <artifactId>mongodb-crypt</artifactId>
-                <version>${mongodb-crypt.version}</version>
-
-            </dependency>
-            <dependency>
-                <groupId>org.apache.commons</groupId>
-                <artifactId>commons-csv</artifactId>
-                <version>${commons-csv.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>org.javassist</groupId>
-                <artifactId>javassist</artifactId>
-                <version>${javassist.version}</version>
-
-            </dependency>
-            <dependency>
                 <groupId>dev.samstevens.totp</groupId>
                 <artifactId>totp-spring-boot-starter</artifactId>
                 <version>${totp-spring-boot-starter.version}</version>
             </dependency>
+
             <dependency>
-                <groupId>jakarta.batch</groupId>
-                <artifactId>jakarta.batch-api</artifactId>
-                <version>${jakarta.batch-api.version}</version>
+                <groupId>org.jboss.resteasy</groupId>
+                <artifactId>resteasy-servlet-spring-boot-starter</artifactId>
+                <version>${resteasy-spring-boot-starter.version}</version>
             </dependency>
             <!-- https://mvnrepository.com/artifact/org.eclipse.persistence/eclipselink -->
             <dependency>
@@ -221,18 +189,6 @@
                 <groupId>org.zeroturnaround</groupId>
                 <artifactId>zt-zip</artifactId>
                 <version>${zt-zip.version}</version>
-            </dependency>
-            <!-- https://mvnrepository.com/artifact/jakarta.interceptor/jakarta.interceptor-api -->
-            <dependency>
-                <groupId>jakarta.interceptor</groupId>
-                <artifactId>jakarta.interceptor-api</artifactId>
-                <version>${jakarta.interceptor-api.version}</version>
-            </dependency>
-            <!-- https://mvnrepository.com/artifact/jakarta.enterprise/jakarta.enterprise.cdi-api -->
-            <dependency>
-                <groupId>jakarta.enterprise</groupId>
-                <artifactId>jakarta.enterprise.cdi-api</artifactId>
-                <version>${jakarta.enterprise.cdi-api.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.maven</groupId>
@@ -262,11 +218,6 @@
                 <artifactId>roaster-jdt</artifactId>
                 <version>${roaster.version}</version>
                 <scope>runtime</scope>
-            </dependency>
-            <dependency>
-                <groupId>com.lambdaworks</groupId>
-                <artifactId>scrypt</artifactId>
-                <version>${scrypt.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.eclipse.persistence</groupId>
@@ -533,6 +484,11 @@
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-compiler-plugin</artifactId>
                     <version>${maven-compiler-plugin.version}</version>
+                    <configuration>
+                        <compilerArgs>
+                            <arg>-parameters</arg>
+                        </compilerArgs>
+                    </configuration>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -579,7 +535,9 @@
                 <version>${maven-compiler-plugin.version}</version>
                 <configuration>
                     <forceJavacCompilerUse>true</forceJavacCompilerUse>
-
+                    <compilerArgs>
+                        <arg>-parameters</arg>
+                    </compilerArgs>
                     <source>${maven.compiler.source}</source>
                     <target>${maven.compiler.target}</target>
                 </configuration>

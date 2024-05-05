@@ -77,7 +77,7 @@ public class PermissionGroupControllerTest {
         PermissionGroupCreate request = new PermissionGroupCreate()
                 .setName(name);
         ResponseEntity<PermissionGroup> permissionGroupResponse = this.restTemplate.postForEntity("/permissionGroup/create", request, PermissionGroup.class);
-        Assertions.assertEquals(200, permissionGroupResponse.getStatusCodeValue());
+        Assertions.assertEquals(200, permissionGroupResponse.getStatusCode().value());
         permissionGroup = permissionGroupResponse.getBody();
         assertPermissionGroup(request, permissionGroup);
 
@@ -90,7 +90,7 @@ public class PermissionGroupControllerTest {
         ParameterizedTypeReference<PaginationResponse<PermissionGroup>> t=new ParameterizedTypeReference<PaginationResponse<PermissionGroup>>() {};
 
         ResponseEntity<PaginationResponse<PermissionGroup>> permissionGroupResponse = this.restTemplate.exchange("/permissionGroup/getAll", HttpMethod.POST, new HttpEntity<>(request), t);
-        Assertions.assertEquals(200, permissionGroupResponse.getStatusCodeValue());
+        Assertions.assertEquals(200, permissionGroupResponse.getStatusCode().value());
         PaginationResponse<PermissionGroup> body = permissionGroupResponse.getBody();
         Assertions.assertNotNull(body);
         List<PermissionGroup> permissionGroups = body.getList();
@@ -113,7 +113,7 @@ public class PermissionGroupControllerTest {
                 .setId(permissionGroup.getId())
                 .setName(name);
         ResponseEntity<PermissionGroup> permissionGroupResponse = this.restTemplate.exchange("/permissionGroup/update",HttpMethod.PUT, new HttpEntity<>(request), PermissionGroup.class);
-        Assertions.assertEquals(200, permissionGroupResponse.getStatusCodeValue());
+        Assertions.assertEquals(200, permissionGroupResponse.getStatusCode().value());
         permissionGroup = permissionGroupResponse.getBody();
         assertPermissionGroup(request, permissionGroup);
 

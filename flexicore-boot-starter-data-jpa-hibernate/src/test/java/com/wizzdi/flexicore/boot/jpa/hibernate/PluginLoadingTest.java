@@ -126,12 +126,12 @@ private static final Random random=new Random();
 				.collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
 				.toString();
 		ResponseEntity<TestEntity> createdTestEntityRequest = restTemplate.postForEntity("/createTestEntity",new TestEntityCreate().setName(name).setLongText(longText).setInheritedString(inheritedString), TestEntity.class);
-		Assertions.assertEquals(200,createdTestEntityRequest.getStatusCodeValue());
+		Assertions.assertEquals(200,createdTestEntityRequest.getStatusCode().value());
 		TestEntity createdTestEntity = createdTestEntityRequest.getBody();
 		Assertions.assertNotNull(createdTestEntity);
 		logger.info("received "+createdTestEntity+" from plugin controller");
 		ResponseEntity<TestEntity> fetchedTestEntityRequest = restTemplate.getForEntity("/getTestEntity/"+createdTestEntity.getId(), TestEntity.class);
-		Assertions.assertEquals(200,fetchedTestEntityRequest.getStatusCodeValue());
+		Assertions.assertEquals(200,fetchedTestEntityRequest.getStatusCode().value());
 		TestEntity fetchedTestEntity = fetchedTestEntityRequest.getBody();
 
 		Assertions.assertNotNull(fetchedTestEntity);

@@ -77,7 +77,7 @@ public class SecurityPolicyControllerTest {
         SecurityPolicyCreate request = new SecurityPolicyCreate()
                 .setName(name);
         ResponseEntity<SecurityPolicy> securityPolicyResponse = this.restTemplate.postForEntity("/securityPolicy/create", request, SecurityPolicy.class);
-        Assertions.assertEquals(200, securityPolicyResponse.getStatusCodeValue());
+        Assertions.assertEquals(200, securityPolicyResponse.getStatusCode().value());
         securityPolicy = securityPolicyResponse.getBody();
         assertSecurityPolicy(request, securityPolicy);
 
@@ -90,7 +90,7 @@ public class SecurityPolicyControllerTest {
         ParameterizedTypeReference<PaginationResponse<SecurityPolicy>> t=new ParameterizedTypeReference<PaginationResponse<SecurityPolicy>>() {};
 
         ResponseEntity<PaginationResponse<SecurityPolicy>> securityPolicyResponse = this.restTemplate.exchange("/securityPolicy/getAll", HttpMethod.POST, new HttpEntity<>(request), t);
-        Assertions.assertEquals(200, securityPolicyResponse.getStatusCodeValue());
+        Assertions.assertEquals(200, securityPolicyResponse.getStatusCode().value());
         PaginationResponse<SecurityPolicy> body = securityPolicyResponse.getBody();
         Assertions.assertNotNull(body);
         List<SecurityPolicy> securityPolicys = body.getList();
@@ -113,7 +113,7 @@ public class SecurityPolicyControllerTest {
                 .setId(securityPolicy.getId())
                 .setName(name);
         ResponseEntity<SecurityPolicy> securityPolicyResponse = this.restTemplate.exchange("/securityPolicy/update",HttpMethod.PUT, new HttpEntity<>(request), SecurityPolicy.class);
-        Assertions.assertEquals(200, securityPolicyResponse.getStatusCodeValue());
+        Assertions.assertEquals(200, securityPolicyResponse.getStatusCode().value());
         securityPolicy = securityPolicyResponse.getBody();
         assertSecurityPolicy(request, securityPolicy);
 

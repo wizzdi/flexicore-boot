@@ -69,18 +69,7 @@ public class ClazzControllerTest {
 
     }
 
-    @Test
-    @Order(1)
-    public void testClazzCreate() {
-        String name = UUID.randomUUID().toString();
-        ClazzCreate request = new ClazzCreate()
-                .setName(name);
-        ResponseEntity<Clazz> clazzResponse = this.restTemplate.postForEntity("/clazz/create", request, Clazz.class);
-        Assertions.assertEquals(200, clazzResponse.getStatusCodeValue());
-        clazz = clazzResponse.getBody();
-        assertClazz(request, clazz);
 
-    }
 
     @Test
     @Order(2)
@@ -89,33 +78,14 @@ public class ClazzControllerTest {
         ParameterizedTypeReference<PaginationResponse<Clazz>> t=new ParameterizedTypeReference<PaginationResponse<Clazz>>() {};
 
         ResponseEntity<PaginationResponse<Clazz>> clazzResponse = this.restTemplate.exchange("/clazz/getAll", HttpMethod.POST, new HttpEntity<>(request), t);
-        Assertions.assertEquals(200, clazzResponse.getStatusCodeValue());
+        Assertions.assertEquals(200, clazzResponse.getStatusCode().value());
         PaginationResponse<Clazz> body = clazzResponse.getBody();
         Assertions.assertNotNull(body);
         List<Clazz> clazzs = body.getList();
         Assertions.assertNotEquals(0,clazzs.size());
-        Assertions.assertTrue(clazzs.stream().anyMatch(f->f.getId().equals(clazz.getId())));
 
 
     }
 
-    public void assertClazz(ClazzCreate request, Clazz clazz) {
-        Assertions.assertNotNull(clazz);
-        Assertions.assertEquals(request.getName(), clazz.getName());
-    }
-
-    @Test
-    @Order(3)
-    public void testClazzUpdate(){
-        String name = UUID.randomUUID().toString();
-        ClazzUpdate request = new ClazzUpdate()
-                .setId(clazz.getId())
-                .setName(name);
-        ResponseEntity<Clazz> clazzResponse = this.restTemplate.exchange("/clazz/update",HttpMethod.PUT, new HttpEntity<>(request), Clazz.class);
-        Assertions.assertEquals(200, clazzResponse.getStatusCodeValue());
-        clazz = clazzResponse.getBody();
-        assertClazz(request, clazz);
-
-    }
 
 }

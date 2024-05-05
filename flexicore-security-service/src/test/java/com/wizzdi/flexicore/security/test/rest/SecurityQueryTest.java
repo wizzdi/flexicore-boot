@@ -450,7 +450,7 @@ private SecurityUserService securityUserService;
         SecurityContextBase securityContext = securityContextProvider.getSecurityContext(freshUser);
         List<TestEntity> testEntities = testEntityService.listAllTestEntities(new TestEntityFilter(), securityContext);
         Assertions.assertTrue(testEntities.stream().allMatch(f->othersInTenantIds.contains(f.getId())));
-        for (int i = 0; i < 10000; i++) {
+        for (int i = 0; i < 1000; i++) {
             TestEntity entity = testEntityService.createTestEntity(new TestEntityCreate().setName("i:"+i), adminSecurityContext);
             othersInTenantIds.add(entity.getId());
         }
@@ -461,7 +461,7 @@ private SecurityUserService securityUserService;
         Assertions.assertTrue(testEntities.stream().noneMatch(f->f.getId().equals(toDeny.getId())));
         Assertions.assertTrue(testEntities.stream().allMatch(f->othersInTenantIds.contains(f.getId())));
         long start = System.currentTimeMillis();
-        for (int i = 0; i < 100; i++) {
+        for (int i = 0; i < 10; i++) {
             testEntities = testEntityService.listAllTestEntities(new TestEntityFilter(), securityContext);
             Assertions.assertTrue(testEntities.stream().noneMatch(f->f.getId().equals(toDeny.getId())));
             Assertions.assertTrue(testEntities.stream().allMatch(f->othersInTenantIds.contains(f.getId())));

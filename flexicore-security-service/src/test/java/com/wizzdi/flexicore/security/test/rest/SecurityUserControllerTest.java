@@ -77,7 +77,7 @@ public class SecurityUserControllerTest {
         SecurityUserCreate request = new SecurityUserCreate()
                 .setName(name);
         ResponseEntity<SecurityUser> securityUserResponse = this.restTemplate.postForEntity("/securityUser/create", request, SecurityUser.class);
-        Assertions.assertEquals(200, securityUserResponse.getStatusCodeValue());
+        Assertions.assertEquals(200, securityUserResponse.getStatusCode().value());
         securityUser = securityUserResponse.getBody();
         assertSecurityUser(request, securityUser);
 
@@ -90,7 +90,7 @@ public class SecurityUserControllerTest {
         ParameterizedTypeReference<PaginationResponse<SecurityUser>> t=new ParameterizedTypeReference<PaginationResponse<SecurityUser>>() {};
 
         ResponseEntity<PaginationResponse<SecurityUser>> securityUserResponse = this.restTemplate.exchange("/securityUser/getAll", HttpMethod.POST, new HttpEntity<>(request), t);
-        Assertions.assertEquals(200, securityUserResponse.getStatusCodeValue());
+        Assertions.assertEquals(200, securityUserResponse.getStatusCode().value());
         PaginationResponse<SecurityUser> body = securityUserResponse.getBody();
         Assertions.assertNotNull(body);
         List<SecurityUser> securityUsers = body.getList();
@@ -113,7 +113,7 @@ public class SecurityUserControllerTest {
                 .setId(securityUser.getId())
                 .setName(name);
         ResponseEntity<SecurityUser> securityUserResponse = this.restTemplate.exchange("/securityUser/update",HttpMethod.PUT, new HttpEntity<>(request), SecurityUser.class);
-        Assertions.assertEquals(200, securityUserResponse.getStatusCodeValue());
+        Assertions.assertEquals(200, securityUserResponse.getStatusCode().value());
         securityUser = securityUserResponse.getBody();
         assertSecurityUser(request, securityUser);
 

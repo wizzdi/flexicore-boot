@@ -1,6 +1,9 @@
 package com.wizzdi.flexicore.security.test.rest;
 
+import com.flexicore.annotations.IOperation;
+import com.flexicore.model.SecurityOperation;
 import com.flexicore.model.TenantToBaseclass;
+import com.flexicore.security.SecurityContextBase;
 import com.wizzdi.flexicore.security.request.TenantToBaseclassCreate;
 import com.wizzdi.flexicore.security.request.TenantToBaseclassFilter;
 import com.wizzdi.flexicore.security.request.TenantToBaseclassUpdate;
@@ -9,9 +12,11 @@ import com.wizzdi.flexicore.security.test.app.App;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
@@ -56,6 +61,14 @@ public class TenantToBaseclassControllerTest {
     private TenantToBaseclass tenantToBaseclass;
     @Autowired
     private TestRestTemplate restTemplate;
+    @Autowired
+    @Qualifier("allOps")
+    @Lazy
+    private SecurityOperation allOps;
+    @Autowired
+    @Qualifier("adminSecurityContext")
+    @Lazy
+    private SecurityContextBase adminSecurityContext;
 
     @BeforeAll
     public void init() {
@@ -73,9 +86,13 @@ public class TenantToBaseclassControllerTest {
     public void testTenantToBaseClassPremissionCreate() {
         String name = UUID.randomUUID().toString();
         TenantToBaseclassCreate request = new TenantToBaseclassCreate()
+                .setTenantId(adminSecurityContext.getTenantToCreateIn().getId())
+                .setAccess(IOperation.Access.allow)
+                .setBaseclassId(adminSecurityContext.getUser().getSecurity().getId())
+                .setOperationId(allOps.getId())
                 .setName(name);
         ResponseEntity<TenantToBaseclass> tenantToBaseClassPremissionResponse = this.restTemplate.postForEntity("/tenantToBaseclass/create", request, TenantToBaseclass.class);
-        Assertions.assertEquals(200, tenantToBaseClassPremissionResponse.getStatusCodeValue());
+        Assertions.assertEquals(200, tenantToBaseClassPremissionResponse.getStatusCode().value());
         tenantToBaseclass = tenantToBaseClassPremissionResponse.getBody();
         assertTenantToBaseClassPremission(request, tenantToBaseclass);
 
@@ -88,7 +105,7 @@ public class TenantToBaseclassControllerTest {
         ParameterizedTypeReference<PaginationResponse<TenantToBaseclass>> t=new ParameterizedTypeReference<PaginationResponse<TenantToBaseclass>>() {};
 
         ResponseEntity<PaginationResponse<TenantToBaseclass>> tenantToBaseClassPremissionResponse = this.restTemplate.exchange("/tenantToBaseclass/getAll", HttpMethod.POST, new HttpEntity<>(request), t);
-        Assertions.assertEquals(200, tenantToBaseClassPremissionResponse.getStatusCodeValue());
+        Assertions.assertEquals(200, tenantToBaseClassPremissionResponse.getStatusCode().value());
         PaginationResponse<TenantToBaseclass> body = tenantToBaseClassPremissionResponse.getBody();
         Assertions.assertNotNull(body);
         List<TenantToBaseclass> tenantToBaseclasses = body.getList();
@@ -111,7 +128,7 @@ public class TenantToBaseclassControllerTest {
                 .setId(tenantToBaseclass.getId())
                 .setName(name);
         ResponseEntity<TenantToBaseclass> tenantToBaseClassPremissionResponse = this.restTemplate.exchange("/tenantToBaseclass/update",HttpMethod.PUT, new HttpEntity<>(request), TenantToBaseclass.class);
-        Assertions.assertEquals(200, tenantToBaseClassPremissionResponse.getStatusCodeValue());
+        Assertions.assertEquals(200, tenantToBaseClassPremissionResponse.getStatusCode().value());
         tenantToBaseclass = tenantToBaseClassPremissionResponse.getBody();
         assertTenantToBaseClassPremission(request, tenantToBaseclass);
 

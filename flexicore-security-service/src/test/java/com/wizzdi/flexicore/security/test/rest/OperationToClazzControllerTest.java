@@ -76,7 +76,7 @@ public class OperationToClazzControllerTest {
         OperationToClazzCreate request = new OperationToClazzCreate()
                 .setName(name);
         ResponseEntity<OperationToClazz> operationToClazzResponse = this.restTemplate.postForEntity("/operationToClazz/create", request, OperationToClazz.class);
-        Assertions.assertEquals(200, operationToClazzResponse.getStatusCodeValue());
+        Assertions.assertEquals(200, operationToClazzResponse.getStatusCode().value());
         operationToClazz = operationToClazzResponse.getBody();
         assertOperationToClazz(request, operationToClazz);
 
@@ -89,7 +89,7 @@ public class OperationToClazzControllerTest {
         ParameterizedTypeReference<PaginationResponse<OperationToClazz>> t=new ParameterizedTypeReference<PaginationResponse<OperationToClazz>>() {};
 
         ResponseEntity<PaginationResponse<OperationToClazz>> operationToClazzResponse = this.restTemplate.exchange("/operationToClazz/getAll", HttpMethod.POST, new HttpEntity<>(request), t);
-        Assertions.assertEquals(200, operationToClazzResponse.getStatusCodeValue());
+        Assertions.assertEquals(200, operationToClazzResponse.getStatusCode().value());
         PaginationResponse<OperationToClazz> body = operationToClazzResponse.getBody();
         Assertions.assertNotNull(body);
         List<OperationToClazz> operationToClazzs = body.getList();
@@ -112,7 +112,7 @@ public class OperationToClazzControllerTest {
                 .setId(operationToClazz.getId())
                 .setName(name);
         ResponseEntity<OperationToClazz> operationToClazzResponse = this.restTemplate.exchange("/operationToClazz/update",HttpMethod.PUT, new HttpEntity<>(request), OperationToClazz.class);
-        Assertions.assertEquals(200, operationToClazzResponse.getStatusCodeValue());
+        Assertions.assertEquals(200, operationToClazzResponse.getStatusCode().value());
         operationToClazz = operationToClazzResponse.getBody();
         assertOperationToClazz(request, operationToClazz);
 

@@ -77,7 +77,7 @@ public class TenantToUserControllerTest {
         TenantToUserCreate request = new TenantToUserCreate()
                 .setName(name);
         ResponseEntity<TenantToUser> tenantToUserResponse = this.restTemplate.postForEntity("/tenantToUser/create", request, TenantToUser.class);
-        Assertions.assertEquals(200, tenantToUserResponse.getStatusCodeValue());
+        Assertions.assertEquals(200, tenantToUserResponse.getStatusCode().value());
         tenantToUser = tenantToUserResponse.getBody();
         assertTenantToUser(request, tenantToUser);
 
@@ -90,7 +90,7 @@ public class TenantToUserControllerTest {
         ParameterizedTypeReference<PaginationResponse<TenantToUser>> t=new ParameterizedTypeReference<PaginationResponse<TenantToUser>>() {};
 
         ResponseEntity<PaginationResponse<TenantToUser>> tenantToUserResponse = this.restTemplate.exchange("/tenantToUser/getAll", HttpMethod.POST, new HttpEntity<>(request), t);
-        Assertions.assertEquals(200, tenantToUserResponse.getStatusCodeValue());
+        Assertions.assertEquals(200, tenantToUserResponse.getStatusCode().value());
         PaginationResponse<TenantToUser> body = tenantToUserResponse.getBody();
         Assertions.assertNotNull(body);
         List<TenantToUser> tenantToUsers = body.getList();
@@ -113,7 +113,7 @@ public class TenantToUserControllerTest {
                 .setId(tenantToUser.getId())
                 .setName(name);
         ResponseEntity<TenantToUser> tenantToUserResponse = this.restTemplate.exchange("/tenantToUser/update",HttpMethod.PUT, new HttpEntity<>(request), TenantToUser.class);
-        Assertions.assertEquals(200, tenantToUserResponse.getStatusCodeValue());
+        Assertions.assertEquals(200, tenantToUserResponse.getStatusCode().value());
         tenantToUser = tenantToUserResponse.getBody();
         assertTenantToUser(request, tenantToUser);
 

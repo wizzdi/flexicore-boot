@@ -110,7 +110,7 @@ public class FileUploadControllerServiceTest {
             HttpEntity<byte[]> requestEntity = new HttpEntity<>(chunk, headers);
 
             ResponseEntity<FileResource> response=this.restTemplate.exchange("/upload", HttpMethod.POST, requestEntity, FileResource.class);
-            Assertions.assertEquals(200, response.getStatusCodeValue());
+            Assertions.assertEquals(200, response.getStatusCode().value());
             FileResource fileResource=response.getBody();
             Assertions.assertNotNull(fileResource);
             Assertions.assertEquals(fileResource.isDone(),lastChunk);
@@ -157,12 +157,12 @@ public class FileUploadControllerServiceTest {
 
             ResponseEntity<String> response=this.restTemplate.exchange("/upload", HttpMethod.POST, requestEntity, String.class);
             if(error){
-                Assertions.assertEquals(HttpStatus.PRECONDITION_FAILED.value(),response.getStatusCodeValue());
+                Assertions.assertEquals(HttpStatus.PRECONDITION_FAILED.value(),response.getStatusCode().value());
                 i-=chunk.length;
                 error=false;
                 continue;
             }
-            Assertions.assertEquals(200, response.getStatusCodeValue());
+            Assertions.assertEquals(200, response.getStatusCode().value());
             FileResource fileResource=objectMapper.readValue(response.getBody(),FileResource.class);
             Assertions.assertNotNull(fileResource);
             Assertions.assertEquals(fileResource.isDone(),lastChunk);
@@ -203,11 +203,11 @@ public class FileUploadControllerServiceTest {
 
             ResponseEntity<String> response=this.restTemplate.exchange("/upload", HttpMethod.POST, requestEntity, String.class);
             if(lastChunk){
-                Assertions.assertEquals(HttpStatus.EXPECTATION_FAILED.value(), response.getStatusCodeValue());
+                Assertions.assertEquals(HttpStatus.EXPECTATION_FAILED.value(), response.getStatusCode().value());
                 break;
 
             }
-            Assertions.assertEquals(200, response.getStatusCodeValue());
+            Assertions.assertEquals(200, response.getStatusCode().value());
             FileResource fileResource=objectMapper.readValue(response.getBody(),FileResource.class);
             Assertions.assertNotNull(fileResource);
             Assertions.assertEquals(fileResource.isDone(),lastChunk);
@@ -232,7 +232,7 @@ public class FileUploadControllerServiceTest {
             HttpEntity<byte[]> requestEntity = new HttpEntity<>(chunk, headers);
 
             ResponseEntity<FileResource> response=this.restTemplate.exchange("/upload", HttpMethod.POST, requestEntity, FileResource.class);
-            Assertions.assertEquals(200, response.getStatusCodeValue());
+            Assertions.assertEquals(200, response.getStatusCode().value());
             FileResource fileResource=response.getBody();
             Assertions.assertNotNull(fileResource);
             Assertions.assertEquals(fileResource.isDone(),lastChunk);
@@ -264,7 +264,7 @@ public class FileUploadControllerServiceTest {
             HttpEntity<byte[]> requestEntity = new HttpEntity<>(chunk, headers);
 
             ResponseEntity<FileResource> response=this.restTemplate.exchange("/upload", HttpMethod.POST, requestEntity, FileResource.class);
-            Assertions.assertEquals(200, response.getStatusCodeValue());
+            Assertions.assertEquals(200, response.getStatusCode().value());
             FileResource fileResource=response.getBody();
             Assertions.assertNotNull(fileResource);
             Assertions.assertEquals(fileResource.isDone(),lastChunk);

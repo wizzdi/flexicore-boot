@@ -47,9 +47,8 @@ public class StaticFilterTest {
 	private AuthorService authorService;
 
 
-	@Test
-	@Order(1)
-	public void testCreate() {
+	@BeforeAll
+	public void init() {
 		for (int i = 0; i < 10; i++) {
 			authorService.createAuthorWithBooks("van " + i,OffsetDateTime.now().minusYears((i*10)+i),10);
 		}
@@ -65,6 +64,12 @@ public class StaticFilterTest {
 			Assertions.assertEquals(10,books.size());
 		}
 
+
+	}
+
+	@AfterAll
+	public void cleanup() {
+		authorService.deleteAll();
 
 	}
 

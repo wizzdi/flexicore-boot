@@ -418,7 +418,11 @@ public class BaseclassRepository implements Plugin {
 		Root<T> r = q.from(c);
 		List<Predicate> predicates = new ArrayList<>();
 		predicates.add(cb.equal(r.get(Basic_.id), id));
-		addBaseclassPredicates(cb, q, r.join(baseclassAttribute), predicates, securityContext);
+		if(requiresSecurityPredicates(securityContext)){
+			Join<T, E> join = r.join(baseclassAttribute);
+			addBaseclassPredicates(cb, q, join, predicates, securityContext);
+		}
+
 		q.select(r).where(predicates.toArray(Predicate[]::new));
 		TypedQuery<T> query = em.createQuery(q);
 		List<T> resultList = query.getResultList();
@@ -431,7 +435,11 @@ public class BaseclassRepository implements Plugin {
 		Root<T> r = q.from(c);
 		List<Predicate> predicates = new ArrayList<>();
 		predicates.add(r.get(Basic_.id).in(ids));
-		addBaseclassPredicates(cb, q, r.join(baseclassAttribute), predicates, securityContext);
+		if(requiresSecurityPredicates(securityContext)){
+			Join<T, E> join = r.join(baseclassAttribute);
+			addBaseclassPredicates(cb, q, join, predicates, securityContext);
+		}
+
 		q.select(r).where(predicates.toArray(Predicate[]::new));
 		TypedQuery<T> query = em.createQuery(q);
 		return query.getResultList();

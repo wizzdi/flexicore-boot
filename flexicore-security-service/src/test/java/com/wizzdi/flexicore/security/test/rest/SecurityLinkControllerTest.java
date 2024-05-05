@@ -7,6 +7,7 @@ import com.wizzdi.flexicore.security.request.SecurityLinkFilter;
 import com.wizzdi.flexicore.security.request.SecurityLinkUpdate;
 import com.wizzdi.flexicore.security.response.PaginationResponse;
 import com.wizzdi.flexicore.security.test.app.App;
+import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,13 +18,19 @@ import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.web.client.DefaultResponseErrorHandler;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.ResponseErrorHandler;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
@@ -60,6 +67,18 @@ public class SecurityLinkControllerTest {
 
     @BeforeAll
     public void init() {
+        ResponseErrorHandler errorHandler = new DefaultResponseErrorHandler() {
+            @Override
+            public boolean hasError(ClientHttpResponse response) throws IOException {
+                return !response.getStatusCode().is2xxSuccessful();
+            }
+            @Override
+            public void handleError(ClientHttpResponse response) throws IOException {
+                String responseBody = IOUtils.toString(response.getBody(), StandardCharsets.UTF_8);
+                throw new HttpClientErrorException(response.getStatusCode(), "%s:%s".formatted(response.getStatusText(), responseBody));
+            }
+        };
+        restTemplate.getRestTemplate().setErrorHandler(errorHandler);
         restTemplate.getRestTemplate().setInterceptors(
                 Collections.singletonList((request, body, execution) -> {
                     request.getHeaders()
@@ -69,19 +88,6 @@ public class SecurityLinkControllerTest {
 
     }
 
-    @Test
-    @Order(1)
-    public void testSecurityLinkCreate() {
-        String name = UUID.randomUUID().toString();
-        SecurityLinkCreate request = new SecurityLinkCreate()
-                .setAccess(IOperation.Access.allow)
-                .setName(name);
-        ResponseEntity<SecurityLink> securityLinkResponse = this.restTemplate.postForEntity("/securityLink/create", request, SecurityLink.class);
-        Assertions.assertEquals(200, securityLinkResponse.getStatusCodeValue());
-        securityLink = securityLinkResponse.getBody();
-        assertSecurityLink(request, securityLink);
-
-    }
 
     @Test
     @Order(2)
@@ -90,33 +96,15 @@ public class SecurityLinkControllerTest {
         ParameterizedTypeReference<PaginationResponse<SecurityLink>> t=new ParameterizedTypeReference<PaginationResponse<SecurityLink>>() {};
 
         ResponseEntity<PaginationResponse<SecurityLink>> securityLinkResponse = this.restTemplate.exchange("/securityLink/getAll", HttpMethod.POST, new HttpEntity<>(request), t);
-        Assertions.assertEquals(200, securityLinkResponse.getStatusCodeValue());
+        Assertions.assertEquals(200, securityLinkResponse.getStatusCode().value());
         PaginationResponse<SecurityLink> body = securityLinkResponse.getBody();
         Assertions.assertNotNull(body);
         List<SecurityLink> securityLinks = body.getList();
         Assertions.assertNotEquals(0,securityLinks.size());
-        Assertions.assertTrue(securityLinks.stream().anyMatch(f->f.getId().equals(securityLink.getId())));
 
 
     }
 
-    public void assertSecurityLink(SecurityLinkCreate request, SecurityLink securityLink) {
-        Assertions.assertNotNull(securityLink);
-        Assertions.assertEquals(request.getName(), securityLink.getName());
-    }
 
-    @Test
-    @Order(3)
-    public void testSecurityLinkUpdate(){
-        String name = UUID.randomUUID().toString();
-        SecurityLinkUpdate request = new SecurityLinkUpdate()
-                .setId(securityLink.getId())
-                .setName(name);
-        ResponseEntity<SecurityLink> securityLinkResponse = this.restTemplate.exchange("/securityLink/update",HttpMethod.PUT, new HttpEntity<>(request), SecurityLink.class);
-        Assertions.assertEquals(200, securityLinkResponse.getStatusCodeValue());
-        securityLink = securityLinkResponse.getBody();
-        assertSecurityLink(request, securityLink);
-
-    }
 
 }

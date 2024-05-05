@@ -67,12 +67,12 @@ public class PluginLoadingTest {
 	@Test
 	public void testJpaPlugin() {
 		ResponseEntity<TestEntity> createdTestEntityRequest = restTemplate.postForEntity("/createTestEntity",null, TestEntity.class);
-		Assertions.assertEquals(200,createdTestEntityRequest.getStatusCodeValue());
+		Assertions.assertEquals(200,createdTestEntityRequest.getStatusCode().value());
 		TestEntity createdTestEntity = createdTestEntityRequest.getBody();
 		Assertions.assertNotNull(createdTestEntity);
 		logger.info("received "+createdTestEntity+" from plugin controller");
 		ResponseEntity<TestEntity> fetchedTestEntityRequest = restTemplate.getForEntity("/getTestEntity/"+createdTestEntity.getId(), TestEntity.class);
-		Assertions.assertEquals(200,fetchedTestEntityRequest.getStatusCodeValue());
+		Assertions.assertEquals(200,fetchedTestEntityRequest.getStatusCode().value());
 		TestEntity fetchedTestEntity = fetchedTestEntityRequest.getBody();
 
 		Assertions.assertNotNull(fetchedTestEntity);

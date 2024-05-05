@@ -1,30 +1,41 @@
 package com.wizzdi.flexicore.security.test.rest;
 
+import com.flexicore.model.PermissionGroup;
 import com.flexicore.model.PermissionGroupToBaseclass;
+import com.flexicore.security.SecurityContextBase;
 import com.wizzdi.flexicore.security.request.PermissionGroupToBaseclassCreate;
 import com.wizzdi.flexicore.security.request.PermissionGroupToBaseclassFilter;
 import com.wizzdi.flexicore.security.request.PermissionGroupToBaseclassUpdate;
 import com.wizzdi.flexicore.security.response.PaginationResponse;
 import com.wizzdi.flexicore.security.test.app.App;
+import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.web.client.DefaultResponseErrorHandler;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.ResponseErrorHandler;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
@@ -58,9 +69,27 @@ public class PermissionGroupToBaseclassControllerTest {
     private PermissionGroupToBaseclass permissionGroupToBaseclass;
     @Autowired
     private TestRestTemplate restTemplate;
+    @Autowired
+    private PermissionGroup permissionGroup;
+    @Autowired
+    @Lazy
+    @Qualifier("adminSecurityContext")
+    private SecurityContextBase adminSecurityContext;
 
     @BeforeAll
     public void init() {
+        ResponseErrorHandler errorHandler = new DefaultResponseErrorHandler() {
+            @Override
+            public boolean hasError(ClientHttpResponse response) throws IOException {
+                return !response.getStatusCode().is2xxSuccessful();
+            }
+            @Override
+            public void handleError(ClientHttpResponse response) throws IOException {
+                String responseBody = IOUtils.toString(response.getBody(), StandardCharsets.UTF_8);
+                throw new HttpClientErrorException(response.getStatusCode(), "%s:%s".formatted(response.getStatusText(), responseBody));
+            }
+        };
+        restTemplate.getRestTemplate().setErrorHandler(errorHandler);
         restTemplate.getRestTemplate().setInterceptors(
                 Collections.singletonList((request, body, execution) -> {
                     request.getHeaders()
@@ -75,9 +104,11 @@ public class PermissionGroupToBaseclassControllerTest {
     public void testPermissionGroupToBaseclassCreate() {
         String name = UUID.randomUUID().toString();
         PermissionGroupToBaseclassCreate request = new PermissionGroupToBaseclassCreate()
+                .setBaseclassId(permissionGroup.getSecurity().getId())
+                .setPermissionGroupId(permissionGroup.getId())
                 .setName(name);
         ResponseEntity<PermissionGroupToBaseclass> permissionGroupToBaseclassResponse = this.restTemplate.postForEntity("/permissionGroupToBaseclass/create", request, PermissionGroupToBaseclass.class);
-        Assertions.assertEquals(200, permissionGroupToBaseclassResponse.getStatusCodeValue());
+        Assertions.assertEquals(200, permissionGroupToBaseclassResponse.getStatusCode().value());
         permissionGroupToBaseclass = permissionGroupToBaseclassResponse.getBody();
         assertPermissionGroupToBaseclass(request, permissionGroupToBaseclass);
 
@@ -90,7 +121,7 @@ public class PermissionGroupToBaseclassControllerTest {
         ParameterizedTypeReference<PaginationResponse<PermissionGroupToBaseclass>> t=new ParameterizedTypeReference<PaginationResponse<PermissionGroupToBaseclass>>() {};
 
         ResponseEntity<PaginationResponse<PermissionGroupToBaseclass>> permissionGroupToBaseclassResponse = this.restTemplate.exchange("/permissionGroupToBaseclass/getAll", HttpMethod.POST, new HttpEntity<>(request), t);
-        Assertions.assertEquals(200, permissionGroupToBaseclassResponse.getStatusCodeValue());
+        Assertions.assertEquals(200, permissionGroupToBaseclassResponse.getStatusCode().value());
         PaginationResponse<PermissionGroupToBaseclass> body = permissionGroupToBaseclassResponse.getBody();
         Assertions.assertNotNull(body);
         List<PermissionGroupToBaseclass> permissionGroupToBaseclasss = body.getList();
@@ -113,7 +144,7 @@ public class PermissionGroupToBaseclassControllerTest {
                 .setId(permissionGroupToBaseclass.getId())
                 .setName(name);
         ResponseEntity<PermissionGroupToBaseclass> permissionGroupToBaseclassResponse = this.restTemplate.exchange("/permissionGroupToBaseclass/update",HttpMethod.PUT, new HttpEntity<>(request), PermissionGroupToBaseclass.class);
-        Assertions.assertEquals(200, permissionGroupToBaseclassResponse.getStatusCodeValue());
+        Assertions.assertEquals(200, permissionGroupToBaseclassResponse.getStatusCode().value());
         permissionGroupToBaseclass = permissionGroupToBaseclassResponse.getBody();
         assertPermissionGroupToBaseclass(request, permissionGroupToBaseclass);
 

@@ -79,7 +79,7 @@ public class SecurityTenantControllerTest {
         SecurityTenantCreate request = new SecurityTenantCreate()
                 .setName(name);
         ResponseEntity<SecurityTenant> securityTenantResponse = this.restTemplate.postForEntity("/securityTenant/create", request, SecurityTenant.class);
-        Assertions.assertEquals(200, securityTenantResponse.getStatusCodeValue());
+        Assertions.assertEquals(200, securityTenantResponse.getStatusCode().value());
         securityTenant = securityTenantResponse.getBody();
         assertSecurityTenant(request, securityTenant);
 
@@ -92,7 +92,7 @@ public class SecurityTenantControllerTest {
         ParameterizedTypeReference<PaginationResponse<SecurityTenant>> t=new ParameterizedTypeReference<PaginationResponse<SecurityTenant>>() {};
 
         ResponseEntity<PaginationResponse<SecurityTenant>> securityTenantResponse = this.restTemplate.exchange("/securityTenant/getAll", HttpMethod.POST, new HttpEntity<>(request), t);
-        Assertions.assertEquals(200, securityTenantResponse.getStatusCodeValue());
+        Assertions.assertEquals(200, securityTenantResponse.getStatusCode().value());
         PaginationResponse<SecurityTenant> body = securityTenantResponse.getBody();
         Assertions.assertNotNull(body);
         List<SecurityTenant> securityTenants = body.getList();
@@ -115,7 +115,7 @@ public class SecurityTenantControllerTest {
                 .setId(securityTenant.getId())
                 .setName(name);
         ResponseEntity<SecurityTenant> securityTenantResponse = this.restTemplate.exchange("/securityTenant/update",HttpMethod.PUT, new HttpEntity<>(request), SecurityTenant.class);
-        Assertions.assertEquals(200, securityTenantResponse.getStatusCodeValue());
+        Assertions.assertEquals(200, securityTenantResponse.getStatusCode().value());
         securityTenant = securityTenantResponse.getBody();
         assertSecurityTenant(request, securityTenant);
 

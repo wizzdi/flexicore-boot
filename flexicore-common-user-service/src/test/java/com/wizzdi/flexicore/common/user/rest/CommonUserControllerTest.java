@@ -80,7 +80,7 @@ public class CommonUserControllerTest {
                 .setTenantId(adminSecurityContext.getTenantToCreateIn().getId())
                 .setName(name);
         ResponseEntity<User> UserResponse = this.restTemplate.postForEntity("/commonUser/createUser", request, User.class);
-        Assertions.assertEquals(200, UserResponse.getStatusCodeValue());
+        Assertions.assertEquals(200, UserResponse.getStatusCode().value());
         user = UserResponse.getBody();
         assertUser(request, user);
 
@@ -93,7 +93,7 @@ public class CommonUserControllerTest {
         ParameterizedTypeReference<PaginationResponse<User>> t=new ParameterizedTypeReference<PaginationResponse<User>>() {};
 
         ResponseEntity<PaginationResponse<User>> UserResponse = this.restTemplate.exchange("/commonUser/getAllUsers", HttpMethod.POST, new HttpEntity<>(request), t);
-        Assertions.assertEquals(200, UserResponse.getStatusCodeValue());
+        Assertions.assertEquals(200, UserResponse.getStatusCode().value());
         PaginationResponse<User> body = UserResponse.getBody();
         Assertions.assertNotNull(body);
         List<User> Users = body.getList();
@@ -116,7 +116,7 @@ public class CommonUserControllerTest {
                 .setId(user.getId())
                 .setName(name);
         ResponseEntity<User> UserResponse = this.restTemplate.exchange("/commonUser/updateUser",HttpMethod.PUT, new HttpEntity<>(request), User.class);
-        Assertions.assertEquals(200, UserResponse.getStatusCodeValue());
+        Assertions.assertEquals(200, UserResponse.getStatusCode().value());
         user = UserResponse.getBody();
         assertUser(request, user);
 

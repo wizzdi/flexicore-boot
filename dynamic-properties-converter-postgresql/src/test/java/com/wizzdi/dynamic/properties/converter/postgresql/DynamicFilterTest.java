@@ -47,9 +47,8 @@ public class DynamicFilterTest {
 	private AuthorService authorService;
 
 
-	@Test
-	@Order(1)
-	public void testCreate() {
+	@BeforeAll
+	public void init() {
 		for (int i = 0; i < 10; i++) {
 			Map<String, Object> dynamic = Map.of("surName", "van " + i, "location", Map.of("cityName", "city " + i, "capital", i % 2 == 0), "age", i * 10, "familiy", "kuku", "books", List.of("first book " + i, "second book " + i), "birthDate", OffsetDateTime.now().minusYears(i * 10));
 			authorService.createAuthor("van " + i,OffsetDateTime.now().minusYears(i), dynamic);
@@ -60,6 +59,12 @@ public class DynamicFilterTest {
 			authorService.createAuthor("kuku "+i,OffsetDateTime.now().minusYears(i), dynamic);
 		}
 
+
+	}
+
+	@AfterAll
+	public void cleanup() {
+		authorService.deleteAll();
 
 	}
 

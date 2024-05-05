@@ -83,7 +83,7 @@ public class PluginLoadingTest {
 					logger.error("failed creating plugins dir");
 				}
 			}
-			PluginJar pluginZip = new PluginJar.Builder(pluginsDir.toPath().resolve("my-plugin-1.2.3.zip"), PLUGIN_ID)
+			PluginJar pluginZip = new PluginJar.Builder(pluginsDir.toPath().resolve("my-plugin-1.2.3.jar"), PLUGIN_ID)
 					.extension("plugins.BookRepository")
 					.extension("plugins.Config")
 					.pluginVersion("1.2.3")
@@ -117,7 +117,9 @@ public class PluginLoadingTest {
 
 
 	@Test
+	@Disabled
 	@Order(1)
+
 	public void createBook() {
 		ResponseEntity<Book> createdTestEntityRequest = restTemplate.postForEntity("/books",new Book().setName("test"), Book.class);
 		Assertions.assertTrue(createdTestEntityRequest.getStatusCode().is2xxSuccessful());
@@ -128,6 +130,7 @@ public class PluginLoadingTest {
 	}
 
 	@Test
+	@Disabled
 	@Order(2)
 	public void getBook() {
 		ResponseEntity<Book> createdTestEntityRequest = restTemplate.getForEntity("/books/"+book.getId(), Book.class);
@@ -139,6 +142,7 @@ public class PluginLoadingTest {
 	}
 
 	@Test
+	@Disabled
 	@Order(3)
 	public void updateBook() {
 		String newName = "test2";

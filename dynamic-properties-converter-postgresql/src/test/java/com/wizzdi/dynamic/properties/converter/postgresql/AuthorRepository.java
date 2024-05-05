@@ -65,4 +65,11 @@ public class AuthorRepository {
         TypedQuery<Book> query = em.createQuery(q);
         return query.getResultList();
     }
+
+    @Transactional
+    public void deleteAll() {
+        em.createQuery("delete from Book").executeUpdate();
+        em.createQuery("delete from Author").executeUpdate();
+
+    }
 }

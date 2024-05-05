@@ -28,7 +28,7 @@ public class SecurityServiceCacheConfig {
     }
 
     @Bean
-    @Qualifier("operationAccessControlCache")
+    @Qualifier("dataAccessControlCacheManager")
     @ConditionalOnMissingBean(name = "dataAccessControlCacheManager")
     public CacheManager dataAccessControlCacheManager() {
         CaffeineCacheManager cacheManager = new CaffeineCacheManager();
@@ -47,8 +47,8 @@ public class SecurityServiceCacheConfig {
 
 
     @Bean
-    @Qualifier("operationAccessControlCache")
-    public Cache dataAccessControlCache(@Qualifier("operationAccessControlCache")CacheManager dataAccessControlCacheManager) {
+    @Qualifier("dataAccessControlCache")
+    public Cache dataAccessControlCache(@Qualifier("dataAccessControlCacheManager")CacheManager dataAccessControlCacheManager) {
         return dataAccessControlCacheManager.getCache("dataAccessControlCache");
     }
 

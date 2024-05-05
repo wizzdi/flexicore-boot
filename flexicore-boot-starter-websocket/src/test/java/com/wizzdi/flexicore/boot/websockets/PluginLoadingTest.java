@@ -65,7 +65,7 @@ public class PluginLoadingTest {
 					logger.error("failed creating plugins dir");
 				}
 			}
-			PluginJar pluginZip = new PluginJar.Builder(pluginsDir.toPath().resolve("my-plugin-1.2.3.zip"), PLUGIN_ID)
+			PluginJar pluginZip = new PluginJar.Builder(pluginsDir.toPath().resolve("my-plugin-1.2.3.jar"), PLUGIN_ID)
 					.extension("plugins.encoders.WSDecoder")
 					.extension("plugins.encoders.WSEncoder")
 					.extension("plugins.messages.TestMessage")

@@ -59,7 +59,7 @@ public class TestControllerTest {
     @BeforeAll
     public void init() {
         ResponseEntity<String> stringResponseEntity = restTemplate.postForEntity("/api/public/login", new AuthRequest().setPassword("admin").setUsername("admin"), String.class);
-        Assertions.assertEquals(200, stringResponseEntity.getStatusCodeValue());
+        Assertions.assertEquals(200, stringResponseEntity.getStatusCode().value());
         String body1 = stringResponseEntity.getBody();
         List<String> strings = stringResponseEntity.getHeaders().get(HttpHeaders.AUTHORIZATION);
         Assertions.assertNotNull(strings);
@@ -81,7 +81,7 @@ public class TestControllerTest {
         ParameterizedTypeReference<PaginationResponse<Role>> t=new ParameterizedTypeReference<PaginationResponse<Role>>() {};
 
         ResponseEntity<PaginationResponse<Role>> testResponse = this.restTemplate.exchange("/test/getAll", HttpMethod.GET, new HttpEntity<>(null,null), t);
-        Assertions.assertEquals(200, testResponse.getStatusCodeValue());
+        Assertions.assertEquals(200, testResponse.getStatusCode().value());
         PaginationResponse<Role> body = testResponse.getBody();
         Assertions.assertNotNull(body);
         List<Role> tests = body.getList();

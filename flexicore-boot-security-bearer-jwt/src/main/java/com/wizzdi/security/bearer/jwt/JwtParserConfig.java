@@ -34,7 +34,7 @@ public class JwtParserConfig {
 
     @Bean
     public JwtParser jwtParser(SecretKeyHolder cachedJWTSecret) {
-        return Jwts.parserBuilder().setSigningKey(cachedJWTSecret.secretKey()).build();
+        return Jwts.parser().verifyWith(cachedJWTSecret.secretKey()).build();
     }
 
     private SecretKey getJWTSecret() {

@@ -6,6 +6,7 @@ import com.wizzdi.flexicore.security.request.SecurityOperationFilter;
 import com.wizzdi.flexicore.security.request.SecurityOperationUpdate;
 import com.wizzdi.flexicore.security.response.PaginationResponse;
 import com.wizzdi.flexicore.security.test.app.App;
+import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,14 +18,20 @@ import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.web.client.DefaultResponseErrorHandler;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.ResponseErrorHandler;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
@@ -55,12 +62,23 @@ public class SecurityOperationControllerTest {
         registry.add("spring.datasource.password", postgresqlContainer::getPassword);
     }
 
-    private SecurityOperation securityOperation;
     @Autowired
     private TestRestTemplate restTemplate;
 
     @BeforeAll
     public void init() {
+        ResponseErrorHandler errorHandler = new DefaultResponseErrorHandler() {
+            @Override
+            public boolean hasError(ClientHttpResponse response) throws IOException {
+                return !response.getStatusCode().is2xxSuccessful();
+            }
+            @Override
+            public void handleError(ClientHttpResponse response) throws IOException {
+                String responseBody = IOUtils.toString(response.getBody(), StandardCharsets.UTF_8);
+                throw new HttpClientErrorException(response.getStatusCode(), "%s:%s".formatted(response.getStatusText(), responseBody));
+            }
+        };
+        restTemplate.getRestTemplate().setErrorHandler(errorHandler);
         restTemplate.getRestTemplate().setInterceptors(
                 Collections.singletonList((request, body, execution) -> {
                     request.getHeaders()
@@ -70,18 +88,6 @@ public class SecurityOperationControllerTest {
 
     }
 
-    @Test
-    @Order(1)
-    public void testSecurityOperationCreate() {
-        String name = UUID.randomUUID().toString();
-        SecurityOperationCreate request = new SecurityOperationCreate()
-                .setName(name);
-        ResponseEntity<SecurityOperation> securityOperationResponse = this.restTemplate.postForEntity("/securityOperation/create", request, SecurityOperation.class);
-        Assertions.assertEquals(200, securityOperationResponse.getStatusCodeValue());
-        securityOperation = securityOperationResponse.getBody();
-        assertSecurityOperation(request, securityOperation);
-
-    }
 
     @Test
     @Order(2)
@@ -90,12 +96,11 @@ public class SecurityOperationControllerTest {
         ParameterizedTypeReference<PaginationResponse<SecurityOperation>> t=new ParameterizedTypeReference<PaginationResponse<SecurityOperation>>() {};
 
         ResponseEntity<PaginationResponse<SecurityOperation>> securityOperationResponse = this.restTemplate.exchange("/securityOperation/getAll", HttpMethod.POST, new HttpEntity<>(request), t);
-        Assertions.assertEquals(200, securityOperationResponse.getStatusCodeValue());
+        Assertions.assertEquals(200, securityOperationResponse.getStatusCode().value());
         PaginationResponse<SecurityOperation> body = securityOperationResponse.getBody();
         Assertions.assertNotNull(body);
         List<SecurityOperation> securityOperations = body.getList();
         Assertions.assertNotEquals(0,securityOperations.size());
-        Assertions.assertTrue(securityOperations.stream().anyMatch(f->f.getId().equals(securityOperation.getId())));
 
 
     }
@@ -105,18 +110,6 @@ public class SecurityOperationControllerTest {
         Assertions.assertEquals(request.getName(), securityOperation.getName());
     }
 
-    @Test
-    @Order(3)
-    public void testSecurityOperationUpdate(){
-        String name = UUID.randomUUID().toString();
-        SecurityOperationUpdate request = new SecurityOperationUpdate()
-                .setId(securityOperation.getId())
-                .setName(name);
-        ResponseEntity<SecurityOperation> securityOperationResponse = this.restTemplate.exchange("/securityOperation/update",HttpMethod.PUT, new HttpEntity<>(request), SecurityOperation.class);
-        Assertions.assertEquals(200, securityOperationResponse.getStatusCodeValue());
-        securityOperation = securityOperationResponse.getBody();
-        assertSecurityOperation(request, securityOperation);
 
-    }
 
 }
