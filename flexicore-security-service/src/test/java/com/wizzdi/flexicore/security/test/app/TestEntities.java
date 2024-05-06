@@ -7,7 +7,6 @@ import com.wizzdi.flexicore.security.request.PermissionGroupCreate;
 import com.wizzdi.flexicore.security.request.RoleCreate;
 import com.wizzdi.flexicore.security.service.PermissionGroupService;
 import com.wizzdi.flexicore.security.service.RoleService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

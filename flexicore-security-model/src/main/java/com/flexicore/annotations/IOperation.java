@@ -6,8 +6,6 @@
  ******************************************************************************/
 package com.flexicore.annotations;
 
-import com.flexicore.model.Baseclass;
-
 import java.lang.annotation.Inherited;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;

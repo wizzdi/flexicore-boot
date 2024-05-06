@@ -3,7 +3,6 @@ package com.wizzdi.flexicore.security.test.rest;
 import com.flexicore.model.SecurityOperation;
 import com.wizzdi.flexicore.security.request.SecurityOperationCreate;
 import com.wizzdi.flexicore.security.request.SecurityOperationFilter;
-import com.wizzdi.flexicore.security.request.SecurityOperationUpdate;
 import com.wizzdi.flexicore.security.response.PaginationResponse;
 import com.wizzdi.flexicore.security.test.app.App;
 import org.apache.commons.io.IOUtils;
@@ -11,7 +10,6 @@ import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.core.ParameterizedTypeReference;
@@ -27,14 +25,12 @@ import org.springframework.web.client.DefaultResponseErrorHandler;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.ResponseErrorHandler;
 import org.testcontainers.containers.PostgreSQLContainer;
-import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.List;
-import java.util.UUID;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = App.class)
@@ -93,7 +89,8 @@ public class SecurityOperationControllerTest {
     @Order(2)
     public void testListAllSecurityOperations() {
         SecurityOperationFilter request=new SecurityOperationFilter();
-        ParameterizedTypeReference<PaginationResponse<SecurityOperation>> t=new ParameterizedTypeReference<PaginationResponse<SecurityOperation>>() {};
+        ParameterizedTypeReference<PaginationResponse<SecurityOperation>> t= new ParameterizedTypeReference<>() {
+        };
 
         ResponseEntity<PaginationResponse<SecurityOperation>> securityOperationResponse = this.restTemplate.exchange("/securityOperation/getAll", HttpMethod.POST, new HttpEntity<>(request), t);
         Assertions.assertEquals(200, securityOperationResponse.getStatusCode().value());

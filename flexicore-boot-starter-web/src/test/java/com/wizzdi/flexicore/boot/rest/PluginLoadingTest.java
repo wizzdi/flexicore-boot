@@ -3,9 +3,7 @@ package com.wizzdi.flexicore.boot.rest;
 import com.wizzdi.flexicore.boot.rest.app.App;
 import com.wizzdi.flexicore.boot.base.init.FlexiCorePluginManager;
 import com.wizzdi.flexicore.boot.test.helper.PluginJar;
-import org.junit.Assert;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -24,8 +22,6 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = App.class)
@@ -50,8 +46,8 @@ public class PluginLoadingTest {
 
 	static{
 		pluginsPath=getPluginsDir("plugins");
-		entitiesPath=getPluginsDir("entities");;
-		try {
+		entitiesPath=getPluginsDir("entities");
+        try {
 			File pluginsDir = new File(pluginsPath);
 			if (!pluginsDir.exists()) {
 				if (!pluginsDir.mkdirs()) {

@@ -4,11 +4,8 @@ import com.wizzdi.flexicore.boot.test.helper.PluginJar;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.test.context.TestConfiguration;
-import org.springframework.test.context.DynamicPropertyRegistry;
-import org.springframework.test.context.DynamicPropertySource;
 
 import java.io.File;
-import java.io.IOException;
 import java.nio.file.Files;
 
 @TestConfiguration
@@ -26,7 +23,7 @@ public class PluginConfig {
 
     static{
         pluginsPath= generatePluginDir("plugins");
-        entitiesPath= generatePluginDir("entities");;
+        entitiesPath= generatePluginDir("entities");
         try {
             File pluginsDir = new File(pluginsPath);
             if (!pluginsDir.exists()) {

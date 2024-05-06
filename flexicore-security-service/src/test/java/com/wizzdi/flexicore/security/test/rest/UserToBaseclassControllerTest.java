@@ -21,7 +21,6 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.test.context.ActiveProfiles;
@@ -38,7 +37,6 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 @ExtendWith(SpringExtension.class)
@@ -122,7 +120,8 @@ public class UserToBaseclassControllerTest {
     @Order(2)
     public void testListAllUserToBaseClasss() {
         UserToBaseclassFilter request=new UserToBaseclassFilter();
-        ParameterizedTypeReference<PaginationResponse<UserToBaseclass>> t=new ParameterizedTypeReference<PaginationResponse<UserToBaseclass>>() {};
+        ParameterizedTypeReference<PaginationResponse<UserToBaseclass>> t= new ParameterizedTypeReference<>() {
+        };
 
         ResponseEntity<PaginationResponse<UserToBaseclass>> userToBaseClassResponse = this.restTemplate.exchange("/userToBaseclass/getAll", HttpMethod.POST, new HttpEntity<>(request), t);
         Assertions.assertEquals(200, userToBaseClassResponse.getStatusCode().value());

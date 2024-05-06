@@ -14,7 +14,7 @@ public class ImprovedVersionManager extends DefaultVersionManager {
 
     private static boolean isSatisfies(String version, String constraint) {
         try{
-            return Version.valueOf(version).satisfies(constraint);
+            return Version.parse(version).satisfies(constraint);
         }
         catch (Throwable e){
             return false;

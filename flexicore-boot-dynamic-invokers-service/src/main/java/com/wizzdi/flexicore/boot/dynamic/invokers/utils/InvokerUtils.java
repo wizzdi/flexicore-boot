@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.flexicore.annotations.IOperation;
 import com.flexicore.annotations.TypeRetention;
 import com.flexicore.model.Baseclass;
-import com.flexicore.model.Basic;
 import com.wizzdi.flexicore.boot.dynamic.invokers.annotations.FieldInfo;
 import com.wizzdi.flexicore.boot.dynamic.invokers.annotations.IdRefFieldInfo;
 import com.wizzdi.flexicore.boot.dynamic.invokers.annotations.ListFieldInfo;
@@ -93,7 +92,7 @@ public class InvokerUtils {
 
 			@Override
 			public String[] relatedMethodNames() {
-				return relatedMethod.isPresent() ? new String[]{relatedMethod.get()} : new String[0];
+				return relatedMethod.map(s -> new String[]{s}).orElseGet(() -> new String[0]);
 			}
 
 			@Override

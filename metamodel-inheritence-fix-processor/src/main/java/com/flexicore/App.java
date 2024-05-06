@@ -1,13 +1,11 @@
 package com.flexicore;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.filefilter.IOFileFilter;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.*;
 import org.apache.maven.project.MavenProject;
-import org.codehaus.plexus.classworlds.realm.ClassRealm;
 import org.jboss.forge.roaster.Roaster;
 import org.jboss.forge.roaster.model.JavaType;
 import org.jboss.forge.roaster.model.source.JavaClassSource;
@@ -43,8 +41,7 @@ List<String> sourceFolders=project.getCompileSourceRoots();
            exts[0]="java";
            Collection<File> javaFiles = FileUtils.listFiles(f,exts,true);
             for (File jFile: javaFiles){
-                JavaType<?> javaClass =
-                        null;
+                JavaType<?> javaClass;
                 try {
                     javaClass = Roaster.parse(jFile);
                 } catch ( IOException e) {
@@ -67,8 +64,7 @@ List<String> sourceFolders=project.getCompileSourceRoots();
            String path=map.get(nonCanonicalName);
            if(path!=null){
                File jFile= new File(path);
-               JavaClassSource javaClass =
-                       null;
+               JavaClassSource javaClass;
                try {
                    javaClass = Roaster.parse(JavaClassSource.class,jFile);
                } catch (IOException e) {

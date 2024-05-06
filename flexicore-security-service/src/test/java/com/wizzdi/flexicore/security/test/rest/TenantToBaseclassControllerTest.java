@@ -102,7 +102,8 @@ public class TenantToBaseclassControllerTest {
     @Order(2)
     public void testListAllTenantToBaseClassPremissions() {
         TenantToBaseclassFilter request=new TenantToBaseclassFilter();
-        ParameterizedTypeReference<PaginationResponse<TenantToBaseclass>> t=new ParameterizedTypeReference<PaginationResponse<TenantToBaseclass>>() {};
+        ParameterizedTypeReference<PaginationResponse<TenantToBaseclass>> t= new ParameterizedTypeReference<>() {
+        };
 
         ResponseEntity<PaginationResponse<TenantToBaseclass>> tenantToBaseClassPremissionResponse = this.restTemplate.exchange("/tenantToBaseclass/getAll", HttpMethod.POST, new HttpEntity<>(request), t);
         Assertions.assertEquals(200, tenantToBaseClassPremissionResponse.getStatusCode().value());

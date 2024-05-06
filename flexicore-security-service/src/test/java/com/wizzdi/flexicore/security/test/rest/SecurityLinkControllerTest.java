@@ -1,10 +1,7 @@
 package com.wizzdi.flexicore.security.test.rest;
 
-import com.flexicore.annotations.IOperation;
 import com.flexicore.model.SecurityLink;
-import com.wizzdi.flexicore.security.request.SecurityLinkCreate;
 import com.wizzdi.flexicore.security.request.SecurityLinkFilter;
-import com.wizzdi.flexicore.security.request.SecurityLinkUpdate;
 import com.wizzdi.flexicore.security.response.PaginationResponse;
 import com.wizzdi.flexicore.security.test.app.App;
 import org.apache.commons.io.IOUtils;
@@ -33,7 +30,6 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.List;
-import java.util.UUID;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = App.class)
@@ -93,7 +89,8 @@ public class SecurityLinkControllerTest {
     @Order(2)
     public void testListAllSecurityLinks() {
         SecurityLinkFilter request=new SecurityLinkFilter();
-        ParameterizedTypeReference<PaginationResponse<SecurityLink>> t=new ParameterizedTypeReference<PaginationResponse<SecurityLink>>() {};
+        ParameterizedTypeReference<PaginationResponse<SecurityLink>> t= new ParameterizedTypeReference<>() {
+        };
 
         ResponseEntity<PaginationResponse<SecurityLink>> securityLinkResponse = this.restTemplate.exchange("/securityLink/getAll", HttpMethod.POST, new HttpEntity<>(request), t);
         Assertions.assertEquals(200, securityLinkResponse.getStatusCode().value());

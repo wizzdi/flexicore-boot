@@ -1,7 +1,6 @@
 package com.wizzdi.flexicore.security.test.rest;
 
 import com.flexicore.annotations.IOperation;
-import com.flexicore.annotations.rest.All;
 import com.flexicore.model.*;
 import com.flexicore.security.SecurityContextBase;
 import com.wizzdi.flexicore.security.interfaces.SecurityContextProvider;

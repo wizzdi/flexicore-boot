@@ -21,14 +21,12 @@ import com.wizzdi.flexicore.security.response.DefaultSecurityEntities;
 import com.wizzdi.flexicore.security.response.TenantAndUserInit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Service;
 
 @Configuration
 public class DefaultObjectsCreator {
@@ -172,20 +170,13 @@ public class DefaultObjectsCreator {
         RoleToUserCreate roleToUserCreate = new RoleToUserCreate()
                 .setRole(superAdminRole)
                 .setSecurityUser(admin)
-               // .setTenant(defaultTenant)
                 .setIdForCreate(SUPER_ADMIN_TO_ADMIN_ID);
         RoleToUser roleToUser = roleToUserService.findByIdOrNull(RoleToUser.class, SUPER_ADMIN_TO_ADMIN_ID);
         if (roleToUser == null) {
             logger.debug("Creating Role To SecurityUser Link");
             roleToUser = defaultRoleToUserProvider.createRoleToUser(roleToUserCreate);
         }
-        /*if(roleToUser.getCreator()==null){
-            roleToUser.setCreator(admin);
-            roleToUser=roleToUserService.merge(roleToUser);
-        }*/
 
-
-        //roleToUserService.massMerge(toMerge);
         return new DefaultSecurityEntities(tenantAndUserInit.getAdmin(), tenantAndUserInit.getDefaultTenant(), superAdminRole, tenantToUser, roleToUser);
 
     }

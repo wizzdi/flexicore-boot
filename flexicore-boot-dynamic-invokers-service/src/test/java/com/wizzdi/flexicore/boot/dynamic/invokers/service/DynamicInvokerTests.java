@@ -152,7 +152,7 @@ public class DynamicInvokerTests {
         ParameterizedTypeReference<PaginationResponse<Map<String,Object>>> ref= new ParameterizedTypeReference<>() {
         };
         ResponseEntity<PaginationResponse<Map<String,Object>>> clazzResponse = this.restTemplate.exchange("/dynamicInvoker/getAll", HttpMethod.POST, new HttpEntity<>(new DynamicInvokerFilter()), ref);
-        Assertions.assertEquals(200, clazzResponse.getStatusCodeValue());
+        Assertions.assertEquals(200, clazzResponse.getStatusCode().value());
         PaginationResponse<Map<String,Object>> clazz = clazzResponse.getBody();
         Assertions.assertNotNull(clazz);
         logger.info("received: "+clazz.getList());
@@ -192,7 +192,7 @@ public class DynamicInvokerTests {
         ParameterizedTypeReference<PaginationResponse<DynamicExecution>> ref= new ParameterizedTypeReference<>() {
         };
         ResponseEntity<PaginationResponse<DynamicExecution>> clazzResponse = this.restTemplate.exchange("/dynamicExecution/getAll", HttpMethod.POST, new HttpEntity<>(new DynamicInvokerFilter()), ref);
-        Assertions.assertEquals(200, clazzResponse.getStatusCodeValue());
+        Assertions.assertEquals(200, clazzResponse.getStatusCode().value());
         PaginationResponse<DynamicExecution> clazz = clazzResponse.getBody();
         Assertions.assertNotNull(clazz);
         logger.info("received: "+clazz.getList());
@@ -207,7 +207,7 @@ public class DynamicInvokerTests {
         DynamicExecutionExampleRequest executeInvokerRequest=new DynamicExecutionExampleRequest()
                 .setId(dynamicExecution.getId());
         ResponseEntity<Object> clazzResponse = this.restTemplate.postForEntity("/dynamicExecution/getDynamicExecutionReturnExample", executeInvokerRequest, Object.class);
-        Assertions.assertEquals(200, clazzResponse.getStatusCodeValue());
+        Assertions.assertEquals(200, clazzResponse.getStatusCode().value());
         Object example = clazzResponse.getBody();
         Assertions.assertNotNull(example);
         logger.info("received: "+example);
@@ -223,7 +223,7 @@ public class DynamicInvokerTests {
                 .setInvokerNames(dynamicExecution.getServiceCanonicalNames().stream().map(f->f.getServiceCanonicalName()).collect(Collectors.toSet()))
                 .setExecutionParametersHolder(dynamicExecution.getExecutionParametersHolder());
         ResponseEntity<ExecuteInvokersResponse> clazzResponse = this.restTemplate.postForEntity("/dynamicInvoker/executeInvoker", executeInvokerRequest, ExecuteInvokersResponse.class);
-        Assertions.assertEquals(200, clazzResponse.getStatusCodeValue());
+        Assertions.assertEquals(200, clazzResponse.getStatusCode().value());
         ExecuteInvokersResponse clazz = clazzResponse.getBody();
         Assertions.assertNotNull(clazz);
         Assertions.assertNotNull(clazz.getResponses());
@@ -238,7 +238,7 @@ public class DynamicInvokerTests {
         ParameterizedTypeReference<PaginationResponse<Map<String,Object>>> ref= new ParameterizedTypeReference<>() {
         };
         ResponseEntity<PaginationResponse<Map<String,Object>>> clazzResponse = this.restTemplate.exchange("/test/listTests", HttpMethod.POST, new HttpEntity<>(dynamicExecution.getExecutionParametersHolder()), ref);
-        Assertions.assertEquals(200, clazzResponse.getStatusCodeValue());
+        Assertions.assertEquals(200, clazzResponse.getStatusCode().value());
         PaginationResponse<Map<String,Object>> clazz = clazzResponse.getBody();
         Assertions.assertNotNull(clazz);
         logger.info("received: "+clazz.getList());

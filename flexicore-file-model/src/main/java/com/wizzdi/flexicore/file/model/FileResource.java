@@ -9,8 +9,6 @@ package com.wizzdi.flexicore.file.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.flexicore.annotations.AnnotatedClazz;
-import com.flexicore.model.Baseclass;
-import com.flexicore.model.Basic;
 import com.flexicore.model.SecuredBasic;
 import com.wizzdi.flexicore.boot.rest.views.Views;
 

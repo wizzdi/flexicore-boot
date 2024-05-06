@@ -16,7 +16,6 @@ import java.util.Map;
 @Component
 public class PostgresqlJsonConverter implements JsonConverterImplementation, AttributeConverter<Map<String, Object>, Object> {
 
-    private static final long serialVersionUID = 1L;
     private static final ObjectMapper mapper = new ObjectMapper().registerModule(new JavaTimeModule())
             .configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
     private static TypeReference<Map<String, Object>> type= new TypeReference<>() {};

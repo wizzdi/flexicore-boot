@@ -2,8 +2,6 @@ package com.wizzdi.flexicore.boot.dynamic.invokers.response;
 
 import com.wizzdi.flexicore.boot.dynamic.invokers.annotations.Invoker;
 
-import java.util.List;
-
 public class InvokerHolder {
 
     private final InvokerInfo invokerInfo;

@@ -1,6 +1,5 @@
 package plugins.test.pluginD;
 
-import com.wizzdi.flexicore.boot.base.interfaces.Plugin;
 import org.pf4j.Extension;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

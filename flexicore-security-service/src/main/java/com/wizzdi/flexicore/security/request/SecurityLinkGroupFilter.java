@@ -1,14 +1,6 @@
 package com.wizzdi.flexicore.security.request;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.flexicore.annotations.IOperation;
-import com.flexicore.model.*;
-import com.wizzdi.flexicore.security.validation.IdValid;
 import jakarta.validation.Valid;
-
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 
 
 public class SecurityLinkGroupFilter extends PaginationFilter {

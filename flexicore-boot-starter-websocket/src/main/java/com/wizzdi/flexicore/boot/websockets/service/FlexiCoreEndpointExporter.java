@@ -8,7 +8,6 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
-import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.server.standard.ServerEndpointExporter;
 
 import jakarta.websocket.Decoder;

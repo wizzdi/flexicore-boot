@@ -10,7 +10,6 @@ import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.core.ParameterizedTypeReference;
@@ -22,7 +21,6 @@ import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.testcontainers.containers.PostgreSQLContainer;
-import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.util.Collections;
@@ -87,7 +85,8 @@ public class TenantToUserControllerTest {
     @Order(2)
     public void testListAllTenantToUsers() {
         TenantToUserFilter request=new TenantToUserFilter();
-        ParameterizedTypeReference<PaginationResponse<TenantToUser>> t=new ParameterizedTypeReference<PaginationResponse<TenantToUser>>() {};
+        ParameterizedTypeReference<PaginationResponse<TenantToUser>> t= new ParameterizedTypeReference<>() {
+        };
 
         ResponseEntity<PaginationResponse<TenantToUser>> tenantToUserResponse = this.restTemplate.exchange("/tenantToUser/getAll", HttpMethod.POST, new HttpEntity<>(request), t);
         Assertions.assertEquals(200, tenantToUserResponse.getStatusCode().value());

@@ -90,7 +90,8 @@ public class CommonUserControllerTest {
     @Order(2)
     public void testListAllUsers() {
         CommonUserFilter request=new CommonUserFilter();
-        ParameterizedTypeReference<PaginationResponse<User>> t=new ParameterizedTypeReference<PaginationResponse<User>>() {};
+        ParameterizedTypeReference<PaginationResponse<User>> t= new ParameterizedTypeReference<>() {
+        };
 
         ResponseEntity<PaginationResponse<User>> UserResponse = this.restTemplate.exchange("/commonUser/getAllUsers", HttpMethod.POST, new HttpEntity<>(request), t);
         Assertions.assertEquals(200, UserResponse.getStatusCode().value());

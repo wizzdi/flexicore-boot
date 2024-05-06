@@ -109,8 +109,8 @@ public class PermissionGroupToBaseclassFilter extends PaginationFilter {
         return (T) this;
     }
 
-    public record Sorting(SortBy sortBy, boolean asc){};
+    public record Sorting(SortBy sortBy, boolean asc){}
     public enum SortBy{
-        BASECLASS_ID,CLAZZ_NAME,BASECLASS_NAME,BASECLASS_CREATION_DATE;
+        BASECLASS_ID,CLAZZ_NAME,BASECLASS_NAME,BASECLASS_CREATION_DATE
     }
 }

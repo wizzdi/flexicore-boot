@@ -1,6 +1,5 @@
 package plugins;
 
-import com.wizzdi.flexicore.boot.base.interfaces.Plugin;
 import com.wizzdi.flexicore.boot.jaxrs.interfaces.RestServicePlugin;
 import org.pf4j.Extension;
 import org.springframework.stereotype.Component;

@@ -211,22 +211,19 @@ public class FlexiCoreDependencyObjectProvider implements ObjectProvider<Object>
 
 	private Optional<?> createOptionalDependency(
 			DependencyDescriptor descriptor, @Nullable String beanName, final Object... args) {
-		DependencyDescriptor descriptorToUse = getNestedProxy(descriptor, new MethodInterceptor() {
-			@Override
-			public Object intercept(Object o, Method method, Object[] objects, MethodProxy methodProxy) throws Throwable {
-				if (method.getName().equals("isRequired")) {
-					return false;
-				}
-				if (method.getName().equals("resolveCandidate") && !ObjectUtils.isEmpty(args)) {
-					String beanName = (String) objects[0];
-					Class<?> requiredType = (Class<?>) objects[1];
-					BeanFactory beanFactory = (BeanFactory) objects[2];
-					return beanFactory.getBean(beanName, args);
-				}
-				return methodProxy.invokeSuper(o, args);
+		DependencyDescriptor descriptorToUse = getNestedProxy(descriptor, (MethodInterceptor) (o, method, objects, methodProxy) -> {
+            if (method.getName().equals("isRequired")) {
+                return false;
+            }
+            if (method.getName().equals("resolveCandidate") && !ObjectUtils.isEmpty(args)) {
+                String beanName1 = (String) objects[0];
+                Class<?> requiredType = (Class<?>) objects[1];
+                BeanFactory beanFactory = (BeanFactory) objects[2];
+                return beanFactory.getBean(beanName1, args);
+            }
+            return methodProxy.invokeSuper(o, args);
 
-			}
-		});
+        });
 
 		Object result = PluginResolveUtils.resolveDependency(original,descriptorToUse, beanName, null, null);
 		Optional<?> o = result instanceof Optional ? (Optional<?>) result : Optional.ofNullable(result);

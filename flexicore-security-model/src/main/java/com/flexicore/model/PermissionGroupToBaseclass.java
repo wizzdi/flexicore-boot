@@ -8,8 +8,6 @@ package com.flexicore.model;
 
 
 
-import com.flexicore.security.SecurityContextBase;
-
 import jakarta.persistence.Entity;
 import jakarta.persistence.ManyToOne;
 

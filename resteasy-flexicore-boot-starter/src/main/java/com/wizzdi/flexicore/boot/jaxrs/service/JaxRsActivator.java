@@ -12,7 +12,6 @@ import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -64,7 +63,7 @@ public class JaxRsActivator extends Application {
 
 
     public static Set<Class<?>> getAll() {
-		return new LinkedHashSet<>(singletons.stream().map(f->f.getClass()).collect(Collectors.toSet()));
+		return singletons.stream().map(Object::getClass).collect(Collectors.toCollection(LinkedHashSet::new));
 	}
 
     public static void addProvider(Class<?> provider) {

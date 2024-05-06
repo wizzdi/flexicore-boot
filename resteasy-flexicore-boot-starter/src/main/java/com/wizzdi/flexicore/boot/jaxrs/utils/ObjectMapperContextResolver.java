@@ -26,7 +26,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class ObjectMapperContextResolver implements ContextResolver<ObjectMapper> {
 
     private Map<ClassLoader, ObjectMapper> classLoaderObjectMapperMap = new ConcurrentHashMap<>();
-    private static ObjectMapper defaultMapper = null;
+    private static ObjectMapper defaultMapper;
     private static final String[] formats = new String[]{"yyyy-MM-dd'T'HH:mm:ss.SSS", "yyyy-MM-dd'T'HH:mm:ss.SSSXXX"};
 
 

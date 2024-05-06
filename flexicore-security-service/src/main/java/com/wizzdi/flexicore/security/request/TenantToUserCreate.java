@@ -28,6 +28,7 @@ public class TenantToUserCreate extends BasicCreate {
         this.user = other.user;
         this.userId = other.userId;
         this.tenant = other.tenant;
+        this.tenantId=other.tenantId;
     }
 
     public TenantToUserCreate() {

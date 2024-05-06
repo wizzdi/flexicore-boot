@@ -1,6 +1,5 @@
 package com.wizzdi.flexicore.security.events;
 
-import com.flexicore.model.Baseclass;
 import com.flexicore.model.Basic;
 import org.springframework.core.ResolvableType;
 import org.springframework.core.ResolvableTypeProvider;

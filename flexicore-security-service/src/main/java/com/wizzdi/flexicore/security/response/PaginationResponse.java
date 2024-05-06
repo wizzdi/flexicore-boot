@@ -1,6 +1,5 @@
 package com.wizzdi.flexicore.security.response;
 
-import com.wizzdi.flexicore.security.request.BaseclassFilter;
 import com.wizzdi.flexicore.security.request.PaginationFilter;
 
 import java.util.List;

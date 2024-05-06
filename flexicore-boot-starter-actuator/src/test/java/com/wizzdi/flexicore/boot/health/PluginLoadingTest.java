@@ -4,7 +4,6 @@ import com.wizzdi.flexicore.boot.base.init.FlexiCorePluginManager;
 import com.wizzdi.flexicore.boot.health.app.App;
 import com.wizzdi.flexicore.boot.test.helper.PluginJar;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -47,8 +46,8 @@ public class PluginLoadingTest {
 
 	static{
 		pluginsPath=getPluginsDir("plugins");
-		entitiesPath=getPluginsDir("entities");;
-		try {
+		entitiesPath=getPluginsDir("entities");
+        try {
 			File pluginsDir = new File(pluginsPath);
 			if (!pluginsDir.exists()) {
 				if (!pluginsDir.mkdirs()) {

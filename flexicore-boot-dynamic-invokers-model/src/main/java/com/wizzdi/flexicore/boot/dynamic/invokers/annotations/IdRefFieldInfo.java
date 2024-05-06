@@ -1,6 +1,5 @@
 package com.wizzdi.flexicore.boot.dynamic.invokers.annotations;
 
-import com.flexicore.annotations.IOperation;
 import com.flexicore.annotations.TypeRetention;
 import org.springframework.core.annotation.AliasFor;
 

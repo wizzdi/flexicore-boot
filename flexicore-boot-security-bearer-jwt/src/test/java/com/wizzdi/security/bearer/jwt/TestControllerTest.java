@@ -7,7 +7,6 @@ import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.core.ParameterizedTypeReference;
@@ -20,7 +19,6 @@ import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.testcontainers.containers.PostgreSQLContainer;
-import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.util.Collections;
@@ -64,7 +62,7 @@ public class TestControllerTest {
         List<String> strings = stringResponseEntity.getHeaders().get(HttpHeaders.AUTHORIZATION);
         Assertions.assertNotNull(strings);
         Assertions.assertFalse(strings.isEmpty());
-        String key=strings.get(0);
+        String key=strings.getFirst();
         restTemplate.getRestTemplate().setInterceptors(
                 Collections.singletonList((request, body, execution) -> {
                     request.getHeaders()
@@ -78,7 +76,8 @@ public class TestControllerTest {
     @Test
     @Order(2)
     public void testListAllTests() {
-        ParameterizedTypeReference<PaginationResponse<Role>> t=new ParameterizedTypeReference<PaginationResponse<Role>>() {};
+        ParameterizedTypeReference<PaginationResponse<Role>> t= new ParameterizedTypeReference<>() {
+        };
 
         ResponseEntity<PaginationResponse<Role>> testResponse = this.restTemplate.exchange("/test/getAll", HttpMethod.GET, new HttpEntity<>(null,null), t);
         Assertions.assertEquals(200, testResponse.getStatusCode().value());

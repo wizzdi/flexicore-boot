@@ -1,6 +1,5 @@
 package com.wizzdi.dynamic.properties.converter.postgresql;
 
-import com.wizzdi.dynamic.properties.converter.DynamicPropertiesUtils;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
 import jakarta.persistence.criteria.CriteriaBuilder;
@@ -13,7 +12,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 @Component
 public class AuthorRepository {

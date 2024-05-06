@@ -1,19 +1,13 @@
 package com.wizzdi.flexicore.boot.dynamic.invokers.service;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.github.benmanes.caffeine.cache.Cache;
-import com.github.benmanes.caffeine.cache.Caffeine;
 import com.wizzdi.flexicore.boot.base.interfaces.Plugin;
 import com.wizzdi.flexicore.boot.dynamic.invokers.annotations.ListFieldInfo;
-import org.checkerframework.checker.units.qual.A;
 import org.pf4j.Extension;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.CachePut;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.core.annotation.AnnotatedElementUtils;
-import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ClassUtils;
@@ -102,7 +96,7 @@ public class ExampleService implements Plugin {
 										if (listFieldInfo != null) {
 											Class<?> collectionType = listFieldInfo.listType();
 											Object o = exampleCacheService.getExampleCached(collectionType);
-											Collection collection = (Collection) toRet.newInstance();
+											Collection collection = (Collection) toRet.getConstructor().newInstance();
 											collection.add(o);
 											setter.invoke(example, collection);
 

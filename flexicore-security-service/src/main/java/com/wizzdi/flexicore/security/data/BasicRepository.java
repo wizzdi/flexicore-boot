@@ -3,7 +3,6 @@ package com.wizzdi.flexicore.security.data;
 import com.flexicore.model.Baseclass_;
 import com.flexicore.model.Basic;
 import com.flexicore.model.Basic_;
-import com.flexicore.model.SecuredBasic_;
 import com.wizzdi.flexicore.boot.base.interfaces.Plugin;
 import com.wizzdi.flexicore.security.events.BasicCreated;
 import com.wizzdi.flexicore.security.events.BasicUpdated;

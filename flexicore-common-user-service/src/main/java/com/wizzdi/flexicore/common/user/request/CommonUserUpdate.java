@@ -13,7 +13,7 @@ public class CommonUserUpdate extends CommonUserCreate {
     @JsonIgnore
     private User user;
 
-    @Schema(description = "id of the user to update",required = true)
+    @Schema(description = "id of the user to update",requiredMode = Schema.RequiredMode.REQUIRED)
     public String getId() {
         return id;
     }

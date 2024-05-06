@@ -4,7 +4,6 @@ import org.reflections.Reflections;
 import org.reflections.util.ConfigurationBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
@@ -79,15 +78,15 @@ public class EntitiesProvider {
 		if (file.exists() && file.isDirectory()) {
 			File[] jars = file.listFiles();
 			if (jars != null) {
-				return Stream.of(jars).filter(f -> f.getName().endsWith(".jar")).map(this::getJarURL).filter(Objects::nonNull).collect(Collectors.toList());
+				return Stream.of(jars).filter(f -> f.getName().endsWith(".jar")).map(EntitiesProvider::getJarURL).filter(Objects::nonNull).collect(Collectors.toList());
 			}
 		}
 		return new ArrayList<>();
 	}
 
-	private URL getJarURL(File f) {
+	private static URL getJarURL(File f) {
 		try {
-			return new URL(new URI("jar", f.toURI().toString(), null).toString() + "!/");
+			return new URI("jar", f.toURI() +"!/",null ).toURL();
 		} catch (MalformedURLException | URISyntaxException e) {
 			logger.error("failed getting jar url for file" + f.getAbsolutePath());
 		}

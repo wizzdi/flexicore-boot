@@ -12,7 +12,6 @@ import com.wizzdi.flexicore.file.model.ZipFileToFileResource;
 import com.wizzdi.flexicore.file.request.*;
 import com.wizzdi.flexicore.security.response.PaginationResponse;
 import com.wizzdi.flexicore.security.service.BaseclassService;
-import com.wizzdi.flexicore.security.service.BasicService;
 import org.pf4j.Extension;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

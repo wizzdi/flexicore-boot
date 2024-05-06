@@ -474,7 +474,7 @@ public class ClassScannerService implements Plugin {
             if (clazz == null) {
                clazz=clazzService.createClazz(clazzCreate, null);
                 existing.put(clazz.getId(), clazz);
-                logger.debug("Have created a new class " + clazz.toString());
+                logger.debug("Have created a new class " + clazz);
 
 
             } else {
@@ -532,10 +532,9 @@ public class ClassScannerService implements Plugin {
         if (size <= 0) {
             throw new IllegalArgumentException("The size must be greater than 0");
         }
-        return new ArrayList<>(IntStream.iterate(0, i -> i + size)
+        return IntStream.iterate(0, i -> i + size)
                 .limit((long) Math.ceil((double) list.size() / size))
-                .mapToObj(cur -> list.subList(cur, Math.min(cur + size, list.size())))
-                .collect(Collectors.toList()));
+                .mapToObj(cur -> list.subList(cur, Math.min(cur + size, list.size()))).collect(Collectors.toList());
     }
 
 }

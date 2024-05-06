@@ -1,7 +1,6 @@
 package com.wizzdi.flexicore.security.request;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.flexicore.model.Baseclass;
 import com.flexicore.model.Role;
 import com.flexicore.model.SecurityTenant;
 import com.wizzdi.flexicore.security.validation.Create;

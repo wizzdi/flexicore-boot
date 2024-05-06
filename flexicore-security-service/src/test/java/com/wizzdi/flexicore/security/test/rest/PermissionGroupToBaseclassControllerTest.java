@@ -14,7 +14,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.context.annotation.Lazy;
@@ -31,7 +30,6 @@ import org.springframework.web.client.DefaultResponseErrorHandler;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.ResponseErrorHandler;
 import org.testcontainers.containers.PostgreSQLContainer;
-import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.io.IOException;
@@ -118,7 +116,8 @@ public class PermissionGroupToBaseclassControllerTest {
     @Order(2)
     public void testListAllPermissionGroupToBaseclasss() {
         PermissionGroupToBaseclassFilter request=new PermissionGroupToBaseclassFilter();
-        ParameterizedTypeReference<PaginationResponse<PermissionGroupToBaseclass>> t=new ParameterizedTypeReference<PaginationResponse<PermissionGroupToBaseclass>>() {};
+        ParameterizedTypeReference<PaginationResponse<PermissionGroupToBaseclass>> t= new ParameterizedTypeReference<>() {
+        };
 
         ResponseEntity<PaginationResponse<PermissionGroupToBaseclass>> permissionGroupToBaseclassResponse = this.restTemplate.exchange("/permissionGroupToBaseclass/getAll", HttpMethod.POST, new HttpEntity<>(request), t);
         Assertions.assertEquals(200, permissionGroupToBaseclassResponse.getStatusCode().value());

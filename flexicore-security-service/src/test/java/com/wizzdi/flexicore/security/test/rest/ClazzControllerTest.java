@@ -1,16 +1,13 @@
 package com.wizzdi.flexicore.security.test.rest;
 
 import com.flexicore.model.Clazz;
-import com.wizzdi.flexicore.security.request.ClazzCreate;
 import com.wizzdi.flexicore.security.request.ClazzFilter;
-import com.wizzdi.flexicore.security.request.ClazzUpdate;
 import com.wizzdi.flexicore.security.response.PaginationResponse;
 import com.wizzdi.flexicore.security.test.app.App;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.core.ParameterizedTypeReference;
@@ -22,12 +19,10 @@ import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.testcontainers.containers.PostgreSQLContainer;
-import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.UUID;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = App.class)
@@ -75,7 +70,8 @@ public class ClazzControllerTest {
     @Order(2)
     public void testListAllClazzs() {
         ClazzFilter request=new ClazzFilter();
-        ParameterizedTypeReference<PaginationResponse<Clazz>> t=new ParameterizedTypeReference<PaginationResponse<Clazz>>() {};
+        ParameterizedTypeReference<PaginationResponse<Clazz>> t= new ParameterizedTypeReference<>() {
+        };
 
         ResponseEntity<PaginationResponse<Clazz>> clazzResponse = this.restTemplate.exchange("/clazz/getAll", HttpMethod.POST, new HttpEntity<>(request), t);
         Assertions.assertEquals(200, clazzResponse.getStatusCode().value());

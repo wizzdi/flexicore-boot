@@ -9,7 +9,7 @@
   <artifactId>flexicore-plugin-test-plugin</artifactId>
   <packaging>maven-plugin</packaging>
   <name>flexicore-plugins-test-plugins Maven Mojo</name>
-  <url>http://maven.apache.org</url>
+  <url>https://maven.apache.org</url>
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <maven.compiler.source>17</maven.compiler.source>

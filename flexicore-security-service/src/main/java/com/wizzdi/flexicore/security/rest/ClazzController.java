@@ -5,16 +5,11 @@ import com.flexicore.annotations.OperationsInside;
 import com.flexicore.model.Clazz;
 import com.flexicore.security.SecurityContextBase;
 import com.wizzdi.flexicore.boot.base.interfaces.Plugin;
-import com.wizzdi.flexicore.security.request.ClazzCreate;
 import com.wizzdi.flexicore.security.request.ClazzFilter;
-import com.wizzdi.flexicore.security.request.ClazzUpdate;
 import com.wizzdi.flexicore.security.response.PaginationResponse;
 import com.wizzdi.flexicore.security.service.ClazzService;
-import com.wizzdi.flexicore.security.validation.Create;
-import com.wizzdi.flexicore.security.validation.Update;
 import org.pf4j.Extension;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import jakarta.validation.Valid;

@@ -96,7 +96,7 @@ public class FileResourceService implements Plugin {
 				logger.warn("failed creating home dir "+home);
 			}
 		}
-		return new File(home, prefix + "--" + UUID.randomUUID().toString());
+		return new File(home, prefix + "--" + UUID.randomUUID());
 	}
 
 	public FileResource createFileResourceNoMerge(FileResourceCreate fileResourceCreate, SecurityContextBase securityContextBase) {
@@ -147,14 +147,12 @@ public class FileResourceService implements Plugin {
 
 
 	public void validate(FileResourceCreate fileResourceCreate, SecurityContextBase securityContextBase) {
-		basicService.validate(fileResourceCreate,securityContextBase);
 
 	}
 
 
 
 	public void validate(FileResourceFilter fileResourceFilter, SecurityContextBase securityContextBase) {
-		basicService.validate(fileResourceFilter, securityContextBase);
 
 
 	}
@@ -234,7 +232,7 @@ public class FileResourceService implements Plugin {
 					InputStream inputStream = new FileInputStream(file);
 					inputStream.skip(offset);
 					if (size > 0) {
-						inputStream = new BoundedInputStream(inputStream, size);
+						inputStream = BoundedInputStream.builder().setInputStream(inputStream).setMaxCount(size).get();
 					}
 					int available = inputStream.available();
 					long contentLength = size > 0 ? Math.min(available, size) : available;
@@ -345,7 +343,7 @@ public class FileResourceService implements Plugin {
 		FileResource fileResource = listAllFileResources(new FileResourceFilter().setMd5s(Collections.singleton(md5)),securityContext).stream().findFirst().orElse(null);
 		if (fileResource == null) {
 			String ext = filename.endsWith("tar.gz") ? "tar.gz" : FilenameUtils.getExtension(filename);
-			String actualFilename = !ext.isEmpty() ? UUID.randomUUID().toString() + "." + ext : UUID.randomUUID().toString();
+			String actualFilename = !ext.isEmpty() ? UUID.randomUUID() + "." + ext : UUID.randomUUID().toString();
 			String fullPath = new File(uploadPath,actualFilename).getAbsolutePath();
 			FileResourceCreate fileResourceCreate = new FileResourceCreate()
 					.setActualFilename(actualFilename)

@@ -57,8 +57,8 @@ public class PluginLoadingTest {
 
 	static{
 		pluginsPath=getPluginsDir("plugins");
-		entitiesPath=getPluginsDir("entities");;
-		try {
+		entitiesPath=getPluginsDir("entities");
+        try {
 			File pluginsDir = new File(pluginsPath);
 			if (!pluginsDir.exists()) {
 				if (!pluginsDir.mkdirs()) {
@@ -107,7 +107,7 @@ public class PluginLoadingTest {
 
 		WebSocketClient webSocketClient = new StandardWebSocketClient();
 		AtomicBoolean connected = new AtomicBoolean(false);
-		WebSocketSession webSocketSession = webSocketClient.doHandshake(new TextWebSocketHandler() {
+		WebSocketSession webSocketSession = webSocketClient.execute(new TextWebSocketHandler() {
 			@Override
 			public void handleTextMessage(WebSocketSession session, TextMessage message) {
 				logger.info("received message - " + message.getPayload());

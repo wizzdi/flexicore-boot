@@ -21,6 +21,7 @@ import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.AbstractJpaVendorAdapter;
 import org.springframework.orm.jpa.vendor.EclipseLinkJpaVendorAdapter;
 import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.transaction.jta.JtaTransactionManager;
 
@@ -54,17 +55,12 @@ public class EclipseLinkJpaConfiguration extends JpaBaseConfiguration {
         JpaTransactionManager transactionManager = new JpaTransactionManager();
         TransactionManagerCustomizers managerCustomizersIfAvailable = transactionManagerCustomizers.getIfAvailable();
         if (managerCustomizersIfAvailable != null) {
-            managerCustomizersIfAvailable.customize(transactionManager);
+            managerCustomizersIfAvailable.customize((TransactionManager)transactionManager);
         }
 
         return transactionManager;
     }
 
-  /*  @Bean
-    @Primary
-    public PlatformTransactionManager transactionManager(PlatformTransactionManager platformTransactionManager){
-        return platformTransactionManager;
-    }*/
 
     @Bean
     @Primary

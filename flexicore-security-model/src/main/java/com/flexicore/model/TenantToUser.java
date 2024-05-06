@@ -7,7 +7,6 @@
 package com.flexicore.model;
 
 import com.flexicore.annotations.AnnotatedClazz;
-import com.flexicore.security.SecurityContextBase;
 
 
 import jakarta.persistence.Entity;

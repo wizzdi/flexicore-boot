@@ -195,12 +195,7 @@ public class BaseclassRepository implements Plugin {
 	}
 
 	private Set<String> getRelevantOpGroups(SecurityOperation op) {
-		return operationToOperationGroupCache.get(op.getId(), new Callable<Set<String>>() {
-			@Override
-			public Set<String> call() throws Exception {
-				return operationToGroupService.listAllOperationToGroups(new OperationToGroupFilter().setOperations(Collections.singletonList(op)),null).stream().map(f->f.getOperationGroup().getId()).collect(Collectors.toSet());
-			}
-		});
+		return operationToOperationGroupCache.get(op.getId(), () -> operationToGroupService.listAllOperationToGroups(new OperationToGroupFilter().setOperations(Collections.singletonList(op)),null).stream().map(f->f.getOperationGroup().getId()).collect(Collectors.toSet()));
 	}
 
 	private SecurityLinkHolder getSecurityLinkHolder(SecurityContextBase securityContextBase) {
@@ -409,7 +404,7 @@ public class BaseclassRepository implements Plugin {
 		q.select(r).where(predicates.toArray(Predicate[]::new));
 		TypedQuery<T> query = em.createQuery(q);
 		List<T> resultList = query.getResultList();
-		return resultList.isEmpty() ? null : resultList.get(0);
+		return resultList.isEmpty() ? null : resultList.getFirst();
 	}
 
 	public <D extends Basic, E extends Baseclass, T extends D> T getByIdOrNull(String id, Class<T> c, SingularAttribute<D, E> baseclassAttribute, SecurityContextBase securityContext) {
@@ -426,7 +421,7 @@ public class BaseclassRepository implements Plugin {
 		q.select(r).where(predicates.toArray(Predicate[]::new));
 		TypedQuery<T> query = em.createQuery(q);
 		List<T> resultList = query.getResultList();
-		return resultList.isEmpty() ? null : resultList.get(0);
+		return resultList.isEmpty() ? null : resultList.getFirst();
 	}
 
 	public <D extends Basic, E extends Baseclass, T extends D> List<T> listByIds(Class<T> c, Set<String> ids, SingularAttribute<D, E> baseclassAttribute, SecurityContextBase securityContext) {

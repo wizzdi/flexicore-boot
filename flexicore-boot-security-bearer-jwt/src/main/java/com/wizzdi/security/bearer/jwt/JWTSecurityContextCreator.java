@@ -14,8 +14,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
-import java.util.stream.Collectors;
-
 @Component
 public class JWTSecurityContextCreator {
     @Autowired
@@ -35,7 +33,7 @@ public class JWTSecurityContextCreator {
 
             return null;
         }
-        Claims claims = claimsJws.getBody();
+        Claims claims = claimsJws.getPayload();
         // Get user identity and set it on the spring security context
         String id = flexicoreJwtTokenUtil.getId(claimsJws);
         SecurityUser securityUser = securityUserService.getByIdOrNull(id, SecurityUser.class, SecurityUser_.security,null);

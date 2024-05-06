@@ -2,7 +2,6 @@ package com.wizzdi.flexicore.boot.jpa.init.hibernate;
 
 
 import com.wizzdi.flexicore.boot.jpa.service.EntitiesHolder;
-import org.hibernate.annotations.ColumnTransformer;
 import org.hibernate.boot.model.naming.ImplicitNamingStrategy;
 import org.hibernate.boot.model.naming.PhysicalNamingStrategy;
 import org.hibernate.cfg.AvailableSettings;
@@ -30,13 +29,12 @@ import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.AbstractJpaVendorAdapter;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.transaction.jta.JtaTransactionManager;
 import org.springframework.util.ClassUtils;
 
 import javax.sql.DataSource;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Method;
 import java.util.*;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -95,7 +93,7 @@ public class HibernateLinkJpaConfiguration extends JpaBaseConfiguration {
         JpaTransactionManager transactionManager = new JpaTransactionManager();
         TransactionManagerCustomizers managerCustomizersIfAvailable = transactionManagerCustomizers.getIfAvailable();
         if (managerCustomizersIfAvailable != null) {
-            managerCustomizersIfAvailable.customize(transactionManager);
+            managerCustomizersIfAvailable.customize((TransactionManager)transactionManager);
         }
 
         return transactionManager;
@@ -228,7 +226,7 @@ public class HibernateLinkJpaConfiguration extends JpaBaseConfiguration {
     private Object getNoJtaPlatformManager() {
         for (String candidate : NO_JTA_PLATFORM_CLASSES) {
             try {
-                return Class.forName(candidate).newInstance();
+                return Class.forName(candidate).getConstructor().newInstance();
             }
             catch (Exception ex) {
                 // Continue searching

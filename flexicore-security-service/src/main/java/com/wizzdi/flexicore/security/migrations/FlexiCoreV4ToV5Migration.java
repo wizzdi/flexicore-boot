@@ -45,7 +45,7 @@ public class FlexiCoreV4ToV5Migration {
     public static final String MIGRATE_WITH_DTYPE = """
            insert into {0}(id,name,description,security_id,dtype,creationDate,updateDate,softDelete)
            select id,name,description,id,''{1}'',creationDate,updateDate,softDelete from baseclass where dtype=''{2}'' on conflict(id) do nothing
-            """;
+           """;
 
     public static final String MIGRATE_WITHOUT_SECURITY = """
             insert into {0}(id,name,description,creationDate,updateDate,softDelete)
@@ -96,15 +96,15 @@ public class FlexiCoreV4ToV5Migration {
     private static void dropUnnecessaryColumns(Statement select, List<TypeMigration> additional) throws SQLException {
         {
             String sql = """
-                    alter table baseclass 
-                    drop column if exists simplevalue , 
+                    alter table baseclass
+                    drop column if exists simplevalue ,
                     drop column if exists value_id ,
                     drop column if exists defualtTennant ,
                     drop column if exists defaultaccess ,
                     drop column if exists leftside_id ,
                     drop column if exists rightside_id ,
                     drop column if exists left_id ,
-                    drop column if exists right_id 
+                    drop column if exists right_id
                     """;
             logger.info("dropping unnecessary columns {}", sql);
             select.execute(sql);
@@ -152,9 +152,9 @@ public class FlexiCoreV4ToV5Migration {
 
         {  //drop constraints
             String sql = """
-                    alter table baseclass 
-                    drop constraint IF EXISTS  fk_baseclass_clazz_id, 
-                    drop constraint IF EXISTS fk_baseclass_creator_id, 
+                    alter table baseclass
+                    drop constraint IF EXISTS  fk_baseclass_clazz_id,
+                    drop constraint IF EXISTS fk_baseclass_creator_id,
                     drop constraint IF EXISTS fk_baseclass_tenant_id
                     """;
             logger.info("dropping constraints SQL: {}", sql);
@@ -164,11 +164,11 @@ public class FlexiCoreV4ToV5Migration {
             //create constraints
             logger.info("creating constraints");
             String sql = """
-                    alter table baseclass 
+                    alter table baseclass
                     add constraint fk_baseclass_clazz_id foreign key (clazz_id) references clazz(id),
                     add constraint fk_baseclass_creator_id foreign key (creator_id) references userTable(id),
                     add constraint fk_baseclass_tenant_id foreign key (tenant_id) references securitytenant(id)
-                       
+                    
                     """;
             select.execute(sql);
         }
@@ -343,6 +343,6 @@ public class FlexiCoreV4ToV5Migration {
     }
 
 
-    public record ExternalTypeMigration(List<FieldMigration> fieldMigrationsOverride,Class<?> type){};
+    public record ExternalTypeMigration(List<FieldMigration> fieldMigrationsOverride,Class<?> type){}
 
 }

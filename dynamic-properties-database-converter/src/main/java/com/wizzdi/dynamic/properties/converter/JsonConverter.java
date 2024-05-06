@@ -6,7 +6,6 @@ import java.util.Map;
 @Converter(autoApply = false)
 public class JsonConverter implements jakarta.persistence.AttributeConverter<Map<String, Object>, Object> {
 
-    private static final long serialVersionUID = 1L;
     static JsonConverterImplementation implementation = null;
 
     @Override

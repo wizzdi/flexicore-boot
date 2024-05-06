@@ -1,9 +1,6 @@
 package com.wizzdi.flexicore.boot.base.init;
 
-import org.pf4j.PluginClassLoader;
-import org.pf4j.PluginDependency;
-import org.pf4j.PluginDescriptor;
-import org.pf4j.PluginManager;
+import org.pf4j.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,7 +31,7 @@ public class FlexiCorePluginClassLoader extends PluginClassLoader {
     }
 
     public FlexiCorePluginClassLoader(PluginManager pluginManager, PluginDescriptor pluginDescriptor, ClassLoader parent, boolean parentFirst) {
-        super(pluginManager, pluginDescriptor, parent, parentFirst);
+        super(pluginManager, pluginDescriptor, parent, parentFirst?ClassLoadingStrategy.APD:ClassLoadingStrategy.PDA);
         initName(pluginDescriptor);
         this.parentFirst = parentFirst;
         this.pluginManager = pluginManager;

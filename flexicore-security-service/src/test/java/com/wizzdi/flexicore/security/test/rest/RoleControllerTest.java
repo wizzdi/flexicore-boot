@@ -10,14 +10,11 @@ import com.wizzdi.flexicore.security.request.RoleFilter;
 import com.wizzdi.flexicore.security.request.RoleUpdate;
 import com.wizzdi.flexicore.security.response.PaginationResponse;
 import com.wizzdi.flexicore.security.test.app.App;
-import com.wizzdi.flexicore.security.validation.ValidationErrorResponse;
-import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.context.annotation.Lazy;
@@ -34,11 +31,9 @@ import org.springframework.web.client.DefaultResponseErrorHandler;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.ResponseErrorHandler;
 import org.testcontainers.containers.PostgreSQLContainer;
-import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
@@ -121,7 +116,8 @@ public class RoleControllerTest {
     @Order(2)
     public void testListAllRoles() {
         RoleFilter request=new RoleFilter();
-        ParameterizedTypeReference<PaginationResponse<Role>> t=new ParameterizedTypeReference<PaginationResponse<Role>>() {};
+        ParameterizedTypeReference<PaginationResponse<Role>> t= new ParameterizedTypeReference<>() {
+        };
 
         ResponseEntity<PaginationResponse<Role>> roleResponse = this.restTemplate.exchange("/role/getAll", HttpMethod.POST, new HttpEntity<>(request), t);
         Assertions.assertEquals(200, roleResponse.getStatusCode().value());

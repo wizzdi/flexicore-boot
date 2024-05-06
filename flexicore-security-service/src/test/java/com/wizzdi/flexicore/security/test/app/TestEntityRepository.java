@@ -2,11 +2,9 @@ package com.wizzdi.flexicore.security.test.app;
 
 import com.flexicore.model.Baseclass;
 import com.flexicore.model.Basic;
-import com.flexicore.model.SecuredBasic;
 import com.flexicore.security.SecurityContextBase;
 import com.wizzdi.flexicore.security.data.BasicRepository;
 import com.wizzdi.flexicore.security.data.SecuredBasicRepository;
-import com.wizzdi.flexicore.security.request.BasicPropertiesFilter;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.TypedQuery;

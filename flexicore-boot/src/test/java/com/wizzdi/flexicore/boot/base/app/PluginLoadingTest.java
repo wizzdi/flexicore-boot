@@ -54,7 +54,7 @@ public class PluginLoadingTest {
 
 	static{
 		pluginsPath=getPluginsDir("plugins");
-		entitiesPath=getPluginsDir("entities");;
+		entitiesPath=getPluginsDir("entities");
 		try {
 			File pluginsDir = new File(pluginsPath);
 			if (!pluginsDir.exists()) {

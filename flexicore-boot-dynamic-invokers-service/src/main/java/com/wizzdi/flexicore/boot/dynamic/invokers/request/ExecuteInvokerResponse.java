@@ -2,7 +2,6 @@ package com.wizzdi.flexicore.boot.dynamic.invokers.request;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
-import com.flexicore.model.Basic;
 
 @JsonIdentityInfo(generator = ObjectIdGenerators.UUIDGenerator.class, property = "json-id")
 public class ExecuteInvokerResponse<E> {

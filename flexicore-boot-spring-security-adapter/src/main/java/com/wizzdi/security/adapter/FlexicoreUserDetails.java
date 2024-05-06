@@ -1,6 +1,5 @@
 package com.wizzdi.security.adapter;
 
-import com.flexicore.model.SecurityUser;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 

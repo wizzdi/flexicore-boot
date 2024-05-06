@@ -7,11 +7,11 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configurers.ExpressionUrlAuthorizationConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import static org.springframework.security.config.Customizer.withDefaults;
 
 @Configuration
 public class FlexicoreSpringSecurityConfig {
@@ -20,30 +20,21 @@ public class FlexicoreSpringSecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http,ObjectProvider<FlexiCoreSecurityFilter> flexiCoreSecurityFilters,ObjectProvider<SecurityPathConfigurator> securityPathConfigurators) throws Exception {
         // Enable CORS and disable CSRF
-        http = http.cors().and().csrf().disable();
+        http.cors(withDefaults())
+                .csrf(f->f.disable())
+                .sessionManagement(f -> f.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .exceptionHandling(
+                        f ->
+                                f.authenticationEntryPoint(
+                                        (request, response, ex) -> response.sendError(HttpServletResponse.SC_UNAUTHORIZED, ex.getMessage())))
+                .authorizeHttpRequests(f->{
+                    for (SecurityPathConfigurator securityPathConfigurator : securityPathConfigurators) {
+                        f=securityPathConfigurator.configure(f);
+                    }
+                });
 
-        // Set session management to stateless
-        http = http
-                .sessionManagement()
-                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                .and();
 
-        // Set unauthorized requests exception handler
-        http = http
-                .exceptionHandling()
-                .authenticationEntryPoint(
-                        (request, response, ex) -> {
-                            response.sendError(
-                                    HttpServletResponse.SC_UNAUTHORIZED,
-                                    ex.getMessage()
-                            );
-                        }
-                )
-                .and();
-        ExpressionUrlAuthorizationConfigurer<HttpSecurity>.ExpressionInterceptUrlRegistry expressionInterceptUrlRegistry = http.authorizeRequests();
-        for (SecurityPathConfigurator securityPathConfigurator : securityPathConfigurators) {
-            expressionInterceptUrlRegistry=securityPathConfigurator.configure(expressionInterceptUrlRegistry);
-        }
+
 
 
 

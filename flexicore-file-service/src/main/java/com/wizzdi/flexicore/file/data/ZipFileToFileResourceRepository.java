@@ -1,12 +1,10 @@
 package com.wizzdi.flexicore.file.data;
 
-import com.flexicore.model.Baseclass;
 import com.flexicore.model.Basic;
 import com.flexicore.security.SecurityContextBase;
 import com.wizzdi.flexicore.boot.base.interfaces.Plugin;
 import com.wizzdi.flexicore.file.model.*;
 import com.wizzdi.flexicore.file.request.ZipFileToFileResourceFilter;
-import com.wizzdi.flexicore.security.data.BaseclassRepository;
 import com.wizzdi.flexicore.security.data.BasicRepository;
 import org.pf4j.Extension;
 import org.springframework.beans.factory.annotation.Autowired;
