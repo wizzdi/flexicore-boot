@@ -63,10 +63,10 @@ public class FlexicoreJwtTokenUtil {
 
         String id = user.getId();
         JwtBuilder jwtBuilder = Jwts.builder()
-                .setSubject(format("%s,%s", id, user.getUsername()))
-                .setIssuer(jwtIssuer)
-                .setIssuedAt(new Date())
-                .setExpiration(Date.from(expirationDate.toInstant())) // 1 week
+                .subject(format("%s,%s", id, user.getUsername()))
+                .issuer(jwtIssuer)
+                .issuedAt(new Date())
+                .expiration(Date.from(expirationDate.toInstant())) // 1 week
                 .claim(ID, id)
                 .signWith(cachedJWTSecret.secretKey());
         JwtBuilder jwtBuilderCustomized=tokenCustomizer.map(f->f.customizeToken(jwtBuilder)).orElse(jwtBuilder);
@@ -74,13 +74,13 @@ public class FlexicoreJwtTokenUtil {
     }
 
     public String getId(Jws<Claims> claimsJws) {
-        return (String) claimsJws.getBody().get(ID);
+        return (String) claimsJws.getPayload().get(ID);
     }
 
 
     public Jws<Claims> getClaims(String token) {
         try {
-            return jwtParser.parseClaimsJws(token);
+            return jwtParser.parseSignedClaims(token);
         } catch (MalformedJwtException ex) {
             logger.error("Invalid JWT token - {}", ex.getMessage());
         } catch (ExpiredJwtException ex) {
