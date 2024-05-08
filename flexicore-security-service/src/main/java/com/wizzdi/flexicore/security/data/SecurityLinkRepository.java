@@ -70,6 +70,16 @@ public class SecurityLinkRepository implements Plugin {
 		if(securityLinkFilter.getBaseclasses()!=null&&!securityLinkFilter.getBaseclasses().isEmpty()){
 			predicates.add(r.get(SecurityLink_.baseclass).in(securityLinkFilter.getBaseclasses()));
 		}
+		if(securityLinkFilter.getClazzes()!=null&&!securityLinkFilter.getClazzes().isEmpty()){
+			predicates.add(r.get(SecurityLink_.clazz).in(securityLinkFilter.getClazzes()));
+		}
+
+		if(securityLinkFilter.getPermissionGroups()!=null&&!securityLinkFilter.getPermissionGroups().isEmpty()){
+			predicates.add(r.get(SecurityLink_.permissionGroup).in(securityLinkFilter.getPermissionGroups()));
+		}
+		if(securityLinkFilter.getOperationGroups()!=null&&!securityLinkFilter.getOperationGroups().isEmpty()){
+			predicates.add(r.get(SecurityLink_.operationGroup).in(securityLinkFilter.getOperationGroups()));
+		}
 		if(securityLinkFilter.getAccesses()!=null&&!securityLinkFilter.getAccesses().isEmpty()){
 			predicates.add(r.get(SecurityLink_.access).in(securityLinkFilter.getAccesses()));
 		}

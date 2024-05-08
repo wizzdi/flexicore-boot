@@ -88,23 +88,21 @@ public class ClassScannerService implements Plugin {
     @Scope(value = ConfigurableBeanFactory.SCOPE_SINGLETON)
     @ConditionalOnMissingBean
     public OperationBuilder securityOperationBuilder() {
-        return (securityOperationCreate, existing, relatedClazzes, toMerge, clazzes, securityContextBase) -> createOperation(securityOperationCreate, existing, relatedClazzes, toMerge, clazzes, securityContextBase);
+        return (securityOperationCreate, existing, relatedClazzes, toMerge, clazzes, securityContextBase) -> createOperationNoMerge(securityOperationCreate, existing, relatedClazzes, toMerge, clazzes, securityContextBase);
     }
 
-    private SecurityOperation createOperation(OperationScanContext operationScanContext, Map<String, SecurityOperation> existing, Map<String, Map<String, OperationToClazz>> relatedClazzes, List<Object> toMerge, Map<String, Clazz> clazzes, SecurityContextBase securityContextBase) {
+    private SecurityOperation createOperationNoMerge(OperationScanContext operationScanContext, Map<String, SecurityOperation> existing, Map<String, Map<String, OperationToClazz>> relatedClazzes, List<Object> toMerge, Map<String, Clazz> clazzes, SecurityContextBase securityContextBase) {
         SecurityOperationCreate securityOperationCreate = operationScanContext.getSecurityOperationCreate();
         SecurityOperation securityOperation = existing.get(securityOperationCreate.getIdForCreate());
         if (securityOperation == null) {
             securityOperation = operationService.createOperationNoMerge(securityOperationCreate, securityContextBase);
             securityOperation.setId(securityOperationCreate.getIdForCreate());
-            securityOperation = operationService.merge(securityOperation);
             existing.put(securityOperation.getId(), securityOperation);
-            //toMerge.add(securityOperation);
+            toMerge.add(securityOperation);
         } else {
             if (operationService.updateOperationNoMerge(securityOperationCreate, securityOperation)) {
-                securityOperation = operationService.merge(securityOperation);
 
-                //toMerge.add(securityOperation);
+                toMerge.add(securityOperation);
             }
         }
         Class<?>[] relatedClasses = operationScanContext.getRelatedClasses();
@@ -112,14 +110,18 @@ public class ClassScannerService implements Plugin {
             for (Class<?> relatedClass : relatedClasses) {
                 String clazzId = Baseclass.generateUUIDFromStringCompt(relatedClass.getCanonicalName());
                 Clazz clazz = clazzes.get(clazzId);
+                if(clazz== null){
+                    logger.warn("could not find clazz for class: {} required for operation {}({})", relatedClass.getCanonicalName(),operationScanContext.getSecurityOperationCreate().getName(),operationScanContext.getSecurityOperationCreate().getIdForCreate());
+                    continue;
+                }
                 Map<String, OperationToClazz> operationClazzes = relatedClazzes.computeIfAbsent(securityOperation.getId(), f -> new HashMap<>());
                 OperationToClazz existingOperationToClazz = operationClazzes.get(clazzId);
                 if (existingOperationToClazz == null) {
                     OperationToClazzCreate operationToClazzCreate = new OperationToClazzCreate()
                             .setClazz(clazz)
                             .setSecurityOperation(securityOperation);
-                    existingOperationToClazz = operationToClazzService.createOperationToClazz(operationToClazzCreate, securityContextBase);
-                    //toMerge.add(existingOperationToClazz);
+                    existingOperationToClazz = operationToClazzService.createOperationToClazzNoMerge(operationToClazzCreate, securityContextBase);
+                    toMerge.add(existingOperationToClazz);
                     operationClazzes.put(clazzId, existingOperationToClazz);
                 }
             }
@@ -240,10 +242,9 @@ public class ClassScannerService implements Plugin {
 
         for (OperationScanContext securityOperationCreate : operationCreateMap.values()) {
             SecurityOperation securityOperation = operationBuilder.upsertOperationNoMerge(securityOperationCreate, existing, relatedClazzes, toMerge, clazzMap, securityContextBase);
-            securityOperation = operationService.merge(securityOperation);
         }
 
-        //operationService.massMerge(toMerge);
+        operationService.massMerge(toMerge);
 
         return new Operations(new ArrayList<>(existing.values()));
     }
@@ -474,11 +475,11 @@ public class ClassScannerService implements Plugin {
             if (clazz == null) {
                clazz=clazzService.createClazz(clazzCreate, null);
                 existing.put(clazz.getId(), clazz);
-                logger.debug("Have created a new class " + clazz);
+                logger.debug("Have created a new class {}({})",classname,id);
 
 
             } else {
-                logger.debug("Clazz  allready exists: " + clazz);
+                logger.debug("Clazz already exists: {}({})",classname,id);
 
             }
             Baseclass.addClazz(clazz);

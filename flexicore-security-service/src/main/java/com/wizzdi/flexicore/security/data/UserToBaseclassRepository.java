@@ -2,6 +2,7 @@ package com.wizzdi.flexicore.security.data;
 
 import com.flexicore.model.UserToBaseclass;
 import com.flexicore.model.Baseclass;
+import com.flexicore.model.UserToBaseclass_;
 import com.wizzdi.flexicore.boot.base.interfaces.Plugin;
 import com.wizzdi.flexicore.security.request.UserToBaseclassFilter;
 import com.flexicore.security.SecurityContextBase;
@@ -42,6 +43,9 @@ public class UserToBaseclassRepository implements Plugin {
 
 	public <T extends UserToBaseclass> void addUserToBaseclassPredicates(UserToBaseclassFilter userToBaseclassFilter, CriteriaBuilder cb, CommonAbstractCriteria q, From<?,T> r, List<Predicate> predicates, SecurityContextBase securityContext) {
 		securityLinkRepository.addSecurityLinkPredicates(userToBaseclassFilter,cb,q,r,predicates,securityContext);
+		if(userToBaseclassFilter.getUsers()!=null&&!userToBaseclassFilter.getUsers().isEmpty()){
+			predicates.add(r.get(UserToBaseclass_.user).in(userToBaseclassFilter.getUsers()));
+		}
 	}
 
 	public long countAllUserToBaseclasss(UserToBaseclassFilter userToBaseclassFilter, SecurityContextBase securityContext){

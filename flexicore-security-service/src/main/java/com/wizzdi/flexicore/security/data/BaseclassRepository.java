@@ -205,7 +205,7 @@ public class BaseclassRepository implements Plugin {
 		if (userPermissions != null && rolePermissions.stream().allMatch(f -> f != null) && tenantPermissions.stream().allMatch(f -> f != null)) {
 			List<RoleToBaseclass> roleLinks = rolePermissions.stream().flatMap(f -> f.stream()).toList();
 			List<TenantToBaseclass> tenantLinks = tenantPermissions.stream().flatMap(f -> f.stream()).toList();
-			logger.info("cache hit users: {} , roles: {} , tenants: {}", userPermissions.size(), roleLinks.size(), tenantLinks.size());
+			logger.debug("cache hit users: {} , roles: {} , tenants: {}", userPermissions.size(), roleLinks.size(), tenantLinks.size());
 			return new SecurityLinkHolder(userPermissions, roleLinks, tenantLinks);
 
 		}
@@ -356,7 +356,7 @@ public class BaseclassRepository implements Plugin {
 		}
 
 
-		predicates.add(cb.or(securityPreds.toArray(new Predicate[0])));
+		predicates.add(cb.and(r.get(Baseclass_.tenant).in(securityContext.getTenants()),cb.or(securityPreds.toArray(new Predicate[0]))));
 
 	}
 

@@ -38,6 +38,13 @@ public class SecurityLinkFilter extends PaginationFilter {
 
     private Set<String> baseclassIds=new HashSet<>();
     @JsonIgnore
+    private List<Clazz> clazzes;
+    @JsonIgnore
+    private List<PermissionGroup> permissionGroups;
+    @JsonIgnore
+    private List<OperationGroup> operationGroups;
+
+    @JsonIgnore
     private List<SecurityOperation> operations;
     private Set<String> operationIds=new HashSet<>();
     private Set<IOperation.Access> accesses;
@@ -164,6 +171,36 @@ public class SecurityLinkFilter extends PaginationFilter {
 
     public <T extends SecurityLinkFilter> T setSorting(List<SecurityLinkOrder> sorting) {
         this.sorting = sorting;
+        return (T) this;
+    }
+
+    @JsonIgnore
+    public List<Clazz> getClazzes() {
+        return clazzes;
+    }
+
+    public <T extends SecurityLinkFilter> T setClazzes(List<Clazz> clazzes) {
+        this.clazzes = clazzes;
+        return (T) this;
+    }
+
+    @JsonIgnore
+    public List<OperationGroup> getOperationGroups() {
+        return operationGroups;
+    }
+
+    public <T extends SecurityLinkFilter> T setOperationGroups(List<OperationGroup> operationGroups) {
+        this.operationGroups = operationGroups;
+        return (T) this;
+    }
+
+    @JsonIgnore
+    public List<PermissionGroup> getPermissionGroups() {
+        return permissionGroups;
+    }
+
+    public <T extends SecurityLinkFilter> T setPermissionGroups(List<PermissionGroup> permissionGroups) {
+        this.permissionGroups = permissionGroups;
         return (T) this;
     }
 }

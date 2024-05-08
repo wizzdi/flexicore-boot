@@ -130,7 +130,7 @@ public class DefaultObjectsCreator {
 
         if (tenantToUser.getSecurity().getCreator() == null) {
             tenantToUser.getSecurity().setCreator(admin);
-            defaultTenant = tenantService.merge(defaultTenant);
+            tenantToUser=tenantService.merge(tenantToUser);
         }
 
 

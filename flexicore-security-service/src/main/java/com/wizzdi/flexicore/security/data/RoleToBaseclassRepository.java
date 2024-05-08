@@ -1,7 +1,9 @@
 package com.wizzdi.flexicore.security.data;
 
+import com.flexicore.model.Role;
 import com.flexicore.model.RoleToBaseclass;
 import com.flexicore.model.Baseclass;
+import com.flexicore.model.RoleToBaseclass_;
 import com.wizzdi.flexicore.boot.base.interfaces.Plugin;
 import com.flexicore.security.SecurityContextBase;
 import com.wizzdi.flexicore.security.request.RoleToBaseclassFilter;
@@ -42,6 +44,9 @@ public class RoleToBaseclassRepository implements Plugin {
 
 	public <T extends RoleToBaseclass> void addRoleToBaseclassPredicates(RoleToBaseclassFilter roleToBaseclassFilter, CriteriaBuilder cb, CommonAbstractCriteria q, From<?,T> r, List<Predicate> predicates, SecurityContextBase securityContext) {
 		securityLinkRepository.addSecurityLinkPredicates(roleToBaseclassFilter,cb,q,r,predicates,securityContext);
+		if(roleToBaseclassFilter.getRoles()!=null&&!roleToBaseclassFilter.getRoles().isEmpty()){
+			predicates.add(r.get(RoleToBaseclass_.role).in(roleToBaseclassFilter.getRoles()));
+		}
 	}
 
 	public long countAllRoleToBaseclasss(RoleToBaseclassFilter roleToBaseclassFilter, SecurityContextBase securityContext){
