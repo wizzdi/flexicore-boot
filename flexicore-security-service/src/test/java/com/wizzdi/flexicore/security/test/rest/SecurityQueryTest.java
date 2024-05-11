@@ -104,6 +104,8 @@ private SecurityUserService securityUserService;
         testUser= securityUserService.createSecurityUser(new SecurityUserCreate().setName("testUser"), null);
         testTenant = securityTenantService.createTenant(new SecurityTenantCreate().setName("testTenant"), null);
         tenantToUserService.createTenantToUser(new TenantToUserCreate().setUser(testUser).setDefaultTenant(true).setTenant(testTenant),null);
+        tenantToUserService.createTenantToUser(new TenantToUserCreate().setUser(testUser).setTenant(adminSecurityContext.getTenantToCreateIn()),null);
+
         testRole= roleService.createRole(new RoleCreate().setTenant(testTenant).setName("testRole"), null);
         testRole.getSecurity().setCreator(testUser);
         roleService.merge(testRole);

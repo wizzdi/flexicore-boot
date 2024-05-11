@@ -29,7 +29,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
-import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
@@ -239,9 +238,9 @@ public class BaseclassRepository implements Plugin {
 				cb.and(
 						cb.isFalse(r.get(SecurityLink_.softDelete)),
 						cb.or(
-				user.get(UserToBaseclass_.user).in(securityContextBase.getUser()),
-				roles.isEmpty()?cb.or():role.get(RoleToBaseclass_.role).in(roles),
-				securityContextBase.getTenants().isEmpty()?cb.or():tenant.get(TenantToBaseclass_.tenant).in(securityContextBase.getTenants())
+								user.get(UserToBaseclass_.user).in(securityContextBase.getUser()),
+								roles.isEmpty()?cb.or():role.get(RoleToBaseclass_.role).in(roles),
+								securityContextBase.getTenants().isEmpty()?cb.or():tenant.get(TenantToBaseclass_.tenant).in(securityContextBase.getTenants())
 						)));
 		return em.createQuery(q).getResultList();
 	}
@@ -268,14 +267,20 @@ public class BaseclassRepository implements Plugin {
 			securityPreds.add(r.in(user.allowed()));
 		}
 		List<Baseclass> userDenied = user.denied();
-		if (!user.allowedTypes().isEmpty()) {
+		List<SecurityTenant> allowAllTenantsWithoutDeny=new ArrayList<>(); // in the case of allow all tenants ,and no denies we can improve the query or avoid a bunch of ors and use an IN clause
+		if (specificUserTypePermissionRequired(user,userDenied)) {
 			securityPreds.add(cb.and(
-					user.allowAll() ? cb.and() : r.get(Baseclass_.clazz).in(user.allowedTypes()),
 					r.get(Baseclass_.tenant).in(securityContext.getTenants()),
+					user.allowAll() ? cb.and() : r.get(Baseclass_.clazz).in(user.allowedTypes()),
 					userDenied.isEmpty() ? cb.and() : cb.not(r.in(userDenied)),
 					user.deniedPermissionGroups().isEmpty()?cb.and(): cb.not(permissionGroupPredicate(r,user.deniedPermissionGroups(),join))
 			));
 
+		}
+		else{
+			if(user.allowAll()){
+				allowAllTenantsWithoutDeny.addAll(securityContext.getTenants());
+			}
 		}
 		if (!user.allowedPermissionGroups().isEmpty()) {
 			securityPreds.add(permissionGroupPredicate(r,user.allowedPermissionGroups(),join));
@@ -291,7 +296,7 @@ public class BaseclassRepository implements Plugin {
 						user.deniedPermissionGroups().isEmpty()?cb.and():cb.not(permissionGroupPredicate(r,user.deniedPermissionGroups(),join))
 				));
 			}
-			if (!role.allowedTypes().isEmpty()) {
+			if (specificRoleTypesPermissionRequired(role,userDenied,user)) {
 				securityPreds.add(cb.and(
 						cb.equal(r.get(Baseclass_.tenant), securityTenant),
 						role.allowAll() ? cb.and() : r.get(Baseclass_.clazz).in(role.allowedTypes()),
@@ -301,6 +306,11 @@ public class BaseclassRepository implements Plugin {
 						role.deniedPermissionGroups().isEmpty()?cb.and():cb.not(permissionGroupPredicate(r,role.deniedPermissionGroups(),join))
 
 				));
+			}
+			else{
+				if(role.allowAll()){
+					allowAllTenantsWithoutDeny.add(securityTenant);
+				}
 			}
 			if (!role.allowedPermissionGroups().isEmpty()) {
 				securityPreds.add(cb.and(
@@ -339,7 +349,7 @@ public class BaseclassRepository implements Plugin {
 			));
 		}
 		for (SecurityPermissionEntry<SecurityTenant> tenant : tenants) {
-			if (!tenant.allowedTypes().isEmpty()) {
+			if (specificTenantTypesPermissionRequired(tenant,userDenied,roleDenied,user,rolePermissionGroupDenied)) {
 				SecurityTenant tenantEntity = tenant.entity();
 				securityPreds.add(cb.and(
 						cb.equal(r.get(Baseclass_.tenant), tenantEntity),
@@ -353,11 +363,31 @@ public class BaseclassRepository implements Plugin {
 						tenant.deniedPermissionGroups().isEmpty()?cb.and():cb.not(permissionGroupPredicate(r,tenant.deniedPermissionGroups(),join))
 				));
 			}
+			else{
+				if(tenant.allowAll()){
+					allowAllTenantsWithoutDeny.add(tenant.entity());
+				}
+			}
+		}
+		if(!allowAllTenantsWithoutDeny.isEmpty()){
+			securityPreds.add(cb.or(r.get(Baseclass_.tenant).in(allowAllTenantsWithoutDeny)));
 		}
 
 
 		predicates.add(cb.and(r.get(Baseclass_.tenant).in(securityContext.getTenants()),cb.or(securityPreds.toArray(new Predicate[0]))));
 
+	}
+
+	private static boolean specificTenantTypesPermissionRequired(SecurityPermissionEntry<SecurityTenant> tenant, List<Baseclass> userDenied, List<Baseclass> roleDenied, SecurityPermissionEntry<SecurityUser> user, List<PermissionGroup> rolePermissionGroupDenied) {
+		return !tenant.allowedTypes().isEmpty() && (!tenant.allowAll() || !userDenied.isEmpty() || !roleDenied.isEmpty() || !user.deniedPermissionGroups().isEmpty() || !rolePermissionGroupDenied.isEmpty());
+	}
+
+	private static boolean specificUserTypePermissionRequired(SecurityPermissionEntry<SecurityUser> user, List<Baseclass> userDenied) {
+		return !user.allowedTypes().isEmpty()&& (!user.allowAll() || !userDenied.isEmpty() || !user.deniedPermissionGroups().isEmpty());
+	}
+
+	private static boolean specificRoleTypesPermissionRequired(SecurityPermissionEntry<Role> role, List<Baseclass> userDenied, SecurityPermissionEntry<SecurityUser> user) {
+		return !role.allowedTypes().isEmpty() && (!role.allowAll() || !userDenied.isEmpty() || !user.deniedPermissionGroups().isEmpty());
 	}
 
 	public boolean requiresSecurityPredicates(SecurityContextBase securityContext) {
@@ -366,8 +396,8 @@ public class BaseclassRepository implements Plugin {
 		}
 		Map<String, List<Role>> roles = securityContext.getRoleMap();
 		List<Role> allRoles = roles.values().stream().flatMap(f -> f.stream()).toList();
-        return !isSuperAdmin(allRoles);
-    }
+		return !isSuperAdmin(allRoles);
+	}
 
 
 	private boolean isSuperAdmin(List<Role> roles) {
