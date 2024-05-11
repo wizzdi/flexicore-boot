@@ -17,7 +17,7 @@ Add the flexicore-boot-dependencies dependency using the latest version availabl
                         <!-- Import dependency management from FleiCore Boot -->
                             <groupId>com.wizzdi</groupId>
                             <artifactId>flexicore-boot-dependencies</artifactId>
-                            <version>4.0.8</version> <!-- use latest version -->
+                            <version>6.0.1</version> <!-- use latest version -->
                             <type>pom</type>
                             <scope>import</scope>
                         </dependency>
