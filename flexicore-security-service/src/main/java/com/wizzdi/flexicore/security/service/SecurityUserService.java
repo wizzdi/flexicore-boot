@@ -42,7 +42,6 @@ public class SecurityUserService implements Plugin {
 		securityUser.setId(UUID.randomUUID().toString());
 		updateSecurityUserNoMerge(securityUserCreate,securityUser);
 		BaseclassService.createSecurityObjectNoMerge(securityUser,securityContext);
-		securityUserRepository.merge(securityUser);
 		return securityUser;
 	}
 
