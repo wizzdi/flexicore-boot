@@ -211,7 +211,7 @@ public class FlexiCoreV4ToV5Migration {
             //insert into securityLinkGroup where securityLinkGroup_id is null
             String sql = """
                     insert into securitylinkgroup(id,name,description,security_id,creationDate,updateDate,softDelete)
-                                           select CONCAT(id,'_group'),name,description,id,creationDate,updateDate,softDelete from securityLink where securityLinkGroup_id is null on conflict(id) do nothing""";
+                                           select CONCAT(id,'_group'),name,description,security_id,creationDate,updateDate,softDelete from securityLink where securityLinkGroup_id is null on conflict(id) do nothing""";
             logger.info("migrating securityLinkGroup: {} ", sql);
             select.execute(sql);
 
