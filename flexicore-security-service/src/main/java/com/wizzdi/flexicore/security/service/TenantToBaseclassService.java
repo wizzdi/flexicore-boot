@@ -48,7 +48,6 @@ public class TenantToBaseclassService implements Plugin {
 		tenantToBaseclass.setId(UUID.randomUUID().toString());
 		updateTenantToBaseclassNoMerge(tenantToBaseclassCreate,tenantToBaseclass);
 		BaseclassService.createSecurityObjectNoMerge(tenantToBaseclass,securityContext);
-		tenantToBaseclassRepository.merge(tenantToBaseclass);
 		return tenantToBaseclass;
 	}
 

@@ -49,7 +49,6 @@ public class SecurityPolicyService implements Plugin {
 		securityPolicy.setId(UUID.randomUUID().toString());
 		updateSecurityPolicyNoMerge(securityPolicyCreate, securityPolicy);
 		BaseclassService.createSecurityObjectNoMerge(securityPolicy, securityContext);
-		securityPolicyRepository.merge(securityPolicy);
 		return securityPolicy;
 	}
 

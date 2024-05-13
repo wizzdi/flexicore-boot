@@ -49,7 +49,6 @@ public class SecurityTenantService implements Plugin {
 		tenant.setId(UUID.randomUUID().toString());
 		updateTenantNoMerge(tenantCreate,tenant);
 		BaseclassService.createSecurityObjectNoMerge(tenant,securityContext);
-		tenantRepository.merge(tenant);
 		return tenant;
 	}
 

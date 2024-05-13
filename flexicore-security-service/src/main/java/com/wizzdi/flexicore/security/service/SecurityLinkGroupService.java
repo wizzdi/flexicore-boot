@@ -84,7 +84,6 @@ public class SecurityLinkGroupService implements Plugin {
 		securityLinkGroup.setId(UUID.randomUUID().toString());
 		updateSecurityLinkGroupNoMerge(securityLinkGroupCreate,securityLinkGroup);
 		BaseclassService.createSecurityObjectNoMerge(securityLinkGroup,securityContext);
-		securityLinkGroupRepository.merge(securityLinkGroup);
 		return securityLinkGroup;
 	}
 

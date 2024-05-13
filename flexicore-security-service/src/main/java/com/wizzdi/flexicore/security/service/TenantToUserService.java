@@ -45,7 +45,6 @@ public class TenantToUserService implements Plugin {
 		tenantToUser.setId(UUID.randomUUID().toString());
 		updateTenantToUserNoMerge(tenantToUserCreate,tenantToUser);
 		BaseclassService.createSecurityObjectNoMerge(tenantToUser,securityContext);
-		tenantToUserRepository.merge(tenantToUser);
 		return tenantToUser;
 	}
 

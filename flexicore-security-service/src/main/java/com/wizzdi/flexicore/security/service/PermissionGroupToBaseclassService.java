@@ -49,7 +49,6 @@ public class PermissionGroupToBaseclassService implements Plugin {
 		permissionGroupToBaseclass.setId(UUID.randomUUID().toString());
 		updatePermissionGroupToBaseclassNoMerge(permissionGroupToBaseclassCreate,permissionGroupToBaseclass);
 		BaseclassService.createSecurityObjectNoMerge(permissionGroupToBaseclass,securityContext);
-		permissionGroupToBaseclassRepository.merge(permissionGroupToBaseclass);
 		return permissionGroupToBaseclass;
 	}
 

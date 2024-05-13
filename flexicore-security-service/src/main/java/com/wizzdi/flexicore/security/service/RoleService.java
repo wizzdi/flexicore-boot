@@ -50,7 +50,6 @@ public class RoleService implements Plugin {
 		updateRoleNoMerge(roleCreate,role);
 		BaseclassService.createSecurityObjectNoMerge(role,securityContext);
 		role.getSecurity().setTenant(roleCreate.getTenant());
-		roleRepository.merge(role);
 		return role;
 	}
 

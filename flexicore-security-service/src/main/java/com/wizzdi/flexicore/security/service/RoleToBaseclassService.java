@@ -49,7 +49,6 @@ public class RoleToBaseclassService implements Plugin {
 		roleToBaseclass.setId(UUID.randomUUID().toString());
 		updateRoleToBaseclassNoMerge(roleToBaseclassCreate,roleToBaseclass);
 		BaseclassService.createSecurityObjectNoMerge(roleToBaseclass,securityContext);
-		roleToBaseclassRepository.merge(roleToBaseclass);
 		return roleToBaseclass;
 	}
 

@@ -48,7 +48,6 @@ public class PermissionGroupService implements Plugin {
 		permissionGroup.setId(UUID.randomUUID().toString());
 		updatePermissionGroupNoMerge(permissionGroupCreate,permissionGroup);
 		BaseclassService.createSecurityObjectNoMerge(permissionGroup,securityContext);
-		permissionGroupRepository.merge(permissionGroup);
 		return permissionGroup;
 	}
 

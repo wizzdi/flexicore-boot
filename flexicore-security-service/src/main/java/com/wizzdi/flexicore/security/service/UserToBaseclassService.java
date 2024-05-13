@@ -39,7 +39,6 @@ public class UserToBaseclassService implements Plugin {
 		userToBaseclass.setId(UUID.randomUUID().toString());
 		updateUserToBaseclassNoMerge(userToBaseclassCreate,userToBaseclass);
 		BaseclassService.createSecurityObjectNoMerge(userToBaseclass,securityContext);
-		userToBaseclassRepository.merge(userToBaseclass);
 		return userToBaseclass;
 	}
 

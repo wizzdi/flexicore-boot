@@ -47,7 +47,6 @@ public class RoleToUserService implements Plugin {
 		roleToUser.setId(UUID.randomUUID().toString());
 		updateRoleToUserNoMerge(roleToUserCreate,roleToUser);
 		BaseclassService.createSecurityObjectNoMerge(roleToUser,securityContext);
-		roleToUserRepository.merge(roleToUser);
 		return roleToUser;
 	}
 

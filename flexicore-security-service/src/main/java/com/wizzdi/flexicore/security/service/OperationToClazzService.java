@@ -47,7 +47,6 @@ public class OperationToClazzService implements Plugin {
 		OperationToClazz operationToClazz=new OperationToClazz();
 		operationToClazz.setId(UUID.randomUUID().toString());
 		updateOperationToClazzNoMerge(operationToClazzCreate,operationToClazz);
-		operationToClazzRepository.merge(operationToClazz);
 		return operationToClazz;
 	}
 
