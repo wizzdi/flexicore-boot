@@ -53,8 +53,8 @@
         <maven.compiler.source>21</maven.compiler.source>
         <maven.compiler.target>21</maven.compiler.target>
 
-        <spring-boot.version>3.2.5</spring-boot.version>
-        <pf4j-spring.version>0.8.0</pf4j-spring.version>
+        <spring-boot.version>3.3.1</spring-boot.version>
+        <pf4j-spring.version>0.9.0</pf4j-spring.version>
 
         <flexicore-boot.version>${project.version}</flexicore-boot.version>
         <flexicore-boot-starter-web.version>${project.version}</flexicore-boot-starter-web.version>
@@ -95,10 +95,10 @@
         <maven-release-plugin.version>3.0.1</maven-release-plugin.version>
         <nexus-staging-maven-plugin.version>1.6.13</nexus-staging-maven-plugin.version>
         <maven-gpg-plugin.version>3.2.4</maven-gpg-plugin.version>
-        <pf4j.version>3.11.0</pf4j.version>
+        <pf4j.version>3.11.1</pf4j.version>
         <reflections.version>0.10.2</reflections.version>
         <org.eclipse.persistence.jpa.version>4.0.2</org.eclipse.persistence.jpa.version>
-        <jjwt-api.version>0.12.5</jjwt-api.version>
+        <jjwt-api.version>0.12.6</jjwt-api.version>
         <swagger.version>2.2.21</swagger.version>
         <springdoc-openapi-starter-webmvc-api.version>2.5.0</springdoc-openapi-starter-webmvc-api.version>
 
@@ -114,14 +114,14 @@
         <flexicore-file-model.version>${project.version}</flexicore-file-model.version>
         <flexicore-file-service.version>${project.version}</flexicore-file-service.version>
         <zt-zip.version>1.17</zt-zip.version>
-        <eclipselink.version>4.0.2</eclipselink.version>
+        <eclipselink.version>4.0.3</eclipselink.version>
         <totp-spring-boot-starter.version>1.7.1</totp-spring-boot-starter.version>
 
         <maven-scm-api.version>2.1.0</maven-scm-api.version>
         <maven-scm-provider-gitexe.version>2.1.0</maven-scm-provider-gitexe.version>
         <maven-processor-plugin.version>5.1</maven-processor-plugin.version>
-        <ci-friendly-flatten-maven-plugin.version>1.0.19</ci-friendly-flatten-maven-plugin.version>
-        <testcontainers.version>1.19.7</testcontainers.version>
+        <ci-friendly-flatten-maven-plugin.version>1.0.20</ci-friendly-flatten-maven-plugin.version>
+        <testcontainers.version>1.19.8</testcontainers.version>
     </properties>
     <distributionManagement>
         <snapshotRepository>
