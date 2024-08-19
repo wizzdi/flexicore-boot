@@ -278,7 +278,7 @@ public class ClassScannerService implements Plugin {
         if (name.contains("delete")) {
             return StandardSecurityOperationCategories.DELETE.name();
         }
-        if (name.contains("read")) {
+        if (name.contains("get")) {
             return StandardSecurityOperationCategories.READ.name();
         }
         return StandardSecurityOperationCategories.WRITE.name();
@@ -317,6 +317,7 @@ public class ClassScannerService implements Plugin {
             }
             String id = Baseclass.generateUUIDFromStringCompt(method.toString());
             return new OperationScanContext(new SecurityOperationCreate()
+                    .setCategory(ioperation.Category().isEmpty() ? detectCategory(ioperation) : ioperation.Category())
                     .setDefaultAccess(ioperation.access())
                     .setDescription(ioperation.Description())
                     .setName(ioperation.Name())

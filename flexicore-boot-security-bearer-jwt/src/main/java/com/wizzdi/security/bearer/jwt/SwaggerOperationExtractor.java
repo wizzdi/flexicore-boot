@@ -36,7 +36,7 @@ public class SwaggerOperationExtractor implements OperationAnnotationConverter {
 
             @Override
             public String Category() {
-                return "General";
+                return "";
             }
 
             @Override
