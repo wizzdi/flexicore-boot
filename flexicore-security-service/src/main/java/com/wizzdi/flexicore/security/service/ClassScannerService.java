@@ -74,7 +74,8 @@ public class ClassScannerService implements Plugin {
     @Scope(value = ConfigurableBeanFactory.SCOPE_SINGLETON)
     @ConditionalOnMissingBean
     public OperationsMethodScanner operationsMethodScanner(ObjectProvider<OperationAnnotationConverter> converters) {
-        return f->scanOperationOnMethod(f,converters);
+        List<OperationAnnotationConverter> convertersList = converters.orderedStream().toList();
+        return f->scanOperationOnMethod(f,convertersList);
     }
 
     @Bean
@@ -308,8 +309,8 @@ public class ClassScannerService implements Plugin {
         return method -> AnnotatedElementUtils.findMergedAnnotation(method, IOperation.class);
     }
 
-    private OperationScanContext scanOperationOnMethod(Method method, ObjectProvider<OperationAnnotationConverter> converters) {
-        IOperation ioperation = converters.orderedStream().map(f -> f.getIOperation(method)).filter(Objects::nonNull).findFirst().orElse(null);
+    private OperationScanContext scanOperationOnMethod(Method method, List<OperationAnnotationConverter> converters) {
+        IOperation ioperation = converters.stream().map(f -> f.getIOperation(method)).filter(Objects::nonNull).findFirst().orElse(null);
         if (ioperation != null) {
             Class<?>[] relatedClasses = ioperation.relatedClazzes();
             if (relatedClasses.length == 0 && method.getReturnType() != null && Basic.class.isAssignableFrom(method.getReturnType())) {
