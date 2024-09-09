@@ -483,32 +483,30 @@ public class BaseclassRepository implements Plugin {
 		return basicRepository.findByIdOrNull(type, id);
 	}
 
-	@Transactional
 	public <T> T merge(T base) {
 		return basicRepository.merge(base);
 	}
 
-	@Transactional
 	public <T> T merge(T base, boolean updateDate, boolean propagateEvents) {
 		return basicRepository.merge(base, updateDate, propagateEvents);
 	}
 
-	@Transactional
+
 	public void massMerge(List<?> toMerge, boolean updatedate, boolean propagateEvents) {
 		basicRepository.massMerge(toMerge, updatedate, propagateEvents);
 	}
 
-	@Transactional
+
 	public <T> T merge(T base, boolean updateDate) {
 		return basicRepository.merge(base, updateDate);
 	}
 
-	@Transactional
+
 	public void massMerge(List<?> toMerge) {
 		basicRepository.massMerge(toMerge);
 	}
 
-	@Transactional
+
 	public void massMerge(List<?> toMerge, boolean updatedate) {
 		basicRepository.massMerge(toMerge, updatedate);
 	}

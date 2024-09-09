@@ -68,12 +68,12 @@ public class RoleRepository implements Plugin {
 
 	}
 
-	@Transactional
+
 	public <T> T merge(T o){
 		return baseclassRepository.merge(o);
 	}
 
-	@Transactional
+
 	public void massMerge(List<Object> list){
 		baseclassRepository.massMerge(list);
 	}

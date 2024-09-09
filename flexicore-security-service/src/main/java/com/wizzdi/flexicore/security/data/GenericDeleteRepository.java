@@ -51,7 +51,6 @@ public class GenericDeleteRepository implements Plugin {
 	}
 
 
-	@Transactional
 	public <T> void merge(T t) {
 		securedBasicRepository.merge(t);
 	}

@@ -62,12 +62,12 @@ public class PermissionGroupRepository implements Plugin {
 
 	}
 
-	@Transactional
+
 	public <T> T merge(T o){
 		return securedBasicRepository.merge(o);
 	}
 
-	@Transactional
+
 	public void massMerge(List<Object> list){
 		securedBasicRepository.massMerge(list);
 	}

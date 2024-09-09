@@ -181,12 +181,10 @@ public class DynamicExecutionRepository implements Plugin {
 		return securedBasicRepository.findByIdOrNull(type, id);
 	}
 
-	@Transactional
 	public void merge(Object base) {
 		securedBasicRepository.merge(base);
 	}
 
-	@Transactional
 	public void massMerge(List<?> toMerge) {
 		securedBasicRepository.massMerge(toMerge);
 	}

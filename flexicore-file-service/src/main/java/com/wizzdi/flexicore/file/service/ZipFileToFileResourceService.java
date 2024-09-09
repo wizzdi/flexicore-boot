@@ -106,22 +106,18 @@ public class ZipFileToFileResourceService implements Plugin {
 		return zipFileToFileResourceRepository.findByIdOrNull(type, id);
 	}
 
-	@Transactional
 	public void merge(Object base) {
 		zipFileToFileResourceRepository.merge(base);
 	}
 
-	@Transactional
 	public void merge(Object base, boolean updateDate) {
 		zipFileToFileResourceRepository.merge(base, updateDate);
 	}
 
-	@Transactional
 	public void massMerge(List<?> toMerge) {
 		zipFileToFileResourceRepository.massMerge(toMerge);
 	}
 
-	@Transactional
 	public void massMerge(List<?> toMerge, boolean updatedate) {
 		zipFileToFileResourceRepository.massMerge(toMerge, updatedate);
 	}

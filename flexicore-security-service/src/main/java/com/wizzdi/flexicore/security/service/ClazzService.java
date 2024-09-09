@@ -99,12 +99,12 @@ public class ClazzService implements Plugin {
 		return ClazzRepository.findByIdOrNull(type, id);
 	}
 
-	@Transactional
+
 	public <T> T merge(T base) {
 		return ClazzRepository.merge(base);
 	}
 
-	@Transactional
+
 	public void massMerge(List<?> toMerge) {
 		ClazzRepository.massMerge(toMerge);
 	}

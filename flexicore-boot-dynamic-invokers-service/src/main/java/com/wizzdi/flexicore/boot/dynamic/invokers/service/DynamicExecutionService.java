@@ -52,12 +52,10 @@ public class DynamicExecutionService implements Plugin {
 		return dynamicExecution;
 	}
 
-	@Transactional
 	public void merge(Object base) {
 		dynamicExecutionRepository.merge(base);
 	}
 
-	@Transactional
 	public void massMerge(List<?> toMerge) {
 		dynamicExecutionRepository.massMerge(toMerge);
 	}

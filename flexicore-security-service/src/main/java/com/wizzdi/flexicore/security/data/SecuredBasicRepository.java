@@ -54,12 +54,12 @@ public class SecuredBasicRepository implements Plugin {
 		}
 	}
 
-	@Transactional
+
 	public <T> T merge(T base, boolean updateDate, boolean propagateEvents) {
 		return baseclassRepository.merge(base, updateDate, propagateEvents);
 	}
 
-	@Transactional
+
 	public void massMerge(List<?> toMerge, boolean updatedate, boolean propagateEvents) {
 		baseclassRepository.massMerge(toMerge, updatedate, propagateEvents);
 	}
@@ -92,12 +92,12 @@ public class SecuredBasicRepository implements Plugin {
 		return baseclassRepository.findByIdOrNull(type, id);
 	}
 
-	@Transactional
+
 	public <T> T merge(T base) {
 		return baseclassRepository.merge(base);
 	}
 
-	@Transactional
+
 	public void massMerge(List<?> toMerge) {
 		baseclassRepository.massMerge(toMerge);
 	}

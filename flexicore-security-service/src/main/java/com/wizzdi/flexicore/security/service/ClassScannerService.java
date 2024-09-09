@@ -445,7 +445,7 @@ public class ClassScannerService implements Plugin {
                 handleEntityClass(annotated, existing, toMerge);
             }
         }
-        //clazzService.massMerge(toMerge);
+        //clazzService.massMerge(merged);
         entities.add(Clazz.class);
         //createIndexes(entities);
         return new Clazzes(new ArrayList<>(existing.values()));

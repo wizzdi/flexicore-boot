@@ -93,12 +93,10 @@ public class ZipFileRepository implements Plugin {
 		return fileResourceRepository.findByIdOrNull(type, id);
 	}
 
-	@Transactional
 	public void merge(Object base) {
 		fileResourceRepository.merge(base);
 	}
 
-	@Transactional
 	public void massMerge(List<?> toMerge) {
 		fileResourceRepository.massMerge(toMerge);
 	}

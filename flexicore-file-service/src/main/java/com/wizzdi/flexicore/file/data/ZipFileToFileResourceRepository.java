@@ -86,22 +86,18 @@ public class ZipFileToFileResourceRepository implements Plugin {
 		return basicRepository.findByIdOrNull(type, id);
 	}
 
-	@Transactional
 	public void merge(Object base) {
 		basicRepository.merge(base);
 	}
 
-	@Transactional
 	public void merge(Object base, boolean updateDate) {
 		basicRepository.merge(base, updateDate);
 	}
 
-	@Transactional
 	public void massMerge(List<?> toMerge) {
 		basicRepository.massMerge(toMerge);
 	}
 
-	@Transactional
 	public void massMerge(List<?> toMerge, boolean updatedate) {
 		basicRepository.massMerge(toMerge, updatedate);
 	}

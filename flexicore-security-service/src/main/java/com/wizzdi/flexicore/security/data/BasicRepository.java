@@ -36,6 +36,8 @@ public class BasicRepository implements Plugin {
     private EntityManager em;
     @Autowired
     private ApplicationEventPublisher eventPublisher;
+    @Autowired
+    private MergingRepository mergingRepository;
 
     public static <T> boolean addPagination(PaginationFilter basicFilter, TypedQuery<T> q) {
         if (basicFilter.getPageSize() != null && basicFilter.getCurrentPage() != null && basicFilter.getCurrentPage() >= 0 && basicFilter.getPageSize() > 0) {
@@ -133,95 +135,37 @@ public class BasicRepository implements Plugin {
         }
     }
 
-    @Transactional
     public <T> T merge(T base) {
         return merge(base, true);
     }
 
-    @Transactional
     public <T> T merge(T base, boolean updateDate) {
         return merge(base, updateDate, true);
     }
 
 
-    @Transactional
     public <T> T merge(T base, boolean updateDate, boolean propagateEvents) {
-        Basic base1 = null;
-        boolean created = false;
-        if (base instanceof Basic) {
-            OffsetDateTime now = OffsetDateTime.now();
-            base1 = (Basic) base;
-            created = base1.getUpdateDate() == null;
-            if (updateDate) {
-                base1.setUpdateDate(now);
-            }
-            if (created) {
-                base1.setCreationDate(now);
-            }
-            if (logger.isDebugEnabled()) {
-                logger.debug("merging " + base1.getId() + " updateDate flag is " + updateDate + " update date " + base1.getUpdateDate());
-            }
-
-
+        MergingRepository.MergeResult<T> merge = mergingRepository.merge(base, updateDate, propagateEvents);
+        if(propagateEvents){
+           eventPublisher.publishEvent(merge.event());
         }
 
-        T merged = em.merge(base);
-        if (propagateEvents) {
-            if (base1 != null) {
-                if (created) {
-                    eventPublisher.publishEvent(new BasicCreated<>(base1));
-                } else {
-                    eventPublisher.publishEvent(new BasicUpdated<>(base1));
-
-                }
-            }
-        }
-
-        return merged;
+        return merge.merged();
 
     }
 
-    @Transactional
     public void massMerge(List<?> toMerge) {
         massMerge(toMerge, true);
     }
 
-    @Transactional
     public void massMerge(List<?> toMerge, boolean updatedate) {
         massMerge(toMerge, updatedate, true);
     }
 
-    @Transactional
     public void massMerge(List<?> toMerge, boolean updatedate, boolean propagateEvents) {
-        List<Object> events = new ArrayList<>();
-        OffsetDateTime now = OffsetDateTime.now();
-        for (Object o : toMerge) {
-            if (o instanceof Basic) {
-                Basic baseclass = (Basic) o;
-                boolean created = baseclass.getUpdateDate() == null;
-                if (updatedate) {
-                    baseclass.setUpdateDate(now);
-                }
-                if (created) {
-                    baseclass.setCreationDate(now);
-                }
-                if (logger.isDebugEnabled()) {
-                    logger.debug("merging " + baseclass.getId() + " updateDate flag is " + updatedate + " update date is " + baseclass.getUpdateDate());
-                }
-                if (created) {
-                    BasicCreated<?> baseclassCreated = new BasicCreated<>(baseclass);
-                    events.add(baseclassCreated);
-                } else {
-                    BasicUpdated<?> baseclassUpdated = new BasicUpdated<>(baseclass);
-                    events.add(baseclassUpdated);
-                }
-
-            }
-
-            em.merge(o);
-        }
+        MergingRepository.MassMergeResult massMergeResult = mergingRepository.massMerge(toMerge, updatedate, propagateEvents);
         if (propagateEvents) {
-            for (Object event : events) {
+            for (Object event : massMergeResult.events()) {
                 eventPublisher.publishEvent(event);
             }
         }

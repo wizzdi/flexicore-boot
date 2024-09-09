@@ -83,12 +83,12 @@ public class OperationGroupService implements Plugin {
 		return operationRepository.listAllOperationGroups(operationFilter, securityContext);
 	}
 
-	@Transactional
+
 	public <T> T merge(T base, boolean updateDate, boolean propagateEvents) {
 		return operationRepository.merge(base, updateDate, propagateEvents);
 	}
 
-	@Transactional
+
 	public void massMerge(List<?> toMerge, boolean updatedate, boolean propagateEvents) {
 		operationRepository.massMerge(toMerge, updatedate, propagateEvents);
 	}
@@ -121,12 +121,12 @@ public class OperationGroupService implements Plugin {
 		return operationRepository.findByIdOrNull(type, id);
 	}
 
-	@Transactional
+
 	public <T> T merge(T base) {
 		return operationRepository.merge(base);
 	}
 
-	@Transactional
+
 	public void massMerge(List<?> toMerge) {
 		operationRepository.massMerge(toMerge);
 	}

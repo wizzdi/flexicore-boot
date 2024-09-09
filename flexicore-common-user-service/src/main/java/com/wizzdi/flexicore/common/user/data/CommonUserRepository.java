@@ -138,32 +138,31 @@ public class CommonUserRepository{
         return securityUserRepository.findByIdOrNull(type, id);
     }
 
-    @Transactional
     public <T> T merge(T base) {
         return securityUserRepository.merge(base);
     }
 
-    @Transactional
+
     public <T> T merge(T base, boolean updateDate, boolean propagateEvents) {
         return securityUserRepository.merge(base, updateDate, propagateEvents);
     }
 
-    @Transactional
+
     public void massMerge(List<?> toMerge, boolean updatedate, boolean propagateEvents) {
         securityUserRepository.massMerge(toMerge, updatedate, propagateEvents);
     }
 
-    @Transactional
+
     public <T> T merge(T base, boolean updateDate) {
         return securityUserRepository.merge(base, updateDate);
     }
 
-    @Transactional
+
     public void massMerge(List<?> toMerge) {
         securityUserRepository.massMerge(toMerge);
     }
 
-    @Transactional
+
     public void massMerge(List<?> toMerge, boolean updatedate) {
         securityUserRepository.massMerge(toMerge, updatedate);
     }
