@@ -84,15 +84,14 @@ public class MergingRepository implements Plugin {
                 if (logger.isDebugEnabled()) {
                     logger.debug("merging " + baseclass.getId() + " updateDate flag is " + updatedate + " update date is " + baseclass.getUpdateDate());
                 }
-                if(!propagateEvents){
-                    continue;
-                }
-                if (created) {
-                    BasicCreated<?> baseclassCreated = new BasicCreated<>(baseclass);
-                    events.add(baseclassCreated);
-                } else {
-                    BasicUpdated<?> baseclassUpdated = new BasicUpdated<>(baseclass);
-                    events.add(baseclassUpdated);
+                if(propagateEvents){
+                    if (created) {
+                        BasicCreated<?> baseclassCreated = new BasicCreated<>(baseclass);
+                        events.add(baseclassCreated);
+                    } else {
+                        BasicUpdated<?> baseclassUpdated = new BasicUpdated<>(baseclass);
+                        events.add(baseclassUpdated);
+                    }
                 }
 
             }
