@@ -144,7 +144,23 @@ public class DynamicInvokerTests {
 
     }
 
+    @Test
+    @Order(3)
+    public void testListAllDynamicInvokerMethodHoldersCreate() {
+        DynamicInvokerMethodFilter request=new DynamicInvokerMethodFilter()
+                .setBasicPropertiesFilter(new BasicPropertiesFilter().setNameLike("createTestEntity"));
+        ParameterizedTypeReference<PaginationResponse<Map<String,Object>>> t= new ParameterizedTypeReference<>() {};
 
+        ResponseEntity<PaginationResponse<Map<String,Object>>> dynamicInvokerResponse = this.restTemplate.exchange("/dynamicInvokerMethod/getAllInvokerMethodHolders", HttpMethod.POST, new HttpEntity<>(request), t);
+        Assertions.assertEquals(200, dynamicInvokerResponse.getStatusCode().value());
+        PaginationResponse<Map<String,Object>> body = dynamicInvokerResponse.getBody();
+        Assertions.assertNotNull(body);
+        List<Map<String,Object>> dynamicInvokers = body.getList();
+        Assertions.assertNotEquals(0,dynamicInvokers.size());
+        System.out.println("received "+dynamicInvokers.size() +" invoker methods: "+dynamicInvokers);
+
+
+    }
 
     @Test
     @Order(7)

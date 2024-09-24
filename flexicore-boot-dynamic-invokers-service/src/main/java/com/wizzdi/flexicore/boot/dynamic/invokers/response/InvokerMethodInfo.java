@@ -4,9 +4,14 @@ import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.flexicore.model.Baseclass;
+import com.wizzdi.flexicore.boot.dynamic.invokers.annotations.VirtualField;
+import jakarta.persistence.Entity;
+import jakarta.persistence.OneToMany;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
@@ -28,6 +33,7 @@ public class InvokerMethodInfo {
 
     private String parameterHolderType;
     private List<ParameterInfo> parameters=new ArrayList<>();
+    private List<VirtualProperty> returnTypeVirtualProperties = new ArrayList<>();
 
     public InvokerMethodInfo() {
     }
@@ -41,8 +47,27 @@ public class InvokerMethodInfo {
         returnTypeClass= method.getReturnType();
         this.categories=invokerMethodInfo!=null? Stream.of(invokerMethodInfo.categories()).collect(Collectors.toSet()) : Collections.emptySet();
         this.relatedMethodNames=invokerMethodInfo!=null? Stream.of(invokerMethodInfo.relatedMethodNames()).collect(Collectors.toSet()) : Collections.emptySet();
+        this.returnTypeVirtualProperties = getVirtualProperties(returnTypeClass);
 
 
+    }
+
+    private List<VirtualProperty> getVirtualProperties(Class<?> returnTypeClass) {
+        if (returnTypeClass == null) {
+            return Collections.emptyList();
+        }
+        List<VirtualProperty> virtualProperties = new ArrayList<>();
+        for (Class<?> current = returnTypeClass; current != null; current = current.getSuperclass()) {
+            List<VirtualProperty> virtualFields = Arrays.stream(current.getAnnotationsByType(VirtualField.class)).map(f -> toVirtualProperty(f)).toList();
+            virtualProperties.addAll(virtualFields);
+
+        }
+        return virtualProperties;
+    }
+
+    private VirtualProperty toVirtualProperty(VirtualField field) {
+
+        return new VirtualProperty(field.name(), field.list(), field.type(), field.mappedBy());
     }
 
     public void addParameterInfo(ParameterInfo parameterInfo){
@@ -129,6 +154,15 @@ public class InvokerMethodInfo {
 
     public <T extends InvokerMethodInfo> T setRelatedMethodNames(Set<String> relatedMethodNames) {
         this.relatedMethodNames = relatedMethodNames;
+        return (T) this;
+    }
+
+    public List<VirtualProperty> getReturnTypeVirtualProperties() {
+        return returnTypeVirtualProperties;
+    }
+
+    public <T extends InvokerMethodInfo> T setReturnTypeVirtualProperties(List<VirtualProperty> returnTypeVirtualProperties) {
+        this.returnTypeVirtualProperties = returnTypeVirtualProperties;
         return (T) this;
     }
 

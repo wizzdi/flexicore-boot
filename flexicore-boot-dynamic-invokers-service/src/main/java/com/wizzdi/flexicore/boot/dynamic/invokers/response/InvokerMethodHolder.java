@@ -120,6 +120,14 @@ public class InvokerMethodHolder {
         return (T) this;
     }
 
+    public List<VirtualProperty> getReturnTypeVirtualProperties() {
+        return invokerMethodHolder.getReturnTypeVirtualProperties();
+    }
+
+    public <T extends InvokerMethodInfo> T setReturnTypeVirtualProperties(List<VirtualProperty> returnTypeVirtualProperties) {
+        return invokerMethodHolder.setReturnTypeVirtualProperties(returnTypeVirtualProperties);
+    }
+
     @Override
     public String toString() {
         return "InvokerMethodHolder{" +

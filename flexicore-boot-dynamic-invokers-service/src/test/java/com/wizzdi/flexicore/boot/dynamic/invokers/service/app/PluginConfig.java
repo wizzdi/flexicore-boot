@@ -35,6 +35,7 @@ public class PluginConfig {
                     .extension("plugins.TestEntity")
                     .extension("plugins.TestFilter")
                     .extension("plugins.TestInvoker")
+                    .extension("plugins.TestDependent")
                     .pluginVersion("1.2.3")
                     .build();
         }
