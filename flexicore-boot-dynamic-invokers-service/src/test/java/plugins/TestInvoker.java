@@ -32,7 +32,7 @@ public class TestInvoker implements Invoker {
     @IOperation(Name = "createTestEntity",Description = "createTest")
     @PostMapping("/createTestEntity")
     public TestEntity createTest(
-			@RequestBody TestFilter filter, @RequestAttribute("securityContext") SecurityContextBase securityContext) {
+			@RequestBody TestEntityCreate testEntityCreate, @RequestAttribute("securityContext") SecurityContextBase securityContext) {
         return new TestEntity().setName("test").setDescription("test");
     }
 

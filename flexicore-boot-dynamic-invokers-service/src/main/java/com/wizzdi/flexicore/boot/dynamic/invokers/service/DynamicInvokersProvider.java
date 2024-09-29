@@ -5,6 +5,7 @@ import com.flexicore.annotations.OperationsInside;
 import com.flexicore.security.SecurityContextBase;
 import com.wizzdi.flexicore.boot.base.init.FlexiCorePluginManager;
 import com.wizzdi.flexicore.boot.base.interfaces.Plugin;
+import com.wizzdi.flexicore.boot.dynamic.invokers.annotations.ConstructorName;
 import com.wizzdi.flexicore.boot.dynamic.invokers.annotations.FieldInfo;
 import com.wizzdi.flexicore.boot.dynamic.invokers.annotations.IdRefFieldInfo;
 import com.wizzdi.flexicore.boot.dynamic.invokers.annotations.Invoker;
@@ -12,6 +13,8 @@ import com.wizzdi.flexicore.boot.dynamic.invokers.annotations.ListFieldInfo;
 import com.wizzdi.flexicore.boot.dynamic.invokers.interfaces.InvokerMethodScanner;
 import com.wizzdi.flexicore.boot.dynamic.invokers.interfaces.InvokerParameterScanner;
 import com.wizzdi.flexicore.boot.dynamic.invokers.request.ScanFieldRequest;
+import com.wizzdi.flexicore.boot.dynamic.invokers.response.Constructor;
+import com.wizzdi.flexicore.boot.dynamic.invokers.response.ConstructorParameter;
 import com.wizzdi.flexicore.boot.dynamic.invokers.response.InvokerInfo;
 import com.wizzdi.flexicore.boot.dynamic.invokers.response.InvokerMethodInfo;
 import com.wizzdi.flexicore.boot.dynamic.invokers.response.ParameterInfo;
@@ -33,6 +36,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.lang.reflect.Parameter;
 import java.time.*;
 import java.util.*;
@@ -96,10 +100,28 @@ public class DynamicInvokersProvider implements Plugin {
                             invokerMethodInfo.addParameterInfo(parameterInfo);
                         }
                     }
+                    List<Method> staticConstructors = Arrays.stream(bodyParameterType.getDeclaredMethods()).filter(f -> f.getReturnType().equals(bodyParameterType) && Modifier
+                            .isStatic(f.getModifiers())).toList();
+                    for (Method staticConstructor : staticConstructors) {
+                        ConstructorName constructorName=staticConstructor.getAnnotation(ConstructorName.class);
+                        String name=constructorName!=null? constructorName.value() : staticConstructor.getName();
+                        List<ConstructorParameter> parameters=getStaticConstructorParameters(staticConstructor.getParameters());
+                        invokerMethodInfo.addConstructor(new Constructor(name, parameters));
+
+                    }
                 }
             }
         }
         return invokerInfo;
+    }
+
+    private List<ConstructorParameter> getStaticConstructorParameters(Parameter[] parameters) {
+        List<ConstructorParameter> toRet=new ArrayList<>();
+        for (int i = 0; i < parameters.length; i++) {
+            Parameter parameter=parameters[i];
+            toRet.add(new ConstructorParameter(parameter.getName(),i,false));
+        }
+        return toRet;
     }
 
     private Optional<Parameter> getBodyParameter(Method method) {

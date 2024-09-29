@@ -34,6 +34,7 @@ public class PluginConfig {
             PluginJar pluginZip = new PluginJar.Builder(pluginsDir.toPath().resolve("my-plugin-1.2.3.jar"), PLUGIN_ID)
                     .extension("plugins.TestEntity")
                     .extension("plugins.TestFilter")
+                    .extension("plugins.TestEntityCreate")
                     .extension("plugins.TestInvoker")
                     .extension("plugins.TestDependent")
                     .pluginVersion("1.2.3")

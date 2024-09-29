@@ -34,6 +34,7 @@ public class InvokerMethodInfo {
     private String parameterHolderType;
     private List<ParameterInfo> parameters=new ArrayList<>();
     private List<VirtualProperty> returnTypeVirtualProperties = new ArrayList<>();
+    private List<Constructor> constructors=new ArrayList<>();
 
     public InvokerMethodInfo() {
     }
@@ -65,6 +66,9 @@ public class InvokerMethodInfo {
         return virtualProperties;
     }
 
+    public void addConstructor(Constructor constructor) {
+        this.constructors.add(constructor);
+    }
     private VirtualProperty toVirtualProperty(VirtualField field) {
 
         return new VirtualProperty(field.name(), field.list(), field.type(), field.mappedBy());
@@ -166,6 +170,15 @@ public class InvokerMethodInfo {
         return (T) this;
     }
 
+    public List<Constructor> getConstructors() {
+        return constructors;
+    }
+
+    public <T extends InvokerMethodInfo> T setConstructors(List<Constructor> constructors) {
+        this.constructors = constructors;
+        return (T) this;
+    }
+
     @Override
     public String toString() {
         return "InvokerMethodInfo{" +
@@ -180,4 +193,5 @@ public class InvokerMethodInfo {
                 ", parameters=" + parameters +
                 '}';
     }
+
 }
