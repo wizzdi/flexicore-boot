@@ -128,6 +128,14 @@ public class InvokerMethodHolder {
         return invokerMethodHolder.setReturnTypeVirtualProperties(returnTypeVirtualProperties);
     }
 
+    public List<Constructor> getConstructors() {
+        return invokerMethodHolder.getConstructors();
+    }
+
+    public <T extends InvokerMethodInfo> T setConstructors(List<Constructor> constructors) {
+        return invokerMethodHolder.setConstructors(constructors);
+    }
+
     @Override
     public String toString() {
         return "InvokerMethodHolder{" +
