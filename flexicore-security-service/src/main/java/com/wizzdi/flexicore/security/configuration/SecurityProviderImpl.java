@@ -15,6 +15,7 @@ import com.wizzdi.segmantix.api.model.IUser;
 import com.wizzdi.segmantix.api.service.SecurityLinkProvider;
 import com.wizzdi.segmantix.model.SecurityContext;
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Root;
@@ -26,11 +27,8 @@ import java.util.List;
 @Component
 public class SecurityProviderImpl implements SecurityLinkProvider {
 
-    private final EntityManager em;
-
-    public SecurityProviderImpl(EntityManager em) {
-        this.em=em;
-    }
+    @PersistenceContext
+    private EntityManager em;
 
     @Override
     public List<ISecurity> getSecurityLinks(ISecurityContext securityContext) {

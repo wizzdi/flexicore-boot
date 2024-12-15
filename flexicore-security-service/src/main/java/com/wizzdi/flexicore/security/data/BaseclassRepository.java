@@ -3,13 +3,9 @@ package com.wizzdi.flexicore.security.data;
 import com.flexicore.model.*;
 
 import com.wizzdi.flexicore.boot.base.interfaces.Plugin;
-import com.wizzdi.flexicore.security.events.BasicCreated;
-import com.wizzdi.flexicore.security.events.BasicUpdated;
 import com.wizzdi.flexicore.security.request.BaseclassFilter;
 import com.wizzdi.flexicore.security.request.BasicPropertiesFilter;
-import com.wizzdi.flexicore.security.request.OperationToGroupFilter;
 import com.wizzdi.flexicore.security.request.SoftDeleteOption;
-import com.wizzdi.flexicore.security.service.OperationToGroupService;
 import com.wizzdi.segmantix.model.SecurityContext;
 import com.wizzdi.segmantix.service.SecurityRepository;
 import jakarta.persistence.EntityManager;
@@ -21,14 +17,9 @@ import org.pf4j.Extension;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.cache.Cache;
-import org.springframework.context.annotation.Lazy;
-import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 @Component
@@ -63,7 +54,8 @@ public class BaseclassRepository implements Plugin {
 	public <T extends Baseclass> void addBaseclassPredicates(BaseclassFilter baseclassFilter, CriteriaBuilder cb, CommonAbstractCriteria q, From<?,T> r, List<Predicate> predicates, SecurityContext securityContext) {
 		addBaseclassPredicates(baseclassFilter.getBasicPropertiesFilter(),cb,q,r,predicates,securityContext);
 		if(baseclassFilter.getClazzes()!=null&&!baseclassFilter.getClazzes().isEmpty()){
-			predicates.add(r.get(Baseclass_.clazz).in(baseclassFilter.getClazzes()));
+			Set<String> ids=baseclassFilter.getClazzes().stream().map(f->f.name()).collect(Collectors.toSet());
+			predicates.add(r.get(Baseclass_.dtype).in(baseclassFilter.getClazzes()));
 		}
 	}
 

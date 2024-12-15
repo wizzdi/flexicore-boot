@@ -26,8 +26,8 @@ public class ClazzController implements Plugin {
 
     @IOperation(Name = "returns Clazz", Description = "returns Clazz")
     @PostMapping("/getAll")
-    public PaginationResponse<Clazz> getAll(@RequestBody @Valid ClazzFilter ClazzFilter, @RequestAttribute SecurityContext securityContext) {
+    public PaginationResponse<Clazz> getAll(@RequestBody @Valid ClazzFilter clazzFilter, @RequestAttribute SecurityContext securityContext) {
 
-        return ClazzService.getAllClazzs(ClazzFilter, securityContext);
+        return ClazzService.getAllClazzs(clazzFilter);
     }
 }

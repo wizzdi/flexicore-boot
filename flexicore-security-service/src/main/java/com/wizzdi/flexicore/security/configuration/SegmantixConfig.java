@@ -9,13 +9,14 @@ import jakarta.persistence.criteria.Path;
 import org.springframework.cache.Cache;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Lazy;
 
 import java.util.concurrent.Callable;
 
 @Configuration
 public class SegmantixConfig {
     @Bean
-    public SecurityRepository securityRepository(OperationGroupLinkProviderImpl operationToGroupService, SecurityProviderImpl securityProviderImpl, InstanceGroupLinkProviderImpl instanceGroupLinkProvider, Cache dataAccessControlCache, Cache operationToOperationGroupCache, SecurityOperation allOps){
+    public SecurityRepository securityRepository(OperationGroupLinkProviderImpl operationToGroupService, SecurityProviderImpl securityProviderImpl, InstanceGroupLinkProviderImpl instanceGroupLinkProvider, Cache dataAccessControlCache, Cache operationToOperationGroupCache, @Lazy SecurityOperation allOps){
         return new SecurityRepository(new FieldPathProviderImpl(), operationToGroupService,securityProviderImpl,instanceGroupLinkProvider,new CacheWrapper(dataAccessControlCache),new CacheWrapper(operationToOperationGroupCache),allOps);
     }
 
@@ -66,7 +67,11 @@ public class SegmantixConfig {
             if(!Baseclass.class.isAssignableFrom(r.getJavaType())){
                 return null;
             }
-            return r.get("clazz").get("name");
+            try {
+                return r.get("dtype");
+            } catch (Throwable ignored) {
+               return null;
+            }
         }
 
         @Override

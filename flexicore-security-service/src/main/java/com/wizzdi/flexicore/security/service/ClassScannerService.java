@@ -2,7 +2,6 @@ package com.wizzdi.flexicore.security.service;
 
 import com.wizzdi.segmantix.model.SecurityContext;
 import com.wizzdi.segmantix.model.Access;
-import com.flexicore.annotations.AnnotatedClazz;
 import com.flexicore.annotations.IOperation;
 import com.flexicore.annotations.OperationsInside;
 import com.flexicore.annotations.rest.*;
@@ -38,7 +37,6 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 @Primary
 @Component
@@ -110,7 +108,7 @@ public class ClassScannerService implements Plugin {
         Class<?>[] relatedClasses = operationScanContext.getRelatedClasses();
         if (relatedClasses != null) {
             for (Class<?> relatedClass : relatedClasses) {
-                String clazzId = ClazzService.getClazzId(relatedClass);
+                String clazzId =relatedClass.getSimpleName();
                 Clazz clazz = clazzes.get(clazzId);
                 if(clazz== null){
                     logger.warn("could not find clazz for class: {} required for operation {}({})", relatedClass.getCanonicalName(),operationScanContext.getSecurityOperationCreate().getName(),operationScanContext.getSecurityOperationCreate().getIdForCreate());
@@ -120,7 +118,7 @@ public class ClassScannerService implements Plugin {
                 OperationToClazz existingOperationToClazz = operationClazzes.get(clazzId);
                 if (existingOperationToClazz == null) {
                     OperationToClazzCreate operationToClazzCreate = new OperationToClazzCreate()
-                            .setClazz(clazz)
+                            .setType(clazz)
                             .setSecurityOperation(securityOperation);
                     existingOperationToClazz = operationToClazzService.createOperationToClazzNoMerge(operationToClazzCreate, securityContext);
                     toMerge.add(existingOperationToClazz);
@@ -151,7 +149,7 @@ public class ClassScannerService implements Plugin {
     @Qualifier("securityWildcard")
     @ConditionalOnMissingBean
     public Clazz securityWildcard(Clazzes clazzes){
-        return clazzes.getClazzes().stream().filter(f->f.getId().equals(ClazzService.getClazzId(SecurityWildcard.class))).findFirst().orElseThrow(()->new RuntimeException("could not find SecurityWildcard"));
+        return clazzes.getClazzes().stream().filter(f->f.name().equals(SecurityWildcard.class.getSimpleName())).findFirst().orElseThrow(()->new RuntimeException("could not find SecurityWildcard"));
     }
 
     @Bean
@@ -221,7 +219,7 @@ public class ClassScannerService implements Plugin {
     @ConditionalOnMissingBean
     public Operations initializeOperations(@Qualifier("adminSecurityContext") SecurityContext securityContext, Clazzes clazzes, OperationsClassScanner operationsClassScanner, OperationBuilder operationBuilder, StandardOperationScanner standardOperationScanner) {
 
-        Map<String, Clazz> clazzMap = clazzes.getClazzes().stream().collect(Collectors.toMap(f -> f.getId(), f -> f));
+        Map<String, Clazz> clazzMap = clazzes.getClazzes().stream().collect(Collectors.toMap(f -> f.name(), f -> f));
 
         List<PluginWrapper> startedPlugins = pluginManager.getStartedPlugins().stream().sorted(PluginInit.PLUGIN_COMPARATOR).collect(Collectors.toList());
         Set<Class<?>> operationClasses = new HashSet<>();
@@ -239,7 +237,7 @@ public class ClassScannerService implements Plugin {
         scannedOperations.addAll(standardOperationScanner.getStandardOperations());
         Map<String, OperationScanContext> operationCreateMap = scannedOperations.stream().collect(Collectors.toMap(f -> f.getSecurityOperationCreate().getIdForCreate(), f -> f, (a, b) -> a));
         Map<String, SecurityOperation> existing = operationCreateMap.isEmpty() ? new HashMap<>() : operationService.findByIds(SecurityOperation.class, operationCreateMap.keySet()).stream().collect(Collectors.toMap(f -> f.getId(), f -> f, (a, b) -> a));
-        Map<String, Map<String, OperationToClazz>> relatedClazzes = existing.isEmpty() ? new HashMap<>() : operationToClazzService.listAllOperationToClazz(new OperationToClazzFilter().setSecurityOperations(new ArrayList<>(existing.values())), null).stream().filter(f -> f.getOperation() != null && f.getClazz() != null).collect(Collectors.groupingBy(f -> f.getOperation().getId(), Collectors.toMap(f -> f.getClazz().getId(), f -> f, (a, b) -> a)));
+        Map<String, Map<String, OperationToClazz>> relatedClazzes = existing.isEmpty() ? new HashMap<>() : operationToClazzService.listAllOperationToClazz(new OperationToClazzFilter().setSecurityOperations(new ArrayList<>(existing.values())), null).stream().filter(f -> f.getOperation() != null && f.getType() != null).collect(Collectors.groupingBy(f -> f.getOperation().getId(), Collectors.toMap(f -> f.getType(), f -> f, (a, b) -> a)));
         List<Object> toMerge = new ArrayList<>();
 
         for (OperationScanContext securityOperationCreate : operationCreateMap.values()) {
@@ -389,27 +387,6 @@ public class ClassScannerService implements Plugin {
         return operation;
     }
 
-    private void handleOperationRelatedClasses(SecurityOperation operation, Class<? extends Baseclass>[] related, List<Object> toMerge, Map<String, OperationToClazz> existing) {
-
-        for (Class<? extends Baseclass> relatedClazz : related) {
-            String linkId = ClazzService.getIdFromString(operation.getId() + relatedClazz.getCanonicalName());
-            OperationToClazz operationToClazz = existing.get(linkId);
-            Clazz clazz = clazzService.findByIdOrNull(Clazz.class, ClazzService.getClazzId(relatedClazz));
-
-            OperationToClazzCreate operationToClazzCreate=new OperationToClazzCreate()
-                    .setClazz(clazz)
-                    .setSecurityOperation(operation)
-                    .setIdForCreate(linkId)
-                    .setName("OperationToClazz");
-            if (operationToClazz == null) {
-                operationToClazzService.createOperationToClazz(operationToClazzCreate, null);
-
-
-
-            }
-
-        }
-    }
 
 
     /**
@@ -423,121 +400,6 @@ public class ClassScannerService implements Plugin {
     @Scope(value = ConfigurableBeanFactory.SCOPE_SINGLETON)
 
     public Clazzes initializeClazzes() {
-        logger.info("Initializing classes");
-
-
-        Set<Class<?>> entities = entityManager.getMetamodel().getEntities().stream().map(f -> f.getJavaType()).collect(Collectors.toSet());
-        logger.debug("detected classes:  " + entities.parallelStream().map(e -> e.getCanonicalName()).collect(Collectors.joining(System.lineSeparator())));
-
-        Set<String> ids = entities.parallelStream().map(f -> ClazzService.getClazzId(f)).collect(Collectors.toSet());
-        ids.add(ClazzService.getClazzId(Clazz.class));
-        Map<String, Clazz> existing = new HashMap<>();
-        for (List<String> part : partition(new ArrayList<>(ids), 50)) {
-            if (!part.isEmpty()) {
-                existing.putAll(clazzService.findByIds(Clazz.class, ids).parallelStream().collect(Collectors.toMap(f -> f.getId(), f -> f)));
-            }
-        }
-        List<Object> toMerge = new ArrayList<>();
-        // registering clazz before all
-        handleEntityClass(Clazz.class, existing, toMerge);
-        // registering the rest
-        for (Class<?> annotated : entities) {
-            if (!annotated.getCanonicalName().equalsIgnoreCase(Clazz.class.getCanonicalName())) {
-                handleEntityClass(annotated, existing, toMerge);
-            }
-        }
-        //clazzService.massMerge(merged);
-        entities.add(Clazz.class);
-        //createIndexes(entities);
-        return new Clazzes(new ArrayList<>(existing.values()));
-
-
+        return new Clazzes(clazzService.listAllClazzs(new ClazzFilter()));
     }
-
-    private void handleEntityClass(Class<?> claz, Map<String, Clazz> existing, List<Object> toMerge) {
-        registerClazzes(claz, existing, toMerge);
-    }
-
-
-    private void registerClazzes(Class<?> claz, Map<String, Clazz> existing, List<Object> toMerge) {
-        try {
-            String classname = claz.getCanonicalName();
-            AnnotatedClazz annotatedclazz = claz.getAnnotation(AnnotatedClazz.class);
-
-            if (annotatedclazz == null) {
-                annotatedclazz = generateAnnotatedClazz(claz);
-            }
-            String id = ClazzService.getIdFromString(classname);
-
-
-            Clazz clazz = existing.get(id);
-            ClazzCreate clazzCreate=new ClazzCreate()
-                    .setIdForCreate(id)
-                    .setName(classname)
-                    .setDescription(annotatedclazz.Description());
-            if (clazz == null) {
-               clazz=clazzService.createClazz(clazzCreate, null);
-                existing.put(clazz.getId(), clazz);
-                logger.debug("Have created a new class {}({})",classname,id);
-
-
-            } else {
-                logger.debug("Clazz already exists: {}({})",classname,id);
-
-            }
-
-        } catch (Exception e) {
-            logger.error("failed registering clazz", e);
-        }
-
-    }
-
-
-
-
-    private AnnotatedClazz generateAnnotatedClazz(Class<?> claz) {
-        return new AnnotatedClazz() {
-
-            @Override
-            public String DisplayName() {
-                return claz.getSimpleName();
-            }
-
-            @Override
-            public Class<? extends Annotation> annotationType() {
-                return AnnotatedClazz.class;
-            }
-
-
-            @Override
-            public String Name() {
-                return claz.getCanonicalName();
-            }
-
-            @Override
-            public String Description() {
-                return "Auto Generated Description";
-            }
-
-            @Override
-            public String Category() {
-                return "Auto Generated Category";
-            }
-        };
-    }
-
-    protected <T> T save(T Acd, boolean en) {
-
-        return Acd;
-    }
-
-    public static <T> List<List<T>> partition(List<T> list, int size) {
-        if (size <= 0) {
-            throw new IllegalArgumentException("The size must be greater than 0");
-        }
-        return IntStream.iterate(0, i -> i + size)
-                .limit((long) Math.ceil((double) list.size() / size))
-                .mapToObj(cur -> list.subList(cur, Math.min(cur + size, list.size()))).collect(Collectors.toList());
-    }
-
 }

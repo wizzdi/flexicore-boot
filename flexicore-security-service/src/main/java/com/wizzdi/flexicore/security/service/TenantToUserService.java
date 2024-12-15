@@ -54,7 +54,7 @@ public class TenantToUserService implements Plugin {
 			tenantToUser.setUser(tenantToUserCreate.getUser());
 			update=true;
 		}
-		if(tenantToUserCreate.getTenant()!=null&&(tenantToUser.getTargetTenant()==null||!tenantToUserCreate.getTenant().getId().equals(tenantToUser.getTargetTenant().getId()))){
+		if(tenantToUserCreate.getTenant()!=null&&(tenantToUser.getTenant()==null||!tenantToUserCreate.getTenant().getId().equals(tenantToUser.getTenant().getId()))){
 			tenantToUser.setTenant(tenantToUserCreate.getTenant());
 			update=true;
 		}

@@ -7,6 +7,7 @@ import com.wizzdi.segmantix.api.model.IInstanceGroup;
 import com.wizzdi.segmantix.api.model.IInstanceGroupLink;
 import com.wizzdi.segmantix.api.service.InstanceGroupLinkProvider;
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Root;
@@ -18,12 +19,8 @@ import java.util.List;
 @Component
 public class InstanceGroupLinkProviderImpl implements InstanceGroupLinkProvider {
 
-    private final EntityManager em;
-
-    public InstanceGroupLinkProviderImpl(EntityManager em) {
-        this.em = em;
-    }
-
+    @PersistenceContext
+    private  EntityManager em;
 
 
     @Override

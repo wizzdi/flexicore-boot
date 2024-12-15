@@ -20,8 +20,6 @@ import jakarta.persistence.ManyToOne;
 public class TenantToUser extends Baseclass {
 
     private boolean defaultTenant;
-    @ManyToOne(targetEntity = SecurityTenant.class)
-    private SecurityTenant targetTenant;
     @ManyToOne(targetEntity = SecurityUser.class)
     private SecurityUser user;
 
@@ -34,15 +32,7 @@ public class TenantToUser extends Baseclass {
         return (T) this;
     }
 
-    @ManyToOne(targetEntity = SecurityTenant.class)
-    public SecurityTenant getTargetTenant() {
-        return targetTenant;
-    }
 
-    public <T extends TenantToUser> T setTargetTenant(SecurityTenant tenant) {
-        this.targetTenant = tenant;
-        return (T) this;
-    }
 
     @ManyToOne(targetEntity = SecurityUser.class)
     public SecurityUser getUser() {

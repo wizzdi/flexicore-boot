@@ -32,12 +32,12 @@ public class SecurityTenant extends SecurityEntity implements ITenant {
 	@OneToMany(targetEntity = TenantToBaseclass.class,mappedBy="tenant")
 	private List<TenantToBaseclass> tenantToBaseclasses =new ArrayList<>();
 
-	@OneToMany(targetEntity = TenantToUser.class,mappedBy= "targetTenant")
+	@OneToMany(targetEntity = TenantToUser.class,mappedBy= "tenant")
 	@JsonIgnore
 	private List<TenantToUser> tenantToUser=new ArrayList<>();
 
 	@JsonIgnore
-	@OneToMany(targetEntity = TenantToUser.class,mappedBy= "targetTenant")
+	@OneToMany(targetEntity = TenantToUser.class,mappedBy= "tenant")
 	public List<TenantToUser> getTenantToUser() {
 		return tenantToUser;
 	}

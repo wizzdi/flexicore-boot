@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.flexicore.model.Baseclass;
 import com.flexicore.model.Clazz;
 import com.flexicore.model.PermissionGroup;
+import com.wizzdi.flexicore.security.validation.ClazzValid;
 import com.wizzdi.flexicore.security.validation.IdValid;
 
 import java.util.HashSet;
@@ -13,7 +14,6 @@ import java.util.Set;
 
 @IdValid.List({
         @IdValid(targetField = "permissionGroups", fieldType = PermissionGroup.class, field = "permissionGroupIds"),
-        @IdValid(targetField = "clazzes", fieldType = Clazz.class, field = "clazzIds")
 })
 public class PermissionGroupToBaseclassFilter extends PaginationFilter {
 
@@ -25,7 +25,7 @@ public class PermissionGroupToBaseclassFilter extends PaginationFilter {
     @JsonIgnore
     private List<PermissionGroup> permissionGroups;
 
-    private Set<String> clazzIds=new HashSet<>();
+    @ClazzValid
     @JsonIgnore
     private List<Clazz> clazzes;
 
@@ -70,15 +70,6 @@ public class PermissionGroupToBaseclassFilter extends PaginationFilter {
 
     public <T extends PermissionGroupToBaseclassFilter> T setSecuredIds(Set<String> securedIds) {
         this.securedIds = securedIds;
-        return (T) this;
-    }
-
-    public Set<String> getClazzIds() {
-        return clazzIds;
-    }
-
-    public <T extends PermissionGroupToBaseclassFilter> T setClazzIds(Set<String> clazzIds) {
-        this.clazzIds = clazzIds;
         return (T) this;
     }
 

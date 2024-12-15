@@ -8,11 +8,12 @@ package com.flexicore.model;
 
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.wizzdi.segmantix.api.model.IInstanceGroup;
 import com.wizzdi.segmantix.api.model.IInstanceGroupLink;
 import jakarta.persistence.Entity;
 import jakarta.persistence.ManyToOne;
-
-
+import jakarta.persistence.Transient;
 
 
 @Entity
@@ -51,6 +52,13 @@ public class PermissionGroupToBaseclass extends Baseclass implements IInstanceGr
 	@Override
 	public String getSecuredType() {
 		return securedType;
+	}
+
+	@Transient
+	@JsonIgnore
+	@Override
+	public IInstanceGroup getInstanceGroup() {
+		return permissionGroup;
 	}
 
 	public <T extends PermissionGroupToBaseclass> T setSecuredType(String securedType) {

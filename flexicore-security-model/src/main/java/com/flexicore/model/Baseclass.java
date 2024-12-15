@@ -8,7 +8,6 @@ package com.flexicore.model;
 
 import com.fasterxml.jackson.annotation.JsonView;
 import com.wizzdi.flexicore.boot.rest.views.Views;
-import com.wizzdi.flexicore.boot.rest.views.Views.Full;
 
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.MappedSuperclass;
@@ -24,6 +23,7 @@ public class Baseclass extends Basic  {
 
 	@ManyToOne(targetEntity = SecurityTenant.class)
 	private SecurityTenant tenant;
+	private String securityId;
 
 	@ManyToOne(targetEntity = SecurityTenant.class)
 	public SecurityTenant getTenant() {
@@ -34,22 +34,7 @@ public class Baseclass extends Basic  {
 		this.tenant = tenant;
 	}
 
-	@ManyToOne(targetEntity = Clazz.class)
-	@JsonView(Full.class)
-	protected Clazz clazz;
-	// this field is added to to trigger metadatamodel generation , sometimes _.clazz field isn't created.
 
-
-
-	@JsonView(Full.class)
-	@ManyToOne(targetEntity = Clazz.class)
-	public Clazz getClazz() {
-		return clazz;
-	}
-
-	public void setClazz(Clazz clazz) {
-		this.clazz = clazz;
-	}
 
 
 	@JsonView(Views.ForSwaggerOnly.class)
@@ -62,10 +47,12 @@ public class Baseclass extends Basic  {
 		this.creator = creator;
 	}
 
+	public String getSecurityId() {
+		return securityId;
+	}
 
-
-
-
-
-
+	public <T extends Baseclass> T setSecurityId(String securityId) {
+		this.securityId = securityId;
+		return (T) this;
+	}
 }

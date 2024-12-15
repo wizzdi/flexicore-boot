@@ -42,9 +42,8 @@ public class OperationToClazzRepository implements Plugin {
 	public  <T extends OperationToClazz> void addOperationToClazzPredicates(OperationToClazzFilter operationToClazzFilter, CriteriaBuilder cb, CommonAbstractCriteria q, From<?,T> r, List<Predicate> predicates, SecurityContext securityContext) {
 		BasicRepository.addBasicPropertiesFilter(operationToClazzFilter.getBasicPropertiesFilter(),cb,q,r,predicates);
 		if(operationToClazzFilter.getClazzes()!=null&&!operationToClazzFilter.getClazzes().isEmpty()){
-			Set<String> ids=operationToClazzFilter.getClazzes().stream().map(f->f.getId()).collect(Collectors.toSet());
-			Join<T, Clazz> join=r.join(OperationToClazz_.clazz);
-			predicates.add(join.get(Clazz_.id).in(ids));
+			Set<String> ids=operationToClazzFilter.getClazzes().stream().map(f->f.name()).collect(Collectors.toSet());
+			predicates.add(r.get(OperationToClazz_.type).in(ids));
 		}
 
 		if(operationToClazzFilter.getSecurityOperations()!=null&&!operationToClazzFilter.getSecurityOperations().isEmpty()){

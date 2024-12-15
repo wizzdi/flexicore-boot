@@ -18,22 +18,11 @@ import jakarta.persistence.Transient;
 
 public class TenantToBaseclass extends SecurityLink implements ITenantSecurity {
 
-	@ManyToOne(targetEntity = SecurityTenant.class)
-	private SecurityTenant targetTenant;
 
-	@ManyToOne(targetEntity = SecurityTenant.class)
-	public SecurityTenant getTargetTenant() {
-		return targetTenant;
-	}
-
-	public <T extends TenantToBaseclass> T setTargetTenant(SecurityTenant securityTenant) {
-		this.targetTenant = securityTenant;
-		return (T) this;
-	}
 
 	@Transient
 	@Override
 	public SecurityEntity getSecurityEntity() {
-		return targetTenant;
+		return getTenant();
 	}
 }

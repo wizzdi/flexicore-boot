@@ -2,6 +2,7 @@ package com.wizzdi.flexicore.security.request;
 
 import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.wizzdi.flexicore.security.validation.ClazzValid;
 import com.wizzdi.segmantix.model.Access;
 import com.flexicore.model.*;
 import com.wizzdi.flexicore.security.validation.Create;
@@ -16,7 +17,6 @@ import org.apache.commons.lang.StringUtils;
         @IdValid(targetField = "operation",field = "operationId",fieldType = SecurityOperation.class, groups = {Create.class, Update.class}),
         @IdValid(targetField = "operationGroup",field = "operationGroupId",fieldType = OperationGroup.class, groups = {Create.class, Update.class}),
         @IdValid(targetField = "permissionGroup",field = "permissionGroupId",fieldType = PermissionGroup.class, groups = {Create.class, Update.class}),
-        @IdValid(targetField = "clazz",field = "clazzId",fieldType = Clazz.class, groups = {Create.class, Update.class})
 })
 public class SecurityLinkCreate extends BasicCreate {
 
@@ -34,10 +34,9 @@ public class SecurityLinkCreate extends BasicCreate {
 
     private String permissionGroupId;
 
-    @JsonIgnore
+    @ClazzValid
     private Clazz clazz;
 
-    private String clazzId;
     private String operationId;
     @JsonIgnore
     private SecurityOperation operation;
@@ -51,14 +50,7 @@ public class SecurityLinkCreate extends BasicCreate {
 
 
 
-    public String getTenantId() {
-        return securedId;
-    }
 
-    public <T extends SecurityLinkCreate> T setSecuredId(String securedId) {
-        this.securedId = securedId;
-        return (T) this;
-    }
 
     public String getOperationId() {
         return operationId;
@@ -88,9 +80,6 @@ public class SecurityLinkCreate extends BasicCreate {
         return (T) this;
     }
 
-    public String getSecuredId() {
-        return securedId;
-    }
 
     @JsonIgnore
     public PermissionGroup getPermissionGroup() {
@@ -118,15 +107,6 @@ public class SecurityLinkCreate extends BasicCreate {
 
     public <T extends SecurityLinkCreate> T setClazz(Clazz clazz) {
         this.clazz = clazz;
-        return (T) this;
-    }
-
-    public String getClazzId() {
-        return clazzId;
-    }
-
-    public <T extends SecurityLinkCreate> T setClazzId(String clazzId) {
-        this.clazzId = clazzId;
         return (T) this;
     }
 
@@ -168,9 +148,18 @@ public class SecurityLinkCreate extends BasicCreate {
         return (T) this;
     }
 
+    public String getSecuredId() {
+        return securedId;
+    }
+
+    public <T extends SecurityLinkCreate> T setSecuredId(String securedId) {
+        this.securedId = securedId;
+        return (T) this;
+    }
+
     @AssertTrue(message = "clazzId or baseclassId or permissionGroupId must be provided",groups = Create.class)
     private boolean isTargetProvided() {
-        return !StringUtils.isEmpty(clazzId)||!StringUtils.isEmpty(securedId)||!StringUtils.isEmpty(permissionGroupId);
+        return clazz!=null||!StringUtils.isEmpty(securedId)||!StringUtils.isEmpty(permissionGroupId);
     }
 
     @AssertTrue(message = "operationId or operationGroupId must be provided",groups = Create.class)

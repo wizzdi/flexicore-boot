@@ -6,14 +6,9 @@
  ******************************************************************************/
 package com.flexicore.model;
 
-import com.flexicore.annotations.AnnotatedClazz;
-import jakarta.persistence.Entity;
 
 
-@AnnotatedClazz(Category="core", Name="Clazz", Description="Describes all other classes in the system")
-@Entity
-public class Clazz extends Baseclass {
 
-
+public record Clazz(String name) {
 
 }

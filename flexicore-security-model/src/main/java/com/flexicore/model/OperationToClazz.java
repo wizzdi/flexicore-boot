@@ -18,8 +18,7 @@ public class OperationToClazz extends Basic {
 
 	@ManyToOne(targetEntity = SecurityOperation.class)
 	private SecurityOperation operation;
-	@ManyToOne(targetEntity = Clazz.class)
-	private Clazz clazz;
+	private String type;
 
 	
 
@@ -35,13 +34,12 @@ public class OperationToClazz extends Basic {
 	}
 
 
-	@ManyToOne(targetEntity = Clazz.class)
-	public Clazz getClazz() {
-		return clazz;
+	public String getType() {
+		return type;
 	}
 
-	public <T extends OperationToClazz> T setClazz(Clazz clazz) {
-		this.clazz = clazz;
+	public <T extends OperationToClazz> T setType(String type) {
+		this.type = type;
 		return (T) this;
 	}
 }

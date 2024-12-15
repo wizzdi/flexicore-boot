@@ -1,7 +1,6 @@
 package com.wizzdi.flexicore.security.data;
 
 import com.flexicore.model.Baseclass;
-import com.flexicore.model.Baseclass_;
 import com.flexicore.model.PermissionGroupToBaseclass;
 import com.flexicore.model.PermissionGroupToBaseclass_;
 import com.wizzdi.segmantix.model.SecurityContext;
@@ -17,6 +16,7 @@ import jakarta.persistence.TypedQuery;
 import jakarta.persistence.criteria.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -43,9 +43,13 @@ public class PermissionGroupToBaseclassRepository implements Plugin {
 	}
 
 	private static Order getSorting(PermissionGroupToBaseclassFilter permissionGroupToBaseclassFilter, Root<PermissionGroupToBaseclass> r, CriteriaBuilder cb) {
-		PermissionGroupToBaseclassFilter.Sorting sorting = permissionGroupToBaseclassFilter.getSorting();
-		Path<?> sortPath = r.get(PermissionGroupToBaseclass_.securedId);
-        return sorting.asc() ? cb.asc(sortPath) : cb.desc(sortPath);
+		PermissionGroupToBaseclassFilter.SortBy sortBy = Optional.ofNullable(permissionGroupToBaseclassFilter.getSorting()).map(f->f.sortBy()).orElse(PermissionGroupToBaseclassFilter.SortBy.CLAZZ_NAME);
+		boolean asc = Optional.ofNullable(permissionGroupToBaseclassFilter.getSorting()).map(f->f.asc()).orElse(true);
+		Path<?> sortPath = switch (sortBy){
+			case BASECLASS_ID -> r.get(PermissionGroupToBaseclass_.securedId);
+			default-> r.get(PermissionGroupToBaseclass_.securedType);
+		};
+        return asc ? cb.asc(sortPath) : cb.desc(sortPath);
 	}
 
 	public  <T extends PermissionGroupToBaseclass> void addPermissionGroupToBaseclassPredicates(PermissionGroupToBaseclassFilter permissionGroupToBaseclassFilter, CriteriaBuilder cb, CommonAbstractCriteria q, From<?,T> r, List<Predicate> predicates, SecurityContext securityContext) {
@@ -54,7 +58,7 @@ public class PermissionGroupToBaseclassRepository implements Plugin {
 			predicates.add(r.get(PermissionGroupToBaseclass_.securedId).in(permissionGroupToBaseclassFilter.getSecuredIds()));
 		}
 		if (permissionGroupToBaseclassFilter.getClazzes() != null && !permissionGroupToBaseclassFilter.getClazzes().isEmpty()) {
-			Set<String> types=permissionGroupToBaseclassFilter.getClazzes().stream().map(f->f.getName()).collect(Collectors.toSet());
+			Set<String> types=permissionGroupToBaseclassFilter.getClazzes().stream().map(f->f.name()).collect(Collectors.toSet());
 			predicates.add(r.get(PermissionGroupToBaseclass_.securedType).in(types));
 		}
 		if (permissionGroupToBaseclassFilter.getPermissionGroups() != null && permissionGroupToBaseclassFilter.getPermissionGroups().isEmpty()) {

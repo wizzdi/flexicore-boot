@@ -7,6 +7,7 @@ import com.wizzdi.segmantix.api.model.IOperation;
 import com.wizzdi.segmantix.api.model.IOperationGroupLink;
 import com.wizzdi.segmantix.api.service.OperationGroupLinkProvider;
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Root;
@@ -18,11 +19,10 @@ import java.util.List;
 
 @Component
 public class OperationGroupLinkProviderImpl implements OperationGroupLinkProvider {
-    private final EntityManager em;
 
-    public OperationGroupLinkProviderImpl(EntityManager em) {
-        this.em = em;
-    }
+    @PersistenceContext
+    private  EntityManager em;
+
 
     @Override
     public List<IOperationGroupLink> listAllOperationGroupLinks(List<IOperation> operations) {

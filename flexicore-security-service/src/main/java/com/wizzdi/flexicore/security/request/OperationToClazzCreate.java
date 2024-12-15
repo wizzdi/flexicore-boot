@@ -3,13 +3,13 @@ package com.wizzdi.flexicore.security.request;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.flexicore.model.Clazz;
 import com.flexicore.model.SecurityOperation;
+import com.wizzdi.flexicore.security.validation.ClazzValid;
 import com.wizzdi.flexicore.security.validation.Create;
 import com.wizzdi.flexicore.security.validation.IdValid;
 import com.wizzdi.flexicore.security.validation.Update;
 
 @IdValid.List({
         @IdValid(targetField = "securityOperation", fieldType = SecurityOperation.class, field = "securityOperationId", groups = {Create.class, Update.class}),
-        @IdValid(targetField = "clazz", fieldType = Clazz.class, field = "clazzId", groups = {Create.class, Update.class})
 
 })
 public class OperationToClazzCreate extends BasicCreate {
@@ -17,9 +17,8 @@ public class OperationToClazzCreate extends BasicCreate {
     @JsonIgnore
     private SecurityOperation securityOperation;
     private String securityOperationId;
-    @JsonIgnore
-    private Clazz clazz;
-    private String clazzId;
+    @ClazzValid
+    private Clazz type;
 
     @JsonIgnore
     public SecurityOperation getSecurityOperation() {
@@ -40,22 +39,13 @@ public class OperationToClazzCreate extends BasicCreate {
         return (T) this;
     }
 
-    @JsonIgnore
-    public Clazz getClazz() {
-        return clazz;
+
+    public Clazz getType() {
+        return type;
     }
 
-    public <T extends OperationToClazzCreate> T setClazz(Clazz clazz) {
-        this.clazz = clazz;
-        return (T) this;
-    }
-
-    public String getClazzId() {
-        return clazzId;
-    }
-
-    public <T extends OperationToClazzCreate> T setClazzId(String clazzId) {
-        this.clazzId = clazzId;
+    public <T extends OperationToClazzCreate> T setType(Clazz type) {
+        this.type = type;
         return (T) this;
     }
 }

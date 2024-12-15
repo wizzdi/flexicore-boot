@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.flexicore.annotations.TypeRetention;
 import com.flexicore.model.Clazz;
 import com.flexicore.model.SecurityOperation;
+import com.wizzdi.flexicore.security.validation.ClazzValid;
 
 import java.util.List;
 
@@ -14,6 +15,7 @@ public class OperationToClazzFilter extends PaginationFilter {
     @JsonIgnore
     @TypeRetention(SecurityOperation.class)
     private List<SecurityOperation> securityOperations;
+    @ClazzValid
     @JsonIgnore
     @TypeRetention(Clazz.class)
     private List<Clazz> clazzes;

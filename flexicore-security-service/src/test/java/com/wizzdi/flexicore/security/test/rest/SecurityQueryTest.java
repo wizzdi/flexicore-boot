@@ -35,13 +35,15 @@ import java.util.stream.IntStream;
 
 
 public class SecurityQueryTest {
-	    private final static PostgreSQLContainer postgresqlContainer = new PostgreSQLContainer("postgres:15")
+    private final static PostgreSQLContainer postgresqlContainer = new PostgreSQLContainer("postgres:15")
 
 			.withDatabaseName("flexicore-test")
 			.withUsername("flexicore")
 			.withPassword("flexicore");
-	
-	static{
+    public static final Clazz TEST_ENTITY_CLAZZ = new Clazz(TestEntity.class.getSimpleName());
+    public static final Clazz SECURITY_WILDCARD_CLAZZ = new Clazz(SecurityWildcard.class.getSimpleName());
+
+    static{
 		postgresqlContainer.start();
 	}
 
@@ -108,7 +110,7 @@ private SecurityUserService securityUserService;
         testUser= securityUserService.createSecurityUser(new SecurityUserCreate().setName("testUser"), null);
         testTenant = securityTenantService.createTenant(new SecurityTenantCreate().setName("testTenant"), null);
         tenantToUserService.createTenantToUser(new TenantToUserCreate().setUser(testUser).setDefaultTenant(true).setTenant(testTenant),null);
-        tenantToUserService.createTenantToUser(new TenantToUserCreate().setUser(testUser).setTenant((SecurityTenant) adminSecurityContext.getTenantToCreateIn()),null);
+        tenantToUserService.createTenantToUser(new TenantToUserCreate().setUser(testUser).setTenant( adminSecurityContext.getTenantToCreateIn()),null);
 
         testRole= roleService.createRole(new RoleCreate().setTenant(testTenant).setName("testRole"), null);
         testRole.setCreator(testUser);
@@ -150,7 +152,7 @@ private SecurityUserService securityUserService;
         TestEntity forUser = testEntityService.createTestEntityNoMerge(new TestEntityCreate().setName("forUser"), adminSecurityContext);
         forUser.setTenant(testTenant);
         testEntityService.merge(forUser);
-        userToBaseclassService.createUserToBaseclass(new UserToBaseclassCreate().setUser(testUser).setAccess(Access.allow).setSecuredId(forUser.getId()),null);
+        userToBaseclassService.createUserToBaseclass(new UserToBaseclassCreate().setUser(testUser).setAccess(Access.allow).setSecuredId(forUser.getId()).setClazz(TEST_ENTITY_CLAZZ),null);
         List<TestEntity> testEntities = testEntityService.listAllTestEntities(new TestEntityFilter(), testUserSecurityContext);
         Assertions.assertTrue(testEntities.stream().anyMatch(f->f.getId().equals(forUser.getId())));
         Assertions.assertTrue(testEntities.stream().noneMatch(f-> othersInOtherTenantIds.contains(f.getId())));
@@ -164,7 +166,7 @@ private SecurityUserService securityUserService;
         TestEntity forRole = testEntityService.createTestEntity(new TestEntityCreate().setName("forRole"), adminSecurityContext);
         forRole.setTenant(testTenant);
         testEntityService.merge(forRole);
-        roleToBaseclassService.createRoleToBaseclass(new RoleToBaseclassCreate().setRole(testRole).setAccess(Access.allow).setSecuredId(forRole.getId()),null);
+        roleToBaseclassService.createRoleToBaseclass(new RoleToBaseclassCreate().setRole(testRole).setAccess(Access.allow).setSecuredId(forRole.getId()).setClazz(TEST_ENTITY_CLAZZ),null);
         List<TestEntity> testEntities = testEntityService.listAllTestEntities(new TestEntityFilter(), testUserSecurityContext);
         Assertions.assertTrue(testEntities.stream().anyMatch(f->f.getId().equals(forRole.getId())));
         Assertions.assertTrue(testEntities.stream().noneMatch(f-> othersInOtherTenantIds.contains(f.getId())));
@@ -177,7 +179,7 @@ private SecurityUserService securityUserService;
     public void testForTenant() {
         TestEntity forTenant = testEntityService.createTestEntity(new TestEntityCreate().setName("forTenant"), adminSecurityContext);
 
-        tenantToBaseclassService.createTenantToBaseclass(new TenantToBaseclassCreate().setTenant(testTenant).setAccess(Access.allow).setSecuredId(forTenant.getId()),null);
+        tenantToBaseclassService.createTenantToBaseclass(new TenantToBaseclassCreate().setTenant(testTenant).setAccess(Access.allow).setSecuredId(forTenant.getId()).setClazz(TEST_ENTITY_CLAZZ),null);
         List<TestEntity> testEntities = testEntityService.listAllTestEntities(new TestEntityFilter(), testUserSecurityContext);
         Assertions.assertTrue(testEntities.stream().anyMatch(f->f.getId().equals(forTenant.getId())));
         Assertions.assertTrue(testEntities.stream().noneMatch(f-> othersInOtherTenantIds.contains(f.getId())));
@@ -242,7 +244,7 @@ private SecurityUserService securityUserService;
         Assertions.assertTrue(testEntities.isEmpty());
 
         // grant it access for clazz
-        userToBaseclassService.createUserToBaseclass(new UserToBaseclassCreate().setUser(freshUser).setAccess(Access.allow).setClazz(clazzService.get(TestEntity.class)),null);
+        userToBaseclassService.createUserToBaseclass(new UserToBaseclassCreate().setUser(freshUser).setAccess(Access.allow).setClazz(TEST_ENTITY_CLAZZ),null);
 
         // validate it has access to all TestEntities in the tenant
         testEntities = testEntityService.listAllTestEntities(new TestEntityFilter(), securityContextProvider.getSecurityContext(freshUser));
@@ -268,7 +270,7 @@ private SecurityUserService securityUserService;
         Assertions.assertTrue(testEntities.isEmpty());
 
         // grant the role access for clazz
-        roleToBaseclassService.createRoleToBaseclass(new RoleToBaseclassCreate().setRole(freshRole).setAccess(Access.allow).setClazz(clazzService.get(TestEntity.class)),null);
+        roleToBaseclassService.createRoleToBaseclass(new RoleToBaseclassCreate().setRole(freshRole).setAccess(Access.allow).setClazz(TEST_ENTITY_CLAZZ),null);
 
         // validate the user with role has access to all TestEntities in the tenant
         testEntities = testEntityService.listAllTestEntities(new TestEntityFilter(), securityContextProvider.getSecurityContext(freshUserWithRole));
@@ -295,7 +297,7 @@ private SecurityUserService securityUserService;
         Assertions.assertTrue(testEntities.isEmpty());
 
         // grant the tenant access for clazz
-        tenantToBaseclassService.createTenantToBaseclass(new TenantToBaseclassCreate().setTenant(freshTenant).setAccess(Access.allow).setClazz(clazzService.get(TestEntity.class)),null);
+        tenantToBaseclassService.createTenantToBaseclass(new TenantToBaseclassCreate().setTenant(freshTenant).setAccess(Access.allow).setClazz(TEST_ENTITY_CLAZZ),null);
 
         // validate the user in the tenant has access to all TestEntities in the tenant
         testEntities = testEntityService.listAllTestEntities(new TestEntityFilter(), securityContextProvider.getSecurityContext(freshUserInTenant));
@@ -316,7 +318,7 @@ private SecurityUserService securityUserService;
         Assertions.assertTrue(testEntities.isEmpty());
 
         // grant it access for clazz
-        userToBaseclassService.createUserToBaseclass(new UserToBaseclassCreate().setUser(freshUser).setAccess(Access.allow).setClazz(clazzService.get(SecurityWildcard.class)),null);
+        userToBaseclassService.createUserToBaseclass(new UserToBaseclassCreate().setUser(freshUser).setAccess(Access.allow).setClazz(SECURITY_WILDCARD_CLAZZ),null);
 
         // validate it has access to all TestEntities in the tenant
         testEntities = testEntityService.listAllTestEntities(new TestEntityFilter(), securityContextProvider.getSecurityContext(freshUser));
@@ -342,7 +344,7 @@ private SecurityUserService securityUserService;
         Assertions.assertTrue(testEntities.isEmpty());
 
         // grant the role access for clazz
-        roleToBaseclassService.createRoleToBaseclass(new RoleToBaseclassCreate().setRole(freshRole).setAccess(Access.allow).setClazz(clazzService.get(SecurityWildcard.class)),null);
+        roleToBaseclassService.createRoleToBaseclass(new RoleToBaseclassCreate().setRole(freshRole).setAccess(Access.allow).setClazz(SECURITY_WILDCARD_CLAZZ),null);
 
         // validate the user with role has access to all TestEntities in the tenant
         testEntities = testEntityService.listAllTestEntities(new TestEntityFilter(), securityContextProvider.getSecurityContext(freshUserWithRole));
@@ -369,7 +371,7 @@ private SecurityUserService securityUserService;
         Assertions.assertTrue(testEntities.isEmpty());
 
         // grant the tenant access for clazz
-        tenantToBaseclassService.createTenantToBaseclass(new TenantToBaseclassCreate().setTenant(freshTenant).setAccess(Access.allow).setClazz(clazzService.get(SecurityWildcard.class)),null);
+        tenantToBaseclassService.createTenantToBaseclass(new TenantToBaseclassCreate().setTenant(freshTenant).setAccess(Access.allow).setClazz(SECURITY_WILDCARD_CLAZZ),null);
 
         // validate the user in the tenant has access to all TestEntities in the tenant
         testEntities = testEntityService.listAllTestEntities(new TestEntityFilter(), securityContextProvider.getSecurityContext(freshUserInTenant));
@@ -383,7 +385,7 @@ private SecurityUserService securityUserService;
         SecurityUser freshUser = securityUserService.createSecurityUser(new SecurityUserCreate().setName("freshUser"), null);
         SecurityTenant freshTenant = securityTenantService.createTenant(new SecurityTenantCreate().setName("freshTenant"), null);
         tenantToUserService.createTenantToUser(new TenantToUserCreate().setUser(freshUser).setDefaultTenant(true).setTenant(freshTenant),null);
-        userToBaseclassService.createUserToBaseclass(new UserToBaseclassCreate().setUser(freshUser).setAccess(Access.allow).setClazz(clazzService.get(SecurityWildcard.class)),null);
+        userToBaseclassService.createUserToBaseclass(new UserToBaseclassCreate().setUser(freshUser).setAccess(Access.allow).setClazz(SECURITY_WILDCARD_CLAZZ),null);
 
         // validate it has access to nothing
         SecurityContext securityContext = securityContextProvider.getSecurityContext(freshUser);
@@ -408,7 +410,7 @@ private SecurityUserService securityUserService;
         SecurityUser freshUserWithRole = securityUserService.createSecurityUser(new SecurityUserCreate().setName("freshUserWithRole"), null);
         roleToUserService.createRoleToUser(new RoleToUserCreate().setRole(freshRole).setSecurityUser(freshUserWithRole), null);
         tenantToUserService.createTenantToUser(new TenantToUserCreate().setUser(freshUserWithRole).setDefaultTenant(true).setTenant(freshTenant),null);
-        roleToBaseclassService.createRoleToBaseclass(new RoleToBaseclassCreate().setRole(freshRole).setAccess(Access.allow).setClazz(clazzService.get(SecurityWildcard.class)),null);
+        roleToBaseclassService.createRoleToBaseclass(new RoleToBaseclassCreate().setRole(freshRole).setAccess(Access.allow).setClazz(SECURITY_WILDCARD_CLAZZ),null);
 
         // validate it has access to nothing
         SecurityContext securityContext = securityContextProvider.getSecurityContext(freshUserWithRole);
@@ -429,7 +431,7 @@ private SecurityUserService securityUserService;
         SecurityUser freshUser = securityUserService.createSecurityUser(new SecurityUserCreate().setName("freshUser"), null);
         SecurityTenant freshTenant = securityTenantService.createTenant(new SecurityTenantCreate().setName("freshTenant"), null);
         tenantToUserService.createTenantToUser(new TenantToUserCreate().setUser(freshUser).setDefaultTenant(true).setTenant(freshTenant),null);
-        tenantToBaseclassService.createTenantToBaseclass(new TenantToBaseclassCreate().setTenant(freshTenant).setAccess(Access.allow).setClazz(clazzService.get(SecurityWildcard.class)),null);
+        tenantToBaseclassService.createTenantToBaseclass(new TenantToBaseclassCreate().setTenant(freshTenant).setAccess(Access.allow).setClazz(SECURITY_WILDCARD_CLAZZ),null);
 
         // validate it has access to nothing
         SecurityContext securityContext = securityContextProvider.getSecurityContext(freshUser);
@@ -449,7 +451,7 @@ private SecurityUserService securityUserService;
         SecurityUser freshUser = securityUserService.createSecurityUser(new SecurityUserCreate().setName("freshUser"), null);
         SecurityTenant freshTenant = securityTenantService.createTenant(new SecurityTenantCreate().setName("freshTenant"), null);
         tenantToUserService.createTenantToUser(new TenantToUserCreate().setUser(freshUser).setDefaultTenant(true).setTenant(freshTenant),null);
-        tenantToBaseclassService.createTenantToBaseclass(new TenantToBaseclassCreate().setTenant(freshTenant).setAccess(Access.allow).setClazz(clazzService.get(SecurityWildcard.class)),null);
+        tenantToBaseclassService.createTenantToBaseclass(new TenantToBaseclassCreate().setTenant(freshTenant).setAccess(Access.allow).setClazz(SECURITY_WILDCARD_CLAZZ),null);
 
         // validate it has access to nothing
         SecurityContext securityContext = securityContextProvider.getSecurityContext(freshUser);

@@ -65,8 +65,8 @@ public class SecurityLinkService implements Plugin {
 			updated=true;
 		}
 
-		if(securityLinkCreate.getClazz()!=null&&(securityLink.getClazz()==null || !securityLinkCreate.getClazz().getId().equals(securityLink.getClazz().getId()))){
-			securityLink.setClazz(securityLinkCreate.getClazz());
+		if(securityLinkCreate.getClazz()!=null&&!securityLinkCreate.getClazz().name().equals(securityLink.getSecuredType())){
+			securityLink.setSecuredType(securityLinkCreate.getClazz().name());
 			updated=true;
 		}
 		if(securityLinkCreate.getSecurityLinkGroup()!=null&&(securityLink.getSecurityLinkGroup()==null || !securityLinkCreate.getSecurityLinkGroup().getId().equals(securityLink.getSecurityLinkGroup().getId()))){

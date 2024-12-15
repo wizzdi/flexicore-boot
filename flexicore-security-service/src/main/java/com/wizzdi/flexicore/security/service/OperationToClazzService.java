@@ -52,8 +52,8 @@ public class OperationToClazzService implements Plugin {
 
 	public boolean updateOperationToClazzNoMerge(OperationToClazzCreate operationToClazzCreate, OperationToClazz operationToClazz) {
 		boolean update= basicService.updateBasicNoMerge(operationToClazzCreate,operationToClazz);
-		if(operationToClazzCreate.getClazz()!=null&&(operationToClazz.getClazz()==null||!operationToClazzCreate.getClazz().getId().equals(operationToClazz.getClazz().getId()))){
-			operationToClazz.setClazz(operationToClazzCreate.getClazz());
+		if(operationToClazzCreate.getType()!=null&&!operationToClazzCreate.getType().name().equals(operationToClazz.getType())){
+			operationToClazz.setType(operationToClazzCreate.getType().name());
 			update=true;
 		}
 		if(operationToClazzCreate.getSecurityOperation()!=null&&(operationToClazz.getOperation()==null||!operationToClazzCreate.getSecurityOperation().getId().equals(operationToClazz.getOperation().getId()))){

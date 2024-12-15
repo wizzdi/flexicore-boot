@@ -53,7 +53,7 @@ public class TenantToBaseclassService implements Plugin {
 
 	public boolean updateTenantToBaseclassNoMerge(TenantToBaseclassCreate tenantToBaseclassCreate, TenantToBaseclass tenantToBaseclass) {
 		boolean update = securityLinkService.updateSecurityLinkNoMerge(tenantToBaseclassCreate, tenantToBaseclass);
-		if(tenantToBaseclassCreate.getTenant()!=null&&(tenantToBaseclass.getTargetTenant()==null||!tenantToBaseclassCreate.getTenant().getId().equals(tenantToBaseclass.getTargetTenant().getId()))){
+		if(tenantToBaseclassCreate.getTenant()!=null&&(tenantToBaseclass.getTenant()==null||!tenantToBaseclassCreate.getTenant().getId().equals(tenantToBaseclass.getTenant().getId()))){
 			tenantToBaseclass.setTenant(tenantToBaseclassCreate.getTenant());
 			update=true;
 		}

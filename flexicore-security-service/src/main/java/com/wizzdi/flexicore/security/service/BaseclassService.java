@@ -31,8 +31,12 @@ public class BaseclassService implements Plugin {
 
 
 	public static <T extends Baseclass> Baseclass createSecurityObjectNoMerge(T subject, SecurityContext securityContext) {
-		subject.setCreator((SecurityUser) securityContext.user());
-		subject.setTenant((SecurityTenant) securityContext.getTenantToCreateIn());
+		if(securityContext==null){
+			return subject;
+		}
+		subject.setCreator(securityContext.getUser());
+		subject.setTenant(securityContext.getTenantToCreateIn());
+		subject.setSecurityId(subject.getId());
 		//TODO:clazz?
 		return subject;
 	}

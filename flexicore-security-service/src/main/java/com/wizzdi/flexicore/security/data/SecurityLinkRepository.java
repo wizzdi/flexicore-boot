@@ -16,6 +16,7 @@ import jakarta.persistence.criteria.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Component
 @Extension
@@ -70,7 +71,8 @@ public class SecurityLinkRepository implements Plugin {
 			predicates.add(r.get(SecurityLink_.securedId).in(securityLinkFilter.getSecuredIds()));
 		}
 		if(securityLinkFilter.getClazzes()!=null&&!securityLinkFilter.getClazzes().isEmpty()){
-			predicates.add(r.get(SecurityLink_.clazz).in(securityLinkFilter.getClazzes()));
+			Set<String> types = securityLinkFilter.getClazzes().stream().map(f -> f.name()).collect(Collectors.toSet());
+			predicates.add(r.get(SecurityLink_.securedType).in(types));
 		}
 
 		if(securityLinkFilter.getPermissionGroups()!=null&&!securityLinkFilter.getPermissionGroups().isEmpty()){

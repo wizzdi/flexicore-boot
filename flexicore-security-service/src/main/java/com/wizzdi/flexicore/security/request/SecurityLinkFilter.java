@@ -2,6 +2,7 @@ package com.wizzdi.flexicore.security.request;
 
 import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.wizzdi.flexicore.security.validation.ClazzValid;
 import com.wizzdi.segmantix.model.Access;
 import com.flexicore.model.*;
 import com.wizzdi.flexicore.security.validation.IdValid;
@@ -37,6 +38,7 @@ public class SecurityLinkFilter extends PaginationFilter {
 
     @JsonAlias("baseclassIds")
     private Set<String> securedIds =new HashSet<>();
+    @ClazzValid
     @JsonIgnore
     private List<Clazz> clazzes;
     @JsonIgnore

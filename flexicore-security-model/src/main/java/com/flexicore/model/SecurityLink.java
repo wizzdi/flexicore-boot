@@ -7,6 +7,8 @@
 package com.flexicore.model;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.wizzdi.segmantix.api.model.IInstanceGroup;
 import com.wizzdi.segmantix.model.Access;
 import com.wizzdi.segmantix.api.model.ISecurity;
 import jakarta.persistence.*;
@@ -38,6 +40,7 @@ public class SecurityLink extends Baseclass implements ISecurity {
 
 
 
+	@JsonIgnore
 	@Transient
 	public SecurityEntity getSecurityEntity(){
 		return null;
@@ -107,6 +110,13 @@ public class SecurityLink extends Baseclass implements ISecurity {
 	@Override
 	public String getSecuredType() {
 		return securedType;
+	}
+
+	@Transient
+	@JsonIgnore
+	@Override
+	public IInstanceGroup getInstanceGroup() {
+		return permissionGroup;
 	}
 
 	public <T extends SecurityLink> T setSecuredType(String securedType) {

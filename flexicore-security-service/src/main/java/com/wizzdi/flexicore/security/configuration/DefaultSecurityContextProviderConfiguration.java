@@ -1,8 +1,6 @@
 package com.wizzdi.flexicore.security.configuration;
 
 import com.flexicore.model.*;
-import com.wizzdi.segmantix.api.model.IRole;
-import com.wizzdi.segmantix.api.model.ITenant;
 import com.wizzdi.segmantix.model.SecurityContext;
 import com.wizzdi.flexicore.security.interfaces.SecurityContextProvider;
 import com.wizzdi.flexicore.security.request.RoleToUserFilter;
@@ -41,8 +39,8 @@ public class DefaultSecurityContextProviderConfiguration {
         List<TenantToUser> links=tenantToUserService.listAllTenantToUsers(new TenantToUserFilter().setUsers(Collections.singletonList(securityUser)),null);
         List<RoleToUser> roleToUsers=roleToUserService.listAllRoleToUsers(new RoleToUserFilter().setUsers(Collections.singletonList(securityUser)),null);
         List<Role> allRoles=new ArrayList<>(roleToUsers.stream().map(f->f.getRole()).collect(Collectors.toMap(f->f.getId(), f->f,(a, b)->a)).values());
-        List<SecurityTenant> tenants = new ArrayList<>(links.stream().map(f -> f.getTargetTenant()).collect(Collectors.toMap(f -> f.getId(), f -> f, (a, b) -> a)).values());
-        SecurityTenant tenantToCreateIn = links.stream().filter(f -> f.isDefaultTenant()).map(f -> f.getTargetTenant()).findFirst().orElse(null);
+        List<SecurityTenant> tenants = new ArrayList<>(links.stream().map(f -> f.getTenant()).collect(Collectors.toMap(f -> f.getId(), f -> f, (a, b) -> a)).values());
+        SecurityTenant tenantToCreateIn = links.stream().filter(f -> f.isDefaultTenant()).map(f -> f.getTenant()).findFirst().orElse(null);
         Map<String, List<Role>> roleMap = roleToUsers.stream().map(f -> f.getRole()).collect(Collectors.groupingBy(f -> f.getTenant().getId()));
         return new SecurityContext()
                 .setTenants(tenants)

@@ -3,7 +3,9 @@ package com.wizzdi.flexicore.security.request;
 import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.flexicore.model.Baseclass;
+import com.flexicore.model.Clazz;
 import com.flexicore.model.PermissionGroup;
+import com.wizzdi.flexicore.security.validation.ClazzValid;
 import com.wizzdi.flexicore.security.validation.Create;
 import com.wizzdi.flexicore.security.validation.IdValid;
 import com.wizzdi.flexicore.security.validation.Update;
@@ -21,6 +23,8 @@ public class PermissionGroupToBaseclassCreate extends BasicCreate {
 
     @JsonAlias("baseclassId")
     private String securedId;
+    @ClazzValid
+    private Clazz securedType;
 
     @JsonIgnore
     public PermissionGroup getPermissionGroup() {
@@ -47,6 +51,15 @@ public class PermissionGroupToBaseclassCreate extends BasicCreate {
 
     public <T extends PermissionGroupToBaseclassCreate> T setSecuredId(String securedId) {
         this.securedId = securedId;
+        return (T) this;
+    }
+
+    public Clazz getSecuredType() {
+        return securedType;
+    }
+
+    public <T extends PermissionGroupToBaseclassCreate> T setSecuredType(Clazz securedType) {
+        this.securedType = securedType;
         return (T) this;
     }
 }
