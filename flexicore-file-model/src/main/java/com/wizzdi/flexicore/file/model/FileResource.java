@@ -9,7 +9,7 @@ package com.wizzdi.flexicore.file.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.flexicore.annotations.AnnotatedClazz;
-import com.flexicore.model.SecuredBasic;
+import com.flexicore.model.Baseclass;
 import com.wizzdi.flexicore.boot.rest.views.Views;
 
 import jakarta.persistence.*;
@@ -22,7 +22,7 @@ import java.util.List;
 @Entity
 
 @Table(indexes = {@Index(name = "fileResource_md5_ix", columnList = "md5")})
-public class FileResource extends SecuredBasic {
+public class FileResource extends Baseclass {
     private String md5;
     @Column(name = "fileoffset")
     private long offset;

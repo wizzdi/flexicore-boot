@@ -4,7 +4,7 @@ import com.flexicore.model.Baseclass;
 import com.flexicore.model.Basic;
 import com.flexicore.model.OperationGroup;
 import com.flexicore.model.OperationGroup_;
-import com.flexicore.security.SecurityContextBase;
+import com.wizzdi.segmantix.model.SecurityContext;
 import com.wizzdi.flexicore.boot.base.interfaces.Plugin;
 import com.wizzdi.flexicore.security.request.OperationGroupFilter;
 import jakarta.persistence.EntityManager;
@@ -15,7 +15,6 @@ import jakarta.persistence.metamodel.SingularAttribute;
 import org.pf4j.Extension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,7 +29,7 @@ public class OperationGroupRepository implements Plugin {
 	private SecuredBasicRepository securedBasicRepository;
 
 
-	public List<OperationGroup> listAllOperationGroups(OperationGroupFilter operationFilter, SecurityContextBase securityContext){
+	public List<OperationGroup> listAllOperationGroups(OperationGroupFilter operationFilter, SecurityContext securityContext){
 		CriteriaBuilder cb=em.getCriteriaBuilder();
 		CriteriaQuery<OperationGroup> q=cb.createQuery(OperationGroup.class);
 		Root<OperationGroup> r=q.from(OperationGroup.class);
@@ -43,14 +42,14 @@ public class OperationGroupRepository implements Plugin {
 
 	}
 
-	public <T extends OperationGroup> void addOperationGroupPredicates(OperationGroupFilter operationFilter, CriteriaBuilder cb, CommonAbstractCriteria q, From<?,T> r, List<Predicate> predicates, SecurityContextBase securityContext) {
+	public <T extends OperationGroup> void addOperationGroupPredicates(OperationGroupFilter operationFilter, CriteriaBuilder cb, CommonAbstractCriteria q, From<?,T> r, List<Predicate> predicates, SecurityContext securityContext) {
 		securedBasicRepository.addSecuredBasicPredicates(operationFilter.getBasicPropertiesFilter(),cb,q,r,predicates,securityContext);
 		if(operationFilter.getExternalIds()!=null&&!operationFilter.getExternalIds().isEmpty()){
 			predicates.add(r.get(OperationGroup_.externalId).in(operationFilter.getExternalIds()));
 		}
 	}
 
-	public long countAllOperationGroups(OperationGroupFilter operationFilter, SecurityContextBase securityContext){
+	public long countAllOperationGroups(OperationGroupFilter operationFilter, SecurityContext securityContext){
 		CriteriaBuilder cb=em.getCriteriaBuilder();
 		CriteriaQuery<Long> q=cb.createQuery(Long.class);
 		Root<OperationGroup> r=q.from(OperationGroup.class);
@@ -73,19 +72,19 @@ public class OperationGroupRepository implements Plugin {
 		securedBasicRepository.massMerge(toMerge, updatedate, propagateEvents);
 	}
 
-	public <T extends Baseclass> List<T> listByIds(Class<T> c, Set<String> ids, SecurityContextBase securityContext) {
+	public <T extends Baseclass> List<T> listByIds(Class<T> c, Set<String> ids, SecurityContext securityContext) {
 		return securedBasicRepository.listByIds(c, ids, securityContext);
 	}
 
-	public <T extends Baseclass> T getByIdOrNull(String id, Class<T> c, SecurityContextBase securityContext) {
+	public <T extends Baseclass> T getByIdOrNull(String id, Class<T> c, SecurityContext securityContext) {
 		return securedBasicRepository.getByIdOrNull(id, c, securityContext);
 	}
 
-	public <D extends Basic, E extends Baseclass, T extends D> T getByIdOrNull(String id, Class<T> c, SingularAttribute<D, E> baseclassAttribute, SecurityContextBase securityContext) {
+	public <D extends Basic, E extends Baseclass, T extends D> T getByIdOrNull(String id, Class<T> c, SingularAttribute<D, E> baseclassAttribute, SecurityContext securityContext) {
 		return securedBasicRepository.getByIdOrNull(id, c, baseclassAttribute, securityContext);
 	}
 
-	public <D extends Basic, E extends Baseclass, T extends D> List<T> listByIds(Class<T> c, Set<String> ids, SingularAttribute<D, E> baseclassAttribute, SecurityContextBase securityContext) {
+	public <D extends Basic, E extends Baseclass, T extends D> List<T> listByIds(Class<T> c, Set<String> ids, SingularAttribute<D, E> baseclassAttribute, SecurityContext securityContext) {
 		return securedBasicRepository.listByIds(c, ids, baseclassAttribute, securityContext);
 	}
 

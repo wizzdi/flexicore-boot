@@ -2,7 +2,7 @@ package com.wizzdi.flexicore.security.test.app;
 
 import com.flexicore.model.Baseclass;
 import com.flexicore.model.Basic;
-import com.flexicore.security.SecurityContextBase;
+import com.wizzdi.segmantix.model.SecurityContext;
 import com.wizzdi.flexicore.security.service.BaseclassService;
 import com.wizzdi.flexicore.security.service.BasicService;
 import jakarta.persistence.metamodel.SingularAttribute;
@@ -22,19 +22,19 @@ public class TestEntityService {
     @Autowired
     private BasicService basicService;
 
-    public TestEntity createTestEntity(TestEntityCreate testEntityCreate, SecurityContextBase securityContextBase){
-        TestEntity testEntity=createTestEntityNoMerge(testEntityCreate,securityContextBase);
+    public TestEntity createTestEntity(TestEntityCreate testEntityCreate, SecurityContext securityContext){
+        TestEntity testEntity=createTestEntityNoMerge(testEntityCreate, securityContext);
         testEntityRepository.merge(testEntity);
         return testEntity;
 
     }
 
-    public TestEntity createTestEntityNoMerge(TestEntityCreate testEntityCreate, SecurityContextBase securityContextBase) {
+    public TestEntity createTestEntityNoMerge(TestEntityCreate testEntityCreate, SecurityContext securityContext) {
         TestEntity testEntity = new TestEntity();
         testEntity.setId(UUID.randomUUID().toString());
         updateTestEntityNoMerge(testEntityCreate, testEntity);
 
-        BaseclassService.createSecurityObjectNoMerge(testEntity, securityContextBase);
+        BaseclassService.createSecurityObjectNoMerge(testEntity, securityContext);
         return testEntity;
     }
 
@@ -42,7 +42,7 @@ public class TestEntityService {
         return basicService.updateBasicNoMerge(testEntityCreate,testEntity);
     }
 
-    public List<TestEntity> listAllTestEntities(TestEntityFilter filtering, SecurityContextBase securityContext) {
+    public List<TestEntity> listAllTestEntities(TestEntityFilter filtering, SecurityContext securityContext) {
         return testEntityRepository.listAllTestEntities(filtering, securityContext);
     }
 
@@ -56,19 +56,19 @@ public class TestEntityService {
         testEntityRepository.massMerge(toMerge, updatedate, propagateEvents);
     }
 
-    public <T extends Baseclass> List<T> listByIds(Class<T> c, Set<String> ids, SecurityContextBase securityContext) {
+    public <T extends Baseclass> List<T> listByIds(Class<T> c, Set<String> ids, SecurityContext securityContext) {
         return testEntityRepository.listByIds(c, ids, securityContext);
     }
 
-    public <T extends Baseclass> T getByIdOrNull(String id, Class<T> c, SecurityContextBase securityContext) {
+    public <T extends Baseclass> T getByIdOrNull(String id, Class<T> c, SecurityContext securityContext) {
         return testEntityRepository.getByIdOrNull(id, c, securityContext);
     }
 
-    public <D extends Basic, E extends Baseclass, T extends D> T getByIdOrNull(String id, Class<T> c, SingularAttribute<D, E> baseclassAttribute, SecurityContextBase securityContext) {
+    public <D extends Basic, E extends Baseclass, T extends D> T getByIdOrNull(String id, Class<T> c, SingularAttribute<D, E> baseclassAttribute, SecurityContext securityContext) {
         return testEntityRepository.getByIdOrNull(id, c, baseclassAttribute, securityContext);
     }
 
-    public <D extends Basic, E extends Baseclass, T extends D> List<T> listByIds(Class<T> c, Set<String> ids, SingularAttribute<D, E> baseclassAttribute, SecurityContextBase securityContext) {
+    public <D extends Basic, E extends Baseclass, T extends D> List<T> listByIds(Class<T> c, Set<String> ids, SingularAttribute<D, E> baseclassAttribute, SecurityContext securityContext) {
         return testEntityRepository.listByIds(c, ids, baseclassAttribute, securityContext);
     }
 

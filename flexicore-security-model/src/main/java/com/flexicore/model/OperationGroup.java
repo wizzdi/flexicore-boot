@@ -1,9 +1,10 @@
 package com.flexicore.model;
 
+import com.wizzdi.segmantix.api.model.IOperationGroup;
 import jakarta.persistence.Entity;
 
 @Entity
-public class OperationGroup extends SecuredBasic{
+public class OperationGroup extends Baseclass implements IOperationGroup {
 
     private String externalId;
 

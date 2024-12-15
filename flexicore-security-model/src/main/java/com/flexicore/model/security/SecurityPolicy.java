@@ -8,7 +8,7 @@ import jakarta.persistence.ManyToOne;
 import java.time.OffsetDateTime;
 
 @Entity
-public class SecurityPolicy extends SecuredBasic {
+public class SecurityPolicy extends Baseclass {
 
 
 	@Column(columnDefinition = "timestamp with time zone")

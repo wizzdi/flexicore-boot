@@ -2,7 +2,7 @@ package com.wizzdi.flexicore.boot.dynamic.invokers.model;
 
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.databind.annotation.JsonTypeIdResolver;
-import com.flexicore.model.SecuredBasic;
+import com.flexicore.model.Baseclass;
 
 import jakarta.persistence.*;
 import java.time.OffsetDateTime;
@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-public class DynamicExecution extends SecuredBasic {
+public class DynamicExecution extends Baseclass {
 
 
     public DynamicExecution() {

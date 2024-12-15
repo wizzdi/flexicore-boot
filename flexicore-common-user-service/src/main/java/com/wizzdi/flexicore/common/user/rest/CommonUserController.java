@@ -7,10 +7,10 @@
 package com.wizzdi.flexicore.common.user.rest;
 
 import com.flexicore.annotations.IOperation;
-import com.flexicore.annotations.IOperation.Access;
+import com.wizzdi.segmantix.model.SecurityContext;
+import com.wizzdi.segmantix.model.Access;
 import com.flexicore.annotations.OperationsInside;
 import com.flexicore.model.User;
-import com.flexicore.security.SecurityContextBase;
 import com.wizzdi.flexicore.common.user.request.CommonUserCreate;
 import com.wizzdi.flexicore.common.user.request.CommonUserFilter;
 import com.wizzdi.flexicore.common.user.request.CommonUserUpdate;
@@ -49,7 +49,7 @@ public class CommonUserController {
     @PostMapping("/getAllUsers")
     @IOperation(access = Access.allow, Name = "getAllUsers", Description = "lists Users", relatedClazzes = {User.class})
     public PaginationResponse<User> getAllUsers(@RequestBody @Valid CommonUserFilter commonUserFilter,
-                                                @RequestAttribute SecurityContextBase securityContext) {
+                                                @RequestAttribute SecurityContext securityContext) {
         return commonUserService.getAllUsers(commonUserFilter, securityContext);
 
     }
@@ -58,7 +58,7 @@ public class CommonUserController {
     @PostMapping("/createUser")
     @IOperation(access = Access.allow, Name = "Creates User", Description = "Creates User", relatedClazzes = {User.class})
     public User createUser( @RequestBody @Validated(Create.class) CommonUserCreate commonUserCreate,
-                            @RequestAttribute SecurityContextBase securityContext) {
+                            @RequestAttribute SecurityContext securityContext) {
         return commonUserService.createUser(commonUserCreate, securityContext);
 
     }
@@ -66,7 +66,7 @@ public class CommonUserController {
     @PutMapping("/updateUser")
     @IOperation(access = Access.allow, Name = "Updates User", Description = "Updates User", relatedClazzes = {User.class})
     public User updateUser(@RequestBody @Validated(Update.class) CommonUserUpdate userUpdate,
-                           @RequestAttribute SecurityContextBase securityContext) {
+                           @RequestAttribute SecurityContext securityContext) {
         return commonUserService.updateUser(userUpdate, securityContext);
 
     }

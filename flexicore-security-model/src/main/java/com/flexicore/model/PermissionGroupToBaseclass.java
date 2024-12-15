@@ -8,6 +8,7 @@ package com.flexicore.model;
 
 
 
+import com.wizzdi.segmantix.api.model.IInstanceGroupLink;
 import jakarta.persistence.Entity;
 import jakarta.persistence.ManyToOne;
 
@@ -16,16 +17,18 @@ import jakarta.persistence.ManyToOne;
 
 @Entity
 
-public class PermissionGroupToBaseclass extends SecuredBasic {
+public class PermissionGroupToBaseclass extends Baseclass implements IInstanceGroupLink {
 
 
 	@ManyToOne(targetEntity = PermissionGroup.class)
 	private PermissionGroup permissionGroup;
-	@ManyToOne(targetEntity = Baseclass.class)
-	private Baseclass baseclass;
+	private String securedId;
+	private String securedType;
+
+
+
 
 	@ManyToOne(targetEntity = PermissionGroup.class)
-
 	public PermissionGroup getPermissionGroup() {
 		return permissionGroup;
 	}
@@ -35,14 +38,23 @@ public class PermissionGroupToBaseclass extends SecuredBasic {
 		return (T) this;
 	}
 
-	@ManyToOne(targetEntity = Baseclass.class)
-
-	public Baseclass getBaseclass() {
-		return baseclass;
+	@Override
+	public String getSecuredId() {
+		return securedId;
 	}
 
-	public <T extends PermissionGroupToBaseclass> T setBaseclass(Baseclass baseclass) {
-		this.baseclass = baseclass;
+	public <T extends PermissionGroupToBaseclass> T setSecuredId(String securedId) {
+		this.securedId = securedId;
+		return (T) this;
+	}
+
+	@Override
+	public String getSecuredType() {
+		return securedType;
+	}
+
+	public <T extends PermissionGroupToBaseclass> T setSecuredType(String securedType) {
+		this.securedType = securedType;
 		return (T) this;
 	}
 }

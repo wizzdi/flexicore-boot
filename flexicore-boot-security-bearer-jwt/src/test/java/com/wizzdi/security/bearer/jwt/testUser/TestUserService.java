@@ -1,7 +1,7 @@
 package com.wizzdi.security.bearer.jwt.testUser;
 
 import com.flexicore.model.Baseclass;
-import com.flexicore.security.SecurityContextBase;
+import com.wizzdi.segmantix.model.SecurityContext;
 import com.wizzdi.flexicore.boot.base.interfaces.Plugin;
 import com.wizzdi.flexicore.security.response.PaginationResponse;
 import com.wizzdi.flexicore.security.service.SecurityUserService;
@@ -16,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 
 
 @Extension
@@ -30,7 +31,7 @@ public class TestUserService implements Plugin {
     @Autowired
     private SecurityUserService securityUserService;
     @Autowired
-    private SecurityContextBase adminSecurityContext;
+    private SecurityContext adminSecurityContext;
     @Autowired
     private PasswordEncoder passwordEncoder;
 
@@ -39,7 +40,7 @@ public class TestUserService implements Plugin {
 
 
     public TestUser createTestUser(TestUserCreate testUserCreate,
-                                                             SecurityContextBase securityContext) {
+                                                             SecurityContext securityContext) {
         TestUser testUser = createTestUserNoMerge(testUserCreate,
                 securityContext);
         repository.merge(testUser);
@@ -48,9 +49,9 @@ public class TestUserService implements Plugin {
     }
 
     public TestUser createTestUserNoMerge(TestUserCreate testUserCreate,
-                                                                    SecurityContextBase securityContext) {
+                                                                    SecurityContext securityContext) {
         TestUser testUser = new TestUser();
-        testUser.setId(Baseclass.getBase64ID());
+        testUser.setId(UUID.randomUUID().toString());
         updateTestUserNoMerge(testUser, testUserCreate);
         return testUser;
     }
@@ -69,23 +70,23 @@ public class TestUserService implements Plugin {
 
 
     public List<TestUser> listAllTestUsers(TestUserFilter testUserFiltering,
-                                                                     SecurityContextBase securityContext) {
+                                                                     SecurityContext securityContext) {
         return repository.listAllTestUsers(testUserFiltering, securityContext);
     }
 
 
 
-    public PaginationResponse<TestUser> getAllTestUsers(TestUserFilter testUserFiltering, SecurityContextBase securityContext) {
+    public PaginationResponse<TestUser> getAllTestUsers(TestUserFilter testUserFiltering, SecurityContext securityContext) {
         List<TestUser> list = listAllTestUsers(testUserFiltering, securityContext);
         long count = repository.countAllTestUsers(testUserFiltering, securityContext);
         return new PaginationResponse<>(list, testUserFiltering, count);
     }
 
-    public <T extends Baseclass> List<T> listByIds(Class<T> c, Set<String> ids, SecurityContextBase securityContext) {
+    public <T extends Baseclass> List<T> listByIds(Class<T> c, Set<String> ids, SecurityContext securityContext) {
         return repository.listByIds(c, ids, securityContext);
     }
 
-    public <T extends Baseclass> T getByIdOrNull(String id, Class<T> c, SecurityContextBase securityContext) {
+    public <T extends Baseclass> T getByIdOrNull(String id, Class<T> c, SecurityContext securityContext) {
         return repository.getByIdOrNull(id, c, securityContext);
     }
 

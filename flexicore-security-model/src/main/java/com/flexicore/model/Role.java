@@ -10,6 +10,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.flexicore.annotations.AnnotatedClazz;
 
 
+import com.wizzdi.segmantix.api.model.IRole;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.OneToMany;
@@ -27,12 +28,13 @@ import java.util.Optional;
 
 @AnnotatedClazz(Category="access control", Name="Role", Description="Groups users by Operations they are allowed to perform")
 @Entity
-public class Role extends SecurityEntity  {
+public class Role extends SecurityEntity implements IRole {
 
 
 	@JsonIgnore
 	@OneToMany(mappedBy="role",targetEntity=RoleToUser.class) //users are subscribed to very few roles.
 	private List<RoleToUser> roleToUser =new ArrayList<>();
+	private boolean superAdmin;
 
 
 	@OneToMany(targetEntity = RoleToBaseclass.class,mappedBy="role", fetch=FetchType.LAZY)
@@ -62,9 +64,15 @@ public class Role extends SecurityEntity  {
 		this.roleToBaseclass = baseclasses;
 	}
 
-	@Transient
-	public SecurityTenant getSecurityTenant(){
-		return Optional.ofNullable(getSecurity()).map(f->f.getTenant()).orElse(null);
+
+
+	@Override
+	public boolean isSuperAdmin() {
+		return superAdmin;
 	}
 
+	public <T extends Role> T setSuperAdmin(boolean superAdmin) {
+		this.superAdmin = superAdmin;
+		return (T) this;
+	}
 }

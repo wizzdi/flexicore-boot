@@ -1,7 +1,7 @@
 package com.wizzdi.flexicore.security.service;
 
 import com.flexicore.model.*;
-import com.flexicore.security.SecurityContextBase;
+import com.wizzdi.segmantix.model.SecurityContext;
 import com.wizzdi.flexicore.boot.base.interfaces.Plugin;
 import com.wizzdi.flexicore.security.data.TenantToUserRepository;
 import com.wizzdi.flexicore.security.request.TenantToUserCreate;
@@ -24,7 +24,7 @@ public class TenantToUserService implements Plugin {
 	private TenantToUserRepository tenantToUserRepository;
 
 
-	public TenantToUser createTenantToUser(TenantToUserCreate tenantToUserCreate, SecurityContextBase securityContext){
+	public TenantToUser createTenantToUser(TenantToUserCreate tenantToUserCreate, SecurityContext securityContext){
 		TenantToUser tenantToUser= createTenantToUserNoMerge(tenantToUserCreate,securityContext);
 		tenantToUserRepository.merge(tenantToUser);
 		return tenantToUser;
@@ -36,11 +36,11 @@ public class TenantToUserService implements Plugin {
 	public void massMerge(List<Object> list){
 		tenantToUserRepository.massMerge(list);
 	}
-	public <T extends Baseclass> List<T> listByIds(Class<T> c,Set<String> ids,  SecurityContextBase securityContext) {
+	public <T extends Baseclass> List<T> listByIds(Class<T> c, Set<String> ids, SecurityContext securityContext) {
 		return tenantToUserRepository.listByIds(c, ids, securityContext);
 	}
 
-	public TenantToUser createTenantToUserNoMerge(TenantToUserCreate tenantToUserCreate, SecurityContextBase securityContext){
+	public TenantToUser createTenantToUserNoMerge(TenantToUserCreate tenantToUserCreate, SecurityContext securityContext){
 		TenantToUser tenantToUser=new TenantToUser();
 		tenantToUser.setId(UUID.randomUUID().toString());
 		updateTenantToUserNoMerge(tenantToUserCreate,tenantToUser);
@@ -54,7 +54,7 @@ public class TenantToUserService implements Plugin {
 			tenantToUser.setUser(tenantToUserCreate.getUser());
 			update=true;
 		}
-		if(tenantToUserCreate.getTenant()!=null&&(tenantToUser.getTenant()==null||!tenantToUserCreate.getTenant().getId().equals(tenantToUser.getTenant().getId()))){
+		if(tenantToUserCreate.getTenant()!=null&&(tenantToUser.getTargetTenant()==null||!tenantToUserCreate.getTenant().getId().equals(tenantToUser.getTargetTenant().getId()))){
 			tenantToUser.setTenant(tenantToUserCreate.getTenant());
 			update=true;
 		}
@@ -66,7 +66,7 @@ public class TenantToUserService implements Plugin {
 		return update;
 	}
 
-	public TenantToUser updateTenantToUser(TenantToUserUpdate tenantToUserUpdate, SecurityContextBase securityContext){
+	public TenantToUser updateTenantToUser(TenantToUserUpdate tenantToUserUpdate, SecurityContext securityContext){
 		TenantToUser tenantToUser=tenantToUserUpdate.getTenantToUser();
 		if(updateTenantToUserNoMerge(tenantToUserUpdate,tenantToUser)){
 			tenantToUserRepository.merge(tenantToUser);
@@ -75,23 +75,23 @@ public class TenantToUserService implements Plugin {
 	}
 
 	@Deprecated
-	public void validate(TenantToUserCreate tenantToUserCreate, SecurityContextBase securityContext) {
+	public void validate(TenantToUserCreate tenantToUserCreate, SecurityContext securityContext) {
 		basicService.validate(tenantToUserCreate,securityContext);
 	}
 
 
 
-	public <T extends Baseclass> T getByIdOrNull(String id,Class<T> c, SecurityContextBase securityContext) {
+	public <T extends Baseclass> T getByIdOrNull(String id, Class<T> c, SecurityContext securityContext) {
 		return tenantToUserRepository.getByIdOrNull(id,c,securityContext);
 	}
 
-	public PaginationResponse<TenantToUser> getAllTenantToUsers(TenantToUserFilter tenantToUserFilter, SecurityContextBase securityContext) {
+	public PaginationResponse<TenantToUser> getAllTenantToUsers(TenantToUserFilter tenantToUserFilter, SecurityContext securityContext) {
 		List<TenantToUser> list= listAllTenantToUsers(tenantToUserFilter, securityContext);
 		long count=tenantToUserRepository.countAllTenantToUsers(tenantToUserFilter,securityContext);
 		return new PaginationResponse<>(list,tenantToUserFilter,count);
 	}
 
-	public List<TenantToUser> listAllTenantToUsers(TenantToUserFilter tenantToUserFilter, SecurityContextBase securityContext) {
+	public List<TenantToUser> listAllTenantToUsers(TenantToUserFilter tenantToUserFilter, SecurityContext securityContext) {
 		return tenantToUserRepository.listAllTenantToUsers(tenantToUserFilter, securityContext);
 	}
 

@@ -3,7 +3,7 @@ package com.wizzdi.flexicore.security.service;
 import com.flexicore.model.Baseclass;
 import com.flexicore.model.Basic;
 import com.flexicore.model.Clazz;
-import com.flexicore.security.SecurityContextBase;
+import com.wizzdi.segmantix.model.SecurityContext;
 import com.wizzdi.flexicore.boot.base.interfaces.Plugin;
 import com.wizzdi.flexicore.security.data.ClazzRepository;
 import com.wizzdi.flexicore.security.request.ClazzCreate;
@@ -14,7 +14,6 @@ import jakarta.persistence.metamodel.SingularAttribute;
 import org.pf4j.Extension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Set;
@@ -29,15 +28,24 @@ public class ClazzService implements Plugin {
 	@Autowired
 	private ClazzRepository ClazzRepository;
 
+	public static String getClazzId(Class<?> relatedClass) {
+		String string = relatedClass.getCanonicalName();
+		return getIdFromString(string);
+	}
 
-	public Clazz createClazz(ClazzCreate ClazzCreate, SecurityContextBase securityContext){
+	public static String getIdFromString(String string) {
+		return UUID.nameUUIDFromBytes(string.getBytes()).toString();
+	}
+
+
+	public Clazz createClazz(ClazzCreate ClazzCreate, SecurityContext securityContext){
 		Clazz Clazz= createClazzNoMerge(ClazzCreate,securityContext);
 		ClazzRepository.merge(Clazz);
 		return Clazz;
 	}
 
 
-	public Clazz createClazzNoMerge(ClazzCreate ClazzCreate, SecurityContextBase securityContext){
+	public Clazz createClazzNoMerge(ClazzCreate ClazzCreate, SecurityContext securityContext){
 		Clazz clazz=new Clazz();
 		clazz.setId(UUID.randomUUID().toString());
 		updateClazzNoMerge(ClazzCreate,clazz);
@@ -50,7 +58,7 @@ public class ClazzService implements Plugin {
 		return basicService.updateBasicNoMerge(ClazzCreate,Clazz);
 	}
 
-	public Clazz updateClazz(ClazzUpdate ClazzUpdate, SecurityContextBase securityContext){
+	public Clazz updateClazz(ClazzUpdate ClazzUpdate, SecurityContext securityContext){
 		Clazz Clazz=ClazzUpdate.getClazz();
 		if(updateClazzNoMerge(ClazzUpdate,Clazz)){
 			ClazzRepository.merge(Clazz);
@@ -61,29 +69,29 @@ public class ClazzService implements Plugin {
 
 
 
-	public PaginationResponse<Clazz> getAllClazzs(ClazzFilter ClazzFilter, SecurityContextBase securityContext) {
+	public PaginationResponse<Clazz> getAllClazzs(ClazzFilter ClazzFilter, SecurityContext securityContext) {
 		List<Clazz> list= listAllClazzs(ClazzFilter, securityContext);
 		long count=ClazzRepository.countAllClazzs(ClazzFilter,securityContext);
 		return new PaginationResponse<>(list,ClazzFilter,count);
 	}
 
-	public List<Clazz> listAllClazzs(ClazzFilter ClazzFilter, SecurityContextBase securityContext) {
+	public List<Clazz> listAllClazzs(ClazzFilter ClazzFilter, SecurityContext securityContext) {
 		return ClazzRepository.listAllClazzs(ClazzFilter, securityContext);
 	}
 
-	public <T extends Baseclass> List<T> listByIds(Class<T> c, Set<String> ids, SecurityContextBase securityContext) {
+	public <T extends Baseclass> List<T> listByIds(Class<T> c, Set<String> ids, SecurityContext securityContext) {
 		return ClazzRepository.listByIds(c, ids, securityContext);
 	}
 
-	public <T extends Baseclass> T getByIdOrNull(String id, Class<T> c, SecurityContextBase securityContext) {
+	public <T extends Baseclass> T getByIdOrNull(String id, Class<T> c, SecurityContext securityContext) {
 		return ClazzRepository.getByIdOrNull(id, c, securityContext);
 	}
 
-	public <D extends Basic, E extends Baseclass, T extends D> T getByIdOrNull(String id, Class<T> c, SingularAttribute<D, E> baseclassAttribute, SecurityContextBase securityContext) {
+	public <D extends Basic, E extends Baseclass, T extends D> T getByIdOrNull(String id, Class<T> c, SingularAttribute<D, E> baseclassAttribute, SecurityContext securityContext) {
 		return ClazzRepository.getByIdOrNull(id, c, baseclassAttribute, securityContext);
 	}
 
-	public <D extends Basic, E extends Baseclass, T extends D> List<T> listByIds(Class<T> c, Set<String> ids, SingularAttribute<D, E> baseclassAttribute, SecurityContextBase securityContext) {
+	public <D extends Basic, E extends Baseclass, T extends D> List<T> listByIds(Class<T> c, Set<String> ids, SingularAttribute<D, E> baseclassAttribute, SecurityContext securityContext) {
 		return ClazzRepository.listByIds(c, ids, baseclassAttribute, securityContext);
 	}
 
@@ -97,6 +105,9 @@ public class ClazzService implements Plugin {
 
 	public <T> T findByIdOrNull(Class<T> type, String id) {
 		return ClazzRepository.findByIdOrNull(type, id);
+	}
+	public Clazz get(Class<?> type){
+		return findByIdOrNull(Clazz.class,getClazzId(type));
 	}
 
 

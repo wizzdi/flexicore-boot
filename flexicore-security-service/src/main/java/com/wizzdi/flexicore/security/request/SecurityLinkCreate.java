@@ -1,7 +1,8 @@
 package com.wizzdi.flexicore.security.request;
 
+import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.flexicore.annotations.IOperation;
+import com.wizzdi.segmantix.model.Access;
 import com.flexicore.model.*;
 import com.wizzdi.flexicore.security.validation.Create;
 import com.wizzdi.flexicore.security.validation.IdValid;
@@ -12,7 +13,6 @@ import org.apache.commons.lang.StringUtils;
 
 @IdValid.List({
         @IdValid(targetField = "securityLinkGroup",field = "securityLinkGroupId",fieldType = SecurityLinkGroup.class, groups = {Create.class, Update.class}),
-        @IdValid(targetField = "baseclass",field = "baseclassId",fieldType = Baseclass.class, groups = {Create.class, Update.class}),
         @IdValid(targetField = "operation",field = "operationId",fieldType = SecurityOperation.class, groups = {Create.class, Update.class}),
         @IdValid(targetField = "operationGroup",field = "operationGroupId",fieldType = OperationGroup.class, groups = {Create.class, Update.class}),
         @IdValid(targetField = "permissionGroup",field = "permissionGroupId",fieldType = PermissionGroup.class, groups = {Create.class, Update.class}),
@@ -24,10 +24,10 @@ public class SecurityLinkCreate extends BasicCreate {
     @JsonIgnore
     private SecurityLinkGroup securityLinkGroup;
 
-    @JsonIgnore
-    private Baseclass baseclass;
 
-    private String baseclassId;
+
+    @JsonAlias("baseclassId")
+    private String securedId;
 
     @JsonIgnore
     private PermissionGroup permissionGroup;
@@ -47,24 +47,16 @@ public class SecurityLinkCreate extends BasicCreate {
     private OperationGroup operationGroup;
 
     @NotNull(groups = Create.class)
-    private IOperation.Access access;
+    private Access access;
 
-    @JsonIgnore
-    public Baseclass getBaseclass() {
-        return baseclass;
-    }
 
-    public <T extends SecurityLinkCreate> T setBaseclass(Baseclass baseclass) {
-        this.baseclass = baseclass;
-        return (T) this;
-    }
 
     public String getTenantId() {
-        return baseclassId;
+        return securedId;
     }
 
-    public <T extends SecurityLinkCreate> T setBaseclassId(String baseclassId) {
-        this.baseclassId = baseclassId;
+    public <T extends SecurityLinkCreate> T setSecuredId(String securedId) {
+        this.securedId = securedId;
         return (T) this;
     }
 
@@ -87,17 +79,17 @@ public class SecurityLinkCreate extends BasicCreate {
         return (T) this;
     }
 
-    public IOperation.Access getAccess() {
+    public Access getAccess() {
         return access;
     }
 
-    public <T extends SecurityLinkCreate> T setAccess(IOperation.Access access) {
+    public <T extends SecurityLinkCreate> T setAccess(Access access) {
         this.access = access;
         return (T) this;
     }
 
-    public String getBaseclassId() {
-        return baseclassId;
+    public String getSecuredId() {
+        return securedId;
     }
 
     @JsonIgnore
@@ -178,7 +170,7 @@ public class SecurityLinkCreate extends BasicCreate {
 
     @AssertTrue(message = "clazzId or baseclassId or permissionGroupId must be provided",groups = Create.class)
     private boolean isTargetProvided() {
-        return !StringUtils.isEmpty(clazzId)||!StringUtils.isEmpty(baseclassId)||!StringUtils.isEmpty(permissionGroupId);
+        return !StringUtils.isEmpty(clazzId)||!StringUtils.isEmpty(securedId)||!StringUtils.isEmpty(permissionGroupId);
     }
 
     @AssertTrue(message = "operationId or operationGroupId must be provided",groups = Create.class)

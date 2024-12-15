@@ -2,12 +2,12 @@ package com.wizzdi.flexicore.security.data;
 
 import com.flexicore.model.*;
 import com.wizzdi.flexicore.boot.base.interfaces.Plugin;
-import com.flexicore.security.SecurityContextBase;
+import com.wizzdi.segmantix.model.SecurityContext;
 import com.wizzdi.flexicore.security.request.RoleFilter;
+import com.wizzdi.segmantix.service.SecurityRepository;
 import org.pf4j.Extension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -29,7 +29,7 @@ public class RoleRepository implements Plugin {
 	@Autowired
 	private SecurityEntityRepository securityEntityRepository;
 
-	public List<Role> listAllRoles(RoleFilter roleFilter, SecurityContextBase securityContext){
+	public List<Role> listAllRoles(RoleFilter roleFilter, SecurityContext securityContext){
 		CriteriaBuilder cb=em.getCriteriaBuilder();
 		CriteriaQuery<Role> q=cb.createQuery(Role.class);
 		Root<Role> r=q.from(Role.class);
@@ -42,12 +42,11 @@ public class RoleRepository implements Plugin {
 
 	}
 
-	public <T extends Role> void addRolePredicates(RoleFilter roleFilter, CriteriaBuilder cb, CommonAbstractCriteria q, From<?,T> r, List<Predicate> predicates, SecurityContextBase securityContext) {
+	public <T extends Role> void addRolePredicates(RoleFilter roleFilter, CriteriaBuilder cb, CommonAbstractCriteria q, From<?,T> r, List<Predicate> predicates, SecurityContext securityContext) {
 		securityEntityRepository.addSecurityEntityPredicates(roleFilter,cb,q,r,predicates,securityContext);
 		if(roleFilter.getTenants()!=null &&!roleFilter.getTenants().isEmpty()){
 			Set<String> ids=roleFilter.getTenants().stream().map(f->f.getId()).collect(Collectors.toSet());
-			Join<T,Baseclass> baseclassJoin=r.join(Role_.security);
-			Join<Baseclass, SecurityTenant> join=baseclassJoin.join(Baseclass_.tenant);
+			Join<T, SecurityTenant> join=r.join(Baseclass_.tenant);
 			predicates.add(join.get(SecurityTenant_.id).in(ids));
 		}
 		if(roleFilter.getUsers()!=null &&!roleFilter.getUsers().isEmpty()){
@@ -56,7 +55,7 @@ public class RoleRepository implements Plugin {
 		}
 	}
 
-	public long countAllRoles(RoleFilter roleFilter, SecurityContextBase securityContext){
+	public long countAllRoles(RoleFilter roleFilter, SecurityContext securityContext){
 		CriteriaBuilder cb=em.getCriteriaBuilder();
 		CriteriaQuery<Long> q=cb.createQuery(Long.class);
 		Root<Role> r=q.from(Role.class);
@@ -78,11 +77,11 @@ public class RoleRepository implements Plugin {
 		baseclassRepository.massMerge(list);
 	}
 
-	public <T extends Baseclass> List<T> listByIds(Class<T> c,Set<String> ids,  SecurityContextBase securityContext) {
+	public <T extends Baseclass> List<T> listByIds(Class<T> c, Set<String> ids, SecurityContext securityContext) {
 		return baseclassRepository.listByIds(c, ids, securityContext);
 	}
 
-	public <T extends Baseclass> T getByIdOrNull(String id, Class<T> c, SecurityContextBase securityContext) {
+	public <T extends Baseclass> T getByIdOrNull(String id, Class<T> c, SecurityContext securityContext) {
 		return baseclassRepository.getByIdOrNull(id, c, securityContext);
 	}
 

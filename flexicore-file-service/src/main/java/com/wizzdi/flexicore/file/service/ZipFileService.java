@@ -2,7 +2,7 @@ package com.wizzdi.flexicore.file.service;
 
 import com.flexicore.model.Baseclass;
 import com.flexicore.model.Basic;
-import com.flexicore.security.SecurityContextBase;
+import com.wizzdi.segmantix.model.SecurityContext;
 import com.wizzdi.flexicore.boot.base.interfaces.Plugin;
 import com.wizzdi.flexicore.file.data.ZipFileRepository;
 import com.wizzdi.flexicore.file.model.FileResource;
@@ -44,9 +44,9 @@ public class ZipFileService implements Plugin {
 	private FileResourceService fileResourceService;
 
 
-	public ZipFile createZipFile(ZipFileCreate zipFileCreate, SecurityContextBase securityContextBase) {
-		ZipFile zipFile = createZipFileNoMerge(zipFileCreate, securityContextBase);
-		Baseclass security= BaseclassService.createSecurityObjectNoMerge(zipFile,securityContextBase);
+	public ZipFile createZipFile(ZipFileCreate zipFileCreate, SecurityContext securityContext) {
+		ZipFile zipFile = createZipFileNoMerge(zipFileCreate, securityContext);
+		Baseclass security= BaseclassService.createSecurityObjectNoMerge(zipFile, securityContext);
 		massMerge(Arrays.asList(zipFile,security));
 		return zipFile;
 	}
@@ -59,15 +59,15 @@ public class ZipFileService implements Plugin {
 		zipFileRepository.massMerge(list);
 	}
 
-	public <T extends Baseclass> List<T> listByIds(Class<T> c, Set<String> ids, SecurityContextBase securityContextBase) {
-		return zipFileRepository.listByIds(c, ids, securityContextBase);
+	public <T extends Baseclass> List<T> listByIds(Class<T> c, Set<String> ids, SecurityContext securityContext) {
+		return zipFileRepository.listByIds(c, ids, securityContext);
 	}
 
-	public ZipFile createZipFileNoMerge(ZipFileCreate zipFileCreate, SecurityContextBase securityContextBase) {
+	public ZipFile createZipFileNoMerge(ZipFileCreate zipFileCreate, SecurityContext securityContext) {
 		ZipFile zipFile = new ZipFile();
-		zipFile.setId(Baseclass.getBase64ID());
+		zipFile.setId(UUID.randomUUID().toString());
 		updateZipFileNoMerge(zipFileCreate, zipFile);
-		BaseclassService.createSecurityObjectNoMerge(zipFile,securityContextBase);
+		BaseclassService.createSecurityObjectNoMerge(zipFile, securityContext);
 		return zipFile;
 	}
 
@@ -80,7 +80,7 @@ public class ZipFileService implements Plugin {
 		return update;
 	}
 
-	public ZipFile updateZipFile(ZipFileUpdate zipFileUpdate, SecurityContextBase securityContextBase) {
+	public ZipFile updateZipFile(ZipFileUpdate zipFileUpdate, SecurityContext securityContext) {
 		ZipFile ZipFile = zipFileUpdate.getZipFile();
 		if (updateZipFileNoMerge(zipFileUpdate, ZipFile)) {
 			zipFileRepository.merge(ZipFile);
@@ -94,9 +94,9 @@ public class ZipFileService implements Plugin {
 		return md5Service.generateMD5(raw.getBytes(StandardCharsets.UTF_8));
 	}
 
-	public void validate(ZipAndDownloadRequest zipAndDownloadRequest, SecurityContextBase securityContext) {
+	public void validate(ZipAndDownloadRequest zipAndDownloadRequest, SecurityContext securityContext) {
 		Set<String> fileResourceIds = zipAndDownloadRequest.getFileResourceIds();
-		Map<String, FileResource> fileResourceMap = fileResourceIds.isEmpty() ? new HashMap<>() : zipFileRepository.listByIds(FileResource.class, fileResourceIds, FileResource_.security,securityContext).parallelStream().collect(Collectors.toMap(f -> f.getId(), f -> f));
+		Map<String, FileResource> fileResourceMap = fileResourceIds.isEmpty() ? new HashMap<>() : zipFileRepository.listByIds(FileResource.class, fileResourceIds, securityContext).parallelStream().collect(Collectors.toMap(f -> f.getId(), f -> f));
 		fileResourceIds.removeAll(fileResourceMap.keySet());
 		if (!fileResourceIds.isEmpty()) {
 			String message = "No FileResources With ids " + fileResourceIds;
@@ -113,25 +113,25 @@ public class ZipFileService implements Plugin {
 
 	}
 
-	public void validate(ZipFileCreate zipFileCreate, SecurityContextBase securityContextBase) {
-		fileResourceService.validate(zipFileCreate,securityContextBase);
+	public void validate(ZipFileCreate zipFileCreate, SecurityContext securityContext) {
+		fileResourceService.validate(zipFileCreate, securityContext);
 
 	}
 
 
 
-	public void validate(ZipFileFilter zipFileFilter, SecurityContextBase securityContextBase) {
-		fileResourceService.validate(zipFileFilter, securityContextBase);
+	public void validate(ZipFileFilter zipFileFilter, SecurityContext securityContext) {
+		fileResourceService.validate(zipFileFilter, securityContext);
 
 
 	}
 
-	public <D extends Basic, E extends Baseclass, T extends D> T getByIdOrNull(String id, Class<T> c, SingularAttribute<D, E> baseclassAttribute, SecurityContextBase securityContextBase) {
-		return zipFileRepository.getByIdOrNull(id, c, baseclassAttribute, securityContextBase);
+	public <D extends Basic, E extends Baseclass, T extends D> T getByIdOrNull(String id, Class<T> c, SingularAttribute<D, E> baseclassAttribute, SecurityContext securityContext) {
+		return zipFileRepository.getByIdOrNull(id, c, baseclassAttribute, securityContext);
 	}
 
-	public <D extends Basic, E extends Baseclass, T extends D> List<T> listByIds(Class<T> c, Set<String> ids, SingularAttribute<D, E> baseclassAttribute, SecurityContextBase securityContextBase) {
-		return zipFileRepository.listByIds(c, ids, baseclassAttribute, securityContextBase);
+	public <D extends Basic, E extends Baseclass, T extends D> List<T> listByIds(Class<T> c, Set<String> ids, SingularAttribute<D, E> baseclassAttribute, SecurityContext securityContext) {
+		return zipFileRepository.listByIds(c, ids, baseclassAttribute, securityContext);
 	}
 
 	public <D extends Basic, T extends D> List<T> findByIds(Class<T> c, Set<String> ids, SingularAttribute<D, String> idAttribute) {
@@ -142,18 +142,18 @@ public class ZipFileService implements Plugin {
 		return zipFileRepository.findByIdOrNull(type, id);
 	}
 
-	public <T extends Baseclass> T getByIdOrNull(String id, Class<T> c, SecurityContextBase securityContextBase) {
-		return zipFileRepository.getByIdOrNull(id, c, securityContextBase);
+	public <T extends Baseclass> T getByIdOrNull(String id, Class<T> c, SecurityContext securityContext) {
+		return zipFileRepository.getByIdOrNull(id, c, securityContext);
 	}
 
-	public PaginationResponse<ZipFile> getAllZipFiles(ZipFileFilter ZipFileFilter, SecurityContextBase securityContextBase) {
-		List<ZipFile> list = listAllZipFiles(ZipFileFilter, securityContextBase);
-		long count = zipFileRepository.countAllZipFiles(ZipFileFilter, securityContextBase);
+	public PaginationResponse<ZipFile> getAllZipFiles(ZipFileFilter ZipFileFilter, SecurityContext securityContext) {
+		List<ZipFile> list = listAllZipFiles(ZipFileFilter, securityContext);
+		long count = zipFileRepository.countAllZipFiles(ZipFileFilter, securityContext);
 		return new PaginationResponse<>(list, ZipFileFilter, count);
 	}
 
-	public List<ZipFile> listAllZipFiles(ZipFileFilter ZipFileFilter, SecurityContextBase securityContextBase) {
-		return zipFileRepository.listAllZipFiles(ZipFileFilter, securityContextBase);
+	public List<ZipFile> listAllZipFiles(ZipFileFilter ZipFileFilter, SecurityContext securityContext) {
+		return zipFileRepository.listAllZipFiles(ZipFileFilter, securityContext);
 	}
 
 	public <T extends Baseclass> List<T> findByIds(Class<T> c, Set<String> requested) {
@@ -162,7 +162,7 @@ public class ZipFileService implements Plugin {
 
 
 
-	public ZipFile zipAndDownload(ZipAndDownloadRequest zipAndDownload, SecurityContextBase securityContext) {
+	public ZipFile zipAndDownload(ZipAndDownloadRequest zipAndDownload, SecurityContext securityContext) {
 		String filesMd5 = calculateUniqueFilesMd5(zipAndDownload.getFileResources());
 		ZipFile existing = getExistingZipFile(filesMd5, securityContext);
 		if (existing == null) {
@@ -190,12 +190,12 @@ public class ZipFileService implements Plugin {
 
 	}
 
-	private ZipFile getExistingZipFile(String md5, SecurityContextBase securityContext) {
+	private ZipFile getExistingZipFile(String md5, SecurityContext securityContext) {
 		return listAllZipFiles(new ZipFileFilter().setUniqueFilesMd5(md5),securityContext).stream().filter(f -> f.getFullPath() != null && new File(f.getFullPath()).exists()).findFirst().orElse(null);
 
 	}
 
-	public void calculateZipsMd5(ZipFileFilter zipFileFilter, SecurityContextBase securityContext) {
+	public void calculateZipsMd5(ZipFileFilter zipFileFilter, SecurityContext securityContext) {
 		List<ZipFile> zipFiles = listAllZipFiles(zipFileFilter, securityContext);
 		Map<String,List<ZipFileToFileResource>> map=zipFiles.isEmpty()?new HashMap<>():zipFileToFileResourceService.listAllZipFileToFileResources(new ZipFileToFileResourceFilter().setZipFiles(zipFiles),null).stream().collect(Collectors.groupingBy(f->f.getZipFile().getId()));
 		for (ZipFile zipFile : zipFiles) {

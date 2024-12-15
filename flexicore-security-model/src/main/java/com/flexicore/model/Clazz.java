@@ -12,7 +12,7 @@ import jakarta.persistence.Entity;
 
 @AnnotatedClazz(Category="core", Name="Clazz", Description="Describes all other classes in the system")
 @Entity
-public class Clazz extends SecuredBasic {
+public class Clazz extends Baseclass {
 
 
 

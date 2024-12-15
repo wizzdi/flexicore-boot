@@ -9,6 +9,7 @@ package com.flexicore.model;
 import com.flexicore.annotations.AnnotatedClazz;
 
 
+import com.wizzdi.segmantix.api.model.IUserSecurity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Transient;
@@ -17,7 +18,7 @@ import jakarta.persistence.Transient;
 @AnnotatedClazz(Category = "Permissions", Name = "RoleToBaseClass", Description = "User Permission on Baseclass")
 @Entity
 
-public class UserToBaseclass extends SecurityLink {
+public class UserToBaseclass extends SecurityLink implements IUserSecurity {
 
 	@ManyToOne(targetEntity = SecurityUser.class)
 	private SecurityUser user;

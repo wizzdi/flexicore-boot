@@ -2,9 +2,7 @@ package com.wizzdi.flexicore.security.validation;
 
 import com.flexicore.model.Baseclass;
 import com.flexicore.model.Basic;
-import com.flexicore.model.SecuredBasic;
-import com.flexicore.model.SecuredBasic_;
-import com.flexicore.security.SecurityContextBase;
+import com.wizzdi.segmantix.model.SecurityContext;
 import com.wizzdi.flexicore.security.data.SecuredBasicRepository;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
@@ -42,7 +40,7 @@ public class IdValidator implements ConstraintValidator<IdValid, Object> {
 
     @Override
     public boolean isValid(Object value, ConstraintValidatorContext constraintValidatorContext) {
-        SecurityContextBase securityContext = (SecurityContextBase) RequestContextHolder.getRequestAttributes().getAttribute(SECURITY_CONTEXT_ATTRIBUTE_NAME, RequestAttributes.SCOPE_REQUEST);
+        SecurityContext securityContext = (SecurityContext) RequestContextHolder.getRequestAttributes().getAttribute(SECURITY_CONTEXT_ATTRIBUTE_NAME, RequestAttributes.SCOPE_REQUEST);
         BeanWrapperImpl objectWrapper = new BeanWrapperImpl(value);
         Object fieldValue = objectWrapper
                 .getPropertyValue(field);
@@ -51,11 +49,6 @@ public class IdValidator implements ConstraintValidator<IdValid, Object> {
             Set<String> ids = collection.stream().filter(f -> f instanceof String).map(f -> (String) f).collect(Collectors.toSet());
             if (!ids.isEmpty()) {
                 Map<String, Basic> basicMap;
-                if (SecuredBasic.class.isAssignableFrom(fieldType)) {
-                    Class<? extends SecuredBasic> c = (Class<? extends SecuredBasic>) fieldType;
-                    basicMap = securedBasicRepository.listByIds(c, ids, SecuredBasic_.security, securityContext).stream().collect(Collectors.toMap(f -> f.getId(), f -> f, (a, b) -> a));
-
-                } else {
                     if(Baseclass.class.isAssignableFrom(fieldType)){
                         Class<? extends Baseclass> c = (Class<? extends Baseclass>) fieldType;
                         basicMap = securedBasicRepository.listByIds(c, ids, securityContext).stream().collect(Collectors.toMap(f -> f.getId(), f -> f, (a, b) -> a));
@@ -68,7 +61,6 @@ public class IdValidator implements ConstraintValidator<IdValid, Object> {
                     }
 
 
-                }
 
                 ids.removeAll(basicMap.keySet());
                 if (!ids.isEmpty()) {
@@ -83,11 +75,6 @@ public class IdValidator implements ConstraintValidator<IdValid, Object> {
                 String id = (String) fieldValue;
                 Basic basic;
 
-                if (SecuredBasic.class.isAssignableFrom(fieldType)) {
-                    Class<? extends SecuredBasic> c = (Class<? extends SecuredBasic>) fieldType;
-                    basic = securedBasicRepository.getByIdOrNull(id, c, SecuredBasic_.security, securityContext);
-
-                } else {
                     if(Baseclass.class.isAssignableFrom(fieldType)){
                         Class<? extends Baseclass> c = (Class<? extends Baseclass>) fieldType;
                         basic = securedBasicRepository.getByIdOrNull(id, c, securityContext);
@@ -97,7 +84,6 @@ public class IdValidator implements ConstraintValidator<IdValid, Object> {
                         basic = securedBasicRepository.findByIdOrNull(basicClass, id);
                     }
 
-                }
                 if (basic == null) {
                     constraintValidatorContext.buildConstraintViolationWithTemplate("cannot find "+fieldType.getCanonicalName() +" with id \""+id+"\"").addPropertyNode(field).addConstraintViolation();
                     return false;

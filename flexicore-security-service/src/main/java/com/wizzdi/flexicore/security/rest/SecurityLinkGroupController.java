@@ -3,7 +3,7 @@ package com.wizzdi.flexicore.security.rest;
 import com.flexicore.annotations.IOperation;
 import com.flexicore.annotations.OperationsInside;
 import com.flexicore.model.SecurityLinkGroup;
-import com.flexicore.security.SecurityContextBase;
+import com.wizzdi.segmantix.model.SecurityContext;
 import com.wizzdi.flexicore.boot.base.interfaces.Plugin;
 import com.wizzdi.flexicore.security.request.*;
 import com.wizzdi.flexicore.security.response.PaginationResponse;
@@ -29,26 +29,26 @@ public class SecurityLinkGroupController implements Plugin {
 
     @IOperation(Name = "returns SecurityLinkGroup", Description = "returns SecurityLinkGroup")
     @PostMapping("/getAll")
-    public PaginationResponse<SecurityLinkGroup> getAll(@RequestBody @Valid SecurityLinkGroupFilter securityLinkGroupFilter, @RequestAttribute SecurityContextBase securityContext) {
+    public PaginationResponse<SecurityLinkGroup> getAll(@RequestBody @Valid SecurityLinkGroupFilter securityLinkGroupFilter, @RequestAttribute SecurityContext securityContext) {
         return securityLinkGroupService.getAllSecurityLinkGroups(securityLinkGroupFilter, securityContext);
     }
 
     @IOperation(Name = "returns SecurityLinkGroupContainers", Description = "returns SecurityLinkGroupContainers")
     @PostMapping("/getAllContainers")
-    public PaginationResponse<SecurityLinkGroupContainer> getAllContainers(@RequestBody @Valid SecurityLinkGroupFilter securityLinkGroupFilter, @RequestAttribute SecurityContextBase securityContext) {
+    public PaginationResponse<SecurityLinkGroupContainer> getAllContainers(@RequestBody @Valid SecurityLinkGroupFilter securityLinkGroupFilter, @RequestAttribute SecurityContext securityContext) {
         return securityLinkGroupService.getAllSecurityLinkGroupContainers(securityLinkGroupFilter, securityContext);
     }
 
     @IOperation(Name = "updates SecurityLinkGroup", Description = "updates SecurityLinkGroup")
     @PutMapping("/update")
-    public SecurityLinkGroup update(@RequestBody @Validated(Update.class) SecurityLinkGroupUpdate securityLinkGroupUpdate, @RequestAttribute SecurityContextBase securityContext) {
+    public SecurityLinkGroup update(@RequestBody @Validated(Update.class) SecurityLinkGroupUpdate securityLinkGroupUpdate, @RequestAttribute SecurityContext securityContext) {
 
         return securityLinkGroupService.updateSecurityLinkGroup(securityLinkGroupUpdate, securityContext);
     }
 
     @IOperation(Name = "creates SecurityLinkGroup", Description = "creates SecurityLinkGroup")
     @PostMapping("/create")
-    public SecurityLinkGroup create(@RequestBody @Validated(Create.class) SecurityLinkGroupCreate securityLinkGroupCreate, @RequestAttribute SecurityContextBase securityContext) {
+    public SecurityLinkGroup create(@RequestBody @Validated(Create.class) SecurityLinkGroupCreate securityLinkGroupCreate, @RequestAttribute SecurityContext securityContext) {
 
         return securityLinkGroupService.createSecurityLinkGroup(securityLinkGroupCreate, securityContext);
     }

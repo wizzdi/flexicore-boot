@@ -3,7 +3,7 @@ package com.wizzdi.flexicore.security.rest;
 import com.flexicore.annotations.IOperation;
 import com.flexicore.annotations.OperationsInside;
 import com.flexicore.model.UserToBaseclass;
-import com.flexicore.security.SecurityContextBase;
+import com.wizzdi.segmantix.model.SecurityContext;
 import com.wizzdi.flexicore.boot.base.interfaces.Plugin;
 import com.wizzdi.flexicore.security.request.UserToBaseclassCreate;
 import com.wizzdi.flexicore.security.request.UserToBaseclassFilter;
@@ -30,7 +30,7 @@ public class UserToBaseclassController implements Plugin {
 
     @IOperation(Name = "create user to baseclass", Description = "creates user to baseclass")
     @PostMapping("/create")
-    public UserToBaseclass create(@RequestBody @Validated(Create.class) UserToBaseclassCreate userToBaseclassCreate, @RequestAttribute SecurityContextBase securityContext) {
+    public UserToBaseclass create(@RequestBody @Validated(Create.class) UserToBaseclassCreate userToBaseclassCreate, @RequestAttribute SecurityContext securityContext) {
 
         return userToBaseclassService.createUserToBaseclass(userToBaseclassCreate, securityContext);
     }
@@ -38,7 +38,7 @@ public class UserToBaseclassController implements Plugin {
     @IOperation(Name = "returns user to baseclass", Description = "returns user to baseclass")
 
     @PostMapping("/getAll")
-    public PaginationResponse<UserToBaseclass> getAll(@RequestBody @Valid UserToBaseclassFilter userToBaseclassFilter, @RequestAttribute SecurityContextBase securityContext) {
+    public PaginationResponse<UserToBaseclass> getAll(@RequestBody @Valid UserToBaseclassFilter userToBaseclassFilter, @RequestAttribute SecurityContext securityContext) {
 
         return userToBaseclassService.getAllUserToBaseclass(userToBaseclassFilter, securityContext);
     }
@@ -46,7 +46,7 @@ public class UserToBaseclassController implements Plugin {
     @IOperation(Name = "updates user to baseclass", Description = "updates user to baseclass")
 
     @PutMapping("/update")
-    public UserToBaseclass update(@RequestBody @Validated(Update.class) UserToBaseclassUpdate userToBaseclassUpdate, @RequestAttribute SecurityContextBase securityContext) {
+    public UserToBaseclass update(@RequestBody @Validated(Update.class) UserToBaseclassUpdate userToBaseclassUpdate, @RequestAttribute SecurityContext securityContext) {
 
         return userToBaseclassService.updateUserToBaseclass(userToBaseclassUpdate, securityContext);
     }

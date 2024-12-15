@@ -25,16 +25,16 @@ FlexiCore boosts [Spring Boot](https://github.com/spring-projects/spring-boot) a
       private PersonRepository repository;  
       
       
-     public Person createPerson(PersonCreate personCreate, SecurityContextBase securityContextBase) {  
-            Person person = createPersonNoMerge(personCreate, securityContextBase);  
+     public Person createPerson(PersonCreate personCreate, SecurityContextBase securityContext) {  
+            Person person = createPersonNoMerge(personCreate, securityContext);  
       repository.merge(person);  
       return person;  
        }  
 
 
   
-    public Person createPersonNoMerge(PersonCreate personCreate, SecurityContextBase securityContextBase) {  
-        Person person = new Person(personCreate.getFirstName(),securityContextBase);  
+    public Person createPersonNoMerge(PersonCreate personCreate, SecurityContextBase securityContext) {  
+        Person person = new Person(personCreate.getFirstName(),securityContext);  
         updatePersonNoMerge(person, personCreate); 
          return person;  
          }
@@ -60,16 +60,16 @@ FlexiCore boosts [Spring Boot](https://github.com/spring-projects/spring-boot) a
       private PersonService personService;  
       
      public Author createAuthor(AuthorCreate authorCreate,  
-      SecurityContextBase securityContextBase) {  
-          Author author = createAuthorNoMerge(authorCreate, securityContextBase);  
+      SecurityContextBase securityContext) {  
+          Author author = createAuthorNoMerge(authorCreate, securityContext);  
       repository.merge(author);  
      return author;  
       }  
       
        public Author createAuthorNoMerge(AuthorCreate authorCreate,  
-      SecurityContextBase securityContextBase) {  
+      SecurityContextBase securityContext) {  
           Author author = new Author(authorCreate.getFirstName(),  
-      securityContextBase);  
+      securityContext);  
       updateAuthorNoMerge(author, authorCreate);  
      return author;  
       }

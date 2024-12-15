@@ -1,10 +1,10 @@
 package com.wizzdi.flexicore.security.service;
 
-import com.flexicore.model.SecurityTenant;
 import com.flexicore.model.Baseclass;
+import com.flexicore.model.SecurityTenant;
 import com.wizzdi.flexicore.boot.base.interfaces.Plugin;
 import com.wizzdi.flexicore.security.data.SecurityTenantRepository;
-import com.flexicore.security.SecurityContextBase;
+import com.wizzdi.segmantix.model.SecurityContext;
 import com.wizzdi.flexicore.security.request.SecurityTenantCreate;
 import com.wizzdi.flexicore.security.request.SecurityTenantFilter;
 import com.wizzdi.flexicore.security.request.SecurityTenantUpdate;
@@ -27,7 +27,7 @@ public class SecurityTenantService implements Plugin {
 	private SecurityTenantRepository tenantRepository;
 
 
-	public SecurityTenant createTenant(SecurityTenantCreate tenantCreate, SecurityContextBase securityContext){
+	public SecurityTenant createTenant(SecurityTenantCreate tenantCreate, SecurityContext securityContext){
 		SecurityTenant tenant= createTenantNoMerge(tenantCreate,securityContext);
 		tenantRepository.merge(tenant);
 		return tenant;
@@ -40,11 +40,11 @@ public class SecurityTenantService implements Plugin {
 		tenantRepository.massMerge(list);
 	}
 
-	public <T extends Baseclass> List<T> listByIds(Class<T> c,Set<String> ids,  SecurityContextBase securityContext) {
+	public <T extends Baseclass> List<T> listByIds(Class<T> c, Set<String> ids, SecurityContext securityContext) {
 		return tenantRepository.listByIds(c, ids, securityContext);
 	}
 
-	public SecurityTenant createTenantNoMerge(SecurityTenantCreate tenantCreate, SecurityContextBase securityContext){
+	public SecurityTenant createTenantNoMerge(SecurityTenantCreate tenantCreate, SecurityContext securityContext){
 		SecurityTenant tenant=new SecurityTenant();
 		tenant.setId(UUID.randomUUID().toString());
 		updateTenantNoMerge(tenantCreate,tenant);
@@ -56,7 +56,7 @@ public class SecurityTenantService implements Plugin {
 		return securityEntityService.updateNoMerge(tenantCreate,tenant);
 	}
 
-	public SecurityTenant updateTenant(SecurityTenantUpdate tenantUpdate, SecurityContextBase securityContext){
+	public SecurityTenant updateTenant(SecurityTenantUpdate tenantUpdate, SecurityContext securityContext){
 		SecurityTenant tenant=tenantUpdate.getTenantToUpdate();
 		if(updateTenantNoMerge(tenantUpdate,tenant)){
 			tenantRepository.merge(tenant);
@@ -66,17 +66,17 @@ public class SecurityTenantService implements Plugin {
 
 
 
-	public <T extends Baseclass> T getByIdOrNull(String id,Class<T> c, SecurityContextBase securityContext) {
+	public <T extends Baseclass> T getByIdOrNull(String id, Class<T> c, SecurityContext securityContext) {
 		return tenantRepository.getByIdOrNull(id,c,securityContext);
 	}
 
-	public PaginationResponse<SecurityTenant> getAllTenants(SecurityTenantFilter tenantFilter, SecurityContextBase securityContext) {
+	public PaginationResponse<SecurityTenant> getAllTenants(SecurityTenantFilter tenantFilter, SecurityContext securityContext) {
 		List<SecurityTenant> list= listAllTenants(tenantFilter, securityContext);
 		long count=tenantRepository.countAllTenants(tenantFilter,securityContext);
 		return new PaginationResponse<>(list,tenantFilter,count);
 	}
 
-	public List<SecurityTenant> listAllTenants(SecurityTenantFilter tenantFilter, SecurityContextBase securityContext) {
+	public List<SecurityTenant> listAllTenants(SecurityTenantFilter tenantFilter, SecurityContext securityContext) {
 		return tenantRepository.listAllTenants(tenantFilter, securityContext);
 	}
 

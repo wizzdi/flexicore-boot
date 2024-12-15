@@ -9,6 +9,7 @@ package com.flexicore.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.flexicore.annotations.AnnotatedClazz;
 
+import com.wizzdi.segmantix.api.model.ITenant;
 import jakarta.persistence.Entity;
 import jakarta.persistence.OneToMany;
 import java.util.ArrayList;
@@ -21,7 +22,7 @@ import java.util.List;
 
 @AnnotatedClazz(Category="core", Name="Tenant", Description="Defines a way to run different isolated virtual database on a single physical one")
 @Entity
-public class SecurityTenant extends SecurityEntity  {
+public class SecurityTenant extends SecurityEntity implements ITenant {
 
 	private String externalId;
 
@@ -31,12 +32,12 @@ public class SecurityTenant extends SecurityEntity  {
 	@OneToMany(targetEntity = TenantToBaseclass.class,mappedBy="tenant")
 	private List<TenantToBaseclass> tenantToBaseclasses =new ArrayList<>();
 
-	@OneToMany(targetEntity = TenantToUser.class,mappedBy="tenant")
+	@OneToMany(targetEntity = TenantToUser.class,mappedBy= "targetTenant")
 	@JsonIgnore
 	private List<TenantToUser> tenantToUser=new ArrayList<>();
 
 	@JsonIgnore
-	@OneToMany(targetEntity = TenantToUser.class,mappedBy="tenant")
+	@OneToMany(targetEntity = TenantToUser.class,mappedBy= "targetTenant")
 	public List<TenantToUser> getTenantToUser() {
 		return tenantToUser;
 	}

@@ -4,14 +4,13 @@ import com.flexicore.model.Baseclass;
 import com.flexicore.model.Basic;
 import com.flexicore.model.Clazz;
 import com.flexicore.model.Clazz_;
-import com.flexicore.security.SecurityContextBase;
+import com.wizzdi.segmantix.model.SecurityContext;
 import com.wizzdi.flexicore.boot.base.interfaces.Plugin;
 import com.wizzdi.flexicore.security.request.ClazzFilter;
 import jakarta.persistence.metamodel.SingularAttribute;
 import org.pf4j.Extension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -30,7 +29,7 @@ public class ClazzRepository implements Plugin {
 	private SecuredBasicRepository securedBasicRepository;
 
 
-	public List<Clazz> listAllClazzs(ClazzFilter ClazzFilter, SecurityContextBase securityContext) {
+	public List<Clazz> listAllClazzs(ClazzFilter ClazzFilter, SecurityContext securityContext) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Clazz> q = cb.createQuery(Clazz.class);
 		Root<Clazz> r = q.from(Clazz.class);
@@ -43,11 +42,11 @@ public class ClazzRepository implements Plugin {
 
 	}
 
-	public <T extends Clazz> void addClazzPredicates(ClazzFilter clazzFilter, CriteriaBuilder cb, CommonAbstractCriteria q, From<?, T> r, List<Predicate> predicates, SecurityContextBase securityContext) {
+	public <T extends Clazz> void addClazzPredicates(ClazzFilter clazzFilter, CriteriaBuilder cb, CommonAbstractCriteria q, From<?, T> r, List<Predicate> predicates, SecurityContext securityContext) {
 		securedBasicRepository.addSecuredBasicPredicates(clazzFilter.getBasicPropertiesFilter(), cb, q, r, predicates, securityContext);
 	}
 
-	public long countAllClazzs(ClazzFilter ClazzFilter, SecurityContextBase securityContext) {
+	public long countAllClazzs(ClazzFilter ClazzFilter, SecurityContext securityContext) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Long> q = cb.createQuery(Long.class);
 		Root<Clazz> r = q.from(Clazz.class);
@@ -67,19 +66,19 @@ public class ClazzRepository implements Plugin {
 		securedBasicRepository.massMerge(toMerge, updatedate, propagateEvents);
 	}
 
-	public <T extends Baseclass> List<T> listByIds(Class<T> c, Set<String> ids, SecurityContextBase securityContext) {
+	public <T extends Baseclass> List<T> listByIds(Class<T> c, Set<String> ids, SecurityContext securityContext) {
 		return securedBasicRepository.listByIds(c, ids, securityContext);
 	}
 
-	public <T extends Baseclass> T getByIdOrNull(String id, Class<T> c, SecurityContextBase securityContext) {
+	public <T extends Baseclass> T getByIdOrNull(String id, Class<T> c, SecurityContext securityContext) {
 		return securedBasicRepository.getByIdOrNull(id, c, securityContext);
 	}
 
-	public <D extends Basic, E extends Baseclass, T extends D> T getByIdOrNull(String id, Class<T> c, SingularAttribute<D, E> baseclassAttribute, SecurityContextBase securityContext) {
+	public <D extends Basic, E extends Baseclass, T extends D> T getByIdOrNull(String id, Class<T> c, SingularAttribute<D, E> baseclassAttribute, SecurityContext securityContext) {
 		return securedBasicRepository.getByIdOrNull(id, c, baseclassAttribute, securityContext);
 	}
 
-	public <D extends Basic, E extends Baseclass, T extends D> List<T> listByIds(Class<T> c, Set<String> ids, SingularAttribute<D, E> baseclassAttribute, SecurityContextBase securityContext) {
+	public <D extends Basic, E extends Baseclass, T extends D> List<T> listByIds(Class<T> c, Set<String> ids, SingularAttribute<D, E> baseclassAttribute, SecurityContext securityContext) {
 		return securedBasicRepository.listByIds(c, ids, baseclassAttribute, securityContext);
 	}
 

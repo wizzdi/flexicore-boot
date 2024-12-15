@@ -1,15 +1,14 @@
 package com.wizzdi.flexicore.security.service;
 
-import com.flexicore.annotations.IOperation;
-import com.flexicore.annotations.IOperation.Access;
+import com.wizzdi.segmantix.model.Access;
 import com.flexicore.model.SecurityOperation;
 import com.flexicore.model.SecurityTenant;
 import com.flexicore.model.SecurityUser;
 import com.flexicore.model.TenantToBaseclass;
-import com.flexicore.security.SecurityContextBase;
+import com.wizzdi.segmantix.model.SecurityContext;
 
 import com.wizzdi.flexicore.boot.base.interfaces.Plugin;
-import com.wizzdi.flexicore.security.data.SecurityRepository;
+import com.wizzdi.flexicore.security.data.SecurityOpCheckRepository;
 
 import com.wizzdi.flexicore.security.request.TenantToBaseclassFilter;
 import org.pf4j.Extension;
@@ -37,7 +36,7 @@ public class OperationValidatorService implements Plugin {
 
 
     @Autowired
-    private SecurityRepository securityRepository;
+    private SecurityOpCheckRepository securityOpCheckRepository;
     @Autowired
     private TenantToBaseclassService tenantToBaseclassService;
 
@@ -53,32 +52,32 @@ public class OperationValidatorService implements Plugin {
         return value;
     }
 
-    static String getAccessControlKey(String type, String opId, String securityEntityId, IOperation.Access access){
+    static String getAccessControlKey(String type, String opId, String securityEntityId, Access access){
         return type+"."+opId+"."+securityEntityId+"."+access.name();
     }
 
-    public boolean checkIfAllowed(SecurityContextBase securityContextBase) {
-        Access defaultaccess = securityContextBase.getOperation() != null && securityContextBase.getOperation().getDefaultAccess() != null ? securityContextBase.getOperation().getDefaultAccess() : Access.allow;
-        return checkIfAllowed(securityContextBase.getUser(), securityContextBase.getTenants(), securityContextBase.getOperation(), defaultaccess);
+    public boolean checkIfAllowed(SecurityContext securityContext) {
+        Access defaultaccess = securityContext.operation() instanceof SecurityOperation securityOperation&& securityOperation.getDefaultAccess() != null ? securityOperation.getDefaultAccess(): Access.allow;
+        return checkIfAllowed((SecurityUser) securityContext.user(), securityContext.tenants().stream().map(f->(SecurityTenant)f).toList(), (SecurityOperation) securityContext.operation(), defaultaccess);
     }
 
     public boolean userAllowed(SecurityOperation operation, SecurityUser user) {
-        return checkUser(operation, user, IOperation.Access.allow);
+        return checkUser(operation, user, Access.allow);
 
     }
 
     public boolean userDenied(SecurityOperation operation, SecurityUser user) {
-        return checkUser(operation, user, IOperation.Access.deny);
+        return checkUser(operation, user, Access.deny);
     }
 
     public boolean roleAllowed(SecurityOperation operation, SecurityUser user) {
-        IOperation.Access access = IOperation.Access.allow;
+        Access access = Access.allow;
         String cacheKey= getAccessControlKey(ROLE_TYPE,operation.getId(),user.getId(),access);
         Boolean val= getIsAllowedFromCache(cacheKey);
         if(val!=null){
             return val;
         }
-        val = securityRepository.checkRole(operation, user, access);
+        val = securityOpCheckRepository.checkRole(operation, user, access);
         updateIsAllowedCache(cacheKey,val);
 
         return val;
@@ -86,49 +85,49 @@ public class OperationValidatorService implements Plugin {
     }
 
     public boolean roleDenied(SecurityOperation operation, SecurityUser user) {
-        IOperation.Access access = IOperation.Access.deny;
+        Access access = Access.deny;
 
         String cacheKey=getAccessControlKey(ROLE_TYPE,operation.getId(),user.getId(),access);
         Boolean val= getIsAllowedFromCache(cacheKey);
         if(val!=null){
             return val;
         }
-        val = securityRepository.checkRole(operation, user, access);
+        val = securityOpCheckRepository.checkRole(operation, user, access);
         updateIsAllowedCache(cacheKey,val);
         return val;
     }
 
-    public boolean checkUser(SecurityOperation operation, SecurityUser user, IOperation.Access access) {
+    public boolean checkUser(SecurityOperation operation, SecurityUser user, Access access) {
         String cacheKey= getAccessControlKey(USER_TYPE,operation.getId(),user.getId(),access);
         Boolean val= getIsAllowedFromCache(cacheKey);
         if(val!=null){
             return val;
         }
-        val = securityRepository.checkUser(operation, user, access);
+        val = securityOpCheckRepository.checkUser(operation, user, access);
         updateIsAllowedCache(cacheKey,val);
         return val;
     }
     public boolean tenantAllowed(SecurityOperation operation, SecurityTenant tenant) {
-        IOperation.Access access=IOperation.Access.allow;
+        Access access= Access.allow;
         String cacheKey= getAccessControlKey(TENANT_TYPE,operation.getId(),tenant.getId(),access);
         Boolean val= getIsAllowedFromCache(cacheKey);
         if(val!=null){
             return val;
         }
-        TenantToBaseclass link = tenantToBaseclassService.listAllTenantToBaseclasss(new TenantToBaseclassFilter().setTenants(Collections.singletonList(tenant)).setBaseclasses(Collections.singletonList(operation.getSecurity())).setAccesses(Collections.singleton(access)),null).stream().findFirst().orElse(null);
+        TenantToBaseclass link = tenantToBaseclassService.listAllTenantToBaseclasss(new TenantToBaseclassFilter().setTenants(Collections.singletonList(tenant)).setSecuredIds(Collections.singleton(operation.getId())).setAccesses(Collections.singleton(access)),null).stream().findFirst().orElse(null);
         val= link != null;
         updateIsAllowedCache(cacheKey,val);
         return val;
     }
 
     public boolean tenantDenied(SecurityOperation operation, SecurityTenant tenant) {
-        IOperation.Access access=IOperation.Access.deny;
+        Access access= Access.deny;
         String cacheKey= getAccessControlKey(TENANT_TYPE,operation.getId(),tenant.getId(),access);
         Boolean val= getIsAllowedFromCache(cacheKey);
         if(val!=null){
             return val;
         }
-        TenantToBaseclass link = tenantToBaseclassService.listAllTenantToBaseclasss(new TenantToBaseclassFilter().setTenants(Collections.singletonList(tenant)).setBaseclasses(Collections.singletonList(operation.getSecurity())).setAccesses(Collections.singleton(access)),null).stream().findFirst().orElse(null);
+        TenantToBaseclass link = tenantToBaseclassService.listAllTenantToBaseclasss(new TenantToBaseclassFilter().setTenants(Collections.singletonList(tenant)).setSecuredIds(Collections.singleton(operation.getId())).setAccesses(Collections.singleton(access)),null).stream().findFirst().orElse(null);
         val= link != null;
         updateIsAllowedCache(cacheKey,val);
         return val;

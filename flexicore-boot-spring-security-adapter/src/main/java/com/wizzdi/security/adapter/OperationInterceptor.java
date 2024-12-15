@@ -1,9 +1,8 @@
 package com.wizzdi.security.adapter;
 
-import com.flexicore.model.Baseclass;
-import com.flexicore.model.SecuredBasic_;
 import com.flexicore.model.SecurityOperation;
-import com.flexicore.security.SecurityContextBase;
+import com.wizzdi.flexicore.security.service.ClazzService;
+import com.wizzdi.segmantix.model.SecurityContext;
 import com.wizzdi.flexicore.security.service.SecurityOperationService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,20 +34,20 @@ public class OperationInterceptor implements HandlerInterceptor {
 
 	@Override
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-		SecurityContextBase securityContextBase = (SecurityContextBase) request.getAttribute(SECURITY_CONTEXT);
-		if(securityContextBase!=null){
+		SecurityContext securityContext = (SecurityContext) request.getAttribute(SECURITY_CONTEXT);
+		if(securityContext !=null){
 			if(handler instanceof HandlerMethod) {
 				HandlerMethod handlerMethod= (HandlerMethod) handler;
 				Method method = handlerMethod.getMethod();
 				if(!BasicErrorController.class.equals(method.getDeclaringClass())){
-					String operationId = Baseclass.generateUUIDFromStringCompt(method.toString());
-					SecurityOperation securityOperation=securityOperationService.getByIdOrNull(operationId,SecurityOperation.class, SecuredBasic_.security,null);
+					String operationId = ClazzService.getIdFromString(method.toString());
+					SecurityOperation securityOperation=securityOperationService.getByIdOrNull(operationId,SecurityOperation.class, null);
 					if(securityOperation==null){
 						logger.error("could not find io operation annotation on method: " + method.getName());
 						response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 						return false;
 					}
-					securityContextBase.setOperation(securityOperation);
+					securityContext.setOperation(securityOperation);
 				}
 
 

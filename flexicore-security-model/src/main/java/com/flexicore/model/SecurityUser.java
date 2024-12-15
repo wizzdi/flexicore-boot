@@ -7,6 +7,7 @@
 package com.flexicore.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.wizzdi.segmantix.api.model.IUser;
 import jakarta.persistence.Entity;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
@@ -19,7 +20,7 @@ import java.util.List;
 @Table(name = "UserTable")
 @Entity
 
-public class SecurityUser extends SecurityEntity {
+public class SecurityUser extends SecurityEntity implements IUser {
 
 	@JsonIgnore
 	@OneToMany(targetEntity = RoleToUser.class,mappedBy = "user")

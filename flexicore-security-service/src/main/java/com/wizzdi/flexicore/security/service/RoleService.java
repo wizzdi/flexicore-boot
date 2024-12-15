@@ -3,9 +3,9 @@ package com.wizzdi.flexicore.security.service;
 import com.flexicore.model.Baseclass;
 import com.flexicore.model.Role;
 import com.flexicore.model.SecurityTenant;
+import com.wizzdi.segmantix.model.SecurityContext;
 import com.wizzdi.flexicore.boot.base.interfaces.Plugin;
 import com.wizzdi.flexicore.security.data.RoleRepository;
-import com.flexicore.security.SecurityContextBase;
 import com.wizzdi.flexicore.security.request.RoleCreate;
 import com.wizzdi.flexicore.security.request.RoleFilter;
 import com.wizzdi.flexicore.security.request.RoleUpdate;
@@ -26,7 +26,7 @@ public class RoleService implements Plugin {
 	private RoleRepository roleRepository;
 
 
-	public Role createRole(RoleCreate roleCreate, SecurityContextBase securityContext){
+	public Role createRole(RoleCreate roleCreate, SecurityContext securityContext){
 		Role role= createRoleNoMerge(roleCreate,securityContext);
 		roleRepository.merge(role);
 		return role;
@@ -39,31 +39,30 @@ public class RoleService implements Plugin {
 		roleRepository.massMerge(list);
 	}
 
-	public <T extends Baseclass> List<T> listByIds(Class<T> c,Set<String> ids,  SecurityContextBase securityContext) {
+	public <T extends Baseclass> List<T> listByIds(Class<T> c, Set<String> ids, SecurityContext securityContext) {
 		return roleRepository.listByIds(c, ids, securityContext);
 	}
 
 
-	public Role createRoleNoMerge(RoleCreate roleCreate, SecurityContextBase securityContext){
+	public Role createRoleNoMerge(RoleCreate roleCreate, SecurityContext securityContext){
 		Role role=new Role();
 		role.setId(UUID.randomUUID().toString());
 		updateRoleNoMerge(roleCreate,role);
 		BaseclassService.createSecurityObjectNoMerge(role,securityContext);
-		role.getSecurity().setTenant(roleCreate.getTenant());
 		return role;
 	}
 
 	public boolean updateRoleNoMerge(RoleCreate roleCreate, Role role) {
 		boolean update = securityEntityService.updateNoMerge(roleCreate, role);
-		SecurityTenant currentTenant=Optional.of(role).map(f->f.getSecurity()).map(f->f.getTenant()).orElse(null);
-		if(roleCreate.getTenant()!=null&&role.getSecurity()!=null&&(currentTenant==null||!roleCreate.getTenant().getId().equals(currentTenant.getId()))){
-			role.getSecurity().setTenant(roleCreate.getTenant());
+		SecurityTenant currentTenant=Optional.of(role).map(f->f.getTenant()).orElse(null);
+		if(roleCreate.getTenant()!=null&&(currentTenant==null||!roleCreate.getTenant().getId().equals(currentTenant.getId()))){
+			role.setTenant(roleCreate.getTenant());
 			update=true;
 		}
 		return update;
 	}
 
-	public Role updateRole(RoleUpdate roleUpdate, SecurityContextBase securityContext){
+	public Role updateRole(RoleUpdate roleUpdate, SecurityContext securityContext){
 		Role role=roleUpdate.getRole();
 		if(updateRoleNoMerge(roleUpdate,role)){
 			roleRepository.merge(role);
@@ -73,17 +72,17 @@ public class RoleService implements Plugin {
 
 
 
-	public <T extends Baseclass> T getByIdOrNull(String id,Class<T> c, SecurityContextBase securityContext) {
+	public <T extends Baseclass> T getByIdOrNull(String id, Class<T> c, SecurityContext securityContext) {
 		return roleRepository.getByIdOrNull(id,c,securityContext);
 	}
 
-	public PaginationResponse<Role> getAllRoles(RoleFilter roleFilter, SecurityContextBase securityContext) {
+	public PaginationResponse<Role> getAllRoles(RoleFilter roleFilter, SecurityContext securityContext) {
 		List<Role> list= listAllRoles(roleFilter, securityContext);
 		long count=roleRepository.countAllRoles(roleFilter,securityContext);
 		return new PaginationResponse<>(list,roleFilter,count);
 	}
 
-	public List<Role> listAllRoles(RoleFilter roleFilter, SecurityContextBase securityContext) {
+	public List<Role> listAllRoles(RoleFilter roleFilter, SecurityContext securityContext) {
 		return roleRepository.listAllRoles(roleFilter, securityContext);
 	}
 

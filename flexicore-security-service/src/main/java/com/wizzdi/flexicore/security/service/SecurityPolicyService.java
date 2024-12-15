@@ -2,7 +2,7 @@ package com.wizzdi.flexicore.security.service;
 
 import com.flexicore.model.Baseclass;
 import com.flexicore.model.security.SecurityPolicy;
-import com.flexicore.security.SecurityContextBase;
+import com.wizzdi.segmantix.model.SecurityContext;
 import com.wizzdi.flexicore.boot.base.interfaces.Plugin;
 import com.wizzdi.flexicore.security.data.SecurityPolicyRepository;
 import com.wizzdi.flexicore.security.request.SecurityPolicyCreate;
@@ -26,7 +26,7 @@ public class SecurityPolicyService implements Plugin {
 	private BasicService basicService;
 
 
-	public SecurityPolicy createSecurityPolicy(SecurityPolicyCreate securityPolicyCreate, SecurityContextBase securityContext) {
+	public SecurityPolicy createSecurityPolicy(SecurityPolicyCreate securityPolicyCreate, SecurityContext securityContext) {
 		SecurityPolicy securityPolicy = createSecurityPolicyNoMerge(securityPolicyCreate, securityContext);
 		securityPolicyRepository.merge(securityPolicy);
 		return securityPolicy;
@@ -40,11 +40,11 @@ public class SecurityPolicyService implements Plugin {
 		securityPolicyRepository.massMerge(list);
 	}
 
-	public <T extends Baseclass> List<T> listByIds(Class<T> c, Set<String> ids, SecurityContextBase securityContext) {
+	public <T extends Baseclass> List<T> listByIds(Class<T> c, Set<String> ids, SecurityContext securityContext) {
 		return securityPolicyRepository.listByIds(c, ids, securityContext);
 	}
 
-	public SecurityPolicy createSecurityPolicyNoMerge(SecurityPolicyCreate securityPolicyCreate, SecurityContextBase securityContext) {
+	public SecurityPolicy createSecurityPolicyNoMerge(SecurityPolicyCreate securityPolicyCreate, SecurityContext securityContext) {
 		SecurityPolicy securityPolicy = new SecurityPolicy();
 		securityPolicy.setId(UUID.randomUUID().toString());
 		updateSecurityPolicyNoMerge(securityPolicyCreate, securityPolicy);
@@ -78,7 +78,7 @@ public class SecurityPolicyService implements Plugin {
 		return update;
 	}
 
-	public SecurityPolicy updateSecurityPolicy(SecurityPolicyUpdate securityPolicyUpdate, SecurityContextBase securityContext) {
+	public SecurityPolicy updateSecurityPolicy(SecurityPolicyUpdate securityPolicyUpdate, SecurityContext securityContext) {
 		SecurityPolicy SecurityPolicy = securityPolicyUpdate.getSecurityPolicy();
 		if (updateSecurityPolicyNoMerge(securityPolicyUpdate, SecurityPolicy)) {
 			securityPolicyRepository.merge(SecurityPolicy);
@@ -86,21 +86,21 @@ public class SecurityPolicyService implements Plugin {
 		return SecurityPolicy;
 	}
 
-	public <T extends Baseclass> T getByIdOrNull(String id, Class<T> c, SecurityContextBase securityContext) {
+	public <T extends Baseclass> T getByIdOrNull(String id, Class<T> c, SecurityContext securityContext) {
 		return securityPolicyRepository.getByIdOrNull(id, c, securityContext);
 	}
 
-	public <T extends SecurityPolicy> T getSecurityPolicyByIdOrNull(String id, Class<T> c, SecurityContextBase securityContext) {
+	public <T extends SecurityPolicy> T getSecurityPolicyByIdOrNull(String id, Class<T> c, SecurityContext securityContext) {
 		return securityPolicyRepository.getSecurityPolicyByIdOrNull(id, c, securityContext);
 	}
 
-	public PaginationResponse<SecurityPolicy> getAllSecurityPolicies(SecurityPolicyFilter SecurityPolicyFilter, SecurityContextBase securityContext) {
+	public PaginationResponse<SecurityPolicy> getAllSecurityPolicies(SecurityPolicyFilter SecurityPolicyFilter, SecurityContext securityContext) {
 		List<SecurityPolicy> list = listAllSecurityPolicies(SecurityPolicyFilter, securityContext);
 		long count = securityPolicyRepository.countAllSecurityPolicies(SecurityPolicyFilter, securityContext);
 		return new PaginationResponse<>(list, SecurityPolicyFilter, count);
 	}
 
-	public List<SecurityPolicy> listAllSecurityPolicies(SecurityPolicyFilter SecurityPolicyFilter, SecurityContextBase securityContext) {
+	public List<SecurityPolicy> listAllSecurityPolicies(SecurityPolicyFilter SecurityPolicyFilter, SecurityContext securityContext) {
 		return securityPolicyRepository.listAllSecurityPolicies(SecurityPolicyFilter, securityContext);
 	}
 

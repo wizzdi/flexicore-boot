@@ -2,7 +2,7 @@ package com.wizzdi.flexicore.boot.dynamic.invokers.controllers;
 
 import com.flexicore.annotations.IOperation;
 import com.flexicore.annotations.OperationsInside;
-import com.flexicore.security.SecurityContextBase;
+import com.wizzdi.segmantix.model.SecurityContext;
 import com.wizzdi.flexicore.boot.base.interfaces.Plugin;
 import com.wizzdi.flexicore.boot.dynamic.invokers.request.DynamicInvokerMethodFilter;
 import com.wizzdi.flexicore.boot.dynamic.invokers.response.InvokerMethodHolder;
@@ -27,7 +27,7 @@ public class DynamicInvokerMethodController implements Plugin {
 	@IOperation(Name = "returns dynamicInvokerMethod holders",Description = "returns dynamicInvokerMethod holders")
 	@PostMapping("/getAllInvokerMethodHolders")
 	public PaginationResponse<InvokerMethodHolder> getAllInvokerMethodHolders(
-			@RequestBody DynamicInvokerMethodFilter dynamicInvokerFilter, @RequestAttribute SecurityContextBase securityContext){
+			@RequestBody DynamicInvokerMethodFilter dynamicInvokerFilter, @RequestAttribute SecurityContext securityContext){
 		dynamicInvokerService.validate(dynamicInvokerFilter,securityContext);
 		return dynamicInvokerService.getAllInvokerMethodHolders(dynamicInvokerFilter,securityContext);
 	}

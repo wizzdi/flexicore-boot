@@ -7,9 +7,9 @@
 package com.wizzdi.flexicore.file.controllers;
 
 import com.flexicore.annotations.IOperation;
-import com.flexicore.annotations.IOperation.Access;
+import com.wizzdi.segmantix.model.SecurityContext;
+import com.wizzdi.segmantix.model.Access;
 import com.flexicore.annotations.OperationsInside;
-import com.flexicore.security.SecurityContextBase;
 import com.wizzdi.flexicore.boot.base.interfaces.Plugin;
 import com.wizzdi.flexicore.file.model.FileResource;
 import com.wizzdi.flexicore.file.service.FileResourceService;
@@ -43,7 +43,7 @@ public class FileResourceController implements Plugin {
     @GetMapping("{md5}")
     @IOperation(access = Access.allow, Name = "gets file resource", Description = "gets a fileResource by MD5")
 
-    public FileResource getFileResource(     @PathVariable("md5") String md5, @RequestAttribute SecurityContextBase securityContext) {
+    public FileResource getFileResource(     @PathVariable("md5") String md5, @RequestAttribute SecurityContext securityContext) {
         return fileResourceService.getFileResourceByMd5(md5, securityContext);
 
     }

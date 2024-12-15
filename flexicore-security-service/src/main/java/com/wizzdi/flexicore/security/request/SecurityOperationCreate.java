@@ -1,18 +1,18 @@
 package com.wizzdi.flexicore.security.request;
 
-import com.flexicore.annotations.IOperation;
+import com.wizzdi.segmantix.model.Access;
 
 public class SecurityOperationCreate extends BasicCreate {
 
-    private IOperation.Access defaultAccess;
+    private Access defaultAccess;
 
     private String category;
 
-    public IOperation.Access getDefaultAccess() {
+    public Access getDefaultAccess() {
         return defaultAccess;
     }
 
-    public <T extends SecurityOperationCreate> T setDefaultAccess(IOperation.Access defaultAccess) {
+    public <T extends SecurityOperationCreate> T setDefaultAccess(Access defaultAccess) {
         this.defaultAccess = defaultAccess;
         return (T) this;
     }

@@ -1,8 +1,7 @@
 package com.wizzdi.flexicore.boot.dynamic.invokers.service;
 
-import com.flexicore.model.SecuredBasic_;
 import com.flexicore.model.SecurityOperation;
-import com.flexicore.security.SecurityContextBase;
+import com.wizzdi.segmantix.model.SecurityContext;
 import com.wizzdi.flexicore.boot.base.interfaces.Plugin;
 import com.wizzdi.flexicore.boot.dynamic.invokers.interfaces.ExecutionContext;
 import com.wizzdi.flexicore.boot.dynamic.invokers.request.*;
@@ -69,28 +68,28 @@ public class DynamicInvokerService implements Plugin {
     private Validator validator;
 
 
-    public void validate(DynamicInvokerFilter dynamicInvokerFilter, SecurityContextBase securityContext) {
+    public void validate(DynamicInvokerFilter dynamicInvokerFilter, SecurityContext securityContext) {
 
 
     }
 
-    public void validate(DynamicInvokerMethodFilter dynamicInvokerMethodFilter, SecurityContextBase securityContext) {
+    public void validate(DynamicInvokerMethodFilter dynamicInvokerMethodFilter, SecurityContext securityContext) {
         if(dynamicInvokerMethodFilter.getDynamicInvokerFilter()!=null){
             validate(dynamicInvokerMethodFilter.getDynamicInvokerFilter(),securityContext);
         }
     }
 
-    public PaginationResponse<InvokerInfo> getAllDynamicInvokers(DynamicInvokerFilter dynamicInvokerFilter, SecurityContextBase securityContext) {
+    public PaginationResponse<InvokerInfo> getAllDynamicInvokers(DynamicInvokerFilter dynamicInvokerFilter, SecurityContext securityContext) {
         List<InvokerInfo> list = listAllDynamicInvokers(dynamicInvokerFilter, securityContext);
         long count = countAllDynamicInvokers(dynamicInvokerFilter, securityContext);
         return new PaginationResponse<>(list, dynamicInvokerFilter.getPageSize(), count);
     }
 
-    private long countAllDynamicInvokers(DynamicInvokerFilter dynamicInvokerFilter, SecurityContextBase securityContextBase) {
+    private long countAllDynamicInvokers(DynamicInvokerFilter dynamicInvokerFilter, SecurityContext securityContext) {
         return invokerInfos.stream().filter(f -> filter(f, dynamicInvokerFilter)).count();
     }
 
-    public List<InvokerInfo> listAllDynamicInvokers(DynamicInvokerFilter dynamicInvokerFilter, SecurityContextBase securityContextBase) {
+    public List<InvokerInfo> listAllDynamicInvokers(DynamicInvokerFilter dynamicInvokerFilter, SecurityContext securityContext) {
         return paginate(invokerInfos.stream().filter(f -> filter(f, dynamicInvokerFilter)), dynamicInvokerFilter).collect(Collectors.toList());
     }
 
@@ -142,7 +141,7 @@ public class DynamicInvokerService implements Plugin {
         return pred;
     }
 
-    public ExecuteInvokersResponse executeInvoker(ExecuteInvokerRequest executeInvokerRequest, SecurityContextBase securityContext) {
+    public ExecuteInvokersResponse executeInvoker(ExecuteInvokerRequest executeInvokerRequest, SecurityContext securityContext) {
         List<? extends Plugin> invokers = getInvokers(executeInvokerRequest.getInvokerNames());
 
         List<ExecuteInvokerResponse<?>> responses = new ArrayList<>();
@@ -168,8 +167,8 @@ public class DynamicInvokerService implements Plugin {
                         if (bodyIndex > -1) {
 
                             OperationScanContext operationScanContext = operationsMethodScanner.scanOperationOnMethod(method);
-                            SecurityOperation securityOperation = operationScanContext != null ? securityOperationService.getByIdOrNull(operationScanContext.getSecurityOperationCreate().getIdForCreate(), SecurityOperation.class, SecuredBasic_.security,null) : null;
-                            SecurityOperation original = securityContext.getOperation();
+                            SecurityOperation securityOperation = operationScanContext != null ? securityOperationService.getByIdOrNull(operationScanContext.getSecurityOperationCreate().getIdForCreate(), SecurityOperation.class, null) : null;
+                            SecurityOperation original = (SecurityOperation) securityContext.operation();
                             try {
                                 if (securityOperation != null) {
                                     securityContext.setOperation(securityOperation);
@@ -181,7 +180,7 @@ public class DynamicInvokerService implements Plugin {
                                 parameters[bodyIndex] = executionParametersHolder;
                                 for (int i = 0; i < parameterTypes.length; i++) {
                                     Class<?> parameterType = parameterTypes[i];
-                                    if (SecurityContextBase.class.isAssignableFrom(parameterType)) {
+                                    if (SecurityContext.class.isAssignableFrom(parameterType)) {
                                         parameters[i] = securityContext;
                                     }
                                     if (executionContext != null && parameterType.isAssignableFrom(executionContext.getClass())) {
@@ -215,7 +214,7 @@ public class DynamicInvokerService implements Plugin {
 
     }
 
-    private void validateRequestBody(Object executionParametersHolder, Method method, int bodyIndex, SecurityContextBase securityContext) throws MethodArgumentNotValidException {
+    private void validateRequestBody(Object executionParametersHolder, Method method, int bodyIndex, SecurityContext securityContext) throws MethodArgumentNotValidException {
         RequestAttributes original = RequestContextHolder.getRequestAttributes();
         try {
             if (original == null) {
@@ -271,13 +270,13 @@ public class DynamicInvokerService implements Plugin {
     }
 
 
-    public PaginationResponse<InvokerHolder> getAllDynamicInvokerHolders(DynamicInvokerFilter dynamicInvokerFilter, SecurityContextBase securityContext) {
+    public PaginationResponse<InvokerHolder> getAllDynamicInvokerHolders(DynamicInvokerFilter dynamicInvokerFilter, SecurityContext securityContext) {
         PaginationResponse<InvokerInfo> paginationResponse = getAllDynamicInvokers(dynamicInvokerFilter, securityContext);
         List<InvokerHolder> invokerHolders = paginationResponse.getList().stream().map(f -> new InvokerHolder(f)).collect(Collectors.toList());
         return new PaginationResponse<>(invokerHolders, dynamicInvokerFilter, paginationResponse.getTotalRecords());
     }
 
-    public PaginationResponse<InvokerMethodHolder> getAllInvokerMethodHolders(DynamicInvokerMethodFilter dynamicInvokerMethodFilter, SecurityContextBase securityContext) {
+    public PaginationResponse<InvokerMethodHolder> getAllInvokerMethodHolders(DynamicInvokerMethodFilter dynamicInvokerMethodFilter, SecurityContext securityContext) {
         List<InvokerMethodHolder> invokerMethodHolders = listAllInvokerMethodHolders(dynamicInvokerMethodFilter);
         long count = countAllInvokerMethodHolders(dynamicInvokerMethodFilter);
         return new PaginationResponse<>(invokerMethodHolders, dynamicInvokerMethodFilter, count);

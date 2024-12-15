@@ -1,7 +1,7 @@
 package com.wizzdi.flexicore.security.data;
 
 import com.flexicore.model.*;
-import com.flexicore.security.SecurityContextBase;
+import com.wizzdi.segmantix.model.SecurityContext;
 import com.wizzdi.flexicore.boot.base.interfaces.Plugin;
 import com.wizzdi.flexicore.security.request.SecurityLinkGroupFilter;
 import jakarta.persistence.EntityManager;
@@ -11,7 +11,6 @@ import jakarta.persistence.criteria.*;
 import org.pf4j.Extension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,7 +27,7 @@ public class SecurityLinkGroupRepository implements Plugin {
 	private SecurityLinkRepository securityLinkRepository;
 
 
-	public List<SecurityLinkGroup> listAllSecurityLinkGroups(SecurityLinkGroupFilter securityLinkGroupFilter, SecurityContextBase securityContext){
+	public List<SecurityLinkGroup> listAllSecurityLinkGroups(SecurityLinkGroupFilter securityLinkGroupFilter, SecurityContext securityContext){
 		CriteriaBuilder cb=em.getCriteriaBuilder();
 		CriteriaQuery<SecurityLinkGroup> q=cb.createQuery(SecurityLinkGroup.class);
 		Root<SecurityLinkGroup> r=q.from(SecurityLinkGroup.class);
@@ -45,7 +44,7 @@ public class SecurityLinkGroupRepository implements Plugin {
 
 	}
 
-	public <T extends SecurityLinkGroup> Join<T,SecurityLink> addSecurityLinkGroupPredicates(SecurityLinkGroupFilter securityLinkGroupFilter, CriteriaBuilder cb, CommonAbstractCriteria q, From<?,T> r, List<Predicate> predicates, SecurityContextBase securityContext) {
+	public <T extends SecurityLinkGroup> Join<T,SecurityLink> addSecurityLinkGroupPredicates(SecurityLinkGroupFilter securityLinkGroupFilter, CriteriaBuilder cb, CommonAbstractCriteria q, From<?,T> r, List<Predicate> predicates, SecurityContext securityContext) {
 		securedBasicRepository.addSecuredBasicPredicates(securityLinkGroupFilter.getBasicPropertiesFilter(),cb,q,r,predicates,securityContext);
 		if(securityLinkGroupFilter.getSecurityLinkFilter()!=null){
 			Join<T,SecurityLink> join=r.join(SecurityLinkGroup_.securityLinks);
@@ -56,7 +55,7 @@ public class SecurityLinkGroupRepository implements Plugin {
 
 	}
 
-	public long countAllSecurityLinkGroups(SecurityLinkGroupFilter securityLinkGroupFilter, SecurityContextBase securityContext){
+	public long countAllSecurityLinkGroups(SecurityLinkGroupFilter securityLinkGroupFilter, SecurityContext securityContext){
 		CriteriaBuilder cb=em.getCriteriaBuilder();
 		CriteriaQuery<Long> q=cb.createQuery(Long.class);
 		Root<SecurityLinkGroup> r=q.from(SecurityLinkGroup.class);
@@ -78,11 +77,11 @@ public class SecurityLinkGroupRepository implements Plugin {
 		securedBasicRepository.massMerge(list);
 	}
 
-	public <T extends Baseclass> List<T> listByIds(Class<T> c,Set<String> ids,  SecurityContextBase securityContext) {
+	public <T extends Baseclass> List<T> listByIds(Class<T> c, Set<String> ids, SecurityContext securityContext) {
 		return securedBasicRepository.listByIds(c, ids, securityContext);
 	}
 
-	public <T extends Baseclass> T getByIdOrNull(String id, Class<T> c, SecurityContextBase securityContext) {
+	public <T extends Baseclass> T getByIdOrNull(String id, Class<T> c, SecurityContext securityContext) {
 		return securedBasicRepository.getByIdOrNull(id, c, securityContext);
 	}
 }

@@ -158,6 +158,11 @@
 
     <dependencyManagement>
         <dependencies>
+            <dependency>
+                <groupId>com.wizzdi</groupId>
+                <artifactId>segmantix-core</artifactId>
+                <version>0.0.0-dev</version>
+            </dependency>
 
             <dependency>
                 <groupId>org.springframework.boot</groupId>

@@ -1,6 +1,6 @@
 package com.wizzdi.security.bearer.jwt;
 
-import com.flexicore.security.SecurityContextBase;
+import com.wizzdi.segmantix.model.SecurityContext;
 import com.wizzdi.security.adapter.FlexiCoreAuthentication;
 import com.wizzdi.security.adapter.FlexiCoreSecurityFilter;
 import com.wizzdi.security.adapter.OperationInterceptor;
@@ -59,7 +59,7 @@ public class FlexicoreJwtTokenFilter extends OncePerRequestFilter implements Fle
             return;
 
         }
-        SecurityContextBase securityContext=authentication.getSecurityContextBase();
+        SecurityContext securityContext=authentication.getSecurityContextBase();
 
         authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
@@ -74,7 +74,7 @@ public class FlexicoreJwtTokenFilter extends OncePerRequestFilter implements Fle
             HandlerExecutionChain handler = handlerMapping.getHandler(request);
             if(handler.getHandler() instanceof HandlerMethod handlerMethod){
                 Method method = handlerMethod.getMethod();
-                return Arrays.stream(method.getParameterTypes()).anyMatch(SecurityContextBase.class::isAssignableFrom);
+                return Arrays.stream(method.getParameterTypes()).anyMatch(SecurityContext.class::isAssignableFrom);
             }
         } catch (Exception e) {
             logger.debug("unable to determine if request is protected",e);

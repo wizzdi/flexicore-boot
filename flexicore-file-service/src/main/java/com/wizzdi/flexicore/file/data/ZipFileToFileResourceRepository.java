@@ -1,7 +1,7 @@
 package com.wizzdi.flexicore.file.data;
 
 import com.flexicore.model.Basic;
-import com.flexicore.security.SecurityContextBase;
+import com.wizzdi.segmantix.model.SecurityContext;
 import com.wizzdi.flexicore.boot.base.interfaces.Plugin;
 import com.wizzdi.flexicore.file.model.*;
 import com.wizzdi.flexicore.file.request.ZipFileToFileResourceFilter;
@@ -9,7 +9,6 @@ import com.wizzdi.flexicore.security.data.BasicRepository;
 import org.pf4j.Extension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -30,12 +29,12 @@ public class ZipFileToFileResourceRepository implements Plugin {
 	private BasicRepository basicRepository;
 
 
-	public List<ZipFileToFileResource> listAllZipFileToFileResources(ZipFileToFileResourceFilter ZipFileToFileResourceFilter, SecurityContextBase securityContextBase) {
+	public List<ZipFileToFileResource> listAllZipFileToFileResources(ZipFileToFileResourceFilter ZipFileToFileResourceFilter, SecurityContext securityContext) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<ZipFileToFileResource> q = cb.createQuery(ZipFileToFileResource.class);
 		Root<ZipFileToFileResource> r = q.from(ZipFileToFileResource.class);
 		List<Predicate> predicates = new ArrayList<>();
-		addZipFileToFileResourcePredicates(ZipFileToFileResourceFilter, cb, q, r, predicates, securityContextBase);
+		addZipFileToFileResourcePredicates(ZipFileToFileResourceFilter, cb, q, r, predicates, securityContext);
 		q.select(r).where(predicates.toArray(Predicate[]::new));
 		TypedQuery<ZipFileToFileResource> query = em.createQuery(q);
 		BasicRepository.addPagination(ZipFileToFileResourceFilter, query);
@@ -43,7 +42,7 @@ public class ZipFileToFileResourceRepository implements Plugin {
 
 	}
 
-	public <T extends ZipFileToFileResource> void addZipFileToFileResourcePredicates(ZipFileToFileResourceFilter zipFileToFileResourceFilter, CriteriaBuilder cb, CommonAbstractCriteria q, From<?, T> r, List<Predicate> predicates, SecurityContextBase securityContextBase) {
+	public <T extends ZipFileToFileResource> void addZipFileToFileResourcePredicates(ZipFileToFileResourceFilter zipFileToFileResourceFilter, CriteriaBuilder cb, CommonAbstractCriteria q, From<?, T> r, List<Predicate> predicates, SecurityContext securityContext) {
 
 		if(zipFileToFileResourceFilter.getBasicPropertiesFilter()!=null){
 			BasicRepository.addBasicPropertiesFilter(zipFileToFileResourceFilter.getBasicPropertiesFilter(),cb,q,r,predicates);
@@ -62,12 +61,12 @@ public class ZipFileToFileResourceRepository implements Plugin {
 
 	}
 
-	public long countAllZipFileToFileResources(ZipFileToFileResourceFilter ZipFileToFileResourceFilter, SecurityContextBase securityContextBase) {
+	public long countAllZipFileToFileResources(ZipFileToFileResourceFilter ZipFileToFileResourceFilter, SecurityContext securityContext) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Long> q = cb.createQuery(Long.class);
 		Root<ZipFileToFileResource> r = q.from(ZipFileToFileResource.class);
 		List<Predicate> predicates = new ArrayList<>();
-		addZipFileToFileResourcePredicates(ZipFileToFileResourceFilter, cb, q, r, predicates, securityContextBase);
+		addZipFileToFileResourcePredicates(ZipFileToFileResourceFilter, cb, q, r, predicates, securityContext);
 		q.select(cb.count(r)).where(predicates.toArray(Predicate[]::new));
 		TypedQuery<Long> query = em.createQuery(q);
 		return query.getSingleResult();

@@ -3,7 +3,10 @@ package com.wizzdi.flexicore.security.test.rest;
 import com.flexicore.model.Baseclass;
 import com.flexicore.model.PermissionGroup;
 import com.flexicore.model.PermissionGroupToBaseclass;
-import com.flexicore.security.SecurityContextBase;
+import com.wizzdi.flexicore.security.test.app.TestEntity;
+import com.wizzdi.flexicore.security.test.app.TestEntityCreate;
+import com.wizzdi.flexicore.security.test.app.TestEntityService;
+import com.wizzdi.segmantix.model.SecurityContext;
 import com.wizzdi.flexicore.security.request.PermissionGroupToBaseclassFilter;
 import com.wizzdi.flexicore.security.request.PermissionGroupToBaseclassMassCreate;
 import com.wizzdi.flexicore.security.service.PermissionGroupToBaseclassService;
@@ -22,8 +25,10 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = App.class)
@@ -55,28 +60,30 @@ public class MassCreateLinksTest {
     @Autowired
     private PermissionGroup permissionGroup;
     @Autowired
-    private SecurityContextBase adminSecurityContext;
-    private List<Baseclass> baseclasses = new ArrayList<>();
+    private SecurityContext adminSecurityContext;
+    @Autowired
+    private TestEntityService testEntityService;
+    private Set<String> baseclasses = new HashSet<>();
 
     @BeforeAll
     public void createInstances() {
         for (int i = 0; i < 10; i++) {
-            Baseclass baseclass = new Baseclass("as", adminSecurityContext);
+            TestEntity baseclass = testEntityService.createTestEntity(new TestEntityCreate().setName("as"),adminSecurityContext);
             permissionGroupToBaseclassService.merge(baseclass);
-            baseclasses.add(baseclass);
+            baseclasses.add(baseclass.getId());
         }
     }
 
     @Test
     public void testMassCreate() {
-        List<PermissionGroupToBaseclass> permissionGroupToBaseclasses = permissionGroupToBaseclassService.listAllPermissionGroupToBaseclass(new PermissionGroupToBaseclassFilter().setPermissionGroups(Collections.singletonList(permissionGroup)).setBaseclasses(baseclasses), adminSecurityContext);
+        List<PermissionGroupToBaseclass> permissionGroupToBaseclasses = permissionGroupToBaseclassService.listAllPermissionGroupToBaseclass(new PermissionGroupToBaseclassFilter().setPermissionGroups(Collections.singletonList(permissionGroup)).setSecuredIds(baseclasses), adminSecurityContext);
         Assertions.assertTrue(permissionGroupToBaseclasses.isEmpty());
-        Map<String, Map<String, PermissionGroupToBaseclass>> stringMapMap = permissionGroupToBaseclassService.massCreatePermissionLinks(new PermissionGroupToBaseclassMassCreate().setPermissionGroups(Collections.singletonList(permissionGroup)).setBaseclasses(baseclasses), adminSecurityContext);
+        Map<String, Map<String, PermissionGroupToBaseclass>> stringMapMap = permissionGroupToBaseclassService.massCreatePermissionLinks(new PermissionGroupToBaseclassMassCreate().setPermissionGroups(Collections.singletonList(permissionGroup)).setSecuredIds(baseclasses), adminSecurityContext);
         Map<String, PermissionGroupToBaseclass> stringPermissionGroupToBaseclassMap = stringMapMap.get(permissionGroup.getId());
         Assertions.assertNotNull(stringPermissionGroupToBaseclassMap);
         Assertions.assertEquals(baseclasses.size(), stringPermissionGroupToBaseclassMap.size());
-        permissionGroupToBaseclassService.massCreatePermissionLinks(new PermissionGroupToBaseclassMassCreate().setPermissionGroups(Collections.singletonList(permissionGroup)).setBaseclasses(baseclasses), adminSecurityContext);
-        permissionGroupToBaseclasses = permissionGroupToBaseclassService.listAllPermissionGroupToBaseclass(new PermissionGroupToBaseclassFilter().setPermissionGroups(Collections.singletonList(permissionGroup)).setBaseclasses(baseclasses), adminSecurityContext);
+        permissionGroupToBaseclassService.massCreatePermissionLinks(new PermissionGroupToBaseclassMassCreate().setPermissionGroups(Collections.singletonList(permissionGroup)).setSecuredIds(baseclasses), adminSecurityContext);
+        permissionGroupToBaseclasses = permissionGroupToBaseclassService.listAllPermissionGroupToBaseclass(new PermissionGroupToBaseclassFilter().setPermissionGroups(Collections.singletonList(permissionGroup)).setSecuredIds(baseclasses), adminSecurityContext);
         Assertions.assertEquals(baseclasses.size(), permissionGroupToBaseclasses.size());
     }
 

@@ -3,7 +3,7 @@ package com.wizzdi.flexicore.security.rest;
 import com.flexicore.annotations.IOperation;
 import com.flexicore.annotations.OperationsInside;
 import com.flexicore.model.OperationToGroup;
-import com.flexicore.security.SecurityContextBase;
+import com.wizzdi.segmantix.model.SecurityContext;
 import com.wizzdi.flexicore.boot.base.interfaces.Plugin;
 import com.wizzdi.flexicore.security.request.OperationToGroupCreate;
 import com.wizzdi.flexicore.security.request.OperationToGroupFilter;
@@ -29,21 +29,21 @@ public class OperationToGroupController implements Plugin {
 
     @IOperation(Name = "creates security operation group", Description = "creates security operation group")
     @PostMapping("/create")
-    public OperationToGroup create(@RequestBody @Validated(Create.class) OperationToGroupCreate operationToGroupCreate, @RequestAttribute SecurityContextBase securityContext) {
+    public OperationToGroup create(@RequestBody @Validated(Create.class) OperationToGroupCreate operationToGroupCreate, @RequestAttribute SecurityContext securityContext) {
 
         return operationService.createOperationToGroup(operationToGroupCreate, securityContext);
     }
 
     @IOperation(Name = "returns security operation group", Description = "returns security operation group")
     @PostMapping("/getAll")
-    public PaginationResponse<OperationToGroup> getAll(@RequestBody @Valid OperationToGroupFilter operationToGroupFilter, @RequestAttribute SecurityContextBase securityContext) {
+    public PaginationResponse<OperationToGroup> getAll(@RequestBody @Valid OperationToGroupFilter operationToGroupFilter, @RequestAttribute SecurityContext securityContext) {
 
         return operationService.getAllOperationToGroups(operationToGroupFilter, securityContext);
     }
 
     @IOperation(Name = "updates security operation group", Description = "updates security operation group")
     @PutMapping("/update")
-    public OperationToGroup update(@RequestBody @Validated(Update.class) OperationToGroupUpdate operationToGroupUpdate, @RequestAttribute SecurityContextBase securityContext) {
+    public OperationToGroup update(@RequestBody @Validated(Update.class) OperationToGroupUpdate operationToGroupUpdate, @RequestAttribute SecurityContext securityContext) {
 
         return operationService.updateOperationToGroup(operationToGroupUpdate, securityContext);
     }

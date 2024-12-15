@@ -2,9 +2,7 @@ package com.wizzdi.flexicore.security.data;
 
 import com.flexicore.model.Baseclass;
 import com.flexicore.model.Basic;
-import com.flexicore.model.SecuredBasic;
-import com.flexicore.model.SecuredBasic_;
-import com.flexicore.security.SecurityContextBase;
+import com.wizzdi.segmantix.model.SecurityContext;
 import com.wizzdi.flexicore.boot.base.interfaces.Plugin;
 import com.wizzdi.flexicore.security.request.BasicPropertiesFilter;
 import com.wizzdi.flexicore.security.request.SoftDeleteOption;
@@ -13,7 +11,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
 import jakarta.persistence.criteria.*;
 import jakarta.persistence.metamodel.SingularAttribute;
@@ -29,28 +26,28 @@ public class SecuredBasicRepository implements Plugin {
 	private BaseclassRepository baseclassRepository;
 
 
-	public <T extends SecuredBasic> void addSecuredBasicPredicates(BasicPropertiesFilter basicPropertiesFilter, CriteriaBuilder cb, CommonAbstractCriteria q, From<?, T> r, List<Predicate> predicates, SecurityContextBase securityContextBase) {
+
+	public <T extends Baseclass> void addSecuredBasicPredicates(BasicPropertiesFilter basicPropertiesFilter, CriteriaBuilder cb, CommonAbstractCriteria q, From<?, T> r, List<Predicate> predicates, SecurityContext securityContext) {
 		if(basicPropertiesFilter!=null){
 			BasicRepository.addBasicPropertiesFilter(basicPropertiesFilter,cb,q,r,predicates);
 		}
 		else{
 			BasicRepository.addBasicPropertiesFilter(new BasicPropertiesFilter().setSoftDelete(SoftDeleteOption.DEFAULT),cb,q,r,predicates);
 		}
-		if(baseclassRepository.requiresSecurityPredicates(securityContextBase)){
-			Join<T, Baseclass> join= r.join(SecuredBasic_.security);
-			baseclassRepository.addBaseclassPredicates(cb,q,join,predicates,securityContextBase);
+		if(baseclassRepository.requiresSecurityPredicates(securityContext)){
+			baseclassRepository.addBaseclassPredicates(cb,q,r,predicates, securityContext);
 		}
 	}
 
-	public <T extends Baseclass> void addBaseclassPredicates(BasicPropertiesFilter basicPropertiesFilter, CriteriaBuilder cb, CommonAbstractCriteria q, From<?, T> r, List<Predicate> predicates, SecurityContextBase securityContextBase) {
+	public <T extends Baseclass> void addBaseclassPredicates(BasicPropertiesFilter basicPropertiesFilter, CriteriaBuilder cb, CommonAbstractCriteria q, From<?, T> r, List<Predicate> predicates, SecurityContext securityContext) {
 		if(basicPropertiesFilter!=null){
 			BasicRepository.addBasicPropertiesFilter(basicPropertiesFilter,cb,q,r,predicates);
 		}
 		else{
 			BasicRepository.addBasicPropertiesFilter(new BasicPropertiesFilter().setSoftDelete(SoftDeleteOption.DEFAULT),cb,q,r,predicates);
 		}
-		if(securityContextBase!=null){
-			baseclassRepository.addBaseclassPredicates(cb,q,r,predicates,securityContextBase);
+		if(securityContext !=null){
+			baseclassRepository.addBaseclassPredicates(cb,q,r,predicates, securityContext);
 		}
 	}
 
@@ -64,19 +61,19 @@ public class SecuredBasicRepository implements Plugin {
 		baseclassRepository.massMerge(toMerge, updatedate, propagateEvents);
 	}
 
-	public <T extends Baseclass> List<T> listByIds(Class<T> c, Set<String> ids, SecurityContextBase securityContext) {
+	public <T extends Baseclass> List<T> listByIds(Class<T> c, Set<String> ids, SecurityContext securityContext) {
 		return baseclassRepository.listByIds(c, ids, securityContext);
 	}
 
-	public <T extends Baseclass> T getByIdOrNull(String id, Class<T> c, SecurityContextBase securityContext) {
+	public <T extends Baseclass> T getByIdOrNull(String id, Class<T> c, SecurityContext securityContext) {
 		return baseclassRepository.getByIdOrNull(id, c, securityContext);
 	}
 
-	public <D extends Basic, E extends Baseclass, T extends D> T getByIdOrNull(String id, Class<T> c, SingularAttribute<D, E> baseclassAttribute, SecurityContextBase securityContext) {
+	public <D extends Basic, E extends Baseclass, T extends D> T getByIdOrNull(String id, Class<T> c, SingularAttribute<D, E> baseclassAttribute, SecurityContext securityContext) {
 		return baseclassRepository.getByIdOrNull(id, c, baseclassAttribute, securityContext);
 	}
 
-	public <D extends Basic, E extends Baseclass, T extends D> List<T> listByIds(Class<T> c, Set<String> ids, SingularAttribute<D, E> baseclassAttribute, SecurityContextBase securityContext) {
+	public <D extends Basic, E extends Baseclass, T extends D> List<T> listByIds(Class<T> c, Set<String> ids, SingularAttribute<D, E> baseclassAttribute, SecurityContext securityContext) {
 		return baseclassRepository.listByIds(c, ids, baseclassAttribute, securityContext);
 	}
 

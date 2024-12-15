@@ -3,7 +3,7 @@ package com.wizzdi.flexicore.security.rest;
 import com.flexicore.annotations.IOperation;
 import com.flexicore.annotations.OperationsInside;
 import com.flexicore.model.TenantToBaseclass;
-import com.flexicore.security.SecurityContextBase;
+import com.wizzdi.segmantix.model.SecurityContext;
 import com.wizzdi.flexicore.boot.base.interfaces.Plugin;
 import com.wizzdi.flexicore.security.request.TenantToBaseclassCreate;
 import com.wizzdi.flexicore.security.request.TenantToBaseclassFilter;
@@ -30,21 +30,21 @@ public class TenantToBaseclassController implements Plugin {
 
     @IOperation(Name = "creates tenant to baseclass", Description = "creates tenant to baseclass")
     @PostMapping("/create")
-    public TenantToBaseclass create(@RequestBody @Validated(Create.class) TenantToBaseclassCreate tenantToBaseclassCreate, @RequestAttribute SecurityContextBase securityContext) {
+    public TenantToBaseclass create(@RequestBody @Validated(Create.class) TenantToBaseclassCreate tenantToBaseclassCreate, @RequestAttribute SecurityContext securityContext) {
 
         return tenantToBaseclassService.createTenantToBaseclass(tenantToBaseclassCreate, securityContext);
     }
 
     @IOperation(Name = "returns tenant to baseclass", Description = "returns tenant to baseclass")
     @PostMapping("/getAll")
-    public PaginationResponse<TenantToBaseclass> getAll(@RequestBody @Valid TenantToBaseclassFilter tenantToBaseclassFilter, @RequestAttribute SecurityContextBase securityContext) {
+    public PaginationResponse<TenantToBaseclass> getAll(@RequestBody @Valid TenantToBaseclassFilter tenantToBaseclassFilter, @RequestAttribute SecurityContext securityContext) {
 
         return tenantToBaseclassService.getAllTenantToBaseclasss(tenantToBaseclassFilter, securityContext);
     }
 
     @IOperation(Name = "update tenant to baseclass", Description = "update tenant to baseclass")
     @PutMapping("/update")
-    public TenantToBaseclass update(@RequestBody @Validated(Update.class) TenantToBaseclassUpdate tenantToBaseclassUpdate, @RequestAttribute SecurityContextBase securityContext) {
+    public TenantToBaseclass update(@RequestBody @Validated(Update.class) TenantToBaseclassUpdate tenantToBaseclassUpdate, @RequestAttribute SecurityContext securityContext) {
 
         return tenantToBaseclassService.updateTenantToBaseclass(tenantToBaseclassUpdate, securityContext);
     }

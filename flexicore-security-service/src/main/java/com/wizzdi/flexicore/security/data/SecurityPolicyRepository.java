@@ -3,13 +3,12 @@ package com.wizzdi.flexicore.security.data;
 import com.flexicore.model.*;
 import com.flexicore.model.security.SecurityPolicy;
 import com.flexicore.model.security.SecurityPolicy_;
-import com.flexicore.security.SecurityContextBase;
+import com.wizzdi.segmantix.model.SecurityContext;
 import com.wizzdi.flexicore.boot.base.interfaces.Plugin;
 import com.wizzdi.flexicore.security.request.SecurityPolicyFilter;
 import org.pf4j.Extension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -30,7 +29,7 @@ public class SecurityPolicyRepository implements Plugin {
 	private SecuredBasicRepository securedBasicRepository;
 
 
-	public List<SecurityPolicy> listAllSecurityPolicies(SecurityPolicyFilter SecurityPolicyFilter, SecurityContextBase securityContext) {
+	public List<SecurityPolicy> listAllSecurityPolicies(SecurityPolicyFilter SecurityPolicyFilter, SecurityContext securityContext) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<SecurityPolicy> q = cb.createQuery(SecurityPolicy.class);
 		Root<SecurityPolicy> r = q.from(SecurityPolicy.class);
@@ -43,7 +42,7 @@ public class SecurityPolicyRepository implements Plugin {
 
 	}
 
-	public <T extends SecurityPolicy> void addSecurityPolicyPredicates(SecurityPolicyFilter securityPolicyFilter, CriteriaBuilder cb, CommonAbstractCriteria q, From<?, T> r, List<Predicate> predicates, SecurityContextBase securityContext) {
+	public <T extends SecurityPolicy> void addSecurityPolicyPredicates(SecurityPolicyFilter securityPolicyFilter, CriteriaBuilder cb, CommonAbstractCriteria q, From<?, T> r, List<Predicate> predicates, SecurityContext securityContext) {
 		securedBasicRepository.addSecuredBasicPredicates(securityPolicyFilter.getBasicPropertiesFilter(), cb, q, r, predicates, securityContext);
 		if (securityPolicyFilter.getEnabled() != null) {
 			predicates.add(cb.equal(r.get(SecurityPolicy_.enabled), securityPolicyFilter.getEnabled()));
@@ -72,7 +71,7 @@ public class SecurityPolicyRepository implements Plugin {
 
 	}
 
-	public long countAllSecurityPolicies(SecurityPolicyFilter SecurityPolicyFilter, SecurityContextBase securityContext) {
+	public long countAllSecurityPolicies(SecurityPolicyFilter SecurityPolicyFilter, SecurityContext securityContext) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Long> q = cb.createQuery(Long.class);
 		Root<SecurityPolicy> r = q.from(SecurityPolicy.class);
@@ -94,11 +93,11 @@ public class SecurityPolicyRepository implements Plugin {
 		securedBasicRepository.massMerge(list);
 	}
 
-	public <T extends Baseclass> List<T> listByIds(Class<T> c, Set<String> ids, SecurityContextBase securityContext) {
+	public <T extends Baseclass> List<T> listByIds(Class<T> c, Set<String> ids, SecurityContext securityContext) {
 		return securedBasicRepository.listByIds(c, ids, securityContext);
 	}
 
-	public <T extends Baseclass> T getByIdOrNull(String id, Class<T> c, SecurityContextBase securityContext) {
+	public <T extends Baseclass> T getByIdOrNull(String id, Class<T> c, SecurityContext securityContext) {
 		return securedBasicRepository.getByIdOrNull(id, c, securityContext);
 	}
 
@@ -106,13 +105,13 @@ public class SecurityPolicyRepository implements Plugin {
 		return securedBasicRepository.findByIds(c, requested);
 	}
 
-	public <T extends SecurityPolicy> T getSecurityPolicyByIdOrNull(String id, Class<T> c, SecurityContextBase securityContext) {
+	public <T extends SecurityPolicy> T getSecurityPolicyByIdOrNull(String id, Class<T> c, SecurityContext securityContext) {
 
-		return securedBasicRepository.getByIdOrNull(id,c,SecurityPolicy_.security,securityContext);
+		return securedBasicRepository.getByIdOrNull(id,c,securityContext);
 	}
 
-	public <T extends SecurityPolicy> List<T> listSecurityPolicyByIds( Class<T> c,Set<String> ids, SecurityContextBase securityContext) {
+	public <T extends SecurityPolicy> List<T> listSecurityPolicyByIds( Class<T> c,Set<String> ids, SecurityContext securityContext) {
 
-		return securedBasicRepository.listByIds(c,ids,SecurityPolicy_.security,securityContext);
+		return securedBasicRepository.listByIds(c,ids,securityContext);
 	}
 }

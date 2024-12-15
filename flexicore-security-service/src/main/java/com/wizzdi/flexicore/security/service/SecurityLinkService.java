@@ -2,7 +2,7 @@ package com.wizzdi.flexicore.security.service;
 
 import com.flexicore.model.Baseclass;
 import com.flexicore.model.SecurityLink;
-import com.flexicore.security.SecurityContextBase;
+import com.wizzdi.segmantix.model.SecurityContext;
 import com.wizzdi.flexicore.boot.base.interfaces.Plugin;
 import com.wizzdi.flexicore.security.data.SecurityLinkRepository;
 import com.wizzdi.flexicore.security.request.*;
@@ -36,7 +36,7 @@ public class SecurityLinkService implements Plugin {
 		securityLinkRepository.massMerge(list);
 	}
 
-	public <T extends Baseclass> List<T> listByIds(Class<T> c,Set<String> ids,  SecurityContextBase securityContext) {
+	public <T extends Baseclass> List<T> listByIds(Class<T> c, Set<String> ids, SecurityContext securityContext) {
 		return securityLinkRepository.listByIds(c, ids, securityContext);
 	}
 
@@ -56,11 +56,10 @@ public class SecurityLinkService implements Plugin {
 			securityLink.setOperationGroup(securityLinkCreate.getOperationGroup());
 			updated=true;
 		}
-		if(securityLinkCreate.getBaseclass()!=null&&(securityLink.getBaseclass()==null || !securityLinkCreate.getBaseclass().getId().equals(securityLink.getBaseclass().getId()))){
-			securityLink.setBaseclass(securityLinkCreate.getBaseclass());
-			updated=true;
+		if (securityLinkCreate.getSecuredId() != null && !securityLinkCreate.getSecuredId().equals(securityLink.getSecuredId())) {
+			securityLink.setSecuredId(securityLinkCreate.getSecuredId());
+			updated = true;
 		}
-
 		if(securityLinkCreate.getPermissionGroup()!=null&&(securityLink.getPermissionGroup()==null || !securityLinkCreate.getPermissionGroup().getId().equals(securityLink.getPermissionGroup().getId()))){
 			securityLink.setPermissionGroup(securityLinkCreate.getPermissionGroup());
 			updated=true;
@@ -77,7 +76,7 @@ public class SecurityLinkService implements Plugin {
 		return updated;
 	}
 
-	public SecurityLink updateSecurityLink(SecurityLinkUpdate securityLinkUpdate, SecurityContextBase securityContext){
+	public SecurityLink updateSecurityLink(SecurityLinkUpdate securityLinkUpdate, SecurityContext securityContext) {
 		SecurityLink securityLink=securityLinkUpdate.getSecurityLink();
 		if(updateSecurityLinkNoMerge(securityLinkUpdate,securityLink)){
 			securityLinkRepository.merge(securityLink);
@@ -86,21 +85,21 @@ public class SecurityLinkService implements Plugin {
 	}
 
 
-	public <T extends Baseclass> T getByIdOrNull(String id,Class<T> c, SecurityContextBase securityContext) {
+	public <T extends Baseclass> T getByIdOrNull(String id, Class<T> c, SecurityContext securityContext) {
 		return securityLinkRepository.getByIdOrNull(id,c,securityContext);
 	}
 
-	public PaginationResponse<SecurityLink> getAllSecurityLinks(SecurityLinkFilter securityLinkFilter, SecurityContextBase securityContext) {
+	public PaginationResponse<SecurityLink> getAllSecurityLinks(SecurityLinkFilter securityLinkFilter, SecurityContext securityContext) {
 		List<SecurityLink> list= listAllSecurityLinks(securityLinkFilter, securityContext);
 		long count=securityLinkRepository.countAllSecurityLinks(securityLinkFilter,securityContext);
 		return new PaginationResponse<>(list,securityLinkFilter,count);
 	}
 
-	public List<SecurityLink> listAllSecurityLinks(SecurityLinkFilter securityLinkFilter, SecurityContextBase securityContext) {
+	public List<SecurityLink> listAllSecurityLinks(SecurityLinkFilter securityLinkFilter, SecurityContext securityContext) {
 		return securityLinkRepository.listAllSecurityLinks(securityLinkFilter, securityContext);
 	}
 
-	public void setRelevant(SecurityLinkFilter securityLinkFilter, SecurityContextBase securityContext) {
+	public void setRelevant(SecurityLinkFilter securityLinkFilter, SecurityContext securityContext) {
 		if(securityLinkFilter.getRelevantUsers()!=null&&!securityLinkFilter.getRelevantUsers().isEmpty()){
 			securityLinkFilter.setRelevantRoles(roleService.listAllRoles(new RoleFilter().setUsers(securityLinkFilter.getRelevantUsers()),securityContext));
 			securityLinkFilter.setRelevantTenants(securityTenantService.listAllTenants(new SecurityTenantFilter().setUsers(securityLinkFilter.getRelevantUsers()),securityContext));

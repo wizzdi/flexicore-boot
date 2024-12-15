@@ -7,9 +7,9 @@
 package com.wizzdi.flexicore.file.controllers;
 
 import com.flexicore.annotations.IOperation;
-import com.flexicore.annotations.IOperation.Access;
+import com.wizzdi.segmantix.model.Access;
 import com.flexicore.annotations.OperationsInside;
-import com.flexicore.security.SecurityContextBase;
+import com.wizzdi.segmantix.model.SecurityContext;
 import com.wizzdi.flexicore.boot.base.interfaces.Plugin;
 import com.wizzdi.flexicore.file.service.FileResourceService;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -54,7 +54,7 @@ public class DownloadController implements Plugin {
                                              @Parameter(description = "id of the FileResource Object to Download")
                                              @RequestHeader(value = "offset", defaultValue = "0", required = false) long offset,
                                              @RequestHeader(value = "size", defaultValue = "0", required = false) long size,
-                                             @PathVariable("id") String id, HttpServletRequest req, @RequestAttribute SecurityContextBase securityContext) {
+                                             @PathVariable("id") String id, HttpServletRequest req, @RequestAttribute SecurityContext securityContext) {
         return fileResourceService.download(offset, size, id, req.getRemoteAddr(), securityContext);
 
     }

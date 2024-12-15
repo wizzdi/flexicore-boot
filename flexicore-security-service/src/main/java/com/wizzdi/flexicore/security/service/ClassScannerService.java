@@ -1,11 +1,12 @@
 package com.wizzdi.flexicore.security.service;
 
+import com.wizzdi.segmantix.model.SecurityContext;
+import com.wizzdi.segmantix.model.Access;
 import com.flexicore.annotations.AnnotatedClazz;
 import com.flexicore.annotations.IOperation;
 import com.flexicore.annotations.OperationsInside;
 import com.flexicore.annotations.rest.*;
 import com.flexicore.model.*;
-import com.flexicore.security.SecurityContextBase;
 import com.wizzdi.flexicore.boot.base.init.FlexiCorePluginManager;
 import com.wizzdi.flexicore.boot.base.init.PluginInit;
 import com.wizzdi.flexicore.boot.base.interfaces.Plugin;
@@ -92,11 +93,11 @@ public class ClassScannerService implements Plugin {
         return (securityOperationCreate, existing, relatedClazzes, toMerge, clazzes, securityContextBase) -> createOperationNoMerge(securityOperationCreate, existing, relatedClazzes, toMerge, clazzes, securityContextBase);
     }
 
-    private SecurityOperation createOperationNoMerge(OperationScanContext operationScanContext, Map<String, SecurityOperation> existing, Map<String, Map<String, OperationToClazz>> relatedClazzes, List<Object> toMerge, Map<String, Clazz> clazzes, SecurityContextBase securityContextBase) {
+    private SecurityOperation createOperationNoMerge(OperationScanContext operationScanContext, Map<String, SecurityOperation> existing, Map<String, Map<String, OperationToClazz>> relatedClazzes, List<Object> toMerge, Map<String, Clazz> clazzes, SecurityContext securityContext) {
         SecurityOperationCreate securityOperationCreate = operationScanContext.getSecurityOperationCreate();
         SecurityOperation securityOperation = existing.get(securityOperationCreate.getIdForCreate());
         if (securityOperation == null) {
-            securityOperation = operationService.createOperationNoMerge(securityOperationCreate, securityContextBase);
+            securityOperation = operationService.createOperationNoMerge(securityOperationCreate, securityContext);
             securityOperation.setId(securityOperationCreate.getIdForCreate());
             existing.put(securityOperation.getId(), securityOperation);
             toMerge.add(securityOperation);
@@ -109,7 +110,7 @@ public class ClassScannerService implements Plugin {
         Class<?>[] relatedClasses = operationScanContext.getRelatedClasses();
         if (relatedClasses != null) {
             for (Class<?> relatedClass : relatedClasses) {
-                String clazzId = Baseclass.generateUUIDFromStringCompt(relatedClass.getCanonicalName());
+                String clazzId = ClazzService.getClazzId(relatedClass);
                 Clazz clazz = clazzes.get(clazzId);
                 if(clazz== null){
                     logger.warn("could not find clazz for class: {} required for operation {}({})", relatedClass.getCanonicalName(),operationScanContext.getSecurityOperationCreate().getName(),operationScanContext.getSecurityOperationCreate().getIdForCreate());
@@ -121,7 +122,7 @@ public class ClassScannerService implements Plugin {
                     OperationToClazzCreate operationToClazzCreate = new OperationToClazzCreate()
                             .setClazz(clazz)
                             .setSecurityOperation(securityOperation);
-                    existingOperationToClazz = operationToClazzService.createOperationToClazzNoMerge(operationToClazzCreate, securityContextBase);
+                    existingOperationToClazz = operationToClazzService.createOperationToClazzNoMerge(operationToClazzCreate, securityContext);
                     toMerge.add(existingOperationToClazz);
                     operationClazzes.put(clazzId, existingOperationToClazz);
                 }
@@ -134,7 +135,7 @@ public class ClassScannerService implements Plugin {
     @Qualifier("adminSecurityContext")
     @Scope(value = ConfigurableBeanFactory.SCOPE_SINGLETON)
     @ConditionalOnMissingBean
-    public SecurityContextBase adminSecurityContext(DefaultSecurityEntities defaultSecurityEntities, SecurityContextProvider securityContextProvider) {
+    public SecurityContext adminSecurityContext(DefaultSecurityEntities defaultSecurityEntities, SecurityContextProvider securityContextProvider) {
         return securityContextProvider.getSecurityContext(defaultSecurityEntities.getSecurityUser());
 
     }
@@ -143,18 +144,18 @@ public class ClassScannerService implements Plugin {
     @Qualifier("allOps")
     @ConditionalOnMissingBean
     public SecurityOperation allOps(Operations operations){
-        return operations.getOperations().stream().filter(f->f.getId().equals(Baseclass.generateUUIDFromStringCompt(All.class.getCanonicalName()))).findFirst().orElseThrow(()->new RuntimeException("could not find all operation"));
+        return operations.getOperations().stream().filter(f->f.getId().equals(ClazzService.getClazzId(All.class))).findFirst().orElseThrow(()->new RuntimeException("could not find all operation"));
     }
 
     @Bean
     @Qualifier("securityWildcard")
     @ConditionalOnMissingBean
     public Clazz securityWildcard(Clazzes clazzes){
-        return clazzes.getClazzes().stream().filter(f->f.getId().equals(Baseclass.generateUUIDFromStringCompt(SecurityWildcard.class.getCanonicalName()))).findFirst().orElseThrow(()->new RuntimeException("could not find SecurityWildcard"));
+        return clazzes.getClazzes().stream().filter(f->f.getId().equals(ClazzService.getClazzId(SecurityWildcard.class))).findFirst().orElseThrow(()->new RuntimeException("could not find SecurityWildcard"));
     }
 
     @Bean
-    public OperationGroups operationGroups(Operations operations, ObjectProvider<OperationGroupProvider> operationGroupProviders, OperationGroupService operationGroupService, OperationToGroupService operationToGroupService, @Qualifier("adminSecurityContext") SecurityContextBase adminSecurityContext) {
+    public OperationGroups operationGroups(Operations operations, ObjectProvider<OperationGroupProvider> operationGroupProviders, OperationGroupService operationGroupService, OperationToGroupService operationToGroupService, @Qualifier("adminSecurityContext") SecurityContext adminSecurityContext) {
         Map<String, OperationGroupContext> contexts = operationGroupProviders.stream().map(f -> f.getOperationGroupContext(operations)).filter(f -> f.operationGroupCreate().getExternalId() != null).collect(Collectors.toMap(f -> f.operationGroupCreate().getExternalId(), f -> f, (a, b) -> a));
         Map<String, OperationGroup> existing = contexts.isEmpty() ? new HashMap<>() : operationGroupService.listAllOperationGroups(new OperationGroupFilter().setExternalIds(contexts.keySet()), null).stream().collect(Collectors.toMap(f -> f.getExternalId(), f -> f, (a, b) -> a));
         List<OperationGroup> existingList = new ArrayList<>(existing.values());
@@ -218,7 +219,7 @@ public class ClassScannerService implements Plugin {
     @Bean
     @Scope(value = ConfigurableBeanFactory.SCOPE_SINGLETON)
     @ConditionalOnMissingBean
-    public Operations initializeOperations(@Qualifier("adminSecurityContext") SecurityContextBase securityContextBase, Clazzes clazzes, OperationsClassScanner operationsClassScanner, OperationBuilder operationBuilder, StandardOperationScanner standardOperationScanner) {
+    public Operations initializeOperations(@Qualifier("adminSecurityContext") SecurityContext securityContext, Clazzes clazzes, OperationsClassScanner operationsClassScanner, OperationBuilder operationBuilder, StandardOperationScanner standardOperationScanner) {
 
         Map<String, Clazz> clazzMap = clazzes.getClazzes().stream().collect(Collectors.toMap(f -> f.getId(), f -> f));
 
@@ -242,7 +243,7 @@ public class ClassScannerService implements Plugin {
         List<Object> toMerge = new ArrayList<>();
 
         for (OperationScanContext securityOperationCreate : operationCreateMap.values()) {
-            SecurityOperation securityOperation = operationBuilder.upsertOperationNoMerge(securityOperationCreate, existing, relatedClazzes, toMerge, clazzMap, securityContextBase);
+            SecurityOperation securityOperation = operationBuilder.upsertOperationNoMerge(securityOperationCreate, existing, relatedClazzes, toMerge, clazzMap, securityContext);
         }
 
         operationService.massMerge(toMerge);
@@ -264,7 +265,7 @@ public class ClassScannerService implements Plugin {
                 .setDefaultAccess(ioperation.access())
                 .setDescription(ioperation.Description())
                 .setName(ioperation.Name())
-                .setIdForCreate(Baseclass.generateUUIDFromStringCompt(standardAccess.getCanonicalName()))
+                .setIdForCreate(ClazzService.getClazzId(standardAccess))
                 , null);
     }
 
@@ -316,7 +317,7 @@ public class ClassScannerService implements Plugin {
             if (relatedClasses.length == 0 && method.getReturnType() != null && Basic.class.isAssignableFrom(method.getReturnType())) {
                 relatedClasses =new Class<?>[]{method.getReturnType()};
             }
-            String id = Baseclass.generateUUIDFromStringCompt(method.toString());
+            String id = ClazzService.getIdFromString(method.toString());
             return new OperationScanContext(new SecurityOperationCreate()
                     .setCategory(ioperation.Category().isEmpty() ? detectCategory(ioperation) : ioperation.Category())
                     .setDefaultAccess(ioperation.access())
@@ -368,14 +369,14 @@ public class ClassScannerService implements Plugin {
     }
 
 
-    private SecurityOperation addOperation(IOperation ioperation, String id, List<Object> toMerge, Map<String, SecurityOperation> existing, SecurityContextBase securityContextBase) {
+    private SecurityOperation addOperation(IOperation ioperation, String id, List<Object> toMerge, Map<String, SecurityOperation> existing, SecurityContext securityContext) {
         SecurityOperation operation = existing.get(id);
         if (operation == null) {
             SecurityOperationCreate createOperationRequest = new SecurityOperationCreate()
                     .setDefaultAccess(ioperation.access())
                     .setDescription(ioperation.Description())
                     .setName(ioperation.Name());
-            operation = operationService.createOperationNoMerge(createOperationRequest, securityContextBase);
+            operation = operationService.createOperationNoMerge(createOperationRequest, securityContext);
             operation.setId(id);
             operation = operationService.merge(operation);
 
@@ -391,9 +392,9 @@ public class ClassScannerService implements Plugin {
     private void handleOperationRelatedClasses(SecurityOperation operation, Class<? extends Baseclass>[] related, List<Object> toMerge, Map<String, OperationToClazz> existing) {
 
         for (Class<? extends Baseclass> relatedClazz : related) {
-            String linkId = Baseclass.generateUUIDFromStringCompt(operation.getId() + relatedClazz.getCanonicalName());
+            String linkId = ClazzService.getIdFromString(operation.getId() + relatedClazz.getCanonicalName());
             OperationToClazz operationToClazz = existing.get(linkId);
-            Clazz clazz = Baseclass.getClazzByName(relatedClazz.getCanonicalName());
+            Clazz clazz = clazzService.findByIdOrNull(Clazz.class, ClazzService.getClazzId(relatedClazz));
 
             OperationToClazzCreate operationToClazzCreate=new OperationToClazzCreate()
                     .setClazz(clazz)
@@ -428,8 +429,8 @@ public class ClassScannerService implements Plugin {
         Set<Class<?>> entities = entityManager.getMetamodel().getEntities().stream().map(f -> f.getJavaType()).collect(Collectors.toSet());
         logger.debug("detected classes:  " + entities.parallelStream().map(e -> e.getCanonicalName()).collect(Collectors.joining(System.lineSeparator())));
 
-        Set<String> ids = entities.parallelStream().map(f -> Baseclass.generateUUIDFromStringCompt(f.getCanonicalName())).collect(Collectors.toSet());
-        ids.add(Baseclass.generateUUIDFromStringCompt(Clazz.class.getCanonicalName()));
+        Set<String> ids = entities.parallelStream().map(f -> ClazzService.getClazzId(f)).collect(Collectors.toSet());
+        ids.add(ClazzService.getClazzId(Clazz.class));
         Map<String, Clazz> existing = new HashMap<>();
         for (List<String> part : partition(new ArrayList<>(ids), 50)) {
             if (!part.isEmpty()) {
@@ -466,7 +467,7 @@ public class ClassScannerService implements Plugin {
             if (annotatedclazz == null) {
                 annotatedclazz = generateAnnotatedClazz(claz);
             }
-            String id = Baseclass.generateUUIDFromStringCompt(classname);
+            String id = ClazzService.getIdFromString(classname);
 
 
             Clazz clazz = existing.get(id);
@@ -484,7 +485,6 @@ public class ClassScannerService implements Plugin {
                 logger.debug("Clazz already exists: {}({})",classname,id);
 
             }
-            Baseclass.addClazz(clazz);
 
         } catch (Exception e) {
             logger.error("failed registering clazz", e);

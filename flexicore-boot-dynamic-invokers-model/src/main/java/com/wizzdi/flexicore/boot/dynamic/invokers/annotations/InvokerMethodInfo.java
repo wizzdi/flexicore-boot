@@ -1,5 +1,6 @@
 package com.wizzdi.flexicore.boot.dynamic.invokers.annotations;
 
+import com.wizzdi.segmantix.model.Access;
 import com.flexicore.annotations.IOperation;
 import org.springframework.core.annotation.AliasFor;
 
@@ -19,7 +20,7 @@ public @interface InvokerMethodInfo {
     String[] categories() default {};
     String[] relatedMethodNames() default {};
     @AliasFor(annotation = IOperation.class,attribute = "access")
-    IOperation.Access access() default IOperation.Access.allow;
+    Access access() default Access.allow;
     @AliasFor(annotation = IOperation.class,attribute = "relatedClazzes")
     Class<?>[] relatedClasses() default {};
 

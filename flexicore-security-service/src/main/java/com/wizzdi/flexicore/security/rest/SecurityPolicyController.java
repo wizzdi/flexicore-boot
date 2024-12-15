@@ -3,7 +3,7 @@ package com.wizzdi.flexicore.security.rest;
 import com.flexicore.annotations.IOperation;
 import com.flexicore.annotations.OperationsInside;
 import com.flexicore.model.security.SecurityPolicy;
-import com.flexicore.security.SecurityContextBase;
+import com.wizzdi.segmantix.model.SecurityContext;
 import com.wizzdi.flexicore.boot.base.interfaces.Plugin;
 import com.wizzdi.flexicore.security.request.SecurityPolicyCreate;
 import com.wizzdi.flexicore.security.request.SecurityPolicyFilter;
@@ -30,21 +30,21 @@ public class SecurityPolicyController implements Plugin {
 
     @IOperation(Name = "creates security policy", Description = "creates security policy")
     @PostMapping("/create")
-    public SecurityPolicy create(@RequestBody @Validated(Create.class) SecurityPolicyCreate securityPolicyCreate, @RequestAttribute SecurityContextBase securityContext) {
+    public SecurityPolicy create(@RequestBody @Validated(Create.class) SecurityPolicyCreate securityPolicyCreate, @RequestAttribute SecurityContext securityContext) {
 
         return securityPolicyService.createSecurityPolicy(securityPolicyCreate, securityContext);
     }
 
     @IOperation(Name = "returns security policy", Description = "returns security policy")
     @PostMapping("/getAll")
-    public PaginationResponse<SecurityPolicy> getAll(@RequestBody @Valid SecurityPolicyFilter securityPolicyFilter, @RequestAttribute SecurityContextBase securityContext) {
+    public PaginationResponse<SecurityPolicy> getAll(@RequestBody @Valid SecurityPolicyFilter securityPolicyFilter, @RequestAttribute SecurityContext securityContext) {
 
         return securityPolicyService.getAllSecurityPolicies(securityPolicyFilter, securityContext);
     }
 
     @IOperation(Name = "updates security policy", Description = "updates security policy")
     @PutMapping("/update")
-    public SecurityPolicy update(@RequestBody @Validated(Update.class) SecurityPolicyUpdate securityPolicyUpdate, @RequestAttribute SecurityContextBase securityContext) {
+    public SecurityPolicy update(@RequestBody @Validated(Update.class) SecurityPolicyUpdate securityPolicyUpdate, @RequestAttribute SecurityContext securityContext) {
 
         return securityPolicyService.updateSecurityPolicy(securityPolicyUpdate, securityContext);
     }

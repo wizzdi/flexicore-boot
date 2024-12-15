@@ -3,7 +3,7 @@ package com.wizzdi.flexicore.security.rest;
 import com.flexicore.annotations.IOperation;
 import com.flexicore.annotations.OperationsInside;
 import com.flexicore.model.SecurityLink;
-import com.flexicore.security.SecurityContextBase;
+import com.wizzdi.segmantix.model.SecurityContext;
 import com.wizzdi.flexicore.boot.base.interfaces.Plugin;
 import com.wizzdi.flexicore.security.request.SecurityLinkFilter;
 import com.wizzdi.flexicore.security.request.SecurityLinkUpdate;
@@ -29,14 +29,14 @@ public class SecurityLinkController implements Plugin {
 
     @IOperation(Name = "returns SecurityLink", Description = "returns SecurityLink")
     @PostMapping("/getAll")
-    public PaginationResponse<SecurityLink> getAll(@RequestBody @Valid SecurityLinkFilter securityLinkFilter, @RequestAttribute SecurityContextBase securityContext) {
+    public PaginationResponse<SecurityLink> getAll(@RequestBody @Valid SecurityLinkFilter securityLinkFilter, @RequestAttribute SecurityContext securityContext) {
         securityLinkService.setRelevant(securityLinkFilter,securityContext);
         return securityLinkService.getAllSecurityLinks(securityLinkFilter, securityContext);
     }
 
     @IOperation(Name = "updates SecurityLink", Description = "updates SecurityLink")
     @PutMapping("/update")
-    public SecurityLink update(@RequestBody @Validated(Update.class) SecurityLinkUpdate securityLinkUpdate, @RequestAttribute SecurityContextBase securityContext) {
+    public SecurityLink update(@RequestBody @Validated(Update.class) SecurityLinkUpdate securityLinkUpdate, @RequestAttribute SecurityContext securityContext) {
 
         return securityLinkService.updateSecurityLink(securityLinkUpdate, securityContext);
     }

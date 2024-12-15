@@ -17,6 +17,10 @@
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.wizzdi</groupId>
+            <artifactId>segmantix-core</artifactId>
+        </dependency>
 
         <dependency>
             <groupId>commons-codec</groupId>

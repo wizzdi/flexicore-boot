@@ -3,7 +3,7 @@ package com.wizzdi.flexicore.security.rest;
 import com.flexicore.annotations.IOperation;
 import com.flexicore.annotations.OperationsInside;
 import com.flexicore.model.PermissionGroupToBaseclass;
-import com.flexicore.security.SecurityContextBase;
+import com.wizzdi.segmantix.model.SecurityContext;
 import com.wizzdi.flexicore.boot.base.interfaces.Plugin;
 import com.wizzdi.flexicore.security.request.PermissionGroupToBaseclassCreate;
 import com.wizzdi.flexicore.security.request.PermissionGroupToBaseclassFilter;
@@ -30,21 +30,21 @@ public class PermissionGroupToBaseclassController implements Plugin {
 
     @IOperation(Name = "creates PermissionGroupToBaseclass", Description = "creates PermissionGroupToBaseclass")
     @PostMapping("/create")
-    public PermissionGroupToBaseclass create(@RequestBody @Validated(Create.class) PermissionGroupToBaseclassCreate permissionGroupToBaseclassCreate, @RequestAttribute SecurityContextBase securityContext) {
+    public PermissionGroupToBaseclass create(@RequestBody @Validated(Create.class) PermissionGroupToBaseclassCreate permissionGroupToBaseclassCreate, @RequestAttribute SecurityContext securityContext) {
 
         return permissionGroupToBaseclassService.createPermissionGroupToBaseclass(permissionGroupToBaseclassCreate, securityContext);
     }
 
     @IOperation(Name = "returns PermissionGroupToBaseclass", Description = "returns PermissionGroupToBaseclass")
     @PostMapping("/getAll")
-    public PaginationResponse<PermissionGroupToBaseclass> getAll(@RequestBody @Valid PermissionGroupToBaseclassFilter permissionGroupToBaseclassFilter, @RequestAttribute SecurityContextBase securityContext) {
+    public PaginationResponse<PermissionGroupToBaseclass> getAll(@RequestBody @Valid PermissionGroupToBaseclassFilter permissionGroupToBaseclassFilter, @RequestAttribute SecurityContext securityContext) {
 
         return permissionGroupToBaseclassService.getAllPermissionGroupToBaseclass(permissionGroupToBaseclassFilter, securityContext);
     }
 
     @IOperation(Name = "updates PermissionGroupToBaseclass", Description = "updates PermissionGroupToBaseclass")
     @PutMapping("/update")
-    public PermissionGroupToBaseclass update(@RequestBody @Validated(Update.class) PermissionGroupToBaseclassUpdate permissionGroupToBaseclassUpdate, @RequestAttribute SecurityContextBase securityContext) {
+    public PermissionGroupToBaseclass update(@RequestBody @Validated(Update.class) PermissionGroupToBaseclassUpdate permissionGroupToBaseclassUpdate, @RequestAttribute SecurityContext securityContext) {
 
         return permissionGroupToBaseclassService.updatePermissionGroupToBaseclass(permissionGroupToBaseclassUpdate, securityContext);
     }

@@ -7,8 +7,9 @@
 package com.flexicore.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.flexicore.annotations.AnnotatedClazz;
 import com.flexicore.annotations.IOperation;
+import com.wizzdi.segmantix.model.Access;
+import com.flexicore.annotations.AnnotatedClazz;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.OneToMany;
@@ -24,9 +25,9 @@ import java.util.List;
 @AnnotatedClazz(Category = "access control", Name = "Operation", Description = "Defines an operation that can be blocked or allowed")
 @Entity
 
-public class SecurityOperation extends SecuredBasic {
+public class SecurityOperation extends Baseclass implements com.wizzdi.segmantix.api.model.IOperation {
 
-	private IOperation.Access defaultAccess;
+	private Access defaultAccess;
 
 	private String category;
 
@@ -34,11 +35,11 @@ public class SecurityOperation extends SecuredBasic {
 	@OneToMany(targetEntity = OperationToGroup.class,mappedBy = "operation")
 	private List<OperationToGroup> operationToGroups=new ArrayList<>();
 
-	public IOperation.Access getDefaultAccess() {
+	public Access getDefaultAccess() {
 		return defaultAccess;
 	}
 
-	public <T extends SecurityOperation> T setDefaultAccess(IOperation.Access defaultaccess) {
+	public <T extends SecurityOperation> T setDefaultAccess(Access defaultaccess) {
 		this.defaultAccess = defaultaccess;
 		return (T) this;
 	}

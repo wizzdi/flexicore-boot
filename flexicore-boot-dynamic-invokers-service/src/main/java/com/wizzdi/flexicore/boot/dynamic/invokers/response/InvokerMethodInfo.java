@@ -5,10 +5,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.flexicore.model.Baseclass;
 import com.wizzdi.flexicore.boot.dynamic.invokers.annotations.VirtualField;
-import jakarta.persistence.Entity;
-import jakarta.persistence.OneToMany;
+import com.wizzdi.flexicore.security.service.ClazzService;
 
-import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -42,7 +40,7 @@ public class InvokerMethodInfo {
     public InvokerMethodInfo(Method method, com.wizzdi.flexicore.boot.dynamic.invokers.annotations.InvokerMethodInfo invokerMethodInfo) {
 
         name=method.getName();
-        id= Baseclass.generateUUIDFromString(method.toString());
+        id= ClazzService.getIdFromString(method.toString());
         displayName=invokerMethodInfo!=null&&!invokerMethodInfo.displayName().isEmpty()?invokerMethodInfo.displayName():name;
         description=invokerMethodInfo!=null&&!invokerMethodInfo.description().isEmpty()?invokerMethodInfo.description():"No Description";
         returnTypeClass= method.getReturnType();

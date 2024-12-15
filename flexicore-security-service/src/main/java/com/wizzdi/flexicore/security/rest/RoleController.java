@@ -3,7 +3,7 @@ package com.wizzdi.flexicore.security.rest;
 import com.flexicore.annotations.IOperation;
 import com.flexicore.annotations.OperationsInside;
 import com.flexicore.model.Role;
-import com.flexicore.security.SecurityContextBase;
+import com.wizzdi.segmantix.model.SecurityContext;
 import com.wizzdi.flexicore.boot.base.interfaces.Plugin;
 import com.wizzdi.flexicore.security.request.RoleCreate;
 import com.wizzdi.flexicore.security.request.RoleFilter;
@@ -30,21 +30,21 @@ public class RoleController implements Plugin {
 
     @IOperation(Name = "creates Role", Description = "creates Role")
     @PostMapping("/create")
-    public Role create(@RequestBody @Validated(Create.class) RoleCreate roleCreate, @RequestAttribute SecurityContextBase securityContext) {
+    public Role create(@RequestBody @Validated(Create.class) RoleCreate roleCreate, @RequestAttribute SecurityContext securityContext) {
 
         return roleService.createRole(roleCreate, securityContext);
     }
 
     @IOperation(Name = "returns Role", Description = "returns Role")
     @PostMapping("/getAll")
-    public PaginationResponse<Role> getAll(@RequestBody @Valid RoleFilter roleFilter, @RequestAttribute SecurityContextBase securityContext) {
+    public PaginationResponse<Role> getAll(@RequestBody @Valid RoleFilter roleFilter, @RequestAttribute SecurityContext securityContext) {
 
         return roleService.getAllRoles(roleFilter, securityContext);
     }
 
     @IOperation(Name = "updates Role", Description = "updates Role")
     @PutMapping("/update")
-    public Role update(@RequestBody @Validated(Update.class) RoleUpdate roleUpdate, @RequestAttribute SecurityContextBase securityContext) {
+    public Role update(@RequestBody @Validated(Update.class) RoleUpdate roleUpdate, @RequestAttribute SecurityContext securityContext) {
 
         return roleService.updateRole(roleUpdate, securityContext);
     }

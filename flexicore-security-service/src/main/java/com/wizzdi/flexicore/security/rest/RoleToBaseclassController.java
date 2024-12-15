@@ -3,7 +3,7 @@ package com.wizzdi.flexicore.security.rest;
 import com.flexicore.annotations.IOperation;
 import com.flexicore.annotations.OperationsInside;
 import com.flexicore.model.RoleToBaseclass;
-import com.flexicore.security.SecurityContextBase;
+import com.wizzdi.segmantix.model.SecurityContext;
 import com.wizzdi.flexicore.boot.base.interfaces.Plugin;
 import com.wizzdi.flexicore.security.request.RoleToBaseclassCreate;
 import com.wizzdi.flexicore.security.request.RoleToBaseclassFilter;
@@ -30,21 +30,21 @@ public class RoleToBaseclassController implements Plugin {
 
     @IOperation(Name = "creates RoleToBaseclass", Description = "creates RoleToBaseclass")
     @PostMapping("/create")
-    public RoleToBaseclass create(@RequestBody @Validated(Create.class) RoleToBaseclassCreate roleToBaseclassCreate, @RequestAttribute SecurityContextBase securityContext) {
+    public RoleToBaseclass create(@RequestBody @Validated(Create.class) RoleToBaseclassCreate roleToBaseclassCreate, @RequestAttribute SecurityContext securityContext) {
 
         return roleToBaseclassService.createRoleToBaseclass(roleToBaseclassCreate, securityContext);
     }
 
     @IOperation(Name = "returns RoleToBaseclass", Description = "returns RoleToBaseclass")
     @PostMapping("/getAll")
-    public PaginationResponse<RoleToBaseclass> getAll(@RequestBody @Valid RoleToBaseclassFilter roleToBaseclassFilter, @RequestAttribute SecurityContextBase securityContext) {
+    public PaginationResponse<RoleToBaseclass> getAll(@RequestBody @Valid RoleToBaseclassFilter roleToBaseclassFilter, @RequestAttribute SecurityContext securityContext) {
 
         return roleToBaseclassService.getAllRoleToBaseclass(roleToBaseclassFilter, securityContext);
     }
 
     @IOperation(Name = "updates RoleToBaseclass", Description = "updates RoleToBaseclass")
     @PutMapping("/update")
-    public RoleToBaseclass update(@RequestBody @Validated(Update.class) RoleToBaseclassUpdate roleToBaseclassUpdate, @RequestAttribute SecurityContextBase securityContext) {
+    public RoleToBaseclass update(@RequestBody @Validated(Update.class) RoleToBaseclassUpdate roleToBaseclassUpdate, @RequestAttribute SecurityContext securityContext) {
 
         return roleToBaseclassService.updateRoleToBaseclass(roleToBaseclassUpdate, securityContext);
     }

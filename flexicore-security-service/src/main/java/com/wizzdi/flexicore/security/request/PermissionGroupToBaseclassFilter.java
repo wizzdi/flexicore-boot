@@ -1,5 +1,6 @@
 package com.wizzdi.flexicore.security.request;
 
+import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.flexicore.model.Baseclass;
 import com.flexicore.model.Clazz;
@@ -12,16 +13,15 @@ import java.util.Set;
 
 @IdValid.List({
         @IdValid(targetField = "permissionGroups", fieldType = PermissionGroup.class, field = "permissionGroupIds"),
-        @IdValid(targetField = "baseclasses", fieldType = Baseclass.class, field = "baseclassIds"),
         @IdValid(targetField = "clazzes", fieldType = Clazz.class, field = "clazzIds")
 })
 public class PermissionGroupToBaseclassFilter extends PaginationFilter {
 
     private BasicPropertiesFilter basicPropertiesFilter;
 
-    @JsonIgnore
-    private List<Baseclass> baseclasses;
-    private Set<String> baseclassIds=new HashSet<>();
+
+    @JsonAlias("baseclassIds")
+    private Set<String> securedIds =new HashSet<>();
     @JsonIgnore
     private List<PermissionGroup> permissionGroups;
 
@@ -62,22 +62,14 @@ public class PermissionGroupToBaseclassFilter extends PaginationFilter {
         return (T) this;
     }
 
-    @JsonIgnore
-    public List<Baseclass> getBaseclasses() {
-        return baseclasses;
+
+
+    public Set<String> getSecuredIds() {
+        return securedIds;
     }
 
-    public <T extends PermissionGroupToBaseclassFilter> T setBaseclasses(List<Baseclass> baseclasses) {
-        this.baseclasses = baseclasses;
-        return (T) this;
-    }
-
-    public Set<String> getBaseclassIds() {
-        return baseclassIds;
-    }
-
-    public <T extends PermissionGroupToBaseclassFilter> T setBaseclassIds(Set<String> baseclassIds) {
-        this.baseclassIds = baseclassIds;
+    public <T extends PermissionGroupToBaseclassFilter> T setSecuredIds(Set<String> securedIds) {
+        this.securedIds = securedIds;
         return (T) this;
     }
 

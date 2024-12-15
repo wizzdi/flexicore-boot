@@ -1,7 +1,8 @@
 package com.wizzdi.flexicore.security.request;
 
+import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.flexicore.annotations.IOperation;
+import com.wizzdi.segmantix.model.Access;
 import com.flexicore.model.*;
 import com.wizzdi.flexicore.security.validation.IdValid;
 
@@ -11,7 +12,6 @@ import java.util.Set;
 
 @IdValid.List({
         @IdValid(field = "securityLinkGroupIds", targetField = "securityLinkGroups", fieldType = SecurityLinkGroup.class),
-        @IdValid(field = "baseclassIds", targetField = "baseclasses", fieldType = Baseclass.class),
         @IdValid(field = "operationIds", targetField = "operations", fieldType = SecurityOperation.class),
         @IdValid(field = "relevantUserIds", targetField = "relevantUsers", fieldType = SecurityUser.class),
 
@@ -33,10 +33,10 @@ public class SecurityLinkFilter extends PaginationFilter {
     @JsonIgnore
     private List<SecurityTenant> relevantTenants;
 
-    @JsonIgnore
-    private List<Baseclass> baseclasses;
 
-    private Set<String> baseclassIds=new HashSet<>();
+
+    @JsonAlias("baseclassIds")
+    private Set<String> securedIds =new HashSet<>();
     @JsonIgnore
     private List<Clazz> clazzes;
     @JsonIgnore
@@ -47,7 +47,7 @@ public class SecurityLinkFilter extends PaginationFilter {
     @JsonIgnore
     private List<SecurityOperation> operations;
     private Set<String> operationIds=new HashSet<>();
-    private Set<IOperation.Access> accesses;
+    private Set<Access> accesses;
 
     private List<SecurityLinkOrder> sorting;
 
@@ -60,22 +60,14 @@ public class SecurityLinkFilter extends PaginationFilter {
         return (T) this;
     }
 
-    @JsonIgnore
-    public List<Baseclass> getBaseclasses() {
-        return baseclasses;
+
+
+    public Set<String> getSecuredIds() {
+        return securedIds;
     }
 
-    public <T extends SecurityLinkFilter> T setBaseclasses(List<Baseclass> baseclasses) {
-        this.baseclasses = baseclasses;
-        return (T) this;
-    }
-
-    public Set<String> getBaseclassIds() {
-        return baseclassIds;
-    }
-
-    public <T extends SecurityLinkFilter> T setBaseclassIds(Set<String> baseclassIds) {
-        this.baseclassIds = baseclassIds;
+    public <T extends SecurityLinkFilter> T setSecuredIds(Set<String> securedIds) {
+        this.securedIds = securedIds;
         return (T) this;
     }
 
@@ -98,11 +90,11 @@ public class SecurityLinkFilter extends PaginationFilter {
         return (T) this;
     }
 
-    public Set<IOperation.Access> getAccesses() {
+    public Set<Access> getAccesses() {
         return accesses;
     }
 
-    public <T extends SecurityLinkFilter> T setAccesses(Set<IOperation.Access> accesses) {
+    public <T extends SecurityLinkFilter> T setAccesses(Set<Access> accesses) {
         this.accesses = accesses;
         return (T) this;
     }

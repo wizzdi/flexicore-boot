@@ -23,14 +23,13 @@
 package com.wizzdi.flexicore.common.user.data;
 
 import com.flexicore.model.*;
+import com.wizzdi.segmantix.model.SecurityContext;
 import com.wizzdi.flexicore.common.user.request.CommonUserFilter;
-import com.flexicore.security.SecurityContextBase;
 import com.wizzdi.flexicore.security.data.BasicRepository;
 import com.wizzdi.flexicore.security.data.SecurityUserRepository;
 import jakarta.persistence.metamodel.SingularAttribute;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -51,31 +50,31 @@ public class CommonUserRepository{
     private SecurityUserRepository securityUserRepository;
 
 
-    public List<User> getAllUsers(CommonUserFilter commonUserFilter, SecurityContextBase securityContextBase) {
+    public List<User> getAllUsers(CommonUserFilter commonUserFilter, SecurityContext securityContext) {
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery<User> q = cb.createQuery(User.class);
         Root<User> r = q.from(User.class);
         List<Predicate> preds = new ArrayList<>();
-        addUserFiltering(commonUserFilter,q, cb, r, preds,securityContextBase);
+        addUserFiltering(commonUserFilter,q, cb, r, preds, securityContext);
         q.select(r).where(preds.toArray(new Predicate[0]));
         TypedQuery<User> query = em.createQuery(q);
         BasicRepository.addPagination(commonUserFilter, query);
         return query.getResultList();
     }
 
-    public long countAllUsers(CommonUserFilter commonUserFilter, SecurityContextBase securityContextBase) {
+    public long countAllUsers(CommonUserFilter commonUserFilter, SecurityContext securityContext) {
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery<Long> q = cb.createQuery(Long.class);
         Root<User> r = q.from(User.class);
         List<Predicate> preds = new ArrayList<>();
-        addUserFiltering(commonUserFilter,q, cb, r, preds,securityContextBase);
+        addUserFiltering(commonUserFilter,q, cb, r, preds, securityContext);
         q.select(cb.count(r)).where(preds.toArray(new Predicate[0]));
         TypedQuery<Long> query = em.createQuery(q);
         return query.getSingleResult();
     }
 
-    public <T extends User> void addUserFiltering(CommonUserFilter commonUserFilter,CommonAbstractCriteria q, CriteriaBuilder cb, From<?,T> r, List<Predicate> preds,SecurityContextBase securityContextBase) {
-        securityUserRepository.addSecurityUserPredicates(commonUserFilter,cb,q,r,preds,securityContextBase);
+    public <T extends User> void addUserFiltering(CommonUserFilter commonUserFilter, CommonAbstractCriteria q, CriteriaBuilder cb, From<?,T> r, List<Predicate> preds, SecurityContext securityContext) {
+        securityUserRepository.addSecurityUserPredicates(commonUserFilter,cb,q,r,preds, securityContext);
         if (commonUserFilter.getEmails() != null && !commonUserFilter.getEmails().isEmpty()) {
             preds.add(r.get(User_.email).in( commonUserFilter.getEmails()));
         }
@@ -110,19 +109,19 @@ public class CommonUserRepository{
 
     }
 
-    public <T extends Baseclass> List<T> listByIds(Class<T> c, Set<String> ids, SecurityContextBase securityContext) {
+    public <T extends Baseclass> List<T> listByIds(Class<T> c, Set<String> ids, SecurityContext securityContext) {
         return securityUserRepository.listByIds(c, ids, securityContext);
     }
 
-    public <T extends Baseclass> T getByIdOrNull(String id, Class<T> c, SecurityContextBase securityContext) {
+    public <T extends Baseclass> T getByIdOrNull(String id, Class<T> c, SecurityContext securityContext) {
         return securityUserRepository.getByIdOrNull(id, c, securityContext);
     }
 
-    public <D extends Basic, E extends Baseclass, T extends D> T getByIdOrNull(String id, Class<T> c, SingularAttribute<D, E> baseclassAttribute, SecurityContextBase securityContext) {
+    public <D extends Basic, E extends Baseclass, T extends D> T getByIdOrNull(String id, Class<T> c, SingularAttribute<D, E> baseclassAttribute, SecurityContext securityContext) {
         return securityUserRepository.getByIdOrNull(id, c, baseclassAttribute, securityContext);
     }
 
-    public <D extends Basic, E extends Baseclass, T extends D> List<T> listByIds(Class<T> c, Set<String> ids, SingularAttribute<D, E> baseclassAttribute, SecurityContextBase securityContext) {
+    public <D extends Basic, E extends Baseclass, T extends D> List<T> listByIds(Class<T> c, Set<String> ids, SingularAttribute<D, E> baseclassAttribute, SecurityContext securityContext) {
         return securityUserRepository.listByIds(c, ids, baseclassAttribute, securityContext);
     }
 

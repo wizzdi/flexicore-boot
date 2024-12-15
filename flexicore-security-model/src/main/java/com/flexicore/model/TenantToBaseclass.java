@@ -8,6 +8,7 @@ package com.flexicore.model;
 
 
 
+import com.wizzdi.segmantix.api.model.ITenantSecurity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Transient;
@@ -15,24 +16,24 @@ import jakarta.persistence.Transient;
 
 @Entity
 
-public class TenantToBaseclass extends SecurityLink {
+public class TenantToBaseclass extends SecurityLink implements ITenantSecurity {
 
 	@ManyToOne(targetEntity = SecurityTenant.class)
-	private SecurityTenant tenant;
+	private SecurityTenant targetTenant;
 
 	@ManyToOne(targetEntity = SecurityTenant.class)
-	public SecurityTenant getTenant() {
-		return tenant;
+	public SecurityTenant getTargetTenant() {
+		return targetTenant;
 	}
 
-	public <T extends TenantToBaseclass> T setTenant(SecurityTenant securityTenant) {
-		this.tenant = securityTenant;
+	public <T extends TenantToBaseclass> T setTargetTenant(SecurityTenant securityTenant) {
+		this.targetTenant = securityTenant;
 		return (T) this;
 	}
 
 	@Transient
 	@Override
 	public SecurityEntity getSecurityEntity() {
-		return tenant;
+		return targetTenant;
 	}
 }

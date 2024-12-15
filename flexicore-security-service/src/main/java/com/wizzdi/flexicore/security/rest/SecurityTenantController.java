@@ -3,7 +3,7 @@ package com.wizzdi.flexicore.security.rest;
 import com.flexicore.annotations.IOperation;
 import com.flexicore.annotations.OperationsInside;
 import com.flexicore.model.SecurityTenant;
-import com.flexicore.security.SecurityContextBase;
+import com.wizzdi.segmantix.model.SecurityContext;
 import com.wizzdi.flexicore.boot.base.interfaces.Plugin;
 import com.wizzdi.flexicore.security.request.SecurityTenantCreate;
 import com.wizzdi.flexicore.security.request.SecurityTenantFilter;
@@ -30,21 +30,21 @@ public class SecurityTenantController implements Plugin {
 
     @IOperation(Name = "creates security tenant", Description = "creates security tenant")
     @PostMapping("/create")
-    public SecurityTenant create(@RequestBody @Validated(Create.class) SecurityTenantCreate tenantCreate, @RequestAttribute SecurityContextBase securityContext) {
+    public SecurityTenant create(@RequestBody @Validated(Create.class) SecurityTenantCreate tenantCreate, @RequestAttribute SecurityContext securityContext) {
 
         return tenantService.createTenant(tenantCreate, securityContext);
     }
 
     @IOperation(Name = "returns security tenant", Description = "returns security tenant")
     @PostMapping("/getAll")
-    public PaginationResponse<SecurityTenant> getAll(@RequestBody @Valid SecurityTenantFilter tenantFilter, @RequestAttribute SecurityContextBase securityContext) {
+    public PaginationResponse<SecurityTenant> getAll(@RequestBody @Valid SecurityTenantFilter tenantFilter, @RequestAttribute SecurityContext securityContext) {
 
         return tenantService.getAllTenants(tenantFilter, securityContext);
     }
 
     @IOperation(Name = "updates security tenant", Description = "updates security tenant")
     @PutMapping("/update")
-    public SecurityTenant update(@RequestBody @Validated(Update.class) SecurityTenantUpdate tenantUpdate, @RequestAttribute SecurityContextBase securityContext) {
+    public SecurityTenant update(@RequestBody @Validated(Update.class) SecurityTenantUpdate tenantUpdate, @RequestAttribute SecurityContext securityContext) {
 
         return tenantService.updateTenant(tenantUpdate, securityContext);
     }

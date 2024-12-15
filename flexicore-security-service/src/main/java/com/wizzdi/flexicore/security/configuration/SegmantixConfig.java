@@ -1,0 +1,81 @@
+package com.wizzdi.flexicore.security.configuration;
+
+import com.flexicore.model.Baseclass;
+import com.flexicore.model.SecurityOperation;
+import com.wizzdi.segmantix.api.service.FieldPathProvider;
+import com.wizzdi.segmantix.service.SecurityRepository;
+import jakarta.persistence.criteria.From;
+import jakarta.persistence.criteria.Path;
+import org.springframework.cache.Cache;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+
+import java.util.concurrent.Callable;
+
+@Configuration
+public class SegmantixConfig {
+    @Bean
+    public SecurityRepository securityRepository(OperationGroupLinkProviderImpl operationToGroupService, SecurityProviderImpl securityProviderImpl, InstanceGroupLinkProviderImpl instanceGroupLinkProvider, Cache dataAccessControlCache, Cache operationToOperationGroupCache, SecurityOperation allOps){
+        return new SecurityRepository(new FieldPathProviderImpl(), operationToGroupService,securityProviderImpl,instanceGroupLinkProvider,new CacheWrapper(dataAccessControlCache),new CacheWrapper(operationToOperationGroupCache),allOps);
+    }
+
+    private static class CacheWrapper implements com.wizzdi.segmantix.api.service.Cache{
+        private final Cache cache;
+
+        public CacheWrapper(Cache cache) {
+            this.cache = cache;
+        }
+
+        @Override
+        public <T> T get(Object key, Class<T> type) {
+            return this.cache.get(key,type);
+        }
+
+        @Override
+        public void put(Object key, Object value) {
+            this.cache.put(key,value);
+}
+
+        @Override
+        public <T> T get(Object key, Callable<T> valueLoader) {
+            return cache.get(key,valueLoader);
+        }
+    }
+
+
+
+    public static class FieldPathProviderImpl implements FieldPathProvider{
+        @Override
+        public <T> Path<String> getCreatorIdPath(From<?, T> r) {
+            if(!Baseclass.class.isAssignableFrom(r.getJavaType())){
+               return null;
+            }
+            return r.get("creator").get("id");
+        }
+
+        @Override
+        public <T> Path<String> getTenantIdPath(From<?, T> r) {
+            if(!Baseclass.class.isAssignableFrom(r.getJavaType())){
+                return null;
+            }
+            return r.get("tenant").get("id");
+        }
+
+        @Override
+        public <T> Path<String> getTypePath(From<?, T> r) {
+            if(!Baseclass.class.isAssignableFrom(r.getJavaType())){
+                return null;
+            }
+            return r.get("clazz").get("name");
+        }
+
+        @Override
+        public <T> Path<String> getSecurityId(From<?, T> r) {
+            if(!Baseclass.class.isAssignableFrom(r.getJavaType())){
+                return null;
+            }
+            return r.get("securityId");
+        }
+    }
+
+}

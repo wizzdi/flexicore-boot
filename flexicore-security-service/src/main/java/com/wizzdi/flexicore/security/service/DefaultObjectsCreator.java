@@ -88,8 +88,8 @@ public class DefaultObjectsCreator {
             logger.debug("Creating Default SecurityTenant");
             defaultTenant = defaultTenantProvider.createDefaultTenant(tenantCreate);
         }
-        if (defaultTenant.getSecurity().getTenant() == null) {
-            defaultTenant.getSecurity().setTenant(defaultTenant);
+        if (defaultTenant.getTenant() == null) {
+            defaultTenant.setTenant(defaultTenant);
             defaultTenant = tenantService.merge(defaultTenant);
         }
 
@@ -102,18 +102,18 @@ public class DefaultObjectsCreator {
             admin = defaultUserProvider.createSecurityUser(userCreate);
         }
 
-        if (admin.getSecurity().getCreator() == null) {
-            admin.getSecurity().setCreator(admin);
+        if (admin.getCreator() == null) {
+            admin.setCreator(admin);
             admin = userService.merge(admin);
         }
-        if (admin.getSecurity().getTenant() == null) {
-            admin.getSecurity().setTenant(defaultTenant);
+        if (admin.getTenant() == null) {
+            admin.setTenant(defaultTenant);
             admin = userService.merge(admin);
         }
 
 
-        if (defaultTenant.getSecurity().getCreator() == null) {
-            defaultTenant.getSecurity().setCreator(admin);
+        if (defaultTenant.getCreator() == null) {
+            defaultTenant.setCreator(admin);
             defaultTenant = tenantService.merge(defaultTenant);
         }
 
@@ -128,8 +128,8 @@ public class DefaultObjectsCreator {
             tenantToUser = defaultTenantToUserProvider.createTenantToUser(tenantToUserCreate);
         }
 
-        if (tenantToUser.getSecurity().getCreator() == null) {
-            tenantToUser.getSecurity().setCreator(admin);
+        if (tenantToUser.getCreator() == null) {
+            tenantToUser.setCreator(admin);
             tenantToUser=tenantService.merge(tenantToUser);
         }
 
@@ -159,12 +159,12 @@ public class DefaultObjectsCreator {
         if (superAdminRole == null) {
             logger.debug("Creating Super Admin role");
             superAdminRole = defaultRoleProvider.createRole(roleCreate);
-            superAdminRole.getSecurity().setTenant(defaultTenant);
-            superAdminRole.getSecurity().setCreator(admin);
+            superAdminRole.setTenant(defaultTenant);
+            superAdminRole.setCreator(admin);
             superAdminRole = roleToUserService.merge(superAdminRole);
         }
-        if(superAdminRole.getSecurity().getCreator()==null){
-            superAdminRole.getSecurity().setCreator(admin);
+        if(superAdminRole.getCreator()==null){
+            superAdminRole.setCreator(admin);
             superAdminRole=roleService.merge(superAdminRole);
         }
         RoleToUserCreate roleToUserCreate = new RoleToUserCreate()

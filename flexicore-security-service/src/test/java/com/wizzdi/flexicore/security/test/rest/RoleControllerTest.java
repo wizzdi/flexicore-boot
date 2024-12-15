@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.flexicore.model.Role;
-import com.flexicore.security.SecurityContextBase;
+import com.wizzdi.segmantix.model.SecurityContext;
 import com.wizzdi.flexicore.security.request.RoleCreate;
 import com.wizzdi.flexicore.security.request.RoleFilter;
 import com.wizzdi.flexicore.security.request.RoleUpdate;
@@ -70,7 +70,7 @@ public class RoleControllerTest {
     @Autowired
     @Lazy
     @Qualifier("adminSecurityContext")
-    private SecurityContextBase adminSecurityContext;
+    private SecurityContext adminSecurityContext;
 
     private static final ObjectMapper objectMapper=new ObjectMapper().registerModule(new JavaTimeModule()).disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
 

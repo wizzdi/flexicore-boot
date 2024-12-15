@@ -1,5 +1,6 @@
 package com.wizzdi.flexicore.security.request;
 
+import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.flexicore.model.Baseclass;
 import com.flexicore.model.PermissionGroup;
@@ -9,7 +10,6 @@ import com.wizzdi.flexicore.security.validation.Update;
 
 @IdValid.List({
         @IdValid(targetField = "permissionGroup", fieldType = PermissionGroup.class, field = "permissionGroupId", groups = {Create.class, Update.class}),
-        @IdValid(targetField = "baseclass", fieldType = Baseclass.class, field = "baseclassId", groups = {Create.class, Update.class})
 
 
 })
@@ -18,9 +18,9 @@ public class PermissionGroupToBaseclassCreate extends BasicCreate {
     @JsonIgnore
     private PermissionGroup permissionGroup;
     private String permissionGroupId;
-    @JsonIgnore
-    private Baseclass baseclass;
-    private String baseclassId;
+
+    @JsonAlias("baseclassId")
+    private String securedId;
 
     @JsonIgnore
     public PermissionGroup getPermissionGroup() {
@@ -41,22 +41,12 @@ public class PermissionGroupToBaseclassCreate extends BasicCreate {
         return (T) this;
     }
 
-    @JsonIgnore
-    public Baseclass getBaseclass() {
-        return baseclass;
+    public String getSecuredId() {
+        return securedId;
     }
 
-    public <T extends PermissionGroupToBaseclassCreate> T setBaseclass(Baseclass baseclass) {
-        this.baseclass = baseclass;
-        return (T) this;
-    }
-
-    public String getBaseclassId() {
-        return baseclassId;
-    }
-
-    public <T extends PermissionGroupToBaseclassCreate> T setBaseclassId(String baseclassId) {
-        this.baseclassId = baseclassId;
+    public <T extends PermissionGroupToBaseclassCreate> T setSecuredId(String securedId) {
+        this.securedId = securedId;
         return (T) this;
     }
 }

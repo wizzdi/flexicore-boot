@@ -3,7 +3,7 @@ package com.wizzdi.flexicore.file.service;
 import com.flexicore.model.Baseclass;
 import com.flexicore.model.Basic;
 import com.flexicore.model.SecurityUser;
-import com.flexicore.security.SecurityContextBase;
+import com.wizzdi.segmantix.model.SecurityContext;
 import com.wizzdi.flexicore.boot.base.interfaces.Plugin;
 import com.wizzdi.flexicore.file.data.FileResourceRepository;
 import com.wizzdi.flexicore.file.interfaces.HomeDirProvider;
@@ -58,8 +58,8 @@ public class FileResourceService implements Plugin {
 	private MD5Service md5Service;
 
 
-	public FileResource createFileResource(FileResourceCreate fileResourceCreate, SecurityContextBase securityContextBase) {
-		FileResource fileResource = createFileResourceNoMerge(fileResourceCreate, securityContextBase);
+	public FileResource createFileResource(FileResourceCreate fileResourceCreate, SecurityContext securityContext) {
+		FileResource fileResource = createFileResourceNoMerge(fileResourceCreate, securityContext);
 		fileResourceRepository.merge(fileResource);
 		return fileResource;
 	}
@@ -72,8 +72,8 @@ public class FileResourceService implements Plugin {
 		fileResourceRepository.massMerge(list);
 	}
 
-	public <T extends Baseclass> List<T> listByIds(Class<T> c, Set<String> ids, SecurityContextBase securityContextBase) {
-		return fileResourceRepository.listByIds(c, ids, securityContextBase);
+	public <T extends Baseclass> List<T> listByIds(Class<T> c, Set<String> ids, SecurityContext securityContext) {
+		return fileResourceRepository.listByIds(c, ids, securityContext);
 	}
 
 
@@ -99,11 +99,11 @@ public class FileResourceService implements Plugin {
 		return new File(home, prefix + "--" + UUID.randomUUID());
 	}
 
-	public FileResource createFileResourceNoMerge(FileResourceCreate fileResourceCreate, SecurityContextBase securityContextBase) {
+	public FileResource createFileResourceNoMerge(FileResourceCreate fileResourceCreate, SecurityContext securityContext) {
 		FileResource fileResource = new FileResource();
-		fileResource.setId(Baseclass.getBase64ID());
+		fileResource.setId(UUID.randomUUID().toString());
 		updateFileResourceNoMerge(fileResourceCreate, fileResource);
-		BaseclassService.createSecurityObjectNoMerge(fileResource,securityContextBase);
+		BaseclassService.createSecurityObjectNoMerge(fileResource, securityContext);
 
 		return fileResource;
 	}
@@ -136,7 +136,7 @@ public class FileResourceService implements Plugin {
 		return update;
 	}
 
-	public FileResource updateFileResource(FileResourceUpdate fileResourceUpdate, SecurityContextBase securityContextBase) {
+	public FileResource updateFileResource(FileResourceUpdate fileResourceUpdate, SecurityContext securityContext) {
 		FileResource FileResource = fileResourceUpdate.getFileResource();
 		if (updateFileResourceNoMerge(fileResourceUpdate, FileResource)) {
 			fileResourceRepository.merge(FileResource);
@@ -146,23 +146,23 @@ public class FileResourceService implements Plugin {
 
 
 
-	public void validate(FileResourceCreate fileResourceCreate, SecurityContextBase securityContextBase) {
+	public void validate(FileResourceCreate fileResourceCreate, SecurityContext securityContext) {
 
 	}
 
 
 
-	public void validate(FileResourceFilter fileResourceFilter, SecurityContextBase securityContextBase) {
+	public void validate(FileResourceFilter fileResourceFilter, SecurityContext securityContext) {
 
 
 	}
 
-	public <D extends Basic, E extends Baseclass, T extends D> T getByIdOrNull(String id, Class<T> c, SingularAttribute<D, E> baseclassAttribute, SecurityContextBase securityContextBase) {
-		return fileResourceRepository.getByIdOrNull(id, c, baseclassAttribute, securityContextBase);
+	public <D extends Basic, E extends Baseclass, T extends D> T getByIdOrNull(String id, Class<T> c, SingularAttribute<D, E> baseclassAttribute, SecurityContext securityContext) {
+		return fileResourceRepository.getByIdOrNull(id, c, baseclassAttribute, securityContext);
 	}
 
-	public <D extends Basic, E extends Baseclass, T extends D> List<T> listByIds(Class<T> c, Set<String> ids, SingularAttribute<D, E> baseclassAttribute, SecurityContextBase securityContextBase) {
-		return fileResourceRepository.listByIds(c, ids, baseclassAttribute, securityContextBase);
+	public <D extends Basic, E extends Baseclass, T extends D> List<T> listByIds(Class<T> c, Set<String> ids, SingularAttribute<D, E> baseclassAttribute, SecurityContext securityContext) {
+		return fileResourceRepository.listByIds(c, ids, baseclassAttribute, securityContext);
 	}
 
 	public <D extends Basic, T extends D> List<T> findByIds(Class<T> c, Set<String> ids, SingularAttribute<D, String> idAttribute) {
@@ -173,25 +173,25 @@ public class FileResourceService implements Plugin {
 		return fileResourceRepository.findByIdOrNull(type, id);
 	}
 
-	public <T extends Baseclass> T getByIdOrNull(String id, Class<T> c, SecurityContextBase securityContextBase) {
-		return fileResourceRepository.getByIdOrNull(id, c, securityContextBase);
+	public <T extends Baseclass> T getByIdOrNull(String id, Class<T> c, SecurityContext securityContext) {
+		return fileResourceRepository.getByIdOrNull(id, c, securityContext);
 	}
 
-	public PaginationResponse<FileResource> getAllFileResources(FileResourceFilter FileResourceFilter, SecurityContextBase securityContextBase) {
-		List<FileResource> list = listAllFileResources(FileResourceFilter, securityContextBase);
-		long count = fileResourceRepository.countAllFileResources(FileResourceFilter, securityContextBase);
+	public PaginationResponse<FileResource> getAllFileResources(FileResourceFilter FileResourceFilter, SecurityContext securityContext) {
+		List<FileResource> list = listAllFileResources(FileResourceFilter, securityContext);
+		long count = fileResourceRepository.countAllFileResources(FileResourceFilter, securityContext);
 		return new PaginationResponse<>(list, FileResourceFilter, count);
 	}
 
-	public List<FileResource> listAllFileResources(FileResourceFilter FileResourceFilter, SecurityContextBase securityContextBase) {
-		return fileResourceRepository.listAllFileResources(FileResourceFilter, securityContextBase);
+	public List<FileResource> listAllFileResources(FileResourceFilter FileResourceFilter, SecurityContext securityContext) {
+		return fileResourceRepository.listAllFileResources(FileResourceFilter, securityContext);
 	}
 
 	public <T extends Baseclass> List<T> findByIds(Class<T> c, Set<String> requested) {
 		return fileResourceRepository.findByIds(c, requested);
 	}
 
-	public ResponseEntity<Resource> download(long offset, long size, String id, String remoteIp, SecurityContextBase securityContext) {
+	public ResponseEntity<Resource> download(long offset, long size, String id, String remoteIp, SecurityContext securityContext) {
 		FileResource fileResource = getFileResourceById(id, securityContext);
 		if (fileResource == null) {
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"No File resource with id " + id);
@@ -338,7 +338,7 @@ public class FileResourceService implements Plugin {
 		}
 	}
 
-	public FileResource uploadFileResource(String filename, SecurityContextBase securityContext, String md5, String chunkMd5, boolean lastChunk, InputStream fileInputStream) {
+	public FileResource uploadFileResource(String filename, SecurityContext securityContext, String md5, String chunkMd5, boolean lastChunk, InputStream fileInputStream) {
 
 		FileResource fileResource = listAllFileResources(new FileResourceFilter().setMd5s(Collections.singleton(md5)),securityContext).stream().findFirst().orElse(null);
 		if (fileResource == null) {
@@ -395,8 +395,8 @@ public class FileResourceService implements Plugin {
 		return data;
 	}
 
-	public FileResource getFileResourceById(String id, SecurityContextBase securityContextBase) {
-		Optional<FileResource> fileResourceOptional = id != null ? listAllFileResources(new FileResourceFilter().setBasicPropertiesFilter(new BasicPropertiesFilter().setOnlyIds(Collections.singleton(id))), securityContextBase).stream().findFirst() : Optional.empty();
+	public FileResource getFileResourceById(String id, SecurityContext securityContext) {
+		Optional<FileResource> fileResourceOptional = id != null ? listAllFileResources(new FileResourceFilter().setBasicPropertiesFilter(new BasicPropertiesFilter().setOnlyIds(Collections.singleton(id))), securityContext).stream().findFirst() : Optional.empty();
 		FileResource fileResource = fileResourceOptional.orElse(null);
 		if (fileResource != null) {
 			File file = new File(fileResource.getFullPath());
@@ -409,8 +409,8 @@ public class FileResourceService implements Plugin {
 		return fileResource;
 	}
 
-	public FileResource getFileResourceByMd5(String md5, SecurityContextBase securityContextBase) {
-		Optional<FileResource> fileResourceOptional = md5 != null ? listAllFileResources(new FileResourceFilter().setMd5s(Collections.singleton(md5)), securityContextBase).stream().findFirst() : Optional.empty();
+	public FileResource getFileResourceByMd5(String md5, SecurityContext securityContext) {
+		Optional<FileResource> fileResourceOptional = md5 != null ? listAllFileResources(new FileResourceFilter().setMd5s(Collections.singleton(md5)), securityContext).stream().findFirst() : Optional.empty();
 		FileResource fileResource = fileResourceOptional.orElse(null);
 		if (fileResource != null) {
 			File file = new File(fileResource.getFullPath());

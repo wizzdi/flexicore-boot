@@ -18,7 +18,7 @@ import jakarta.persistence.ManyToOne;
 @AnnotatedClazz(Category="access control", Name="RoleToUser", Description="Relates Users  to Roles")
 @Entity
 
-public class RoleToUser extends SecuredBasic  {
+public class RoleToUser extends Baseclass {
 
     private Role role;
     private SecurityUser user;

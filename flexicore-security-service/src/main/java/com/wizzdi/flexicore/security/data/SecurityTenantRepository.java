@@ -1,13 +1,13 @@
 package com.wizzdi.flexicore.security.data;
 
 import com.flexicore.model.*;
+import com.wizzdi.segmantix.model.SecurityContext;
 import com.wizzdi.flexicore.boot.base.interfaces.Plugin;
-import com.flexicore.security.SecurityContextBase;
 import com.wizzdi.flexicore.security.request.SecurityTenantFilter;
+import com.wizzdi.segmantix.service.SecurityRepository;
 import org.pf4j.Extension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -27,7 +27,7 @@ public class SecurityTenantRepository implements Plugin {
 	@Autowired
 	private SecurityEntityRepository securityEntityRepository;
 
-	public List<SecurityTenant> listAllTenants(SecurityTenantFilter tenantFilter, SecurityContextBase securityContext){
+	public List<SecurityTenant> listAllTenants(SecurityTenantFilter tenantFilter, SecurityContext securityContext){
 		CriteriaBuilder cb=em.getCriteriaBuilder();
 		CriteriaQuery<SecurityTenant> q=cb.createQuery(SecurityTenant.class);
 		Root<SecurityTenant> r=q.from(SecurityTenant.class);
@@ -40,7 +40,7 @@ public class SecurityTenantRepository implements Plugin {
 
 	}
 
-	public <T extends SecurityTenant> void addTenantPredicates(SecurityTenantFilter tenantFilter, CriteriaBuilder cb, CommonAbstractCriteria q, From<?,T> r, List<Predicate> predicates, SecurityContextBase securityContext) {
+	public <T extends SecurityTenant> void addTenantPredicates(SecurityTenantFilter tenantFilter, CriteriaBuilder cb, CommonAbstractCriteria q, From<?,T> r, List<Predicate> predicates, SecurityContext securityContext) {
 		securityEntityRepository.addSecurityEntityPredicates(tenantFilter,cb,q,r,predicates,securityContext);
 		if(tenantFilter.getUsers()!=null&&!tenantFilter.getUsers().isEmpty()){
 			Join<T, TenantToUser> join=r.join(SecurityTenant_.tenantToUser);
@@ -48,7 +48,7 @@ public class SecurityTenantRepository implements Plugin {
 		}
 	}
 
-	public long countAllTenants(SecurityTenantFilter tenantFilter, SecurityContextBase securityContext){
+	public long countAllTenants(SecurityTenantFilter tenantFilter, SecurityContext securityContext){
 		CriteriaBuilder cb=em.getCriteriaBuilder();
 		CriteriaQuery<Long> q=cb.createQuery(Long.class);
 		Root<SecurityTenant> r=q.from(SecurityTenant.class);
@@ -70,11 +70,11 @@ public class SecurityTenantRepository implements Plugin {
 		baseclassRepository.massMerge(list);
 	}
 
-	public <T extends Baseclass> List<T> listByIds(Class<T> c,Set<String> ids,  SecurityContextBase securityContext) {
+	public <T extends Baseclass> List<T> listByIds(Class<T> c, Set<String> ids, SecurityContext securityContext) {
 		return baseclassRepository.listByIds(c, ids, securityContext);
 	}
 
-	public <T extends Baseclass> T getByIdOrNull(String id, Class<T> c, SecurityContextBase securityContext) {
+	public <T extends Baseclass> T getByIdOrNull(String id, Class<T> c, SecurityContext securityContext) {
 		return baseclassRepository.getByIdOrNull(id, c, securityContext);
 	}
 

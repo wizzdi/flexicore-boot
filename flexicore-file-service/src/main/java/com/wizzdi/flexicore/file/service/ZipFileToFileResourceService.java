@@ -2,7 +2,7 @@ package com.wizzdi.flexicore.file.service;
 
 import com.flexicore.model.Baseclass;
 import com.flexicore.model.Basic;
-import com.flexicore.security.SecurityContextBase;
+import com.wizzdi.segmantix.model.SecurityContext;
 import com.wizzdi.flexicore.boot.base.interfaces.Plugin;
 import com.wizzdi.flexicore.file.data.ZipFileToFileResourceRepository;
 import com.wizzdi.flexicore.file.model.ZipFileToFileResource;
@@ -16,11 +16,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
 import jakarta.persistence.metamodel.SingularAttribute;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 
 @Extension
 @Component
@@ -34,17 +34,17 @@ public class ZipFileToFileResourceService implements Plugin {
 	private BasicService basicService;
 
 
-	public ZipFileToFileResource createZipFileToFileResource(ZipFileToFileResourceCreate zipFileToFileResourceCreate, SecurityContextBase securityContextBase) {
-		ZipFileToFileResource zipFileToFileResource = createZipFileToFileResourceNoMerge(zipFileToFileResourceCreate, securityContextBase);
+	public ZipFileToFileResource createZipFileToFileResource(ZipFileToFileResourceCreate zipFileToFileResourceCreate, SecurityContext securityContext) {
+		ZipFileToFileResource zipFileToFileResource = createZipFileToFileResourceNoMerge(zipFileToFileResourceCreate, securityContext);
 		zipFileToFileResourceRepository.merge(zipFileToFileResource);
 		return zipFileToFileResource;
 	}
 
 
 
-	public ZipFileToFileResource createZipFileToFileResourceNoMerge(ZipFileToFileResourceCreate zipFileToFileResourceCreate, SecurityContextBase securityContextBase) {
+	public ZipFileToFileResource createZipFileToFileResourceNoMerge(ZipFileToFileResourceCreate zipFileToFileResourceCreate, SecurityContext securityContext) {
 		ZipFileToFileResource zipFileToFileResource = new ZipFileToFileResource();
-		zipFileToFileResource.setId(Baseclass.getBase64ID());
+		zipFileToFileResource.setId(UUID.randomUUID().toString());
 		updateZipFileToFileResourceNoMerge(zipFileToFileResourceCreate, zipFileToFileResource);
 		return zipFileToFileResource;
 	}
@@ -62,7 +62,7 @@ public class ZipFileToFileResourceService implements Plugin {
 		return update;
 	}
 
-	public ZipFileToFileResource updateZipFileToFileResource(ZipFileToFileResourceUpdate zipFileToFileResourceUpdate, SecurityContextBase securityContextBase) {
+	public ZipFileToFileResource updateZipFileToFileResource(ZipFileToFileResourceUpdate zipFileToFileResourceUpdate, SecurityContext securityContext) {
 		ZipFileToFileResource ZipFileToFileResource = zipFileToFileResourceUpdate.getZipFileToFileResource();
 		if (updateZipFileToFileResourceNoMerge(zipFileToFileResourceUpdate, ZipFileToFileResource)) {
 			zipFileToFileResourceRepository.merge(ZipFileToFileResource);
@@ -71,27 +71,27 @@ public class ZipFileToFileResourceService implements Plugin {
 	}
 
 
-	public void validate(ZipFileToFileResourceCreate zipFileToFileResourceCreate, SecurityContextBase securityContextBase) {
+	public void validate(ZipFileToFileResourceCreate zipFileToFileResourceCreate, SecurityContext securityContext) {
 
 	}
 
 
 
-	public void validate(ZipFileToFileResourceFilter zipFileToFileResourceFilter, SecurityContextBase securityContextBase) {
+	public void validate(ZipFileToFileResourceFilter zipFileToFileResourceFilter, SecurityContext securityContext) {
 
 
 	}
 
 
 
-	public PaginationResponse<ZipFileToFileResource> getAllZipFileToFileResources(ZipFileToFileResourceFilter ZipFileToFileResourceFilter, SecurityContextBase securityContextBase) {
-		List<ZipFileToFileResource> list = listAllZipFileToFileResources(ZipFileToFileResourceFilter, securityContextBase);
-		long count = zipFileToFileResourceRepository.countAllZipFileToFileResources(ZipFileToFileResourceFilter, securityContextBase);
+	public PaginationResponse<ZipFileToFileResource> getAllZipFileToFileResources(ZipFileToFileResourceFilter ZipFileToFileResourceFilter, SecurityContext securityContext) {
+		List<ZipFileToFileResource> list = listAllZipFileToFileResources(ZipFileToFileResourceFilter, securityContext);
+		long count = zipFileToFileResourceRepository.countAllZipFileToFileResources(ZipFileToFileResourceFilter, securityContext);
 		return new PaginationResponse<>(list, ZipFileToFileResourceFilter, count);
 	}
 
-	public List<ZipFileToFileResource> listAllZipFileToFileResources(ZipFileToFileResourceFilter ZipFileToFileResourceFilter, SecurityContextBase securityContextBase) {
-		return zipFileToFileResourceRepository.listAllZipFileToFileResources(ZipFileToFileResourceFilter, securityContextBase);
+	public List<ZipFileToFileResource> listAllZipFileToFileResources(ZipFileToFileResourceFilter ZipFileToFileResourceFilter, SecurityContext securityContext) {
+		return zipFileToFileResourceRepository.listAllZipFileToFileResources(ZipFileToFileResourceFilter, securityContext);
 	}
 
 	public <D extends Basic, T extends D> List<T> findByIds(Class<T> c, Set<String> ids, SingularAttribute<D, String> idAttribute) {

@@ -1,14 +1,13 @@
 package com.wizzdi.flexicore.security.data;
 
 import com.flexicore.model.*;
+import com.wizzdi.segmantix.model.SecurityContext;
 import com.wizzdi.flexicore.boot.base.interfaces.Plugin;
-import com.flexicore.security.SecurityContextBase;
 import com.wizzdi.flexicore.security.request.SecurityLinkFilter;
 import com.wizzdi.flexicore.security.request.SecurityLinkOrder;
 import org.pf4j.Extension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -27,7 +26,7 @@ public class SecurityLinkRepository implements Plugin {
 	private SecuredBasicRepository securedBasicRepository;
 
 
-	public List<SecurityLink> listAllSecurityLinks(SecurityLinkFilter securityLinkFilter, SecurityContextBase securityContext){
+	public List<SecurityLink> listAllSecurityLinks(SecurityLinkFilter securityLinkFilter, SecurityContext securityContext){
 		CriteriaBuilder cb=em.getCriteriaBuilder();
 		CriteriaQuery<SecurityLink> q=cb.createQuery(SecurityLink.class);
 		Root<SecurityLink> r=q.from(SecurityLink.class);
@@ -62,13 +61,13 @@ public class SecurityLinkRepository implements Plugin {
 		return cb.asc(switchCase);
 	}
 
-	public <T extends SecurityLink> void addSecurityLinkPredicates(SecurityLinkFilter securityLinkFilter, CriteriaBuilder cb, CommonAbstractCriteria q, From<?,T> r, List<Predicate> predicates, SecurityContextBase securityContext) {
+	public <T extends SecurityLink> void addSecurityLinkPredicates(SecurityLinkFilter securityLinkFilter, CriteriaBuilder cb, CommonAbstractCriteria q, From<?,T> r, List<Predicate> predicates, SecurityContext securityContext) {
 		securedBasicRepository.addSecuredBasicPredicates(securityLinkFilter.getBasicPropertiesFilter(),cb,q,r,predicates,securityContext);
 		if(securityLinkFilter.getSecurityLinkGroups()!=null&&!securityLinkFilter.getSecurityLinkGroups().isEmpty()){
 			predicates.add(r.get(SecurityLink_.securityLinkGroup).in(securityLinkFilter.getSecurityLinkGroups()));
 		}
-		if(securityLinkFilter.getBaseclasses()!=null&&!securityLinkFilter.getBaseclasses().isEmpty()){
-			predicates.add(r.get(SecurityLink_.baseclass).in(securityLinkFilter.getBaseclasses()));
+		if(securityLinkFilter.getSecuredIds()!=null&&!securityLinkFilter.getSecuredIds().isEmpty()){
+			predicates.add(r.get(SecurityLink_.securedId).in(securityLinkFilter.getSecuredIds()));
 		}
 		if(securityLinkFilter.getClazzes()!=null&&!securityLinkFilter.getClazzes().isEmpty()){
 			predicates.add(r.get(SecurityLink_.clazz).in(securityLinkFilter.getClazzes()));
@@ -105,7 +104,7 @@ public class SecurityLinkRepository implements Plugin {
 		}
 	}
 
-	public long countAllSecurityLinks(SecurityLinkFilter securityLinkFilter, SecurityContextBase securityContext){
+	public long countAllSecurityLinks(SecurityLinkFilter securityLinkFilter, SecurityContext securityContext){
 		CriteriaBuilder cb=em.getCriteriaBuilder();
 		CriteriaQuery<Long> q=cb.createQuery(Long.class);
 		Root<SecurityLink> r=q.from(SecurityLink.class);
@@ -127,11 +126,11 @@ public class SecurityLinkRepository implements Plugin {
 		securedBasicRepository.massMerge(list);
 	}
 
-	public <T extends Baseclass> List<T> listByIds(Class<T> c,Set<String> ids,  SecurityContextBase securityContext) {
+	public <T extends Baseclass> List<T> listByIds(Class<T> c, Set<String> ids, SecurityContext securityContext) {
 		return securedBasicRepository.listByIds(c, ids, securityContext);
 	}
 
-	public <T extends Baseclass> T getByIdOrNull(String id, Class<T> c, SecurityContextBase securityContext) {
+	public <T extends Baseclass> T getByIdOrNull(String id, Class<T> c, SecurityContext securityContext) {
 		return securedBasicRepository.getByIdOrNull(id, c, securityContext);
 	}
 }

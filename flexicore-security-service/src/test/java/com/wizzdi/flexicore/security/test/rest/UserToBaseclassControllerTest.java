@@ -1,9 +1,9 @@
 package com.wizzdi.flexicore.security.test.rest;
 
-import com.flexicore.annotations.IOperation;
+import com.wizzdi.segmantix.model.Access;
 import com.flexicore.model.SecurityOperation;
 import com.flexicore.model.UserToBaseclass;
-import com.flexicore.security.SecurityContextBase;
+import com.wizzdi.segmantix.model.SecurityContext;
 import com.wizzdi.flexicore.security.request.UserToBaseclassCreate;
 import com.wizzdi.flexicore.security.request.UserToBaseclassFilter;
 import com.wizzdi.flexicore.security.request.UserToBaseclassUpdate;
@@ -75,7 +75,7 @@ public class UserToBaseclassControllerTest {
     @Autowired
     @Qualifier("adminSecurityContext")
     @Lazy
-    private SecurityContextBase adminSecurityContext;
+    private SecurityContext adminSecurityContext;
 
     @BeforeAll
     public void init() {
@@ -104,9 +104,9 @@ public class UserToBaseclassControllerTest {
     public void testUserToBaseClassCreate() {
         String name = UUID.randomUUID().toString();
         UserToBaseclassCreate request = new UserToBaseclassCreate()
-                .setUserId(adminSecurityContext.getUser().getId())
-                .setAccess(IOperation.Access.allow)
-                .setBaseclassId(adminSecurityContext.getUser().getSecurity().getId())
+                .setUserId(adminSecurityContext.user().getId())
+                .setAccess(Access.allow)
+                .setSecuredId(adminSecurityContext.user().getId())
                 .setOperationId(allOps.getId())
                 .setName(name);
         ResponseEntity<UserToBaseclass> userToBaseClassResponse = this.restTemplate.exchange("/userToBaseclass/create",HttpMethod.POST,new HttpEntity<>( request), UserToBaseclass.class);

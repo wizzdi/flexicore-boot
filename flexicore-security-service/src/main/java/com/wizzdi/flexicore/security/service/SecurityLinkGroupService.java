@@ -1,7 +1,7 @@
 package com.wizzdi.flexicore.security.service;
 
 import com.flexicore.model.*;
-import com.flexicore.security.SecurityContextBase;
+import com.wizzdi.segmantix.model.SecurityContext;
 import com.wizzdi.flexicore.boot.base.interfaces.Plugin;
 import com.wizzdi.flexicore.security.data.SecurityLinkGroupRepository;
 import com.wizzdi.flexicore.security.events.BasicUpdated;
@@ -40,7 +40,7 @@ public class SecurityLinkGroupService implements Plugin {
 		securityLinkGroupRepository.massMerge(list);
 	}
 
-	public <T extends Baseclass> List<T> listByIds(Class<T> c,Set<String> ids,  SecurityContextBase securityContext) {
+	public <T extends Baseclass> List<T> listByIds(Class<T> c, Set<String> ids, SecurityContext securityContext) {
 		return securityLinkGroupRepository.listByIds(c, ids, securityContext);
 	}
 
@@ -50,7 +50,7 @@ public class SecurityLinkGroupService implements Plugin {
         return basicService.updateBasicNoMerge(securityLinkGroupCreate, securityLinkGroup);
 	}
 
-	public SecurityLinkGroup updateSecurityLinkGroup(SecurityLinkGroupUpdate securityLinkGroupUpdate, SecurityContextBase securityContext){
+	public SecurityLinkGroup updateSecurityLinkGroup(SecurityLinkGroupUpdate securityLinkGroupUpdate, SecurityContext securityContext){
 		SecurityLinkGroup securityLinkGroup=securityLinkGroupUpdate.getSecurityLinkGroup();
 		if(updateSecurityLinkGroupNoMerge(securityLinkGroupUpdate,securityLinkGroup)){
 			securityLinkGroupRepository.merge(securityLinkGroup);
@@ -59,27 +59,27 @@ public class SecurityLinkGroupService implements Plugin {
 	}
 
 
-	public <T extends Baseclass> T getByIdOrNull(String id,Class<T> c, SecurityContextBase securityContext) {
+	public <T extends Baseclass> T getByIdOrNull(String id, Class<T> c, SecurityContext securityContext) {
 		return securityLinkGroupRepository.getByIdOrNull(id,c,securityContext);
 	}
 
-	public PaginationResponse<SecurityLinkGroup> getAllSecurityLinkGroups(SecurityLinkGroupFilter securityLinkGroupFilter, SecurityContextBase securityContext) {
+	public PaginationResponse<SecurityLinkGroup> getAllSecurityLinkGroups(SecurityLinkGroupFilter securityLinkGroupFilter, SecurityContext securityContext) {
 		List<SecurityLinkGroup> list= listAllSecurityLinkGroups(securityLinkGroupFilter, securityContext);
 		long count=securityLinkGroupRepository.countAllSecurityLinkGroups(securityLinkGroupFilter,securityContext);
 		return new PaginationResponse<>(list,securityLinkGroupFilter,count);
 	}
 
-	public List<SecurityLinkGroup> listAllSecurityLinkGroups(SecurityLinkGroupFilter securityLinkGroupFilter, SecurityContextBase securityContext) {
+	public List<SecurityLinkGroup> listAllSecurityLinkGroups(SecurityLinkGroupFilter securityLinkGroupFilter, SecurityContext securityContext) {
 		return securityLinkGroupRepository.listAllSecurityLinkGroups(securityLinkGroupFilter, securityContext);
 	}
 
-	public SecurityLinkGroup createSecurityLinkGroup(SecurityLinkGroupCreate securityLinkGroupCreate, SecurityContextBase securityContext){
+	public SecurityLinkGroup createSecurityLinkGroup(SecurityLinkGroupCreate securityLinkGroupCreate, SecurityContext securityContext){
 		SecurityLinkGroup securityLinkGroup= createSecurityLinkGroupNoMerge(securityLinkGroupCreate,securityContext);
 		securityLinkGroupRepository.merge(securityLinkGroup);
 		return securityLinkGroup;
 	}
 
-	public SecurityLinkGroup createSecurityLinkGroupNoMerge(SecurityLinkGroupCreate securityLinkGroupCreate, SecurityContextBase securityContext){
+	public SecurityLinkGroup createSecurityLinkGroupNoMerge(SecurityLinkGroupCreate securityLinkGroupCreate, SecurityContext securityContext){
 		SecurityLinkGroup securityLinkGroup=new SecurityLinkGroup();
 		securityLinkGroup.setId(UUID.randomUUID().toString());
 		updateSecurityLinkGroupNoMerge(securityLinkGroupCreate,securityLinkGroup);
@@ -87,7 +87,7 @@ public class SecurityLinkGroupService implements Plugin {
 		return securityLinkGroup;
 	}
 
-	public PaginationResponse<SecurityLinkGroupContainer> getAllSecurityLinkGroupContainers(SecurityLinkGroupFilter securityLinkGroupFilter, SecurityContextBase securityContext) {
+	public PaginationResponse<SecurityLinkGroupContainer> getAllSecurityLinkGroupContainers(SecurityLinkGroupFilter securityLinkGroupFilter, SecurityContext securityContext) {
 		SecurityLinkFilter securityLinkFilter = securityLinkGroupFilter.getSecurityLinkFilter();
 		List<SecurityLinkOrder> sorting = null;
 		if (securityLinkFilter != null) {

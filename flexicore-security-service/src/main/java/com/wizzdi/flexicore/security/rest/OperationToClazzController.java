@@ -3,7 +3,7 @@ package com.wizzdi.flexicore.security.rest;
 import com.flexicore.annotations.IOperation;
 import com.flexicore.annotations.OperationsInside;
 import com.flexicore.model.OperationToClazz;
-import com.flexicore.security.SecurityContextBase;
+import com.wizzdi.segmantix.model.SecurityContext;
 import com.wizzdi.flexicore.boot.base.interfaces.Plugin;
 import com.wizzdi.flexicore.security.request.OperationToClazzCreate;
 import com.wizzdi.flexicore.security.request.OperationToClazzFilter;
@@ -30,21 +30,21 @@ public class OperationToClazzController implements Plugin {
 
     @IOperation(Name = "creates OperationToClazz", Description = "creates OperationToClazz")
     @PostMapping("/create")
-    public OperationToClazz create(@RequestBody @Validated(Create.class) OperationToClazzCreate operationToClazzCreate, @RequestAttribute SecurityContextBase securityContext) {
+    public OperationToClazz create(@RequestBody @Validated(Create.class) OperationToClazzCreate operationToClazzCreate, @RequestAttribute SecurityContext securityContext) {
 
         return operationToClazzService.createOperationToClazz(operationToClazzCreate, securityContext);
     }
 
     @IOperation(Name = "returns OperationToClazz", Description = "returns OperationToClazz")
     @PostMapping("/getAll")
-    public PaginationResponse<OperationToClazz> getAll(@RequestBody @Valid OperationToClazzFilter operationToClazzFilter, @RequestAttribute SecurityContextBase securityContext) {
+    public PaginationResponse<OperationToClazz> getAll(@RequestBody @Valid OperationToClazzFilter operationToClazzFilter, @RequestAttribute SecurityContext securityContext) {
 
         return operationToClazzService.getAllOperationToClazz(operationToClazzFilter, securityContext);
     }
 
     @IOperation(Name = "updates OperationToClazz", Description = "updates OperationToClazz")
     @PutMapping("/update")
-    public OperationToClazz update(@RequestBody @Validated(Update.class) OperationToClazzUpdate operationToClazzUpdate, @RequestAttribute SecurityContextBase securityContext) {
+    public OperationToClazz update(@RequestBody @Validated(Update.class) OperationToClazzUpdate operationToClazzUpdate, @RequestAttribute SecurityContext securityContext) {
 
         return operationToClazzService.updateOperationToClazz(operationToClazzUpdate, securityContext);
     }

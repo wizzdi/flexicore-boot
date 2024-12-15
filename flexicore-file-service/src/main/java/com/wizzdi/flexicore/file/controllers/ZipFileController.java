@@ -8,7 +8,7 @@ package com.wizzdi.flexicore.file.controllers;
 
 
 import com.flexicore.annotations.OperationsInside;
-import com.flexicore.security.SecurityContextBase;
+import com.wizzdi.segmantix.model.SecurityContext;
 import com.wizzdi.flexicore.boot.base.interfaces.Plugin;
 import com.wizzdi.flexicore.file.model.ZipFile;
 import com.wizzdi.flexicore.file.request.ZipAndDownloadRequest;
@@ -51,7 +51,7 @@ public class ZipFileController implements Plugin {
      */
     @PostMapping("zipAndDownload")
     @Operation(summary = "zipAndDownload", description = "Mass Download")
-    public ResponseEntity<Resource> zipAndDownload(@RequestBody ZipAndDownloadRequest zipAndDownload, @RequestAttribute SecurityContextBase securityContext) {
+    public ResponseEntity<Resource> zipAndDownload(@RequestBody ZipAndDownloadRequest zipAndDownload, @RequestAttribute SecurityContext securityContext) {
         zipFileService.validate(zipAndDownload, securityContext);
         ZipFile zipFile = zipFileService.zipAndDownload(zipAndDownload, securityContext);
 
@@ -62,7 +62,7 @@ public class ZipFileController implements Plugin {
 
     @PostMapping("getOrCreateZipFile")
     @Operation(summary = "getOrCreateZipFile", description = "getOrCreateZipFile")
-    public ZipFile getOrCreateZipFile(@RequestBody   ZipAndDownloadRequest zipAndDownload, @RequestAttribute SecurityContextBase securityContext) {
+    public ZipFile getOrCreateZipFile(@RequestBody   ZipAndDownloadRequest zipAndDownload, @RequestAttribute SecurityContext securityContext) {
         zipFileService.validate(zipAndDownload, securityContext);
         return zipFileService.zipAndDownload(zipAndDownload, securityContext);
     }
@@ -70,7 +70,7 @@ public class ZipFileController implements Plugin {
 
     @PostMapping("calculateZipsMd5")
     @Operation(summary = "calculateZipsMd5", description = "calculateZipsMd5")
-    public void calculateZipsMd5(@RequestBody ZipFileFilter zipFileFilter, @RequestAttribute SecurityContextBase securityContext) {
+    public void calculateZipsMd5(@RequestBody ZipFileFilter zipFileFilter, @RequestAttribute SecurityContext securityContext) {
         zipFileService.validate(zipFileFilter, securityContext);
         zipFileService.calculateZipsMd5(zipFileFilter, securityContext);
     }

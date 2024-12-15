@@ -1,5 +1,6 @@
 package com.wizzdi.security.bearer.jwt;
 
+import com.wizzdi.segmantix.model.Access;
 import com.flexicore.annotations.IOperation;
 import com.flexicore.model.Baseclass;
 import com.wizzdi.flexicore.security.interfaces.OperationAnnotationConverter;

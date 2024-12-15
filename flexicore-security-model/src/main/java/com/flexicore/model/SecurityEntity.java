@@ -11,7 +11,7 @@ import jakarta.persistence.MappedSuperclass;
 
 
 @MappedSuperclass
-public abstract class SecurityEntity extends SecuredBasic {
+public abstract class SecurityEntity extends Baseclass {
 
 
 

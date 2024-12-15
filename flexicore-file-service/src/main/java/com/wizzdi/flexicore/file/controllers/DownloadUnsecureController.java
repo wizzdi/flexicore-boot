@@ -7,7 +7,7 @@
 package com.wizzdi.flexicore.file.controllers;
 
 import com.flexicore.annotations.IOperation;
-import com.flexicore.annotations.IOperation.Access;
+import com.wizzdi.segmantix.model.Access;
 import com.flexicore.annotations.OperationsInside;
 import com.wizzdi.flexicore.boot.base.interfaces.Plugin;
 import com.wizzdi.flexicore.file.service.FileResourceService;

@@ -1,9 +1,9 @@
 package com.wizzdi.flexicore.security.test.rest;
 
-import com.flexicore.annotations.IOperation;
+import com.wizzdi.segmantix.model.SecurityContext;
+import com.wizzdi.segmantix.model.Access;
 import com.flexicore.model.SecurityOperation;
 import com.flexicore.model.TenantToBaseclass;
-import com.flexicore.security.SecurityContextBase;
 import com.wizzdi.flexicore.security.request.TenantToBaseclassCreate;
 import com.wizzdi.flexicore.security.request.TenantToBaseclassFilter;
 import com.wizzdi.flexicore.security.request.TenantToBaseclassUpdate;
@@ -68,7 +68,7 @@ public class TenantToBaseclassControllerTest {
     @Autowired
     @Qualifier("adminSecurityContext")
     @Lazy
-    private SecurityContextBase adminSecurityContext;
+    private SecurityContext adminSecurityContext;
 
     @BeforeAll
     public void init() {
@@ -87,8 +87,8 @@ public class TenantToBaseclassControllerTest {
         String name = UUID.randomUUID().toString();
         TenantToBaseclassCreate request = new TenantToBaseclassCreate()
                 .setTenantId(adminSecurityContext.getTenantToCreateIn().getId())
-                .setAccess(IOperation.Access.allow)
-                .setBaseclassId(adminSecurityContext.getUser().getSecurity().getId())
+                .setAccess(Access.allow)
+                .setSecuredId(adminSecurityContext.user().getId())
                 .setOperationId(allOps.getId())
                 .setName(name);
         ResponseEntity<TenantToBaseclass> tenantToBaseClassPremissionResponse = this.restTemplate.postForEntity("/tenantToBaseclass/create", request, TenantToBaseclass.class);

@@ -17,11 +17,11 @@ import jakarta.persistence.ManyToOne;
 
 @AnnotatedClazz(Category = "Tenancy", Name = "TenantToUser", Description = "baseClass Tenancy")
 @Entity
-public class TenantToUser extends SecuredBasic {
+public class TenantToUser extends Baseclass {
 
     private boolean defaultTenant;
     @ManyToOne(targetEntity = SecurityTenant.class)
-    private SecurityTenant tenant;
+    private SecurityTenant targetTenant;
     @ManyToOne(targetEntity = SecurityUser.class)
     private SecurityUser user;
 
@@ -35,12 +35,12 @@ public class TenantToUser extends SecuredBasic {
     }
 
     @ManyToOne(targetEntity = SecurityTenant.class)
-    public SecurityTenant getTenant() {
-        return tenant;
+    public SecurityTenant getTargetTenant() {
+        return targetTenant;
     }
 
-    public <T extends TenantToUser> T setTenant(SecurityTenant tenant) {
-        this.tenant = tenant;
+    public <T extends TenantToUser> T setTargetTenant(SecurityTenant tenant) {
+        this.targetTenant = tenant;
         return (T) this;
     }
 

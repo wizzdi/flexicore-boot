@@ -3,9 +3,9 @@ package com.wizzdi.flexicore.security.service;
 import com.flexicore.model.Baseclass;
 import com.flexicore.model.Basic;
 import com.flexicore.model.SecurityUser;
+import com.wizzdi.segmantix.model.SecurityContext;
 import com.wizzdi.flexicore.boot.base.interfaces.Plugin;
 import com.wizzdi.flexicore.security.data.SecurityUserRepository;
-import com.flexicore.security.SecurityContextBase;
 import com.wizzdi.flexicore.security.request.SecurityUserCreate;
 import com.wizzdi.flexicore.security.request.SecurityUserFilter;
 import com.wizzdi.flexicore.security.request.SecurityUserUpdate;
@@ -14,7 +14,6 @@ import jakarta.persistence.metamodel.SingularAttribute;
 import org.pf4j.Extension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Set;
@@ -30,14 +29,14 @@ public class SecurityUserService implements Plugin {
 	private SecurityUserRepository securityUserRepository;
 
 
-	public SecurityUser createSecurityUser(SecurityUserCreate securityUserCreate, SecurityContextBase securityContext){
+	public SecurityUser createSecurityUser(SecurityUserCreate securityUserCreate, SecurityContext securityContext){
 		SecurityUser securityUser= createSecurityUserNoMerge(securityUserCreate,securityContext);
 		securityUserRepository.merge(securityUser);
 		return securityUser;
 	}
 
 
-	public SecurityUser createSecurityUserNoMerge(SecurityUserCreate securityUserCreate, SecurityContextBase securityContext){
+	public SecurityUser createSecurityUserNoMerge(SecurityUserCreate securityUserCreate, SecurityContext securityContext){
 		SecurityUser securityUser=new SecurityUser();
 		securityUser.setId(UUID.randomUUID().toString());
 		updateSecurityUserNoMerge(securityUserCreate,securityUser);
@@ -49,7 +48,7 @@ public class SecurityUserService implements Plugin {
 		return securityEntityService.updateNoMerge(securityUserCreate,securityUser);
 	}
 
-	public SecurityUser updateSecurityUser(SecurityUserUpdate securityUserUpdate, SecurityContextBase securityContext){
+	public SecurityUser updateSecurityUser(SecurityUserUpdate securityUserUpdate, SecurityContext securityContext){
 		SecurityUser securityUser=securityUserUpdate.getSecurityUser();
 		if(updateSecurityUserNoMerge(securityUserUpdate,securityUser)){
 			securityUserRepository.merge(securityUser);
@@ -59,29 +58,29 @@ public class SecurityUserService implements Plugin {
 
 
 
-	public PaginationResponse<SecurityUser> getAllSecurityUsers(SecurityUserFilter securityUserFilter, SecurityContextBase securityContext) {
+	public PaginationResponse<SecurityUser> getAllSecurityUsers(SecurityUserFilter securityUserFilter, SecurityContext securityContext) {
 		List<SecurityUser> list= listAllSecurityUsers(securityUserFilter, securityContext);
 		long count=securityUserRepository.countAllSecurityUsers(securityUserFilter,securityContext);
 		return new PaginationResponse<>(list,securityUserFilter,count);
 	}
 
-	public List<SecurityUser> listAllSecurityUsers(SecurityUserFilter securityUserFilter, SecurityContextBase securityContext) {
+	public List<SecurityUser> listAllSecurityUsers(SecurityUserFilter securityUserFilter, SecurityContext securityContext) {
 		return securityUserRepository.listAllSecurityUsers(securityUserFilter, securityContext);
 	}
 
-	public <T extends Baseclass> List<T> listByIds(Class<T> c, Set<String> ids, SecurityContextBase securityContext) {
+	public <T extends Baseclass> List<T> listByIds(Class<T> c, Set<String> ids, SecurityContext securityContext) {
 		return securityUserRepository.listByIds(c, ids, securityContext);
 	}
 
-	public <T extends Baseclass> T getByIdOrNull(String id, Class<T> c, SecurityContextBase securityContext) {
+	public <T extends Baseclass> T getByIdOrNull(String id, Class<T> c, SecurityContext securityContext) {
 		return securityUserRepository.getByIdOrNull(id, c, securityContext);
 	}
 
-	public <D extends Basic, E extends Baseclass, T extends D> T getByIdOrNull(String id, Class<T> c, SingularAttribute<D, E> baseclassAttribute, SecurityContextBase securityContext) {
+	public <D extends Basic, E extends Baseclass, T extends D> T getByIdOrNull(String id, Class<T> c, SingularAttribute<D, E> baseclassAttribute, SecurityContext securityContext) {
 		return securityUserRepository.getByIdOrNull(id, c, baseclassAttribute, securityContext);
 	}
 
-	public <D extends Basic, E extends Baseclass, T extends D> List<T> listByIds(Class<T> c, Set<String> ids, SingularAttribute<D, E> baseclassAttribute, SecurityContextBase securityContext) {
+	public <D extends Basic, E extends Baseclass, T extends D> List<T> listByIds(Class<T> c, Set<String> ids, SingularAttribute<D, E> baseclassAttribute, SecurityContext securityContext) {
 		return securityUserRepository.listByIds(c, ids, baseclassAttribute, securityContext);
 	}
 

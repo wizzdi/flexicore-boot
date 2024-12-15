@@ -2,8 +2,8 @@ package com.wizzdi.flexicore.boot.dynamic.invokers.data;
 
 import com.flexicore.model.Baseclass;
 import com.flexicore.model.Basic;
-import com.flexicore.model.SecuredBasic_;
-import com.flexicore.security.SecurityContextBase;
+import com.flexicore.model.Basic_;
+import com.wizzdi.segmantix.model.SecurityContext;
 import com.wizzdi.flexicore.boot.base.interfaces.Plugin;
 import com.wizzdi.flexicore.boot.dynamic.invokers.model.DynamicExecution;
 import com.wizzdi.flexicore.boot.dynamic.invokers.model.DynamicExecution_;
@@ -18,7 +18,6 @@ import com.wizzdi.flexicore.security.request.BasicPropertiesFilter;
 import org.pf4j.Extension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -37,13 +36,13 @@ public class DynamicExecutionRepository implements Plugin {
 	@Autowired
 	private SecuredBasicRepository securedBasicRepository;
 
-	public List<DynamicExecution> listAllDynamicExecutions(DynamicExecutionFilter dynamicExecutionFilter, SecurityContextBase securityContext) {
+	public List<DynamicExecution> listAllDynamicExecutions(DynamicExecutionFilter dynamicExecutionFilter, SecurityContext securityContext) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<DynamicExecution> q = cb.createQuery(DynamicExecution.class);
 		Root<DynamicExecution> r = q.from(DynamicExecution.class);
 		List<Predicate> predicates = new ArrayList<>();
 		addDynamicExecutionPredicates(dynamicExecutionFilter, cb, q, r, predicates, securityContext);
-		q.select(r).where(predicates.toArray(Predicate[]::new)).orderBy(cb.asc(r.get(SecuredBasic_.name)));
+		q.select(r).where(predicates.toArray(Predicate[]::new)).orderBy(cb.asc(r.get(Basic_.name)));
 		TypedQuery<DynamicExecution> query = em.createQuery(q);
 		BasicRepository.addPagination(dynamicExecutionFilter, query);
 		return query.getResultList();
@@ -51,7 +50,7 @@ public class DynamicExecutionRepository implements Plugin {
 	}
 
 
-	public <T extends DynamicExecution> void addDynamicExecutionPredicates(DynamicExecutionFilter dynamicExecutionFilter, CriteriaBuilder cb, CommonAbstractCriteria q, From<?,T> r, List<Predicate> predicates, SecurityContextBase securityContext) {
+	public <T extends DynamicExecution> void addDynamicExecutionPredicates(DynamicExecutionFilter dynamicExecutionFilter, CriteriaBuilder cb, CommonAbstractCriteria q, From<?,T> r, List<Predicate> predicates, SecurityContext securityContext) {
 		securedBasicRepository.addSecuredBasicPredicates(dynamicExecutionFilter.getBasicPropertiesFilter(),cb,q,r,predicates,securityContext);
 		DynamicInvokerMethodFilter dynamicInvokerMethodFilter = dynamicExecutionFilter.getDynamicInvokerMethodFilter();
 		if(dynamicInvokerMethodFilter!=null){
@@ -132,7 +131,7 @@ public class DynamicExecutionRepository implements Plugin {
 		}
 	}
 
-	public long countAllDynamicExecutions(DynamicExecutionFilter dynamicExecutionFilter, SecurityContextBase securityContext) {
+	public long countAllDynamicExecutions(DynamicExecutionFilter dynamicExecutionFilter, SecurityContext securityContext) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Long> q = cb.createQuery(Long.class);
 		Root<DynamicExecution> r = q.from(DynamicExecution.class);
@@ -153,19 +152,19 @@ public class DynamicExecutionRepository implements Plugin {
 		return em.createQuery(q).getResultList();
 	}
 
-	public <T extends Baseclass> List<T> listByIds(Class<T> c, Set<String> ids, SecurityContextBase securityContext) {
+	public <T extends Baseclass> List<T> listByIds(Class<T> c, Set<String> ids, SecurityContext securityContext) {
 		return securedBasicRepository.listByIds(c, ids, securityContext);
 	}
 
-	public <T extends Baseclass> T getByIdOrNull(String id, Class<T> c, SecurityContextBase securityContext) {
+	public <T extends Baseclass> T getByIdOrNull(String id, Class<T> c, SecurityContext securityContext) {
 		return securedBasicRepository.getByIdOrNull(id, c, securityContext);
 	}
 
-	public <D extends Basic, E extends Baseclass, T extends D> T getByIdOrNull(String id, Class<T> c, SingularAttribute<D, E> baseclassAttribute, SecurityContextBase securityContext) {
+	public <D extends Basic, E extends Baseclass, T extends D> T getByIdOrNull(String id, Class<T> c, SingularAttribute<D, E> baseclassAttribute, SecurityContext securityContext) {
 		return securedBasicRepository.getByIdOrNull(id, c, baseclassAttribute, securityContext);
 	}
 
-	public <D extends Basic, E extends Baseclass, T extends D> List<T> listByIds(Class<T> c, Set<String> ids, SingularAttribute<D, E> baseclassAttribute, SecurityContextBase securityContext) {
+	public <D extends Basic, E extends Baseclass, T extends D> List<T> listByIds(Class<T> c, Set<String> ids, SingularAttribute<D, E> baseclassAttribute, SecurityContext securityContext) {
 		return securedBasicRepository.listByIds(c, ids, baseclassAttribute, securityContext);
 	}
 

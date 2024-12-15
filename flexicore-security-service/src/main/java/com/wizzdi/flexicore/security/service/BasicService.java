@@ -1,7 +1,7 @@
 package com.wizzdi.flexicore.security.service;
 
 import com.flexicore.model.Basic;
-import com.flexicore.security.SecurityContextBase;
+import com.wizzdi.segmantix.model.SecurityContext;
 import com.wizzdi.flexicore.boot.base.interfaces.Plugin;
 import com.wizzdi.flexicore.security.request.BasicCreate;
 import com.wizzdi.flexicore.security.request.BasicPropertiesFilter;
@@ -56,17 +56,17 @@ public class BasicService implements Plugin {
 	}
 
 	@Deprecated
-	public void validate(BasicCreate basicCreate, SecurityContextBase securityContext) {
+	public void validate(BasicCreate basicCreate, SecurityContext securityContext) {
 
 	}
 
 	@Deprecated
-	public void validate(PaginationFilter paginationFilter, SecurityContextBase securityContext) {
+	public void validate(PaginationFilter paginationFilter, SecurityContext securityContext) {
 
 	}
 
 	@Deprecated
-	public void validate(BasicPropertiesFilter basicPropertiesFilter, SecurityContextBase securityContext) {
+	public void validate(BasicPropertiesFilter basicPropertiesFilter, SecurityContext securityContext) {
 
 	}
 

@@ -1,7 +1,7 @@
 package com.flexicore.annotations.rest;
 
 import com.flexicore.annotations.IOperation;
-import com.flexicore.annotations.IOperation.Access;
+import com.wizzdi.segmantix.model.Access;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;

@@ -3,7 +3,7 @@ package com.wizzdi.flexicore.security.service;
 import com.flexicore.model.Baseclass;
 import com.flexicore.model.Basic;
 import com.flexicore.model.OperationToGroup;
-import com.flexicore.security.SecurityContextBase;
+import com.wizzdi.segmantix.model.SecurityContext;
 import com.wizzdi.flexicore.boot.base.interfaces.Plugin;
 import com.wizzdi.flexicore.security.data.OperationToGroupRepository;
 import com.wizzdi.flexicore.security.request.OperationToGroupCreate;
@@ -14,7 +14,6 @@ import jakarta.persistence.metamodel.SingularAttribute;
 import org.pf4j.Extension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Set;
@@ -30,7 +29,7 @@ public class OperationToGroupService implements Plugin {
 	private OperationToGroupRepository operationRepository;
 
 
-	public OperationToGroup createOperationToGroup(OperationToGroupCreate operationToGroupCreate, SecurityContextBase securityContext){
+	public OperationToGroup createOperationToGroup(OperationToGroupCreate operationToGroupCreate, SecurityContext securityContext){
 		OperationToGroup operation= createOperationToGroupNoMerge(operationToGroupCreate,securityContext);
 		operationRepository.merge(operation);
 		return operation;
@@ -39,7 +38,7 @@ public class OperationToGroupService implements Plugin {
 
 
 
-	public OperationToGroup createOperationToGroupNoMerge(OperationToGroupCreate operationToGroupCreate, SecurityContextBase securityContext){
+	public OperationToGroup createOperationToGroupNoMerge(OperationToGroupCreate operationToGroupCreate, SecurityContext securityContext){
 		OperationToGroup operation=new OperationToGroup();
 		operation.setId(UUID.randomUUID().toString());
 		updateOperationToGroupNoMerge(operationToGroupCreate,operation);
@@ -60,7 +59,7 @@ public class OperationToGroupService implements Plugin {
 		return update;
 	}
 
-	public OperationToGroup updateOperationToGroup(OperationToGroupUpdate operationToGroupUpdate, SecurityContextBase securityContext){
+	public OperationToGroup updateOperationToGroup(OperationToGroupUpdate operationToGroupUpdate, SecurityContext securityContext){
 		OperationToGroup operation=operationToGroupUpdate.getOperationToGroup();
 		if(updateOperationToGroupNoMerge(operationToGroupUpdate,operation)){
 			operationRepository.merge(operation);
@@ -77,13 +76,13 @@ public class OperationToGroupService implements Plugin {
 
 
 
-	public PaginationResponse<OperationToGroup> getAllOperationToGroups(OperationToGroupFilter operationToGroupFilter, SecurityContextBase securityContext) {
+	public PaginationResponse<OperationToGroup> getAllOperationToGroups(OperationToGroupFilter operationToGroupFilter, SecurityContext securityContext) {
 		List<OperationToGroup> list= listAllOperationToGroups(operationToGroupFilter, securityContext);
 		long count=operationRepository.countAllOperationToGroups(operationToGroupFilter,securityContext);
 		return new PaginationResponse<>(list,operationToGroupFilter,count);
 	}
 
-	public List<OperationToGroup> listAllOperationToGroups(OperationToGroupFilter operationToGroupFilter, SecurityContextBase securityContext) {
+	public List<OperationToGroup> listAllOperationToGroups(OperationToGroupFilter operationToGroupFilter, SecurityContext securityContext) {
 		return operationRepository.listAllOperationToGroups(operationToGroupFilter, securityContext);
 	}
 
@@ -97,19 +96,19 @@ public class OperationToGroupService implements Plugin {
 		operationRepository.massMerge(toMerge, updatedate, propagateEvents);
 	}
 
-	public <T extends Baseclass> List<T> listByIds(Class<T> c, Set<String> ids, SecurityContextBase securityContext) {
+	public <T extends Baseclass> List<T> listByIds(Class<T> c, Set<String> ids, SecurityContext securityContext) {
 		return operationRepository.listByIds(c, ids, securityContext);
 	}
 
-	public <T extends Baseclass> T getByIdOrNull(String id, Class<T> c, SecurityContextBase securityContext) {
+	public <T extends Baseclass> T getByIdOrNull(String id, Class<T> c, SecurityContext securityContext) {
 		return operationRepository.getByIdOrNull(id, c, securityContext);
 	}
 
-	public <D extends Basic, E extends Baseclass, T extends D> T getByIdOrNull(String id, Class<T> c, SingularAttribute<D, E> baseclassAttribute, SecurityContextBase securityContext) {
+	public <D extends Basic, E extends Baseclass, T extends D> T getByIdOrNull(String id, Class<T> c, SingularAttribute<D, E> baseclassAttribute, SecurityContext securityContext) {
 		return operationRepository.getByIdOrNull(id, c, baseclassAttribute, securityContext);
 	}
 
-	public <D extends Basic, E extends Baseclass, T extends D> List<T> listByIds(Class<T> c, Set<String> ids, SingularAttribute<D, E> baseclassAttribute, SecurityContextBase securityContext) {
+	public <D extends Basic, E extends Baseclass, T extends D> List<T> listByIds(Class<T> c, Set<String> ids, SingularAttribute<D, E> baseclassAttribute, SecurityContext securityContext) {
 		return operationRepository.listByIds(c, ids, baseclassAttribute, securityContext);
 	}
 

@@ -1,7 +1,7 @@
 package com.wizzdi.flexicore.file;
 
 import com.flexicore.model.Role;
-import com.flexicore.security.SecurityContextBase;
+import com.wizzdi.segmantix.model.SecurityContext;
 import com.wizzdi.flexicore.file.app.App;
 import com.wizzdi.flexicore.file.model.FileResource;
 import com.wizzdi.flexicore.file.service.FileResourceService;
@@ -67,7 +67,7 @@ public class FileDownloadControllerServiceTest {
     private FileResourceService fileResourceService;
     @Autowired
     @Lazy
-    private SecurityContextBase adminSecurityContext;
+    private SecurityContext adminSecurityContext;
     private FileResource fileResource;
     private String md5;
     @BeforeAll

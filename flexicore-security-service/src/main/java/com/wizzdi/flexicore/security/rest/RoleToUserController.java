@@ -3,7 +3,7 @@ package com.wizzdi.flexicore.security.rest;
 import com.flexicore.annotations.IOperation;
 import com.flexicore.annotations.OperationsInside;
 import com.flexicore.model.RoleToUser;
-import com.flexicore.security.SecurityContextBase;
+import com.wizzdi.segmantix.model.SecurityContext;
 import com.wizzdi.flexicore.boot.base.interfaces.Plugin;
 import com.wizzdi.flexicore.security.request.RoleToUserCreate;
 import com.wizzdi.flexicore.security.request.RoleToUserFilter;
@@ -30,21 +30,21 @@ public class RoleToUserController implements Plugin {
 
     @IOperation(Name = "creates RoleToUser", Description = "creates RoleToUser")
     @PostMapping("/create")
-    public RoleToUser create(@RequestBody @Validated(Create.class) RoleToUserCreate roleToUserCreate, @RequestAttribute SecurityContextBase securityContext) {
+    public RoleToUser create(@RequestBody @Validated(Create.class) RoleToUserCreate roleToUserCreate, @RequestAttribute SecurityContext securityContext) {
 
         return roleToUserService.createRoleToUser(roleToUserCreate, securityContext);
     }
 
     @IOperation(Name = "returns RoleToUser", Description = "returns RoleToUser")
     @PostMapping("/getAll")
-    public PaginationResponse<RoleToUser> getAll(@RequestBody @Valid RoleToUserFilter roleToUserFilter, @RequestAttribute SecurityContextBase securityContext) {
+    public PaginationResponse<RoleToUser> getAll(@RequestBody @Valid RoleToUserFilter roleToUserFilter, @RequestAttribute SecurityContext securityContext) {
 
         return roleToUserService.getAllRoleToUsers(roleToUserFilter, securityContext);
     }
 
     @IOperation(Name = "updates RoleToUser", Description = "updates RoleToUser")
     @PutMapping("/update")
-    public RoleToUser update(@RequestBody @Validated(Update.class) RoleToUserUpdate roleToUserUpdate, @RequestAttribute SecurityContextBase securityContext) {
+    public RoleToUser update(@RequestBody @Validated(Update.class) RoleToUserUpdate roleToUserUpdate, @RequestAttribute SecurityContext securityContext) {
 
         return roleToUserService.updateRoleToUser(roleToUserUpdate, securityContext);
     }

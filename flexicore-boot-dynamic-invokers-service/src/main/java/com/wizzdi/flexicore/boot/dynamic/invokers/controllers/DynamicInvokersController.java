@@ -2,7 +2,7 @@ package com.wizzdi.flexicore.boot.dynamic.invokers.controllers;
 
 import com.flexicore.annotations.IOperation;
 import com.flexicore.annotations.OperationsInside;
-import com.flexicore.security.SecurityContextBase;
+import com.wizzdi.segmantix.model.SecurityContext;
 import com.wizzdi.flexicore.boot.base.interfaces.Plugin;
 import com.wizzdi.flexicore.boot.dynamic.invokers.request.DynamicInvokerFilter;
 import com.wizzdi.flexicore.boot.dynamic.invokers.request.ExecuteInvokerRequest;
@@ -29,7 +29,7 @@ public class DynamicInvokersController implements Plugin {
 	@IOperation(Name = "returns dynamicInvoker",Description = "returns dynamicInvoker")
 	@PostMapping("/getAll")
 	public PaginationResponse<InvokerInfo> getAll(
-			@RequestBody DynamicInvokerFilter dynamicInvokerFilter, @RequestAttribute SecurityContextBase securityContext){
+			@RequestBody DynamicInvokerFilter dynamicInvokerFilter, @RequestAttribute SecurityContext securityContext){
 		dynamicInvokerService.validate(dynamicInvokerFilter,securityContext);
 		return dynamicInvokerService.getAllDynamicInvokers(dynamicInvokerFilter,securityContext);
 	}
@@ -37,14 +37,14 @@ public class DynamicInvokersController implements Plugin {
 	@IOperation(Name = "executes dynamicInvoker",Description = "executes dynamicInvoker")
 	@PostMapping("/executeInvoker")
 	public ExecuteInvokersResponse executeInvoker(
-			@RequestBody ExecuteInvokerRequest executeInvokerRequest, @RequestAttribute SecurityContextBase securityContext){
+			@RequestBody ExecuteInvokerRequest executeInvokerRequest, @RequestAttribute SecurityContext securityContext){
 		return dynamicInvokerService.executeInvoker(executeInvokerRequest,securityContext);
 	}
 
 	@IOperation(Name = "returns dynamicInvoker holders",Description = "returns dynamicInvoker holders")
 	@PostMapping("/getAllInvokerHolders")
 	public PaginationResponse<InvokerHolder> getAllInvokerHolders(
-			@RequestBody DynamicInvokerFilter dynamicInvokerFilter, @RequestAttribute SecurityContextBase securityContext){
+			@RequestBody DynamicInvokerFilter dynamicInvokerFilter, @RequestAttribute SecurityContext securityContext){
 		dynamicInvokerService.validate(dynamicInvokerFilter,securityContext);
 		return dynamicInvokerService.getAllDynamicInvokerHolders(dynamicInvokerFilter,securityContext);
 	}

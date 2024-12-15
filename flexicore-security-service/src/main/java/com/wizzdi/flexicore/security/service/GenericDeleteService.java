@@ -1,7 +1,7 @@
 package com.wizzdi.flexicore.security.service;
 
 import com.flexicore.model.Basic;
-import com.flexicore.security.SecurityContextBase;
+import com.wizzdi.segmantix.model.SecurityContext;
 import com.wizzdi.flexicore.boot.base.interfaces.Plugin;
 import com.wizzdi.flexicore.security.data.GenericDeleteRepository;
 import com.wizzdi.flexicore.security.request.DeleteObjectRequest;
@@ -25,7 +25,7 @@ public class GenericDeleteService implements Plugin {
     @Autowired
     private GenericDeleteRepository genericDeleteRepository;
 
-    public void validate(DeleteObjectsRequest deleteObjectsRequest, SecurityContextBase securityContext) {
+    public void validate(DeleteObjectsRequest deleteObjectsRequest, SecurityContext securityContext) {
         if(deleteObjectsRequest.getEntries()==null){
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"entries field cannot be null");
         }
@@ -53,7 +53,7 @@ public class GenericDeleteService implements Plugin {
         }
     }
 
-    public DeleteResponse softDelete(DeleteObjectsRequest deleteObjectsRequest, SecurityContextBase securityContext) {
+    public DeleteResponse softDelete(DeleteObjectsRequest deleteObjectsRequest, SecurityContext securityContext) {
         List<Object> deleted=new ArrayList<>();
         List<DeleteObjectRequest> failed=new ArrayList<>();
         for (DeleteObjectRequest entry : deleteObjectsRequest.getEntries()) {

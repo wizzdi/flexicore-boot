@@ -1,6 +1,7 @@
 package com.wizzdi.flexicore.boot.dynamic.invokers.utils;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.wizzdi.segmantix.model.Access;
 import com.flexicore.annotations.IOperation;
 import com.flexicore.annotations.TypeRetention;
 import com.flexicore.model.Baseclass;
@@ -96,7 +97,7 @@ public class InvokerUtils {
 			}
 
 			@Override
-			public IOperation.Access access() {
+			public Access access() {
 				return iOperation.access();
 			}
 

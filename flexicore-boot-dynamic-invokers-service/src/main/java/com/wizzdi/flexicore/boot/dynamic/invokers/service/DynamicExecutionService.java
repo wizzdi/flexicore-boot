@@ -2,8 +2,7 @@ package com.wizzdi.flexicore.boot.dynamic.invokers.service;
 
 import com.flexicore.model.Baseclass;
 import com.flexicore.model.Basic;
-import com.flexicore.model.SecuredBasic_;
-import com.flexicore.security.SecurityContextBase;
+import com.wizzdi.segmantix.model.SecurityContext;
 import com.wizzdi.flexicore.boot.base.interfaces.Plugin;
 import com.wizzdi.flexicore.boot.dynamic.invokers.data.DynamicExecutionRepository;
 import com.wizzdi.flexicore.boot.dynamic.invokers.interfaces.ExecutionContext;
@@ -21,7 +20,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.HttpClientErrorException;
 
 import jakarta.persistence.metamodel.SingularAttribute;
@@ -45,7 +43,7 @@ public class DynamicExecutionService implements Plugin {
 	private BasicService basicService;
 
 
-	public DynamicExecution createDynamicExecution(DynamicExecutionCreate dynamicExecutionCreate, SecurityContextBase securityContext) {
+	public DynamicExecution createDynamicExecution(DynamicExecutionCreate dynamicExecutionCreate, SecurityContext securityContext) {
 		List<Object> toMerge = new ArrayList<>();
 		DynamicExecution dynamicExecution = createDynamicExecutionNoMerge(dynamicExecutionCreate, toMerge, securityContext);
 		dynamicExecutionRepository.massMerge(toMerge);
@@ -60,7 +58,7 @@ public class DynamicExecutionService implements Plugin {
 		dynamicExecutionRepository.massMerge(toMerge);
 	}
 
-	public DynamicExecution createDynamicExecutionNoMerge(DynamicExecutionCreate dynamicExecutionCreate, List<Object> toMerge, SecurityContextBase securityContext) {
+	public DynamicExecution createDynamicExecutionNoMerge(DynamicExecutionCreate dynamicExecutionCreate, List<Object> toMerge, SecurityContext securityContext) {
 		DynamicExecution dynamicExecution = new DynamicExecution();
 		dynamicExecution.setId(UUID.randomUUID().toString());
 		updateDynamicExecutionNoMerge(dynamicExecutionCreate, toMerge, dynamicExecution);
@@ -90,7 +88,7 @@ public class DynamicExecutionService implements Plugin {
 			if (!dynamicExecutionCreate.getServiceCanonicalNames().isEmpty()) {
 				List<ServiceCanonicalName> list = dynamicExecutionCreate.getServiceCanonicalNames().parallelStream()
 						.map(f -> new ServiceCanonicalName()
-								.setId(Baseclass.getBase64ID())
+								.setId(UUID.randomUUID().toString())
 								.setDynamicExecution(dynamicExecution)
 								.setServiceCanonicalName(f)
 						)
@@ -105,7 +103,7 @@ public class DynamicExecutionService implements Plugin {
 		return update;
 	}
 
-	public DynamicExecution updateDynamicExecution(DynamicExecutionUpdate dynamicExecutionUpdate, SecurityContextBase securityContext) {
+	public DynamicExecution updateDynamicExecution(DynamicExecutionUpdate dynamicExecutionUpdate, SecurityContext securityContext) {
 		DynamicExecution dynamicExecution = dynamicExecutionUpdate.getDynamicExecution();
 		List<Object> toMerge = new ArrayList<>();
 		if (updateDynamicExecutionNoMerge(dynamicExecutionUpdate, toMerge, dynamicExecution)) {
@@ -117,7 +115,7 @@ public class DynamicExecutionService implements Plugin {
 
 
 
-	public void validateCreate(DynamicExecutionCreate dynamicExecutionCreate, SecurityContextBase securityContext) {
+	public void validateCreate(DynamicExecutionCreate dynamicExecutionCreate, SecurityContext securityContext) {
 		String methodName = dynamicExecutionCreate.getMethodName();
 		if (methodName == null || methodName.isEmpty()) {
 			throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "method name must be non null");
@@ -144,36 +142,36 @@ public class DynamicExecutionService implements Plugin {
 
 	}
 
-	public void validate(DynamicExecutionFilter dynamicExecutionFilter, SecurityContextBase securityContext) {
+	public void validate(DynamicExecutionFilter dynamicExecutionFilter, SecurityContext securityContext) {
 		if(dynamicExecutionFilter.getDynamicInvokerMethodFilter()!=null){
 			dynamicInvokerService.validate(dynamicExecutionFilter.getDynamicInvokerMethodFilter(),securityContext);
 		}
 	}
 
 
-	public PaginationResponse<DynamicExecution> getAllDynamicExecutions(DynamicExecutionFilter dynamicExecutionFilter, SecurityContextBase securityContext) {
+	public PaginationResponse<DynamicExecution> getAllDynamicExecutions(DynamicExecutionFilter dynamicExecutionFilter, SecurityContext securityContext) {
 		List<DynamicExecution> list = listAllDynamicExecutions(dynamicExecutionFilter, securityContext);
 		long count = dynamicExecutionRepository.countAllDynamicExecutions(dynamicExecutionFilter, securityContext);
 		return new PaginationResponse<>(list, dynamicExecutionFilter.getPageSize(), count);
 	}
 
-	public List<DynamicExecution> listAllDynamicExecutions(DynamicExecutionFilter dynamicExecutionFilter, SecurityContextBase securityContext) {
+	public List<DynamicExecution> listAllDynamicExecutions(DynamicExecutionFilter dynamicExecutionFilter, SecurityContext securityContext) {
 		return dynamicExecutionRepository.listAllDynamicExecutions(dynamicExecutionFilter, securityContext);
 	}
 
-	public <T extends Baseclass> List<T> listByIds(Class<T> c, Set<String> ids, SecurityContextBase securityContext) {
+	public <T extends Baseclass> List<T> listByIds(Class<T> c, Set<String> ids, SecurityContext securityContext) {
 		return dynamicExecutionRepository.listByIds(c, ids, securityContext);
 	}
 
-	public <T extends Baseclass> T getByIdOrNull(String id, Class<T> c, SecurityContextBase securityContext) {
+	public <T extends Baseclass> T getByIdOrNull(String id, Class<T> c, SecurityContext securityContext) {
 		return dynamicExecutionRepository.getByIdOrNull(id, c, securityContext);
 	}
 
-	public <D extends Basic, E extends Baseclass, T extends D> T getByIdOrNull(String id, Class<T> c, SingularAttribute<D, E> baseclassAttribute, SecurityContextBase securityContext) {
+	public <D extends Basic, E extends Baseclass, T extends D> T getByIdOrNull(String id, Class<T> c, SingularAttribute<D, E> baseclassAttribute, SecurityContext securityContext) {
 		return dynamicExecutionRepository.getByIdOrNull(id, c, baseclassAttribute, securityContext);
 	}
 
-	public <D extends Basic, E extends Baseclass, T extends D> List<T> listByIds(Class<T> c, Set<String> ids, SingularAttribute<D, E> baseclassAttribute, SecurityContextBase securityContext) {
+	public <D extends Basic, E extends Baseclass, T extends D> List<T> listByIds(Class<T> c, Set<String> ids, SingularAttribute<D, E> baseclassAttribute, SecurityContext securityContext) {
 		return dynamicExecutionRepository.listByIds(c, ids, baseclassAttribute, securityContext);
 	}
 
@@ -189,9 +187,9 @@ public class DynamicExecutionService implements Plugin {
 		return dynamicExecutionRepository.findByIdOrNull(type, id);
 	}
 
-	public void validate(DynamicExecutionExampleRequest dynamicExecutionExampleRequest, SecurityContextBase securityContext) {
+	public void validate(DynamicExecutionExampleRequest dynamicExecutionExampleRequest, SecurityContext securityContext) {
 		String id = dynamicExecutionExampleRequest.getId();
-		DynamicExecution dynamicExecution = id != null ? getByIdOrNull(id, DynamicExecution.class, SecuredBasic_.security, securityContext) : null;
+		DynamicExecution dynamicExecution = id != null ? getByIdOrNull(id, DynamicExecution.class,  securityContext) : null;
 		if (dynamicExecution == null) {
 			throw new HttpClientErrorException(HttpStatus.BAD_REQUEST,"No DynamicExectuion with id " + id);
 		}
@@ -249,12 +247,12 @@ public class DynamicExecutionService implements Plugin {
 		return exampleService.getExample(c);
 	}
 
-	public ExecuteInvokerRequest getExecuteInvokerRequest(DynamicExecution dynamicExecution, SecurityContextBase securityContext) {
+	public ExecuteInvokerRequest getExecuteInvokerRequest(DynamicExecution dynamicExecution, SecurityContext securityContext) {
 		return getExecuteInvokerRequest(dynamicExecution, null, securityContext);
 	}
 
 
-	public ExecuteInvokerRequest getExecuteInvokerRequest(DynamicExecution dynamicExecution, ExecutionContext executionContext, SecurityContextBase securityContext) {
+	public ExecuteInvokerRequest getExecuteInvokerRequest(DynamicExecution dynamicExecution, ExecutionContext executionContext, SecurityContext securityContext) {
 		Set<String> invokerNames = dynamicExecutionRepository.getAllServiceCanonicalNames(dynamicExecution).parallelStream().map(f -> f.getServiceCanonicalName()).collect(Collectors.toSet());
 		return new ExecuteInvokerRequest()
 				.setLastExecuted(dynamicExecution.getLastExecuted())
@@ -264,16 +262,16 @@ public class DynamicExecutionService implements Plugin {
 				.setExecutionParametersHolder( dynamicExecution.getExecutionParametersHolder());
 	}
 
-	public void validate(ExecuteDynamicExecution executeDynamicExecution, SecurityContextBase securityContext) {
+	public void validate(ExecuteDynamicExecution executeDynamicExecution, SecurityContext securityContext) {
 		String dynamicExecutionId=executeDynamicExecution.getDynamicExecutionId();
-		DynamicExecution dynamicExecution=dynamicExecutionId!=null?getByIdOrNull(dynamicExecutionId,DynamicExecution.class,SecuredBasic_.security,securityContext):null;
+		DynamicExecution dynamicExecution=dynamicExecutionId!=null?getByIdOrNull(dynamicExecutionId,DynamicExecution.class,securityContext):null;
 		if(dynamicExecution==null){
 			throw new HttpClientErrorException(HttpStatus.BAD_REQUEST,"no dynamic execution with id "+dynamicExecutionId);
 		}
 		executeDynamicExecution.setDynamicExecution(dynamicExecution);
 	}
 
-	public ExecuteInvokersResponse executeDynamicExecution(ExecuteDynamicExecution executeDynamicExecution, SecurityContextBase securityContext) {
+	public ExecuteInvokersResponse executeDynamicExecution(ExecuteDynamicExecution executeDynamicExecution, SecurityContext securityContext) {
 		ExecuteInvokerRequest executeInvokerRequest = getExecuteInvokerRequest(executeDynamicExecution.getDynamicExecution(), securityContext);
 		return dynamicInvokerService.executeInvoker(executeInvokerRequest,securityContext);
 	}

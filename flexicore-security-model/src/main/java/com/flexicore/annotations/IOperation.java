@@ -6,6 +6,8 @@
  ******************************************************************************/
 package com.flexicore.annotations;
 
+import com.wizzdi.segmantix.model.Access;
+
 import java.lang.annotation.Inherited;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -29,11 +31,6 @@ public @interface IOperation {
 	String Category() default "";
 	boolean auditable() default false;
 	Class<?>[] relatedClazzes() default {};
-	
-	enum Access {
-		deny, allow
-		
-		
-	}
+
 	Access access() default Access.allow;
 }

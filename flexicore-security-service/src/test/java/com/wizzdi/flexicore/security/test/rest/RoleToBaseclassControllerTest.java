@@ -1,10 +1,10 @@
 package com.wizzdi.flexicore.security.test.rest;
 
-import com.flexicore.annotations.IOperation;
+import com.wizzdi.segmantix.model.Access;
 import com.flexicore.model.Role;
 import com.flexicore.model.RoleToBaseclass;
 import com.flexicore.model.SecurityOperation;
-import com.flexicore.security.SecurityContextBase;
+import com.wizzdi.segmantix.model.SecurityContext;
 import com.wizzdi.flexicore.security.request.RoleToBaseclassCreate;
 import com.wizzdi.flexicore.security.request.RoleToBaseclassFilter;
 import com.wizzdi.flexicore.security.request.RoleToBaseclassUpdate;
@@ -76,7 +76,7 @@ public class RoleToBaseclassControllerTest {
     @Autowired
     @Qualifier("adminSecurityContext")
     @Lazy
-    private SecurityContextBase adminSecurityContext;
+    private SecurityContext adminSecurityContext;
     @Autowired
     @Qualifier("roleTest")
     private Role roleTest;
@@ -111,8 +111,8 @@ public class RoleToBaseclassControllerTest {
         String name = UUID.randomUUID().toString();
         RoleToBaseclassCreate request = new RoleToBaseclassCreate()
                 .setRoleId(roleTest.getId())
-                .setAccess(IOperation.Access.allow)
-                .setBaseclassId(adminSecurityContext.getUser().getSecurity().getId())
+                .setAccess(Access.allow)
+                .setSecuredId(adminSecurityContext.user().getId())
                 .setOperationId(allOps.getId())
                 .setName(name);
         ResponseEntity<RoleToBaseclass> roleToBaseclassResponse = this.restTemplate.postForEntity("/roleToBaseclass/create", request, RoleToBaseclass.class);

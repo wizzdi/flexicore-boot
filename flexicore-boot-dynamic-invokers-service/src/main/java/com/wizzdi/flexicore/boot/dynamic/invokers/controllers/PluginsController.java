@@ -2,7 +2,7 @@ package com.wizzdi.flexicore.boot.dynamic.invokers.controllers;
 
 import com.flexicore.annotations.IOperation;
 import com.flexicore.annotations.OperationsInside;
-import com.flexicore.security.SecurityContextBase;
+import com.wizzdi.segmantix.model.SecurityContext;
 import com.wizzdi.flexicore.boot.base.interfaces.Plugin;
 import com.wizzdi.flexicore.boot.dynamic.invokers.response.PluginInfo;
 import org.pf4j.Extension;
@@ -31,7 +31,7 @@ public class PluginsController implements Plugin {
 
 	@IOperation(Name = "returns plugins",Description = "returns plugins")
 	@GetMapping
-	public List<PluginInfo> getAll(@RequestAttribute SecurityContextBase securityContext){
+	public List<PluginInfo> getAll(@RequestAttribute SecurityContext securityContext){
 		return pluginManager.getStartedPlugins().stream().map(f->new PluginInfo(f.getPluginId(),f.getDescriptor().getVersion())).collect(Collectors.toList());
 	}
 

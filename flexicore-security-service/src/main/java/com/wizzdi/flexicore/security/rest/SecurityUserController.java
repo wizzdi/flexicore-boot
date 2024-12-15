@@ -3,7 +3,7 @@ package com.wizzdi.flexicore.security.rest;
 import com.flexicore.annotations.IOperation;
 import com.flexicore.annotations.OperationsInside;
 import com.flexicore.model.SecurityUser;
-import com.flexicore.security.SecurityContextBase;
+import com.wizzdi.segmantix.model.SecurityContext;
 import com.wizzdi.flexicore.boot.base.interfaces.Plugin;
 import com.wizzdi.flexicore.security.request.SecurityUserCreate;
 import com.wizzdi.flexicore.security.request.SecurityUserFilter;
@@ -30,21 +30,21 @@ public class SecurityUserController implements Plugin {
 
     @IOperation(Name = "creates security user", Description = "creates security user")
     @PostMapping("/create")
-    public SecurityUser create(@RequestBody @Validated(Create.class) SecurityUserCreate securityUserCreate, @RequestAttribute SecurityContextBase securityContext) {
+    public SecurityUser create(@RequestBody @Validated(Create.class) SecurityUserCreate securityUserCreate, @RequestAttribute SecurityContext securityContext) {
 
         return securityUserService.createSecurityUser(securityUserCreate, securityContext);
     }
 
     @IOperation(Name = "returns security user", Description = "returns security user")
     @PostMapping("/getAll")
-    public PaginationResponse<SecurityUser> getAll(@RequestBody @Valid SecurityUserFilter securityUserFilter, @RequestAttribute SecurityContextBase securityContext) {
+    public PaginationResponse<SecurityUser> getAll(@RequestBody @Valid SecurityUserFilter securityUserFilter, @RequestAttribute SecurityContext securityContext) {
 
         return securityUserService.getAllSecurityUsers(securityUserFilter, securityContext);
     }
 
     @IOperation(Name = "updates security user", Description = "updates security user")
     @PutMapping("/update")
-    public SecurityUser update(@RequestBody @Validated(Update.class) SecurityUserUpdate securityUserUpdate, @RequestAttribute SecurityContextBase securityContext) {
+    public SecurityUser update(@RequestBody @Validated(Update.class) SecurityUserUpdate securityUserUpdate, @RequestAttribute SecurityContext securityContext) {
 
         return securityUserService.updateSecurityUser(securityUserUpdate, securityContext);
     }

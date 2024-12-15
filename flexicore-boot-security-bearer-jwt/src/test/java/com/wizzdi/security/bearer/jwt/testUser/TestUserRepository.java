@@ -1,7 +1,7 @@
 package com.wizzdi.security.bearer.jwt.testUser;
 
 import com.flexicore.model.Baseclass;
-import com.flexicore.security.SecurityContextBase;
+import com.wizzdi.segmantix.model.SecurityContext;
 import com.wizzdi.flexicore.boot.base.interfaces.Plugin;
 import com.wizzdi.flexicore.security.data.BasicRepository;
 import com.wizzdi.flexicore.security.data.SecurityUserRepository;
@@ -29,7 +29,7 @@ public class TestUserRepository implements Plugin {
     private SecurityUserRepository securityUserRepository;
 
     public List<TestUser> listAllTestUsers(TestUserFilter testUserFiltering,
-                                                 SecurityContextBase securityContext) {
+                                                 SecurityContext securityContext) {
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery<TestUser> q = cb.createQuery(TestUser.class);
         Root<TestUser> r = q.from(TestUser.class);
@@ -42,7 +42,7 @@ public class TestUserRepository implements Plugin {
     }
 
 
-    public <T extends TestUser> void addTestUsersPredicates(TestUserFilter testUserFiltering, From<?, T> r, CriteriaBuilder cb, CommonAbstractCriteria q, List<Predicate> preds, SecurityContextBase securityContext) {
+    public <T extends TestUser> void addTestUsersPredicates(TestUserFilter testUserFiltering, From<?, T> r, CriteriaBuilder cb, CommonAbstractCriteria q, List<Predicate> preds, SecurityContext securityContext) {
         securityUserRepository.addSecurityUserPredicates(testUserFiltering,cb,q,r,preds,securityContext);
         if(testUserFiltering.getUsernames()!=null&&!testUserFiltering.getUsernames().isEmpty()){
             preds.add(r.get("username").in(testUserFiltering.getUsernames()));
@@ -51,7 +51,7 @@ public class TestUserRepository implements Plugin {
     }
 
     public long countAllTestUsers(TestUserFilter testUserFiltering,
-                                     SecurityContextBase securityContext) {
+                                     SecurityContext securityContext) {
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery<Long> q = cb.createQuery(Long.class);
         Root<TestUser> r = q.from(TestUser.class);
@@ -63,11 +63,11 @@ public class TestUserRepository implements Plugin {
     }
 
 
-    public <T extends Baseclass> List<T> listByIds(Class<T> c, Set<String> ids, SecurityContextBase securityContext) {
+    public <T extends Baseclass> List<T> listByIds(Class<T> c, Set<String> ids, SecurityContext securityContext) {
         return securityUserRepository.listByIds(c, ids, securityContext);
     }
 
-    public <T extends Baseclass> T getByIdOrNull(String id, Class<T> c, SecurityContextBase securityContext) {
+    public <T extends Baseclass> T getByIdOrNull(String id, Class<T> c, SecurityContext securityContext) {
         return securityUserRepository.getByIdOrNull(id, c, securityContext);
     }
 

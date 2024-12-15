@@ -2,7 +2,7 @@ package com.wizzdi.flexicore.security.service;
 
 import com.flexicore.model.Baseclass;
 import com.flexicore.model.RoleToUser;
-import com.flexicore.security.SecurityContextBase;
+import com.wizzdi.segmantix.model.SecurityContext;
 import com.wizzdi.flexicore.boot.base.interfaces.Plugin;
 import com.wizzdi.flexicore.security.data.RoleToUserRepository;
 import com.wizzdi.flexicore.security.request.RoleToUserCreate;
@@ -25,7 +25,7 @@ public class RoleToUserService implements Plugin {
 	private RoleToUserRepository roleToUserRepository;
 
 
-	public RoleToUser createRoleToUser(RoleToUserCreate roleToUserCreate, SecurityContextBase securityContext){
+	public RoleToUser createRoleToUser(RoleToUserCreate roleToUserCreate, SecurityContext securityContext){
 		RoleToUser roleToUser= createRoleToUserNoMerge(roleToUserCreate,securityContext);
 		roleToUserRepository.merge(roleToUser);
 		return roleToUser;
@@ -37,12 +37,12 @@ public class RoleToUserService implements Plugin {
 		roleToUserRepository.massMerge(list);
 	}
 
-	public <T extends Baseclass> List<T> listByIds(Class<T> c,Set<String> ids,  SecurityContextBase securityContext) {
+	public <T extends Baseclass> List<T> listByIds(Class<T> c, Set<String> ids, SecurityContext securityContext) {
 		return roleToUserRepository.listByIds(c, ids, securityContext);
 	}
 
 
-	public RoleToUser createRoleToUserNoMerge(RoleToUserCreate roleToUserCreate, SecurityContextBase securityContext){
+	public RoleToUser createRoleToUserNoMerge(RoleToUserCreate roleToUserCreate, SecurityContext securityContext){
 		RoleToUser roleToUser=new RoleToUser();
 		roleToUser.setId(UUID.randomUUID().toString());
 		updateRoleToUserNoMerge(roleToUserCreate,roleToUser);
@@ -63,7 +63,7 @@ public class RoleToUserService implements Plugin {
 		return update;
 	}
 
-	public RoleToUser updateRoleToUser(RoleToUserUpdate roleToUserUpdate, SecurityContextBase securityContext){
+	public RoleToUser updateRoleToUser(RoleToUserUpdate roleToUserUpdate, SecurityContext securityContext){
 		RoleToUser roleToUser=roleToUserUpdate.getRoleToUser();
 		if(updateRoleToUserNoMerge(roleToUserUpdate,roleToUser)){
 			roleToUserRepository.merge(roleToUser);
@@ -73,17 +73,17 @@ public class RoleToUserService implements Plugin {
 
 
 
-	public <T extends Baseclass> T getByIdOrNull(String id,Class<T> c, SecurityContextBase securityContext) {
+	public <T extends Baseclass> T getByIdOrNull(String id, Class<T> c, SecurityContext securityContext) {
 		return roleToUserRepository.getByIdOrNull(id,c,securityContext);
 	}
 
-	public PaginationResponse<RoleToUser> getAllRoleToUsers(RoleToUserFilter roleToUserFilter, SecurityContextBase securityContext) {
+	public PaginationResponse<RoleToUser> getAllRoleToUsers(RoleToUserFilter roleToUserFilter, SecurityContext securityContext) {
 		List<RoleToUser> list= listAllRoleToUsers(roleToUserFilter, securityContext);
 		long count=roleToUserRepository.countAllRoleToUsers(roleToUserFilter,securityContext);
 		return new PaginationResponse<>(list,roleToUserFilter,count);
 	}
 
-	public List<RoleToUser> listAllRoleToUsers(RoleToUserFilter roleToUserFilter, SecurityContextBase securityContext) {
+	public List<RoleToUser> listAllRoleToUsers(RoleToUserFilter roleToUserFilter, SecurityContext securityContext) {
 		return roleToUserRepository.listAllRoleToUsers(roleToUserFilter, securityContext);
 	}
 

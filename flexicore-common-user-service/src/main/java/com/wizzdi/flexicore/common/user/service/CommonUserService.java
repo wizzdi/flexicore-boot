@@ -26,7 +26,7 @@ package com.wizzdi.flexicore.common.user.service;
 import com.flexicore.model.SecurityTenant;
 import com.flexicore.model.TenantToUser;
 import com.flexicore.model.User;
-import com.flexicore.security.SecurityContextBase;
+import com.wizzdi.segmantix.model.SecurityContext;
 import com.wizzdi.flexicore.common.user.data.CommonUserRepository;
 import com.wizzdi.flexicore.common.user.request.CommonUserCreate;
 import com.wizzdi.flexicore.common.user.request.CommonUserFilter;
@@ -77,31 +77,31 @@ public class CommonUserService  {
 
 
     
-    public User createUser(CommonUserCreate commonUserCreate, SecurityContextBase securityContextBase) {
+    public User createUser(CommonUserCreate commonUserCreate, SecurityContext securityContext) {
         List<Object> toMerge = new ArrayList<>();
         SecurityTenant securityTenant =  commonUserCreate.getTenant();
-        User user = createUserNoMerge(commonUserCreate, securityContextBase);
+        User user = createUserNoMerge(commonUserCreate, securityContext);
         toMerge.add(user);
         TenantToUserCreate tenantToUserCreate = new TenantToUserCreate().setDefaultTenant(true).setUser(user).setTenant(securityTenant);
-        TenantToUser tenantToUser = tenantToUserService.createTenantToUserNoMerge(tenantToUserCreate, securityContextBase);
+        TenantToUser tenantToUser = tenantToUserService.createTenantToUserNoMerge(tenantToUserCreate, securityContext);
         toMerge.add(tenantToUser);
         commonUserRepository.massMerge(toMerge);
         user.getTenants().add(tenantToUser);
         return user;
     }
-    public User createUserPlain(CommonUserCreate commonUserCreate, SecurityContextBase securityContextBase) {
-        User user = createUserNoMerge(commonUserCreate, securityContextBase);
+    public User createUserPlain(CommonUserCreate commonUserCreate, SecurityContext securityContext) {
+        User user = createUserNoMerge(commonUserCreate, securityContext);
         commonUserRepository.merge(user);
         return user;
     }
 
 
     
-    public User createUserNoMerge(CommonUserCreate createUser, SecurityContextBase securityContextBase) {
+    public User createUserNoMerge(CommonUserCreate createUser, SecurityContext securityContext) {
         User user = new User();
         user.setId(UUID.randomUUID().toString());
         updateUserNoMerge(user, createUser);
-        BaseclassService.createSecurityObjectNoMerge(user, securityContextBase);
+        BaseclassService.createSecurityObjectNoMerge(user, securityContext);
         return user;
     }
 
@@ -176,7 +176,7 @@ public class CommonUserService  {
 
 
 
-    public User updateUser(CommonUserUpdate userUpdate, SecurityContextBase securityContextBase) {
+    public User updateUser(CommonUserUpdate userUpdate, SecurityContext securityContext) {
         User user = userUpdate.getUser();
         if (updateUserNoMerge(user, userUpdate)) {
             commonUserRepository.merge(user);
@@ -185,15 +185,15 @@ public class CommonUserService  {
     }
 
     
-    public PaginationResponse<User> getAllUsers(CommonUserFilter commonUserFilter, SecurityContextBase securityContextBase) {
-        List<User> list = listAllUsers(commonUserFilter, securityContextBase);
-        long count = commonUserRepository.countAllUsers(commonUserFilter, securityContextBase);
+    public PaginationResponse<User> getAllUsers(CommonUserFilter commonUserFilter, SecurityContext securityContext) {
+        List<User> list = listAllUsers(commonUserFilter, securityContext);
+        long count = commonUserRepository.countAllUsers(commonUserFilter, securityContext);
         return new PaginationResponse<>(list, commonUserFilter, count);
     }
 
     
-    public List<User> listAllUsers(CommonUserFilter commonUserFilter, SecurityContextBase securityContextBase) {
-        return commonUserRepository.getAllUsers(commonUserFilter, securityContextBase);
+    public List<User> listAllUsers(CommonUserFilter commonUserFilter, SecurityContext securityContext) {
+        return commonUserRepository.getAllUsers(commonUserFilter, securityContext);
     }
 
 

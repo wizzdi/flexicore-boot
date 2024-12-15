@@ -1,6 +1,6 @@
 package com.wizzdi.flexicore.security.test.app;
 
-import com.flexicore.security.SecurityContextBase;
+import com.wizzdi.segmantix.model.SecurityContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Lazy;
@@ -22,14 +22,14 @@ public class SecurityInterceptor implements HandlerInterceptor {
 	@Autowired
 	@Qualifier("adminSecurityContext")
 	@Lazy
-	private SecurityContextBase securityContextBase;
+	private SecurityContext securityContext;
 
 
 	@Override
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
 		String token = request.getHeader(AUTHENTICATION_KEY);
 		if(token!=null){
-			request.setAttribute("securityContext",securityContextBase);
+			request.setAttribute("securityContext", securityContext);
 		}
 		return true;
 	}

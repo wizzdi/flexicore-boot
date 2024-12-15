@@ -1,10 +1,11 @@
 package com.flexicore.model;
 
+import com.wizzdi.segmantix.api.model.IOperationGroupLink;
 import jakarta.persistence.Entity;
 import jakarta.persistence.ManyToOne;
 
 @Entity
-public class OperationToGroup extends SecuredBasic{
+public class OperationToGroup extends Baseclass implements IOperationGroupLink {
 
     @ManyToOne(targetEntity = SecurityOperation.class)
     private SecurityOperation operation;

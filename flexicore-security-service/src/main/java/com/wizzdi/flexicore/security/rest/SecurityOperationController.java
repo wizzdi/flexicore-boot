@@ -3,7 +3,7 @@ package com.wizzdi.flexicore.security.rest;
 import com.flexicore.annotations.IOperation;
 import com.flexicore.annotations.OperationsInside;
 import com.flexicore.model.SecurityOperation;
-import com.flexicore.security.SecurityContextBase;
+import com.wizzdi.segmantix.model.SecurityContext;
 import com.wizzdi.flexicore.boot.base.interfaces.Plugin;
 import com.wizzdi.flexicore.security.request.SecurityOperationFilter;
 import com.wizzdi.flexicore.security.response.PaginationResponse;
@@ -25,7 +25,7 @@ public class SecurityOperationController implements Plugin {
 
     @IOperation(Name = "returns security operation", Description = "returns security operation")
     @PostMapping("/getAll")
-    public PaginationResponse<SecurityOperation> getAll(@RequestBody @Valid SecurityOperationFilter operationFilter, @RequestAttribute SecurityContextBase securityContext) {
+    public PaginationResponse<SecurityOperation> getAll(@RequestBody @Valid SecurityOperationFilter operationFilter, @RequestAttribute SecurityContext securityContext) {
 
         return operationService.getAllOperations(operationFilter, securityContext);
     }

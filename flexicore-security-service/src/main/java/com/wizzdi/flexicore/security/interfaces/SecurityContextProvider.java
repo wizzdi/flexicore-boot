@@ -1,9 +1,9 @@
 package com.wizzdi.flexicore.security.interfaces;
 
 import com.flexicore.model.SecurityUser;
-import com.flexicore.security.SecurityContextBase;
+import com.wizzdi.segmantix.model.SecurityContext;
 
 public interface SecurityContextProvider {
 
-    SecurityContextBase getSecurityContext(SecurityUser user);
+    SecurityContext getSecurityContext(SecurityUser user);
 }

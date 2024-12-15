@@ -1,10 +1,10 @@
 package com.wizzdi.flexicore.security.service;
 
-import com.flexicore.model.RoleToBaseclass;
 import com.flexicore.model.Baseclass;
+import com.flexicore.model.RoleToBaseclass;
+import com.wizzdi.segmantix.model.SecurityContext;
 import com.wizzdi.flexicore.boot.base.interfaces.Plugin;
 import com.wizzdi.flexicore.security.data.RoleToBaseclassRepository;
-import com.flexicore.security.SecurityContextBase;
 import com.wizzdi.flexicore.security.request.RoleToBaseclassCreate;
 import com.wizzdi.flexicore.security.request.RoleToBaseclassFilter;
 import com.wizzdi.flexicore.security.request.RoleToBaseclassUpdate;
@@ -27,7 +27,7 @@ public class RoleToBaseclassService implements Plugin {
 	private RoleToBaseclassRepository roleToBaseclassRepository;
 
 
-	public RoleToBaseclass createRoleToBaseclass(RoleToBaseclassCreate roleToBaseclassCreate, SecurityContextBase securityContext){
+	public RoleToBaseclass createRoleToBaseclass(RoleToBaseclassCreate roleToBaseclassCreate, SecurityContext securityContext){
 		RoleToBaseclass roleToBaseclass= createRoleToBaseclassNoMerge(roleToBaseclassCreate,securityContext);
 		roleToBaseclassRepository.merge(roleToBaseclass);
 		return roleToBaseclass;
@@ -39,12 +39,12 @@ public class RoleToBaseclassService implements Plugin {
 		roleToBaseclassRepository.massMerge(list);
 	}
 
-	public <T extends Baseclass> List<T> listByIds(Class<T> c,Set<String> ids,  SecurityContextBase securityContext) {
+	public <T extends Baseclass> List<T> listByIds(Class<T> c, Set<String> ids, SecurityContext securityContext) {
 		return roleToBaseclassRepository.listByIds(c, ids, securityContext);
 	}
 
 
-	public RoleToBaseclass createRoleToBaseclassNoMerge(RoleToBaseclassCreate roleToBaseclassCreate, SecurityContextBase securityContext){
+	public RoleToBaseclass createRoleToBaseclassNoMerge(RoleToBaseclassCreate roleToBaseclassCreate, SecurityContext securityContext){
 		RoleToBaseclass roleToBaseclass=new RoleToBaseclass();
 		roleToBaseclass.setId(UUID.randomUUID().toString());
 		updateRoleToBaseclassNoMerge(roleToBaseclassCreate,roleToBaseclass);
@@ -61,7 +61,7 @@ public class RoleToBaseclassService implements Plugin {
 		return update;
 	}
 
-	public RoleToBaseclass updateRoleToBaseclass(RoleToBaseclassUpdate roleToBaseclassUpdate, SecurityContextBase securityContext){
+	public RoleToBaseclass updateRoleToBaseclass(RoleToBaseclassUpdate roleToBaseclassUpdate, SecurityContext securityContext){
 		RoleToBaseclass roleToBaseclass=roleToBaseclassUpdate.getRoleToBaseclass();
 		if(updateRoleToBaseclassNoMerge(roleToBaseclassUpdate,roleToBaseclass)){
 			roleToBaseclassRepository.merge(roleToBaseclass);
@@ -70,17 +70,17 @@ public class RoleToBaseclassService implements Plugin {
 	}
 
 
-	public <T extends Baseclass> T getByIdOrNull(String id,Class<T> c, SecurityContextBase securityContext) {
+	public <T extends Baseclass> T getByIdOrNull(String id, Class<T> c, SecurityContext securityContext) {
 		return roleToBaseclassRepository.getByIdOrNull(id,c,securityContext);
 	}
 
-	public PaginationResponse<RoleToBaseclass> getAllRoleToBaseclass(RoleToBaseclassFilter roleToBaseclassFilter, SecurityContextBase securityContext) {
+	public PaginationResponse<RoleToBaseclass> getAllRoleToBaseclass(RoleToBaseclassFilter roleToBaseclassFilter, SecurityContext securityContext) {
 		List<RoleToBaseclass> list= listAllRoleToBaseclasss(roleToBaseclassFilter, securityContext);
 		long count=roleToBaseclassRepository.countAllRoleToBaseclasss(roleToBaseclassFilter,securityContext);
 		return new PaginationResponse<>(list,roleToBaseclassFilter,count);
 	}
 
-	public List<RoleToBaseclass> listAllRoleToBaseclasss(RoleToBaseclassFilter roleToBaseclassFilter, SecurityContextBase securityContext) {
+	public List<RoleToBaseclass> listAllRoleToBaseclasss(RoleToBaseclassFilter roleToBaseclassFilter, SecurityContext securityContext) {
 		return roleToBaseclassRepository.listAllRoleToBaseclasss(roleToBaseclassFilter, securityContext);
 	}
 }

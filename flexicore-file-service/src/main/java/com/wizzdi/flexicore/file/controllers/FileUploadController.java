@@ -7,9 +7,9 @@
 package com.wizzdi.flexicore.file.controllers;
 
 import com.flexicore.annotations.IOperation;
-import com.flexicore.annotations.IOperation.Access;
+import com.wizzdi.segmantix.model.SecurityContext;
+import com.wizzdi.segmantix.model.Access;
 import com.flexicore.annotations.OperationsInside;
-import com.flexicore.security.SecurityContextBase;
 import com.wizzdi.flexicore.boot.base.interfaces.Plugin;
 import com.wizzdi.flexicore.file.model.FileResource;
 import com.wizzdi.flexicore.file.service.FileResourceService;
@@ -44,7 +44,7 @@ public class FileUploadController implements Plugin {
     public FileResource uploadFile(@RequestHeader("md5") String md5, @RequestHeader(value = "name",required = false) String name,
                                    @RequestHeader(value = "chunkMd5",required = false) String chunkMd5,
                                    @RequestHeader(value = "lastChunk",required = false) boolean lastChunk,
-                                   InputStream stream, @RequestAttribute SecurityContextBase securityContext) {
+                                   InputStream stream, @RequestAttribute SecurityContext securityContext) {
         return fileResourceService.uploadFileResource(name, securityContext, md5,chunkMd5,lastChunk, stream);
 
     }

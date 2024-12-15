@@ -2,7 +2,7 @@ package com.wizzdi.flexicore.security.test.rest;
 
 import com.flexicore.model.PermissionGroup;
 import com.flexicore.model.PermissionGroupToBaseclass;
-import com.flexicore.security.SecurityContextBase;
+import com.wizzdi.segmantix.model.SecurityContext;
 import com.wizzdi.flexicore.security.request.PermissionGroupToBaseclassCreate;
 import com.wizzdi.flexicore.security.request.PermissionGroupToBaseclassFilter;
 import com.wizzdi.flexicore.security.request.PermissionGroupToBaseclassUpdate;
@@ -72,7 +72,7 @@ public class PermissionGroupToBaseclassControllerTest {
     @Autowired
     @Lazy
     @Qualifier("adminSecurityContext")
-    private SecurityContextBase adminSecurityContext;
+    private SecurityContext adminSecurityContext;
 
     @BeforeAll
     public void init() {
@@ -102,7 +102,7 @@ public class PermissionGroupToBaseclassControllerTest {
     public void testPermissionGroupToBaseclassCreate() {
         String name = UUID.randomUUID().toString();
         PermissionGroupToBaseclassCreate request = new PermissionGroupToBaseclassCreate()
-                .setBaseclassId(permissionGroup.getSecurity().getId())
+                .setSecuredId(permissionGroup.getId())
                 .setPermissionGroupId(permissionGroup.getId())
                 .setName(name);
         ResponseEntity<PermissionGroupToBaseclass> permissionGroupToBaseclassResponse = this.restTemplate.postForEntity("/permissionGroupToBaseclass/create", request, PermissionGroupToBaseclass.class);

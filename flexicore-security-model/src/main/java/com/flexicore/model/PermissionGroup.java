@@ -9,6 +9,7 @@ package com.flexicore.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 
+import com.wizzdi.segmantix.api.model.IInstanceGroup;
 import jakarta.persistence.Entity;
 import jakarta.persistence.OneToMany;
 import java.util.ArrayList;
@@ -16,7 +17,7 @@ import java.util.List;
 
 
 @Entity
-public class PermissionGroup extends SecuredBasic {
+public class PermissionGroup extends Baseclass implements IInstanceGroup {
 
 
 
