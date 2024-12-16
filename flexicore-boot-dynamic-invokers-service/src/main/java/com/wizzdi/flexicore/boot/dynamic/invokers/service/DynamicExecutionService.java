@@ -2,7 +2,7 @@ package com.wizzdi.flexicore.boot.dynamic.invokers.service;
 
 import com.flexicore.model.Baseclass;
 import com.flexicore.model.Basic;
-import com.wizzdi.segmantix.model.SecurityContext;
+import com.wizzdi.flexicore.security.configuration.SecurityContext;
 import com.wizzdi.flexicore.boot.base.interfaces.Plugin;
 import com.wizzdi.flexicore.boot.dynamic.invokers.data.DynamicExecutionRepository;
 import com.wizzdi.flexicore.boot.dynamic.invokers.interfaces.ExecutionContext;

@@ -3,7 +3,7 @@ package com.wizzdi.flexicore.security.test.rest;
 import com.wizzdi.segmantix.model.Access;
 import com.flexicore.model.SecurityOperation;
 import com.flexicore.model.UserToBaseclass;
-import com.wizzdi.segmantix.model.SecurityContext;
+import com.wizzdi.flexicore.security.configuration.SecurityContext;
 import com.wizzdi.flexicore.security.request.UserToBaseclassCreate;
 import com.wizzdi.flexicore.security.request.UserToBaseclassFilter;
 import com.wizzdi.flexicore.security.request.UserToBaseclassUpdate;

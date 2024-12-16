@@ -3,7 +3,7 @@ package com.wizzdi.flexicore.security.service;
 import com.flexicore.model.Baseclass;
 import com.flexicore.model.Role;
 import com.flexicore.model.SecurityTenant;
-import com.wizzdi.segmantix.model.SecurityContext;
+import com.wizzdi.flexicore.security.configuration.SecurityContext;
 import com.wizzdi.flexicore.boot.base.interfaces.Plugin;
 import com.wizzdi.flexicore.security.data.RoleRepository;
 import com.wizzdi.flexicore.security.request.RoleCreate;
@@ -57,6 +57,10 @@ public class RoleService implements Plugin {
 		SecurityTenant currentTenant=Optional.of(role).map(f->f.getTenant()).orElse(null);
 		if(roleCreate.getTenant()!=null&&(currentTenant==null||!roleCreate.getTenant().getId().equals(currentTenant.getId()))){
 			role.setTenant(roleCreate.getTenant());
+			update=true;
+		}
+		if(roleCreate.getSuperAdmin()!=null&&!roleCreate.getSuperAdmin().equals(role.isSuperAdmin())){
+			role.setSuperAdmin(roleCreate.getSuperAdmin());
 			update=true;
 		}
 		return update;

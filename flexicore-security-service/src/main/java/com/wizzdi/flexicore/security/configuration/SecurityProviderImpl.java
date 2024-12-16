@@ -8,12 +8,11 @@ import com.flexicore.model.TenantToBaseclass_;
 import com.flexicore.model.UserToBaseclass;
 import com.flexicore.model.UserToBaseclass_;
 import com.wizzdi.segmantix.api.model.IRole;
-import com.wizzdi.segmantix.api.model.ISecurity;
+import com.wizzdi.segmantix.api.model.ISecurityLink;
 import com.wizzdi.segmantix.api.model.ISecurityContext;
 import com.wizzdi.segmantix.api.model.ITenant;
 import com.wizzdi.segmantix.api.model.IUser;
 import com.wizzdi.segmantix.api.service.SecurityLinkProvider;
-import com.wizzdi.segmantix.model.SecurityContext;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.criteria.CriteriaBuilder;
@@ -31,7 +30,7 @@ public class SecurityProviderImpl implements SecurityLinkProvider {
     private EntityManager em;
 
     @Override
-    public List<ISecurity> getSecurityLinks(ISecurityContext securityContext) {
+    public List<ISecurityLink> getSecurityLinks(ISecurityContext securityContext) {
         IUser user=securityContext.user();
         List<? extends IRole> roles=securityContext.roles();
         List<? extends ITenant> tenants=securityContext.tenants();

@@ -4,7 +4,7 @@ import com.flexicore.model.Baseclass;
 import com.flexicore.model.Basic;
 import com.flexicore.model.OperationGroup;
 import com.flexicore.model.OperationGroup_;
-import com.wizzdi.segmantix.model.SecurityContext;
+import com.wizzdi.flexicore.security.configuration.SecurityContext;
 import com.wizzdi.flexicore.boot.base.interfaces.Plugin;
 import com.wizzdi.flexicore.security.request.OperationGroupFilter;
 import jakarta.persistence.EntityManager;

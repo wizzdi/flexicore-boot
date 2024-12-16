@@ -1,7 +1,7 @@
 package com.wizzdi.flexicore.security.data;
 
 import com.flexicore.model.*;
-import com.wizzdi.segmantix.model.SecurityContext;
+import com.wizzdi.flexicore.security.configuration.SecurityContext;
 import com.wizzdi.flexicore.boot.base.interfaces.Plugin;
 import com.wizzdi.flexicore.security.request.SecurityLinkFilter;
 import com.wizzdi.flexicore.security.request.SecurityLinkOrder;
@@ -85,7 +85,8 @@ public class SecurityLinkRepository implements Plugin {
 			predicates.add(r.get(SecurityLink_.access).in(securityLinkFilter.getAccesses()));
 		}
 		if(securityLinkFilter.getOperations()!=null&&!securityLinkFilter.getOperations().isEmpty()){
-			predicates.add(r.get(SecurityLink_.operation).in(securityLinkFilter.getOperations()));
+			Set<String> operationIds=securityLinkFilter.getOperations().stream().map(f->f.getId()).collect(Collectors.toSet());
+			predicates.add(r.get(SecurityLink_.operationId).in(operationIds));
 		}
 		if(securityLinkFilter.getRelevantUsers()!=null&&!securityLinkFilter.getRelevantUsers().isEmpty()){
 			Path<SecurityLink> p = (Path<SecurityLink>) r;

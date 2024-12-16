@@ -23,7 +23,7 @@
 package com.wizzdi.flexicore.common.user.data;
 
 import com.flexicore.model.*;
-import com.wizzdi.segmantix.model.SecurityContext;
+import com.wizzdi.flexicore.security.configuration.SecurityContext;
 import com.wizzdi.flexicore.common.user.request.CommonUserFilter;
 import com.wizzdi.flexicore.security.data.BasicRepository;
 import com.wizzdi.flexicore.security.data.SecurityUserRepository;

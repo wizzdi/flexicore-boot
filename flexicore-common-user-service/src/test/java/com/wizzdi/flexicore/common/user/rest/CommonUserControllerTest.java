@@ -1,7 +1,7 @@
 package com.wizzdi.flexicore.common.user.rest;
 
 import com.flexicore.model.User;
-import com.wizzdi.segmantix.model.SecurityContext;
+import com.wizzdi.flexicore.security.configuration.SecurityContext;
 import com.wizzdi.flexicore.common.user.App;
 import com.wizzdi.flexicore.common.user.request.CommonUserCreate;
 import com.wizzdi.flexicore.common.user.request.CommonUserFilter;

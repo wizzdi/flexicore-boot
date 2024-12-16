@@ -8,38 +8,9 @@ package com.flexicore.model;
 
 
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.ManyToOne;
 
 
 
-@Entity
-public class OperationToClazz extends Basic {
+public record OperationToClazz(SecurityOperation operation,Clazz clazz){
 
-	@ManyToOne(targetEntity = SecurityOperation.class)
-	private SecurityOperation operation;
-	private String type;
-
-	
-
-	@ManyToOne(targetEntity = SecurityOperation.class)
-
-	public SecurityOperation getOperation() {
-		return operation;
-	}
-
-	public <T extends OperationToClazz> T setOperation(SecurityOperation operation) {
-		this.operation = operation;
-		return (T) this;
-	}
-
-
-	public String getType() {
-		return type;
-	}
-
-	public <T extends OperationToClazz> T setType(String type) {
-		this.type = type;
-		return (T) this;
-	}
 }

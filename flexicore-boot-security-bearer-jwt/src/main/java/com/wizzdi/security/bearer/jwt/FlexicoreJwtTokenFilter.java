@@ -1,6 +1,6 @@
 package com.wizzdi.security.bearer.jwt;
 
-import com.wizzdi.segmantix.model.SecurityContext;
+import com.wizzdi.flexicore.security.configuration.SecurityContext;
 import com.wizzdi.security.adapter.FlexiCoreAuthentication;
 import com.wizzdi.security.adapter.FlexiCoreSecurityFilter;
 import com.wizzdi.security.adapter.OperationInterceptor;

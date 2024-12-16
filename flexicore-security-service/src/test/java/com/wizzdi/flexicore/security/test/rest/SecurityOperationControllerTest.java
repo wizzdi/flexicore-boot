@@ -102,10 +102,7 @@ public class SecurityOperationControllerTest {
 
     }
 
-    public void assertSecurityOperation(SecurityOperationCreate request, SecurityOperation securityOperation) {
-        Assertions.assertNotNull(securityOperation);
-        Assertions.assertEquals(request.getName(), securityOperation.getName());
-    }
+
 
 
 

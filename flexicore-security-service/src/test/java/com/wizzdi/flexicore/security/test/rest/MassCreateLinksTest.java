@@ -1,12 +1,11 @@
 package com.wizzdi.flexicore.security.test.rest;
 
-import com.flexicore.model.Baseclass;
 import com.flexicore.model.PermissionGroup;
 import com.flexicore.model.PermissionGroupToBaseclass;
 import com.wizzdi.flexicore.security.test.app.TestEntity;
 import com.wizzdi.flexicore.security.test.app.TestEntityCreate;
 import com.wizzdi.flexicore.security.test.app.TestEntityService;
-import com.wizzdi.segmantix.model.SecurityContext;
+import com.wizzdi.flexicore.security.configuration.SecurityContext;
 import com.wizzdi.flexicore.security.request.PermissionGroupToBaseclassFilter;
 import com.wizzdi.flexicore.security.request.PermissionGroupToBaseclassMassCreate;
 import com.wizzdi.flexicore.security.service.PermissionGroupToBaseclassService;
@@ -23,7 +22,6 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;

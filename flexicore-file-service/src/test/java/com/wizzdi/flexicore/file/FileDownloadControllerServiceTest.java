@@ -1,7 +1,7 @@
 package com.wizzdi.flexicore.file;
 
 import com.flexicore.model.Role;
-import com.wizzdi.segmantix.model.SecurityContext;
+import com.wizzdi.flexicore.security.configuration.SecurityContext;
 import com.wizzdi.flexicore.file.app.App;
 import com.wizzdi.flexicore.file.model.FileResource;
 import com.wizzdi.flexicore.file.service.FileResourceService;

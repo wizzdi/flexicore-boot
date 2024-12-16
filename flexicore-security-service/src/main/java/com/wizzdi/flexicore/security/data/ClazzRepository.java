@@ -2,7 +2,6 @@ package com.wizzdi.flexicore.security.data;
 
 import com.flexicore.model.Clazz;
 import com.wizzdi.flexicore.security.request.BasicPropertiesFilter;
-import com.wizzdi.segmantix.model.SecurityContext;
 import com.wizzdi.flexicore.boot.base.interfaces.Plugin;
 import com.wizzdi.flexicore.security.request.ClazzFilter;
 import org.pf4j.Extension;

@@ -3,7 +3,7 @@ package com.wizzdi.flexicore.security.service;
 import com.flexicore.model.Baseclass;
 import com.flexicore.model.Basic;
 import com.flexicore.model.OperationToGroup;
-import com.wizzdi.segmantix.model.SecurityContext;
+import com.wizzdi.flexicore.security.configuration.SecurityContext;
 import com.wizzdi.flexicore.boot.base.interfaces.Plugin;
 import com.wizzdi.flexicore.security.data.OperationToGroupRepository;
 import com.wizzdi.flexicore.security.request.OperationToGroupCreate;
@@ -52,8 +52,8 @@ public class OperationToGroupService implements Plugin {
 			operationToGroup.setOperationGroup(operationToGroupCreate.getOperationGroup());
 			update=true;
 		}
-		if(operationToGroupCreate.getOperation()!=null&&(operationToGroup.getOperation()==null||!operationToGroupCreate.getOperation().getId().equals(operationToGroup.getOperation().getId()))){
-			operationToGroup.setOperation(operationToGroupCreate.getOperation());
+		if(operationToGroupCreate.getOperation()!=null&&!operationToGroupCreate.getOperation().getId().equals(operationToGroup.getOperationId())){
+			operationToGroup.setOperationId(operationToGroupCreate.getOperation().getId());
 			update=true;
 		}
 		return update;

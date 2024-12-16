@@ -4,6 +4,7 @@ import com.flexicore.annotations.rest.All;
 import com.flexicore.model.Clazz;
 import com.wizzdi.flexicore.boot.base.interfaces.Plugin;
 import com.wizzdi.flexicore.security.data.ClazzRepository;
+import com.wizzdi.flexicore.security.request.BasicPropertiesFilter;
 import com.wizzdi.flexicore.security.request.ClazzFilter;
 import com.wizzdi.flexicore.security.response.PaginationResponse;
 import org.pf4j.Extension;
@@ -11,6 +12,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 
 @Extension
@@ -41,4 +44,7 @@ public class ClazzService implements Plugin {
 	}
 
 
+	public Optional<Clazz> getClazz(Class<?> aClass) {
+		return clazzRepository.listAllClazzs(new ClazzFilter().setBasicPropertiesFilter(new BasicPropertiesFilter().setNames(Set.of(aClass.getSimpleName())))).stream().findFirst();
+	}
 }

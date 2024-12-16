@@ -3,6 +3,7 @@ package com.wizzdi.flexicore.security.request;
 import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.wizzdi.flexicore.security.validation.ClazzValid;
+import com.wizzdi.flexicore.security.validation.OperationValid;
 import com.wizzdi.segmantix.model.Access;
 import com.flexicore.model.*;
 import com.wizzdi.flexicore.security.validation.Create;
@@ -14,10 +15,10 @@ import org.apache.commons.lang.StringUtils;
 
 @IdValid.List({
         @IdValid(targetField = "securityLinkGroup",field = "securityLinkGroupId",fieldType = SecurityLinkGroup.class, groups = {Create.class, Update.class}),
-        @IdValid(targetField = "operation",field = "operationId",fieldType = SecurityOperation.class, groups = {Create.class, Update.class}),
         @IdValid(targetField = "operationGroup",field = "operationGroupId",fieldType = OperationGroup.class, groups = {Create.class, Update.class}),
         @IdValid(targetField = "permissionGroup",field = "permissionGroupId",fieldType = PermissionGroup.class, groups = {Create.class, Update.class}),
 })
+@OperationValid(targetField = "operation",sourceField = "operationId", groups = {Create.class, Update.class})
 public class SecurityLinkCreate extends BasicCreate {
 
     private String securityLinkGroupId;

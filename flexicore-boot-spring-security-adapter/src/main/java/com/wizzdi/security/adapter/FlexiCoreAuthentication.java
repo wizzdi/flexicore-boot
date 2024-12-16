@@ -1,6 +1,6 @@
 package com.wizzdi.security.adapter;
 
-import com.wizzdi.segmantix.model.SecurityContext;
+import com.wizzdi.flexicore.security.configuration.SecurityContext;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 
 import java.util.Collections;

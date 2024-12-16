@@ -1,6 +1,6 @@
 package com.wizzdi.flexicore.security.test.rest;
 
-import com.wizzdi.segmantix.model.SecurityContext;
+import com.wizzdi.flexicore.security.configuration.SecurityContext;
 import com.wizzdi.segmantix.model.Access;
 import com.flexicore.model.SecurityOperation;
 import com.flexicore.model.TenantToBaseclass;

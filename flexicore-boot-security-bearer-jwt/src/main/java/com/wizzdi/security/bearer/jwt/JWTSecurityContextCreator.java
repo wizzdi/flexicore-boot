@@ -1,8 +1,7 @@
 package com.wizzdi.security.bearer.jwt;
 
 import com.flexicore.model.SecurityUser;
-import com.flexicore.model.SecurityUser_;
-import com.wizzdi.segmantix.model.SecurityContext;
+import com.wizzdi.flexicore.security.configuration.SecurityContext;
 import com.wizzdi.flexicore.security.interfaces.SecurityContextProvider;
 import com.wizzdi.flexicore.security.service.SecurityUserService;
 import com.wizzdi.security.adapter.FlexiCoreAuthentication;

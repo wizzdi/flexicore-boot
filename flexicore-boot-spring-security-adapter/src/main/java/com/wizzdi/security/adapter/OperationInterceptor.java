@@ -2,7 +2,7 @@ package com.wizzdi.security.adapter;
 
 import com.flexicore.model.SecurityOperation;
 import com.wizzdi.flexicore.security.service.ClazzService;
-import com.wizzdi.segmantix.model.SecurityContext;
+import com.wizzdi.flexicore.security.configuration.SecurityContext;
 import com.wizzdi.flexicore.security.service.SecurityOperationService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,7 +41,7 @@ public class OperationInterceptor implements HandlerInterceptor {
 				Method method = handlerMethod.getMethod();
 				if(!BasicErrorController.class.equals(method.getDeclaringClass())){
 					String operationId = ClazzService.getIdFromString(method.toString());
-					SecurityOperation securityOperation=securityOperationService.getByIdOrNull(operationId,SecurityOperation.class, null);
+					SecurityOperation securityOperation=securityOperationService.getByIdOrNull(operationId);
 					if(securityOperation==null){
 						logger.error("could not find io operation annotation on method: " + method.getName());
 						response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);

@@ -151,6 +151,7 @@ public class DefaultObjectsCreator {
         TenantToUser tenantToUser=tenantAndUserInit.getTenantToUser();
 
         RoleCreate roleCreate = new RoleCreate()
+                .setSuperAdmin(true)
                 .setTenant(defaultTenant)
                 .setName("Super Administrators")
                 .setDescription("Role for Super Administrators of the system")

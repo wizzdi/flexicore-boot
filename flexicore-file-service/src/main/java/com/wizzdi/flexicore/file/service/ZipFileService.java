@@ -2,11 +2,10 @@ package com.wizzdi.flexicore.file.service;
 
 import com.flexicore.model.Baseclass;
 import com.flexicore.model.Basic;
-import com.wizzdi.segmantix.model.SecurityContext;
+import com.wizzdi.flexicore.security.configuration.SecurityContext;
 import com.wizzdi.flexicore.boot.base.interfaces.Plugin;
 import com.wizzdi.flexicore.file.data.ZipFileRepository;
 import com.wizzdi.flexicore.file.model.FileResource;
-import com.wizzdi.flexicore.file.model.FileResource_;
 import com.wizzdi.flexicore.file.model.ZipFile;
 import com.wizzdi.flexicore.file.model.ZipFileToFileResource;
 import com.wizzdi.flexicore.file.request.*;

@@ -16,6 +16,8 @@ import org.springframework.stereotype.Component;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Component
 public class OperationGroupLinkProviderImpl implements OperationGroupLinkProvider {
@@ -30,10 +32,11 @@ public class OperationGroupLinkProviderImpl implements OperationGroupLinkProvide
         if(ops.isEmpty()){
             return Collections.emptyList();
         }
+        Set<String> opIds=ops.stream().map(f->f.getId()).collect(Collectors.toSet());
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery<OperationToGroup> q = cb.createQuery(OperationToGroup.class);
         Root<OperationToGroup> r = q.from(OperationToGroup.class);
-        q.select(r).where(r.get(OperationToGroup_.operation).in(ops),cb.isFalse(r.get(OperationToGroup_.softDelete)));
+        q.select(r).where(r.get(OperationToGroup_.operationId).in(opIds),cb.isFalse(r.get(OperationToGroup_.softDelete)));
         return new ArrayList<>(em.createQuery(q).getResultList());
     }
 }

@@ -3,7 +3,6 @@ package com.wizzdi.flexicore.security.test.rest;
 import com.flexicore.model.OperationToClazz;
 import com.wizzdi.flexicore.security.request.OperationToClazzCreate;
 import com.wizzdi.flexicore.security.request.OperationToClazzFilter;
-import com.wizzdi.flexicore.security.request.OperationToClazzUpdate;
 import com.wizzdi.flexicore.security.response.PaginationResponse;
 import com.wizzdi.flexicore.security.test.app.App;
 import org.junit.jupiter.api.*;
@@ -52,7 +51,6 @@ public class OperationToClazzControllerTest {
         registry.add("spring.datasource.password", postgresqlContainer::getPassword);
     }
 
-    private OperationToClazz operationToClazz;
     @Autowired
     private TestRestTemplate restTemplate;
 
@@ -67,18 +65,7 @@ public class OperationToClazzControllerTest {
 
     }
 
-    @Test
-    @Order(1)
-    public void testOperationToClazzCreate() {
-        String name = UUID.randomUUID().toString();
-        OperationToClazzCreate request = new OperationToClazzCreate()
-                .setName(name);
-        ResponseEntity<OperationToClazz> operationToClazzResponse = this.restTemplate.postForEntity("/operationToClazz/create", request, OperationToClazz.class);
-        Assertions.assertEquals(200, operationToClazzResponse.getStatusCode().value());
-        operationToClazz = operationToClazzResponse.getBody();
-        assertOperationToClazz(request, operationToClazz);
 
-    }
 
     @Test
     @Order(2)
@@ -91,30 +78,13 @@ public class OperationToClazzControllerTest {
         Assertions.assertEquals(200, operationToClazzResponse.getStatusCode().value());
         PaginationResponse<OperationToClazz> body = operationToClazzResponse.getBody();
         Assertions.assertNotNull(body);
-        List<OperationToClazz> operationToClazzs = body.getList();
-        Assertions.assertNotEquals(0,operationToClazzs.size());
-        Assertions.assertTrue(operationToClazzs.stream().anyMatch(f->f.getId().equals(operationToClazz.getId())));
+
 
 
     }
 
-    public void assertOperationToClazz(OperationToClazzCreate request, OperationToClazz operationToClazz) {
-        Assertions.assertNotNull(operationToClazz);
-        Assertions.assertEquals(request.getName(), operationToClazz.getName());
-    }
 
-    @Test
-    @Order(3)
-    public void testOperationToClazzUpdate(){
-        String name = UUID.randomUUID().toString();
-        OperationToClazzUpdate request = new OperationToClazzUpdate()
-                .setId(operationToClazz.getId())
-                .setName(name);
-        ResponseEntity<OperationToClazz> operationToClazzResponse = this.restTemplate.exchange("/operationToClazz/update",HttpMethod.PUT, new HttpEntity<>(request), OperationToClazz.class);
-        Assertions.assertEquals(200, operationToClazzResponse.getStatusCode().value());
-        operationToClazz = operationToClazzResponse.getBody();
-        assertOperationToClazz(request, operationToClazz);
 
-    }
+
 
 }

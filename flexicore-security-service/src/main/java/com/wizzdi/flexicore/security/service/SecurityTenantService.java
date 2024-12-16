@@ -4,7 +4,7 @@ import com.flexicore.model.Baseclass;
 import com.flexicore.model.SecurityTenant;
 import com.wizzdi.flexicore.boot.base.interfaces.Plugin;
 import com.wizzdi.flexicore.security.data.SecurityTenantRepository;
-import com.wizzdi.segmantix.model.SecurityContext;
+import com.wizzdi.flexicore.security.configuration.SecurityContext;
 import com.wizzdi.flexicore.security.request.SecurityTenantCreate;
 import com.wizzdi.flexicore.security.request.SecurityTenantFilter;
 import com.wizzdi.flexicore.security.request.SecurityTenantUpdate;

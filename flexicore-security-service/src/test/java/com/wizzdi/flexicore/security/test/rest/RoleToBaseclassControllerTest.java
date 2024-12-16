@@ -4,7 +4,7 @@ import com.wizzdi.segmantix.model.Access;
 import com.flexicore.model.Role;
 import com.flexicore.model.RoleToBaseclass;
 import com.flexicore.model.SecurityOperation;
-import com.wizzdi.segmantix.model.SecurityContext;
+import com.wizzdi.flexicore.security.configuration.SecurityContext;
 import com.wizzdi.flexicore.security.request.RoleToBaseclassCreate;
 import com.wizzdi.flexicore.security.request.RoleToBaseclassFilter;
 import com.wizzdi.flexicore.security.request.RoleToBaseclassUpdate;

@@ -3,7 +3,7 @@ package com.wizzdi.flexicore.security.data;
 import com.flexicore.model.Baseclass;
 import com.flexicore.model.PermissionGroup;
 import com.flexicore.model.PermissionGroup_;
-import com.wizzdi.segmantix.model.SecurityContext;
+import com.wizzdi.flexicore.security.configuration.SecurityContext;
 import com.wizzdi.flexicore.boot.base.interfaces.Plugin;
 import com.wizzdi.flexicore.security.request.PermissionGroupFilter;
 import org.pf4j.Extension;

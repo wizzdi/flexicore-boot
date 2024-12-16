@@ -5,7 +5,7 @@ import com.flexicore.model.SecurityOperation;
 import com.flexicore.model.SecurityTenant;
 import com.flexicore.model.SecurityUser;
 import com.flexicore.model.TenantToBaseclass;
-import com.wizzdi.segmantix.model.SecurityContext;
+import com.wizzdi.flexicore.security.configuration.SecurityContext;
 
 import com.wizzdi.flexicore.boot.base.interfaces.Plugin;
 import com.wizzdi.flexicore.security.data.SecurityOpCheckRepository;
@@ -57,7 +57,7 @@ public class OperationValidatorService implements Plugin {
     }
 
     public boolean checkIfAllowed(SecurityContext securityContext) {
-        Access defaultaccess = securityContext.operation() instanceof SecurityOperation securityOperation&& securityOperation.getDefaultAccess() != null ? securityOperation.getDefaultAccess(): Access.allow;
+        Access defaultaccess = securityContext.operation() instanceof SecurityOperation securityOperation&& securityOperation.defaultAccess() != null ? securityOperation.defaultAccess(): Access.allow;
         return checkIfAllowed((SecurityUser) securityContext.user(), securityContext.tenants().stream().map(f->(SecurityTenant)f).toList(), (SecurityOperation) securityContext.operation(), defaultaccess);
     }
 

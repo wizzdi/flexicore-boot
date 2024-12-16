@@ -8,7 +8,7 @@ package com.wizzdi.flexicore.file.controllers;
 
 
 import com.flexicore.annotations.OperationsInside;
-import com.wizzdi.segmantix.model.SecurityContext;
+import com.wizzdi.flexicore.security.configuration.SecurityContext;
 import com.wizzdi.flexicore.boot.base.interfaces.Plugin;
 import com.wizzdi.flexicore.file.model.ZipFile;
 import com.wizzdi.flexicore.file.request.ZipAndDownloadRequest;

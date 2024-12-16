@@ -2,7 +2,7 @@ package com.wizzdi.flexicore.security.service;
 
 import com.flexicore.model.Baseclass;
 import com.flexicore.model.RoleToUser;
-import com.wizzdi.segmantix.model.SecurityContext;
+import com.wizzdi.flexicore.security.configuration.SecurityContext;
 import com.wizzdi.flexicore.boot.base.interfaces.Plugin;
 import com.wizzdi.flexicore.security.data.RoleToUserRepository;
 import com.wizzdi.flexicore.security.request.RoleToUserCreate;

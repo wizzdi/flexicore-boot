@@ -7,7 +7,7 @@
 package com.wizzdi.flexicore.common.user.rest;
 
 import com.flexicore.annotations.IOperation;
-import com.wizzdi.segmantix.model.SecurityContext;
+import com.wizzdi.flexicore.security.configuration.SecurityContext;
 import com.wizzdi.segmantix.model.Access;
 import com.flexicore.annotations.OperationsInside;
 import com.flexicore.model.User;

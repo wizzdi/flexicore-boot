@@ -6,7 +6,7 @@ import com.wizzdi.flexicore.boot.base.interfaces.Plugin;
 import com.wizzdi.flexicore.security.request.BaseclassFilter;
 import com.wizzdi.flexicore.security.request.BasicPropertiesFilter;
 import com.wizzdi.flexicore.security.request.SoftDeleteOption;
-import com.wizzdi.segmantix.model.SecurityContext;
+import com.wizzdi.flexicore.security.configuration.SecurityContext;
 import com.wizzdi.segmantix.service.SecurityRepository;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -90,7 +90,7 @@ public class BaseclassRepository implements Plugin {
 	}
 
 	public <T extends Baseclass> void addBaseclassPredicates(CriteriaBuilder cb, CommonAbstractCriteria q, From<?, T> r, List<Predicate> predicates, SecurityContext securityContext) {
-		securityRepository.addBaseclassPredicates(cb,q,r,predicates,securityContext);
+		securityRepository.addSecurityPredicates(cb,q,r,predicates,securityContext);
 	}
 
 	public boolean requiresSecurityPredicates(SecurityContext securityContext) {

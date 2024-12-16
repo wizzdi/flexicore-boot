@@ -3,6 +3,7 @@ package com.wizzdi.flexicore.security.request;
 import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.wizzdi.flexicore.security.validation.ClazzValid;
+import com.wizzdi.flexicore.security.validation.OperationValid;
 import com.wizzdi.segmantix.model.Access;
 import com.flexicore.model.*;
 import com.wizzdi.flexicore.security.validation.IdValid;
@@ -13,10 +14,10 @@ import java.util.Set;
 
 @IdValid.List({
         @IdValid(field = "securityLinkGroupIds", targetField = "securityLinkGroups", fieldType = SecurityLinkGroup.class),
-        @IdValid(field = "operationIds", targetField = "operations", fieldType = SecurityOperation.class),
         @IdValid(field = "relevantUserIds", targetField = "relevantUsers", fieldType = SecurityUser.class),
 
 })
+@OperationValid(sourceField = "operationIds", targetField = "operations")
 public class SecurityLinkFilter extends PaginationFilter {
 
     private BasicPropertiesFilter basicPropertiesFilter;

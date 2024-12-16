@@ -1,7 +1,7 @@
 package com.wizzdi.flexicore.security.test.rest;
 
 import com.flexicore.model.Role;
-import com.wizzdi.segmantix.model.SecurityContext;
+import com.wizzdi.flexicore.security.configuration.SecurityContext;
 import com.wizzdi.flexicore.security.request.RoleFilter;
 import com.wizzdi.flexicore.security.request.SecurityPolicyCreate;
 import com.wizzdi.flexicore.security.service.RoleService;

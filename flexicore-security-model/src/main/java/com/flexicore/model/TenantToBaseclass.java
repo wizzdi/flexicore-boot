@@ -8,7 +8,7 @@ package com.flexicore.model;
 
 
 
-import com.wizzdi.segmantix.api.model.ITenantSecurity;
+import com.wizzdi.segmantix.api.model.ITenantSecurityLink;
 import jakarta.persistence.Entity;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Transient;
@@ -16,7 +16,7 @@ import jakarta.persistence.Transient;
 
 @Entity
 
-public class TenantToBaseclass extends SecurityLink implements ITenantSecurity {
+public class TenantToBaseclass extends SecurityLink implements ITenantSecurityLink {
 
 
 

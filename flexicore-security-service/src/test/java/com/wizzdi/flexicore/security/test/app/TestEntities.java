@@ -3,7 +3,7 @@ package com.wizzdi.flexicore.security.test.app;
 import com.flexicore.model.PermissionGroup;
 import com.flexicore.model.Role;
 import com.flexicore.model.SecurityTenant;
-import com.wizzdi.segmantix.model.SecurityContext;
+import com.wizzdi.flexicore.security.configuration.SecurityContext;
 import com.wizzdi.flexicore.security.request.PermissionGroupCreate;
 import com.wizzdi.flexicore.security.request.RoleCreate;
 import com.wizzdi.flexicore.security.service.PermissionGroupService;

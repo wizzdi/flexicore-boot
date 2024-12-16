@@ -3,17 +3,22 @@ package com.wizzdi.flexicore.security.request;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.flexicore.model.OperationGroup;
 import com.flexicore.model.SecurityOperation;
+import com.wizzdi.flexicore.security.validation.Create;
 import com.wizzdi.flexicore.security.validation.IdValid;
+import com.wizzdi.flexicore.security.validation.OperationValid;
+import com.wizzdi.flexicore.security.validation.Update;
+import jakarta.validation.constraints.NotNull;
 
 @IdValid.List({
-        @IdValid(targetField = "operation", fieldType = SecurityOperation.class, field = "operationId"),
         @IdValid(targetField = "operationGroup", fieldType = OperationGroup.class, field = "operationGroupId")
 })
+@OperationValid(sourceField = "operationId",targetField = "operation",groups = {Create.class, Update.class})
 public class OperationToGroupCreate extends BasicCreate {
 
 
     @JsonIgnore
     private SecurityOperation operation;
+    @NotNull(groups = Create.class)
     private String operationId;
 
     @JsonIgnore

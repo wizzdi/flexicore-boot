@@ -2,7 +2,7 @@ package com.wizzdi.flexicore.security.service;
 
 import com.flexicore.model.Baseclass;
 import com.flexicore.model.SecurityLink;
-import com.wizzdi.segmantix.model.SecurityContext;
+import com.wizzdi.flexicore.security.configuration.SecurityContext;
 import com.wizzdi.flexicore.boot.base.interfaces.Plugin;
 import com.wizzdi.flexicore.security.data.SecurityLinkRepository;
 import com.wizzdi.flexicore.security.request.*;
@@ -48,8 +48,8 @@ public class SecurityLinkService implements Plugin {
 			securityLink.setAccess(securityLinkCreate.getAccess());
 			updated=true;
 		}
-		if(securityLinkCreate.getOperation()!=null&&(securityLink.getOperation()==null||!securityLinkCreate.getOperation().getId().equals(securityLink.getOperation().getId()))){
-			securityLink.setOperation(securityLinkCreate.getOperation());
+		if(securityLinkCreate.getOperation()!=null&&!securityLinkCreate.getOperation().getId().equals(securityLink.getOperationId())){
+			securityLink.setOperationId(securityLinkCreate.getOperation().getId());
 			updated=true;
 		}
 		if(securityLinkCreate.getOperationGroup()!=null&&(securityLink.getOperationGroup()==null||!securityLinkCreate.getOperationGroup().getId().equals(securityLink.getOperationGroup().getId()))){

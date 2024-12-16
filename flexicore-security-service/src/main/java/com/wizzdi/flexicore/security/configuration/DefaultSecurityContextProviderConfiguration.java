@@ -1,7 +1,6 @@
 package com.wizzdi.flexicore.security.configuration;
 
 import com.flexicore.model.*;
-import com.wizzdi.segmantix.model.SecurityContext;
 import com.wizzdi.flexicore.security.interfaces.SecurityContextProvider;
 import com.wizzdi.flexicore.security.request.RoleToUserFilter;
 import com.wizzdi.flexicore.security.request.TenantToUserFilter;

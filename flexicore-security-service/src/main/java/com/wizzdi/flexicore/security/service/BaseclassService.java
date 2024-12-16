@@ -1,9 +1,7 @@
 package com.wizzdi.flexicore.security.service;
 
 import com.flexicore.model.Baseclass;
-import com.flexicore.model.SecurityTenant;
-import com.flexicore.model.SecurityUser;
-import com.wizzdi.segmantix.model.SecurityContext;
+import com.wizzdi.flexicore.security.configuration.SecurityContext;
 import com.wizzdi.flexicore.boot.base.interfaces.Plugin;
 import com.wizzdi.segmantix.service.SecurityRepository;
 import com.wizzdi.flexicore.security.request.BaseclassCreate;

@@ -1,10 +1,9 @@
 package com.wizzdi.flexicore.security.data;
 
 import com.flexicore.model.*;
-import com.wizzdi.segmantix.model.SecurityContext;
+import com.wizzdi.flexicore.security.configuration.SecurityContext;
 import com.wizzdi.flexicore.boot.base.interfaces.Plugin;
 import com.wizzdi.flexicore.security.request.SecurityUserFilter;
-import com.wizzdi.segmantix.service.SecurityRepository;
 import jakarta.persistence.metamodel.SingularAttribute;
 import org.pf4j.Extension;
 import org.springframework.beans.factory.annotation.Autowired;

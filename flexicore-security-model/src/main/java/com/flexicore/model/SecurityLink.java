@@ -9,13 +9,14 @@ package com.flexicore.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.wizzdi.segmantix.api.model.IInstanceGroup;
+import com.wizzdi.segmantix.api.model.IOperation;
 import com.wizzdi.segmantix.model.Access;
-import com.wizzdi.segmantix.api.model.ISecurity;
+import com.wizzdi.segmantix.api.model.ISecurityLink;
 import jakarta.persistence.*;
 
 
 @Entity
-public class SecurityLink extends Baseclass implements ISecurity {
+public class SecurityLink extends Baseclass implements ISecurityLink {
 
 	private String securedId;
 	private String securedType;
@@ -25,8 +26,7 @@ public class SecurityLink extends Baseclass implements ISecurity {
 	private PermissionGroup permissionGroup;
 
 
-	@ManyToOne(targetEntity = SecurityOperation.class)
-	private SecurityOperation operation;
+	private String operationId;
 
 	@ManyToOne(targetEntity = OperationGroup.class)
 	private OperationGroup operationGroup;
@@ -46,19 +46,17 @@ public class SecurityLink extends Baseclass implements ISecurity {
 		return null;
 	}
 
-	@ManyToOne(targetEntity = SecurityOperation.class)
-	public SecurityOperation getOperation() {
-		return operation;
-	}
-
-	public <T extends SecurityLink> T setOperation(SecurityOperation operation) {
-		this.operation = operation;
-		return (T) this;
-	}
 
 	@Enumerated(EnumType.STRING)
 	public Access getAccess() {
 		return access;
+	}
+
+	@Transient
+	@JsonIgnore
+	@Override
+	public IOperation getOperation() {
+		return SecurityOperation.ofId(operationId);
 	}
 
 	public <T extends SecurityLink> T setAccess(Access access) {
@@ -121,6 +119,15 @@ public class SecurityLink extends Baseclass implements ISecurity {
 
 	public <T extends SecurityLink> T setSecuredType(String securedType) {
 		this.securedType = securedType;
+		return (T) this;
+	}
+
+	public String getOperationId() {
+		return operationId;
+	}
+
+	public <T extends SecurityLink> T setOperationId(String operationId) {
+		this.operationId = operationId;
 		return (T) this;
 	}
 }

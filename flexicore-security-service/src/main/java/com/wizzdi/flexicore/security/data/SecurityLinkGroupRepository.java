@@ -1,7 +1,7 @@
 package com.wizzdi.flexicore.security.data;
 
 import com.flexicore.model.*;
-import com.wizzdi.segmantix.model.SecurityContext;
+import com.wizzdi.flexicore.security.configuration.SecurityContext;
 import com.wizzdi.flexicore.boot.base.interfaces.Plugin;
 import com.wizzdi.flexicore.security.request.SecurityLinkGroupFilter;
 import jakarta.persistence.EntityManager;

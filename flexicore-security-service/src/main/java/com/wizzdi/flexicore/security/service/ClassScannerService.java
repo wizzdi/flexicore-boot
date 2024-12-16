@@ -1,6 +1,6 @@
 package com.wizzdi.flexicore.security.service;
 
-import com.wizzdi.segmantix.model.SecurityContext;
+import com.wizzdi.flexicore.security.configuration.SecurityContext;
 import com.wizzdi.segmantix.model.Access;
 import com.flexicore.annotations.IOperation;
 import com.flexicore.annotations.OperationsInside;
@@ -94,19 +94,12 @@ public class ClassScannerService implements Plugin {
     private SecurityOperation createOperationNoMerge(OperationScanContext operationScanContext, Map<String, SecurityOperation> existing, Map<String, Map<String, OperationToClazz>> relatedClazzes, List<Object> toMerge, Map<String, Clazz> clazzes, SecurityContext securityContext) {
         SecurityOperationCreate securityOperationCreate = operationScanContext.getSecurityOperationCreate();
         SecurityOperation securityOperation = existing.get(securityOperationCreate.getIdForCreate());
-        if (securityOperation == null) {
-            securityOperation = operationService.createOperationNoMerge(securityOperationCreate, securityContext);
-            securityOperation.setId(securityOperationCreate.getIdForCreate());
-            existing.put(securityOperation.getId(), securityOperation);
-            toMerge.add(securityOperation);
-        } else {
-            if (operationService.updateOperationNoMerge(securityOperationCreate, securityOperation)) {
-
-                toMerge.add(securityOperation);
-            }
-        }
         Class<?>[] relatedClasses = operationScanContext.getRelatedClasses();
-        if (relatedClasses != null) {
+        if (securityOperation == null) {
+            securityOperation = operationService.addOperation(securityOperationCreate);
+            existing.put(securityOperation.getId(), securityOperation);
+        }
+        if(relatedClasses!=null){
             for (Class<?> relatedClass : relatedClasses) {
                 String clazzId =relatedClass.getSimpleName();
                 Clazz clazz = clazzes.get(clazzId);
@@ -120,8 +113,7 @@ public class ClassScannerService implements Plugin {
                     OperationToClazzCreate operationToClazzCreate = new OperationToClazzCreate()
                             .setType(clazz)
                             .setSecurityOperation(securityOperation);
-                    existingOperationToClazz = operationToClazzService.createOperationToClazzNoMerge(operationToClazzCreate, securityContext);
-                    toMerge.add(existingOperationToClazz);
+                    existingOperationToClazz = operationToClazzService.addOperationToClazz(operationToClazzCreate);
                     operationClazzes.put(clazzId, existingOperationToClazz);
                 }
             }
@@ -187,7 +179,7 @@ public class ClassScannerService implements Plugin {
     @Bean
     public OperationGroupProvider viewOperations() {
         return operations -> {
-            List<SecurityOperation> operationList = operations.getOperations().stream().filter(f -> f.getCategory()!=null&&f.getCategory().equals(StandardSecurityOperationCategories.READ.name())).collect(Collectors.toList());
+            List<SecurityOperation> operationList = operations.getOperations().stream().filter(f -> f.category()!=null&&f.category().equals(StandardSecurityOperationCategories.READ.name())).collect(Collectors.toList());
             return new OperationGroupContext(new OperationGroupCreate().setExternalId("ViewOperations").setName("View Operations").setDescription("Operations that are required for viewers: read."), operationList);
         };
     }
@@ -196,7 +188,7 @@ public class ClassScannerService implements Plugin {
     public OperationGroupProvider managingOperations() {
         Set<String> categories=Set.of(StandardSecurityOperationCategories.READ,StandardSecurityOperationCategories.UPDATE,StandardSecurityOperationCategories.WRITE).stream().map(f->f.name()).collect(Collectors.toSet());
        return operations -> {
-            List<SecurityOperation> operationList = operations.getOperations().stream().filter(f -> f.getCategory()!=null&&categories.contains(f.getCategory())).collect(Collectors.toList());
+            List<SecurityOperation> operationList = operations.getOperations().stream().filter(f -> f.category()!=null&&categories.contains(f.category())).collect(Collectors.toList());
             return new OperationGroupContext(new OperationGroupCreate().setExternalId("ManagingOperations").setName("Managing Operations").setDescription("Operations that are required for managers: read , write and update."), operationList);
         };
        }
@@ -206,7 +198,7 @@ public class ClassScannerService implements Plugin {
            Set<String> categories=Set.of(StandardSecurityOperationCategories.READ,StandardSecurityOperationCategories.UPDATE,StandardSecurityOperationCategories.WRITE,StandardSecurityOperationCategories.DELETE).stream().map(f->f.name()).collect(Collectors.toSet());
 
            return operations -> {
-               List<SecurityOperation> operationList = operations.getOperations().stream().filter(f -> f.getCategory()!=null&&categories.contains(f.getCategory())).collect(Collectors.toList());
+               List<SecurityOperation> operationList = operations.getOperations().stream().filter(f -> f.category()!=null&&categories.contains(f.category())).collect(Collectors.toList());
                return new OperationGroupContext(new OperationGroupCreate().setExternalId("AdministrativeOperations").setName("Administrative Operations").setDescription("Operations that are required for administrators: read,write,update and delete."), operationList);
            };
        }
@@ -236,15 +228,13 @@ public class ClassScannerService implements Plugin {
         }
         scannedOperations.addAll(standardOperationScanner.getStandardOperations());
         Map<String, OperationScanContext> operationCreateMap = scannedOperations.stream().collect(Collectors.toMap(f -> f.getSecurityOperationCreate().getIdForCreate(), f -> f, (a, b) -> a));
-        Map<String, SecurityOperation> existing = operationCreateMap.isEmpty() ? new HashMap<>() : operationService.findByIds(SecurityOperation.class, operationCreateMap.keySet()).stream().collect(Collectors.toMap(f -> f.getId(), f -> f, (a, b) -> a));
-        Map<String, Map<String, OperationToClazz>> relatedClazzes = existing.isEmpty() ? new HashMap<>() : operationToClazzService.listAllOperationToClazz(new OperationToClazzFilter().setSecurityOperations(new ArrayList<>(existing.values())), null).stream().filter(f -> f.getOperation() != null && f.getType() != null).collect(Collectors.groupingBy(f -> f.getOperation().getId(), Collectors.toMap(f -> f.getType(), f -> f, (a, b) -> a)));
+        Map<String, SecurityOperation> existing = new HashMap<>();
+        Map<String, Map<String, OperationToClazz>> relatedClazzes = new HashMap<>();
         List<Object> toMerge = new ArrayList<>();
 
         for (OperationScanContext securityOperationCreate : operationCreateMap.values()) {
             SecurityOperation securityOperation = operationBuilder.upsertOperationNoMerge(securityOperationCreate, existing, relatedClazzes, toMerge, clazzMap, securityContext);
         }
-
-        operationService.massMerge(toMerge);
 
         return new Operations(new ArrayList<>(existing.values()));
     }
@@ -367,25 +357,6 @@ public class ClassScannerService implements Plugin {
     }
 
 
-    private SecurityOperation addOperation(IOperation ioperation, String id, List<Object> toMerge, Map<String, SecurityOperation> existing, SecurityContext securityContext) {
-        SecurityOperation operation = existing.get(id);
-        if (operation == null) {
-            SecurityOperationCreate createOperationRequest = new SecurityOperationCreate()
-                    .setDefaultAccess(ioperation.access())
-                    .setDescription(ioperation.Description())
-                    .setName(ioperation.Name());
-            operation = operationService.createOperationNoMerge(createOperationRequest, securityContext);
-            operation.setId(id);
-            operation = operationService.merge(operation);
-
-            logger.debug("Have created a new operation" + operation.toString());
-
-
-        }
-
-
-        return operation;
-    }
 
 
 

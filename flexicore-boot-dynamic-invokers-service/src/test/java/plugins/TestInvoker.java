@@ -2,7 +2,7 @@ package plugins;
 
 
 import com.flexicore.annotations.IOperation;
-import com.wizzdi.segmantix.model.SecurityContext;
+import com.wizzdi.flexicore.security.configuration.SecurityContext;
 import com.wizzdi.flexicore.boot.dynamic.invokers.annotations.Invoker;
 import com.wizzdi.flexicore.security.response.PaginationResponse;
 import org.pf4j.Extension;

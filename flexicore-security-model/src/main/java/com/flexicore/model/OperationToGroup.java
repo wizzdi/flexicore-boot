@@ -1,26 +1,34 @@
 package com.flexicore.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.wizzdi.segmantix.api.model.IOperation;
 import com.wizzdi.segmantix.api.model.IOperationGroupLink;
 import jakarta.persistence.Entity;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Transient;
 
 @Entity
 public class OperationToGroup extends Baseclass implements IOperationGroupLink {
 
-    @ManyToOne(targetEntity = SecurityOperation.class)
-    private SecurityOperation operation;
+    private String operationId;
     @ManyToOne(targetEntity = OperationGroup.class)
     private OperationGroup operationGroup;
 
 
-    @ManyToOne(targetEntity = SecurityOperation.class)
-    public SecurityOperation getOperation() {
-        return operation;
+    public String getOperationId() {
+        return operationId;
     }
 
-    public <T extends OperationToGroup> T setOperation(SecurityOperation securityOperation) {
-        this.operation = securityOperation;
+    public <T extends OperationToGroup> T setOperationId(String operationId) {
+        this.operationId = operationId;
         return (T) this;
+    }
+
+    @Transient
+    @JsonIgnore
+    @Override
+    public IOperation getOperation() {
+        return SecurityOperation.ofId(operationId);
     }
 
     @ManyToOne(targetEntity = OperationGroup.class)

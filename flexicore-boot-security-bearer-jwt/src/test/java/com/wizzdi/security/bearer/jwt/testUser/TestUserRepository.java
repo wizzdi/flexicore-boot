@@ -1,7 +1,7 @@
 package com.wizzdi.security.bearer.jwt.testUser;
 
 import com.flexicore.model.Baseclass;
-import com.wizzdi.segmantix.model.SecurityContext;
+import com.wizzdi.flexicore.security.configuration.SecurityContext;
 import com.wizzdi.flexicore.boot.base.interfaces.Plugin;
 import com.wizzdi.flexicore.security.data.BasicRepository;
 import com.wizzdi.flexicore.security.data.SecurityUserRepository;

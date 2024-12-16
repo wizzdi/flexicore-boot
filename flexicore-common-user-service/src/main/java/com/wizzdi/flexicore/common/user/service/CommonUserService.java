@@ -26,7 +26,7 @@ package com.wizzdi.flexicore.common.user.service;
 import com.flexicore.model.SecurityTenant;
 import com.flexicore.model.TenantToUser;
 import com.flexicore.model.User;
-import com.wizzdi.segmantix.model.SecurityContext;
+import com.wizzdi.flexicore.security.configuration.SecurityContext;
 import com.wizzdi.flexicore.common.user.data.CommonUserRepository;
 import com.wizzdi.flexicore.common.user.request.CommonUserCreate;
 import com.wizzdi.flexicore.common.user.request.CommonUserFilter;

@@ -2,7 +2,7 @@ package com.wizzdi.flexicore.security.test.app;
 
 import com.flexicore.model.Baseclass;
 import com.flexicore.model.Basic;
-import com.wizzdi.segmantix.model.SecurityContext;
+import com.wizzdi.flexicore.security.configuration.SecurityContext;
 import com.wizzdi.flexicore.security.service.BaseclassService;
 import com.wizzdi.flexicore.security.service.BasicService;
 import jakarta.persistence.metamodel.SingularAttribute;

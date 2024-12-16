@@ -1,6 +1,6 @@
 package com.wizzdi.flexicore.security.test.rest;
 
-import com.wizzdi.segmantix.model.SecurityContext;
+import com.wizzdi.flexicore.security.configuration.SecurityContext;
 import com.wizzdi.segmantix.model.Access;
 import com.flexicore.model.*;
 import com.wizzdi.flexicore.security.interfaces.SecurityContextProvider;
@@ -96,13 +96,7 @@ private SecurityUserService securityUserService;
 
     private Set<String> othersInTenantIds=new HashSet<>();
     private Set<String> othersInOtherTenantIds =new HashSet<>();
-    @Autowired
-    private SecurityOperationService securityOperationService;
 
-    @Autowired
-    @Qualifier("allOps")
-    @Lazy
-    private SecurityOperation allOps;
 
 
     @BeforeAll

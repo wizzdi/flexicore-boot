@@ -53,7 +53,7 @@
         <maven.compiler.source>21</maven.compiler.source>
         <maven.compiler.target>21</maven.compiler.target>
 
-        <spring-boot.version>3.3.1</spring-boot.version>
+        <spring-boot.version>3.3.3</spring-boot.version>
         <pf4j-spring.version>0.9.0</pf4j-spring.version>
 
         <flexicore-boot.version>${project.version}</flexicore-boot.version>
@@ -122,6 +122,7 @@
         <maven-processor-plugin.version>5.1</maven-processor-plugin.version>
         <ci-friendly-flatten-maven-plugin.version>1.0.20</ci-friendly-flatten-maven-plugin.version>
         <testcontainers.version>1.19.8</testcontainers.version>
+        <segmantix-dependencies.version>0.0.1</segmantix-dependencies.version>
     </properties>
     <distributionManagement>
         <snapshotRepository>
@@ -160,8 +161,10 @@
         <dependencies>
             <dependency>
                 <groupId>com.wizzdi</groupId>
-                <artifactId>segmantix-core</artifactId>
-                <version>0.0.0-dev</version>
+                <artifactId>segmantix-dependencies</artifactId>
+                <version>${segmantix-dependencies.version}</version>
+                <scope>import</scope>
+                <type>pom</type>
             </dependency>
 
             <dependency>

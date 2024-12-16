@@ -4,15 +4,16 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.flexicore.model.OperationGroup;
 import com.flexicore.model.SecurityOperation;
 import com.wizzdi.flexicore.security.validation.IdValid;
+import com.wizzdi.flexicore.security.validation.OperationValid;
 
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 @IdValid.List({
-        @IdValid(targetField = "operations", fieldType = SecurityOperation.class, field = "operationIds"),
         @IdValid(targetField = "operationGroups", fieldType = OperationGroup.class, field = "operationGroupIds")
 })
+@OperationValid(targetField = "operations",sourceField = "operationIds")
 public class OperationToGroupFilter extends PaginationFilter {
 
     private BasicPropertiesFilter basicPropertiesFilter;

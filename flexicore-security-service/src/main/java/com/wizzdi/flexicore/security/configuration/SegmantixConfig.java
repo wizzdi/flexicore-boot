@@ -2,6 +2,8 @@ package com.wizzdi.flexicore.security.configuration;
 
 import com.flexicore.model.Baseclass;
 import com.flexicore.model.SecurityOperation;
+import com.flexicore.model.SecurityWildcard;
+import com.wizzdi.flexicore.security.service.ClazzService;
 import com.wizzdi.segmantix.api.service.FieldPathProvider;
 import com.wizzdi.segmantix.service.SecurityRepository;
 import jakarta.persistence.criteria.From;
@@ -17,7 +19,7 @@ import java.util.concurrent.Callable;
 public class SegmantixConfig {
     @Bean
     public SecurityRepository securityRepository(OperationGroupLinkProviderImpl operationToGroupService, SecurityProviderImpl securityProviderImpl, InstanceGroupLinkProviderImpl instanceGroupLinkProvider, Cache dataAccessControlCache, Cache operationToOperationGroupCache, @Lazy SecurityOperation allOps){
-        return new SecurityRepository(new FieldPathProviderImpl(), operationToGroupService,securityProviderImpl,instanceGroupLinkProvider,new CacheWrapper(dataAccessControlCache),new CacheWrapper(operationToOperationGroupCache),allOps);
+        return new SecurityRepository(new FieldPathProviderImpl(), operationToGroupService,securityProviderImpl,instanceGroupLinkProvider,new CacheWrapper(dataAccessControlCache),new CacheWrapper(operationToOperationGroupCache),allOps, SecurityWildcard.class.getSimpleName());
     }
 
     private static class CacheWrapper implements com.wizzdi.segmantix.api.service.Cache{

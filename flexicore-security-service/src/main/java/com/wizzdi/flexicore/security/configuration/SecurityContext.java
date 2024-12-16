@@ -4,7 +4,7 @@
  *  Proprietary and confidential
  *  Written by Avishay Ben Natan And Asaf Ben Natan, October 2015
  ******************************************************************************/
-package com.wizzdi.segmantix.model;
+package com.wizzdi.flexicore.security.configuration;
 
 
 import com.flexicore.model.SecurityOperation;

@@ -3,7 +3,7 @@ package com.wizzdi.flexicore.security.interfaces;
 import com.flexicore.model.Clazz;
 import com.flexicore.model.OperationToClazz;
 import com.flexicore.model.SecurityOperation;
-import com.wizzdi.segmantix.model.SecurityContext;
+import com.wizzdi.flexicore.security.configuration.SecurityContext;
 import com.wizzdi.flexicore.security.response.OperationScanContext;
 
 import java.util.List;

@@ -2,7 +2,7 @@ package com.wizzdi.flexicore.security.validation;
 
 import com.flexicore.model.Baseclass;
 import com.flexicore.model.Basic;
-import com.wizzdi.segmantix.model.SecurityContext;
+import com.wizzdi.flexicore.security.configuration.SecurityContext;
 import com.wizzdi.flexicore.security.data.SecuredBasicRepository;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;

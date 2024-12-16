@@ -4,9 +4,12 @@ import com.flexicore.model.Baseclass;
 import com.flexicore.model.Basic;
 import com.flexicore.model.OperationToGroup;
 import com.flexicore.model.OperationToGroup_;
-import com.wizzdi.segmantix.model.SecurityContext;
+import com.flexicore.model.SecurityOperation;
+import com.wizzdi.flexicore.security.configuration.SecurityContext;
 import com.wizzdi.flexicore.boot.base.interfaces.Plugin;
+import com.wizzdi.flexicore.security.request.BasicPropertiesFilter;
 import com.wizzdi.flexicore.security.request.OperationToGroupFilter;
+import com.wizzdi.flexicore.security.request.SecurityOperationFilter;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.TypedQuery;
@@ -19,6 +22,7 @@ import org.springframework.stereotype.Component;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Component
 @Extension
@@ -27,6 +31,8 @@ public class OperationToGroupRepository implements Plugin {
 	private EntityManager em;
 	@Autowired
 	private SecuredBasicRepository securedBasicRepository;
+	@Autowired
+	private SecurityOperationRepository securityOperationRepository;
 
 
 	public List<OperationToGroup> listAllOperationToGroups(OperationToGroupFilter operationFilter, SecurityContext securityContext){
@@ -48,7 +54,8 @@ public class OperationToGroupRepository implements Plugin {
 			predicates.add(r.get(OperationToGroup_.operationGroup).in(operationFilter.getOperationGroups()));
 		}
 		if(operationFilter.getOperations()!=null&&!operationFilter.getOperations().isEmpty()){
-			predicates.add(r.get(OperationToGroup_.operation).in(operationFilter.getOperations()));
+			Set<String> ids=operationFilter.getOperations().stream().map(f->f.getId()).collect(Collectors.toSet());
+			predicates.add(r.get(OperationToGroup_.operationId).in(ids));
 		}
 	}
 

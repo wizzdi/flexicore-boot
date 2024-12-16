@@ -1,6 +1,6 @@
 package com.wizzdi.security.bearer.jwt;
 
-import com.wizzdi.segmantix.model.SecurityContext;
+import com.wizzdi.flexicore.security.configuration.SecurityContext;
 import io.jsonwebtoken.Claims;
 
 public interface SecurityContextCustomizer {

@@ -2,7 +2,7 @@ package com.wizzdi.flexicore.security.test.rest;
 
 import com.flexicore.model.PermissionGroup;
 import com.flexicore.model.PermissionGroupToBaseclass;
-import com.wizzdi.segmantix.model.SecurityContext;
+import com.wizzdi.flexicore.security.configuration.SecurityContext;
 import com.wizzdi.flexicore.security.request.PermissionGroupToBaseclassCreate;
 import com.wizzdi.flexicore.security.request.PermissionGroupToBaseclassFilter;
 import com.wizzdi.flexicore.security.request.PermissionGroupToBaseclassUpdate;

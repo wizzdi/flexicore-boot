@@ -1,7 +1,7 @@
 package com.wizzdi.flexicore.file.data;
 
 import com.flexicore.model.Basic;
-import com.wizzdi.segmantix.model.SecurityContext;
+import com.wizzdi.flexicore.security.configuration.SecurityContext;
 import com.wizzdi.flexicore.boot.base.interfaces.Plugin;
 import com.wizzdi.flexicore.file.model.*;
 import com.wizzdi.flexicore.file.request.ZipFileToFileResourceFilter;
