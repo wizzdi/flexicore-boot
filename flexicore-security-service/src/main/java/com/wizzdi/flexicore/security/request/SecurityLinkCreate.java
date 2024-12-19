@@ -158,9 +158,9 @@ public class SecurityLinkCreate extends BasicCreate {
         return (T) this;
     }
 
-    @AssertTrue(message = "clazzId or baseclassId or permissionGroupId must be provided",groups = Create.class)
+    @AssertTrue(message = "clazz or securedId+clazz or permissionGroupId must be provided",groups = Create.class)
     private boolean isTargetProvided() {
-        return clazz!=null||!StringUtils.isEmpty(securedId)||!StringUtils.isEmpty(permissionGroupId);
+        return clazz!=null||!StringUtils.isEmpty(permissionGroupId);
     }
 
     @AssertTrue(message = "operationId or operationGroupId must be provided",groups = Create.class)

@@ -12,6 +12,7 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.TypedQuery;
 import jakarta.persistence.criteria.*;
+import jakarta.persistence.metamodel.EntityType;
 import jakarta.persistence.metamodel.SingularAttribute;
 import org.pf4j.Extension;
 import org.slf4j.Logger;
@@ -38,14 +39,14 @@ public class BaseclassRepository implements Plugin {
 	private BasicRepository basicRepository;
 
 
-	public List<Baseclass> listAllBaseclass(BaseclassFilter baseclassFilter, SecurityContext securityContext){
+	public <T extends Baseclass> List<T> listAllBaseclass(Class<T> c,BaseclassFilter baseclassFilter, SecurityContext securityContext){
 		CriteriaBuilder cb=em.getCriteriaBuilder();
-		CriteriaQuery<Baseclass> q=cb.createQuery(Baseclass.class);
-		Root<Baseclass> r=q.from(Baseclass.class);
+		CriteriaQuery<T> q=cb.createQuery(c);
+		Root<T> r=q.from(c);
 		List<Predicate> predicates=new ArrayList<>();
 		addBaseclassPredicates(baseclassFilter,cb,q,r,predicates,securityContext);
 		q.select(r).where(predicates.toArray(Predicate[]::new)).orderBy(cb.asc(r.get(Baseclass_.name)));
-		TypedQuery<Baseclass> query = em.createQuery(q);
+		TypedQuery<T> query = em.createQuery(q);
 		BasicRepository.addPagination(baseclassFilter,query);
 		return query.getResultList();
 
@@ -59,10 +60,10 @@ public class BaseclassRepository implements Plugin {
 		}
 	}
 
-	public long countAllBaseclass(BaseclassFilter baseclassFilter,SecurityContext securityContext){
+	public <T extends Baseclass> long countAllBaseclass(Class<T> c,BaseclassFilter baseclassFilter,SecurityContext securityContext){
 		CriteriaBuilder cb=em.getCriteriaBuilder();
 		CriteriaQuery<Long> q=cb.createQuery(Long.class);
-		Root<Baseclass> r=q.from(Baseclass.class);
+		Root<T> r=q.from(c);
 		List<Predicate> predicates=new ArrayList<>();
 		addBaseclassPredicates(baseclassFilter,cb,q,r,predicates,securityContext);
 		q.select(cb.count(r)).where(predicates.toArray(Predicate[]::new));
@@ -197,5 +198,37 @@ public class BaseclassRepository implements Plugin {
 
 	public void massMerge(List<?> toMerge, boolean updatedate) {
 		basicRepository.massMerge(toMerge, updatedate);
+	}
+
+	public Set<EntityType<?>> getEntities() {
+		return em.getMetamodel().getEntities();
+	}
+
+
+	public <T> List<T> listAll(Class<T> c,BaseclassFilter baseclassFilter, SecurityContext securityContext){
+		CriteriaBuilder cb=em.getCriteriaBuilder();
+		CriteriaQuery<T> q=cb.createQuery(c);
+		Root<T> r=q.from(c);
+		List<Predicate> predicates=new ArrayList<>();
+		securityRepository.addSecurityPredicates(cb,q,r,predicates,securityContext);
+		q.select(r).where(predicates.toArray(Predicate[]::new));
+		TypedQuery<T> query = em.createQuery(q);
+		BasicRepository.addPagination(baseclassFilter,query);
+		return query.getResultList();
+
+	}
+
+
+
+	public <T> long countAll(Class<T> c,BaseclassFilter baseclassFilter,SecurityContext securityContext){
+		CriteriaBuilder cb=em.getCriteriaBuilder();
+		CriteriaQuery<Long> q=cb.createQuery(Long.class);
+		Root<T> r=q.from(c);
+		List<Predicate> predicates=new ArrayList<>();
+		securityRepository.addSecurityPredicates(cb,q,r,predicates,securityContext);
+		q.select(cb.count(r)).where(predicates.toArray(Predicate[]::new));
+		TypedQuery<Long> query = em.createQuery(q);
+		return query.getSingleResult();
+
 	}
 }

@@ -45,14 +45,12 @@ public class EntitiesProvider {
 	@Bean
 	@Scope(value = ConfigurableBeanFactory.SCOPE_SINGLETON)
 	@Primary
-	public Reflections reflections(List<EntitiesRootHolder> entitiesRootHolders){
+	public Reflections reflections(List<ReflectionRootHolder> reflectionRootHolders){
 		ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
 
 		List<URL> entitiesJarsUrls;
 		entitiesJarsUrls = getEntitiesJarsUrls();
-		Map<String, Object> beansWithAnnotation = context.getBeansWithAnnotation(SpringBootApplication.class);
-		entitiesJarsUrls.addAll(beansWithAnnotation.values().stream().map(f -> f.getClass().getProtectionDomain().getCodeSource().getLocation()).collect(Collectors.toSet()));
-		entitiesJarsUrls.addAll(entitiesRootHolders.stream().map(f->f.entitiesRoot()).flatMap(Set::stream).map(f->f.getProtectionDomain().getCodeSource().getLocation()).toList());
+		entitiesJarsUrls.addAll(reflectionRootHolders.stream().map(f->f.entitiesRoot()).flatMap(Set::stream).map(f->f.getProtectionDomain().getCodeSource().getLocation()).toList());
 		ConfigurationBuilder configuration = ConfigurationBuilder.build()
 				.addClassLoaders(classLoader)
 				.setUrls(entitiesJarsUrls);

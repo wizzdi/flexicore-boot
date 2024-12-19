@@ -1,6 +1,7 @@
 package com.wizzdi.flexicore.file.config;
 
-import com.wizzdi.flexicore.boot.jpa.service.EntitiesRootHolder;
+import com.wizzdi.flexicore.boot.jpa.service.ReflectionRootHolder;
+import com.wizzdi.flexicore.file.controllers.FileResourceController;
 import com.wizzdi.flexicore.file.model.FileResource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -11,8 +12,8 @@ import java.util.Set;
 public class FileEntitiesConfig {
 
     @Bean
-    public EntitiesRootHolder fileEntitiesHolder(){
-        return new EntitiesRootHolder(Set.of(FileResource.class));
+    public ReflectionRootHolder fileEntitiesHolder(){
+        return new ReflectionRootHolder(Set.of(FileResource.class, FileResourceController.class));
 
     }
 }

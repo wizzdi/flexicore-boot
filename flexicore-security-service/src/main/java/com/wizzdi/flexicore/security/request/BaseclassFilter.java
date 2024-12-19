@@ -4,6 +4,9 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.flexicore.model.Clazz;
 import com.wizzdi.flexicore.security.validation.ClazzValid;
 import com.wizzdi.flexicore.security.validation.IdValid;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 
 import java.util.HashSet;
 import java.util.List;

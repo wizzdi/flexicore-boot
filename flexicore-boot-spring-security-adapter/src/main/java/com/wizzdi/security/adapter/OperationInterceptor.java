@@ -39,8 +39,7 @@ public class OperationInterceptor implements HandlerInterceptor {
 				HandlerMethod handlerMethod= (HandlerMethod) handler;
 				Method method = handlerMethod.getMethod();
 				if(!BasicErrorController.class.equals(method.getDeclaringClass())){
-					String operationId = ClazzService.getIdFromString(method.toString());
-					SecurityOperation securityOperation=securityOperationService.getByIdOrNull(operationId);
+					SecurityOperation securityOperation=securityOperationService.getOperation(method);
 					if(securityOperation==null){
 						logger.error("could not find io operation annotation on method: " + method.getName());
 						response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);

@@ -52,8 +52,12 @@ public class SecurityOperationRepository implements Plugin {
 				pass=pass&&securityOperation.name().toLowerCase().contains(like.toLowerCase());
 			}
 		}
-		if(basicPropertiesFilter.getNameLike()!=null){
-			pass=pass&&basicPropertiesFilter.getNameLike().contains(securityOperation.name());
+		if(basicPropertiesFilter.getOnlyIds()!=null&&!basicPropertiesFilter.getOnlyIds().isEmpty()){
+			pass=pass&&basicPropertiesFilter.getOnlyIds().contains(securityOperation.id());
+		}
+
+		if(basicPropertiesFilter.getNames()!=null&&!basicPropertiesFilter.getNames().isEmpty()){
+			pass=pass&&basicPropertiesFilter.getNames().contains(securityOperation.name());
 		}
 		return pass;
 

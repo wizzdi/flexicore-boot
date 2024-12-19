@@ -55,8 +55,12 @@ public class ClazzRepository implements Plugin {
 				pass=pass&&clazz.name().toLowerCase().contains(like.toLowerCase());
 			}
 		}
-		if(basicPropertiesFilter.getNameLike()!=null){
-			pass=pass&&basicPropertiesFilter.getNameLike().contains(clazz.name());
+		if(basicPropertiesFilter.getNames()!=null&&!basicPropertiesFilter.getNames().isEmpty()){
+			pass=pass&&basicPropertiesFilter.getNames().contains(clazz.name());
+		}
+
+		if(basicPropertiesFilter.getOnlyIds()!=null&&!basicPropertiesFilter.getOnlyIds().isEmpty()){
+			pass=pass&&basicPropertiesFilter.getOnlyIds().contains(clazz.name());
 		}
 		return pass;
 
