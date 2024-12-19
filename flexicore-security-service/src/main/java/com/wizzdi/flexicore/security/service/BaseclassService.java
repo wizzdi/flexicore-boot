@@ -29,12 +29,12 @@ public class BaseclassService implements Plugin {
 
 
 	public static <T extends Baseclass> Baseclass createSecurityObjectNoMerge(T subject, SecurityContext securityContext) {
+		subject.setSecurityId(subject.getId());
 		if(securityContext==null){
 			return subject;
 		}
 		subject.setCreator(securityContext.getUser());
 		subject.setTenant(securityContext.getTenantToCreateIn());
-		subject.setSecurityId(subject.getId());
 		//TODO:clazz?
 		return subject;
 	}

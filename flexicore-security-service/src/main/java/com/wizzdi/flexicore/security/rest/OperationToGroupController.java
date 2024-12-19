@@ -19,6 +19,7 @@ import com.wizzdi.flexicore.security.validation.Update;
 import jakarta.validation.Valid;
 import org.pf4j.Extension;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.validation.annotation.Validated;

@@ -59,7 +59,7 @@ public class FlexicoreJwtTokenFilter extends OncePerRequestFilter implements Fle
             return;
 
         }
-        SecurityContext securityContext=authentication.getSecurityContextBase();
+        SecurityContext securityContext=authentication.getSecurityContext();
 
         authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 

@@ -8,6 +8,7 @@ package com.flexicore.model;
 
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.wizzdi.segmantix.api.model.ITenantSecurityLink;
 import jakarta.persistence.Entity;
 import jakarta.persistence.ManyToOne;
@@ -19,7 +20,18 @@ import jakarta.persistence.Transient;
 public class TenantToBaseclass extends SecurityLink implements ITenantSecurityLink {
 
 
+	@Override
+	@ManyToOne(targetEntity = SecurityTenant.class)
+	public SecurityTenant getTenant() {
+		return super.getTenant();
+	}
 
+	@Override
+	public void setTenant(SecurityTenant tenant) {
+		super.setTenant(tenant);
+	}
+
+	@JsonIgnore
 	@Transient
 	@Override
 	public SecurityEntity getSecurityEntity() {

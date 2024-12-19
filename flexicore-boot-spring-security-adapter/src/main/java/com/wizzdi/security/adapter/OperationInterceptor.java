@@ -28,7 +28,6 @@ public class OperationInterceptor implements HandlerInterceptor {
 
 
 	@Autowired
-	@Lazy
 	private SecurityOperationService securityOperationService;
 
 

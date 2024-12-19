@@ -1,7 +1,7 @@
 package com.wizzdi.flexicore.security.service;
 
-import com.flexicore.annotations.rest.All;
 import com.flexicore.model.Clazz;
+import com.flexicore.model.SecurityWildcard;
 import com.wizzdi.flexicore.boot.base.interfaces.Plugin;
 import com.wizzdi.flexicore.security.data.ClazzRepository;
 import com.wizzdi.flexicore.security.request.BasicPropertiesFilter;
@@ -46,5 +46,8 @@ public class ClazzService implements Plugin {
 
 	public Optional<Clazz> getClazz(Class<?> aClass) {
 		return clazzRepository.listAllClazzs(new ClazzFilter().setBasicPropertiesFilter(new BasicPropertiesFilter().setNames(Set.of(aClass.getSimpleName())))).stream().findFirst();
+	}
+	public Clazz getWildcardClazz(){
+		return getClazz(SecurityWildcard.class).orElse(null);
 	}
 }

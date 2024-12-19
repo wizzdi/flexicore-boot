@@ -1,6 +1,7 @@
 package com.wizzdi.flexicore.security.service;
 
 import com.flexicore.model.Baseclass;
+import com.flexicore.model.Clazz;
 import com.flexicore.model.PermissionGroup;
 import com.flexicore.model.PermissionGroupToBaseclass;
 import com.wizzdi.flexicore.security.configuration.SecurityContext;
@@ -10,6 +11,7 @@ import com.wizzdi.flexicore.security.request.PermissionGroupToBaseclassCreate;
 import com.wizzdi.flexicore.security.request.PermissionGroupToBaseclassFilter;
 import com.wizzdi.flexicore.security.request.PermissionGroupToBaseclassMassCreate;
 import com.wizzdi.flexicore.security.request.PermissionGroupToBaseclassUpdate;
+import com.wizzdi.flexicore.security.request.SecuredHolder;
 import com.wizzdi.flexicore.security.response.PaginationResponse;
 import org.pf4j.Extension;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -101,14 +103,16 @@ public class PermissionGroupToBaseclassService implements Plugin {
 
 	public Map<String, Map<String, PermissionGroupToBaseclass>> massCreatePermissionLinks(PermissionGroupToBaseclassMassCreate permissionGroupToBaseclassMassCreate, SecurityContext securityContext) {
 		List<PermissionGroup> permissionGroups = permissionGroupToBaseclassMassCreate.getPermissionGroups();
-		Set<String> baseclasses = permissionGroupToBaseclassMassCreate.getSecuredIds();
-		Map<String,Map<String, PermissionGroupToBaseclass>> permissionLinks = baseclasses.isEmpty()||permissionGroups.isEmpty()?new HashMap<>():listAllPermissionGroupToBaseclass(new PermissionGroupToBaseclassFilter().setPermissionGroups(new ArrayList<>(permissionGroups)).setSecuredIds(baseclasses), securityContext).stream().collect(Collectors.groupingBy(f->f.getPermissionGroup().getId(),Collectors.toMap(f -> f.getSecuredId(), f -> f, (a, b) -> a)));
+	List<SecuredHolder> baseclasses = permissionGroupToBaseclassMassCreate.getSecuredHolders();
+	Set<String> baseclassIds=baseclasses.stream().map(f->f.id()).collect(Collectors.toSet());
+	List<Clazz> baseclassTypes=baseclasses.stream().map(f->f.type()).collect(Collectors.toList());
+		Map<String,Map<String, PermissionGroupToBaseclass>> permissionLinks = baseclasses.isEmpty()||permissionGroups.isEmpty()?new HashMap<>():listAllPermissionGroupToBaseclass(new PermissionGroupToBaseclassFilter().setPermissionGroups(new ArrayList<>(permissionGroups)).setSecuredIds(baseclassIds).setClazzes(baseclassTypes), securityContext).stream().collect(Collectors.groupingBy(f->f.getPermissionGroup().getId(),Collectors.toMap(f -> f.getSecuredId(), f -> f, (a, b) -> a)));
 		for (PermissionGroup permissionGroup : permissionGroups) {
 			Map<String, PermissionGroupToBaseclass> permissionGroupLinks = permissionLinks.computeIfAbsent(permissionGroup.getId(), f -> new HashMap<>());
-			for (String baseclass : baseclasses) {
-				PermissionGroupToBaseclass existing=permissionGroupLinks.get(baseclass);
+			for (SecuredHolder baseclass : baseclasses) {
+				PermissionGroupToBaseclass existing=permissionGroupLinks.get(baseclass.id());
 				if(existing==null){
-					PermissionGroupToBaseclass permissionGroupToBaseclass = createPermissionGroupToBaseclass(new PermissionGroupToBaseclassCreate().setSecuredId(baseclass).setPermissionGroup(permissionGroup), securityContext);
+					PermissionGroupToBaseclass permissionGroupToBaseclass = createPermissionGroupToBaseclass(new PermissionGroupToBaseclassCreate().setSecuredId(baseclass.id()).setSecuredType(baseclass.type()).setPermissionGroup(permissionGroup), securityContext);
 					permissionGroupLinks.put(permissionGroupToBaseclass.getSecuredId(),permissionGroupToBaseclass);
 				}
 			}

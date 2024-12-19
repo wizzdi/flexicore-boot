@@ -1,7 +1,6 @@
 package com.wizzdi.flexicore.security.service;
 
 import com.wizzdi.flexicore.security.configuration.SecurityContext;
-import com.wizzdi.segmantix.model.Access;
 import com.flexicore.annotations.IOperation;
 import com.flexicore.annotations.OperationsInside;
 import com.flexicore.annotations.rest.*;
@@ -14,6 +13,7 @@ import com.wizzdi.flexicore.security.request.*;
 import com.wizzdi.flexicore.security.response.*;
 import org.pf4j.Extension;
 import org.pf4j.PluginWrapper;
+import org.reflections.Reflections;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.ObjectProvider;
@@ -23,17 +23,12 @@ import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Scope;
 import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ClassUtils;
 
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
-import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -45,8 +40,6 @@ public class ClassScannerService implements Plugin {
 
     private static final Logger logger = LoggerFactory.getLogger(ClassScannerService.class);
 
-    @Autowired
-    private SecurityOperationService operationService;
 
     @Autowired
     private ClazzService clazzService;
@@ -56,11 +49,9 @@ public class ClassScannerService implements Plugin {
     private OperationToClazzService operationToClazzService;
 
 
-    @PersistenceContext
-    private EntityManager entityManager;
     @Autowired
-    @Lazy
-    private FlexiCorePluginManager pluginManager;
+    @Qualifier("pluginManagerUnInjected")
+    private FlexiCorePluginManager pluginManagerUnInjected;
 
 
     /**
@@ -88,15 +79,15 @@ public class ClassScannerService implements Plugin {
     @Scope(value = ConfigurableBeanFactory.SCOPE_SINGLETON)
     @ConditionalOnMissingBean
     public OperationBuilder securityOperationBuilder() {
-        return (securityOperationCreate, existing, relatedClazzes, toMerge, clazzes, securityContextBase) -> createOperationNoMerge(securityOperationCreate, existing, relatedClazzes, toMerge, clazzes, securityContextBase);
+        return (securityOperationCreate, existing, relatedClazzes, toMerge, clazzes) -> createOperationNoMerge(securityOperationCreate, existing, relatedClazzes, toMerge, clazzes);
     }
 
-    private SecurityOperation createOperationNoMerge(OperationScanContext operationScanContext, Map<String, SecurityOperation> existing, Map<String, Map<String, OperationToClazz>> relatedClazzes, List<Object> toMerge, Map<String, Clazz> clazzes, SecurityContext securityContext) {
+    private SecurityOperation createOperationNoMerge(OperationScanContext operationScanContext, Map<String, SecurityOperation> existing, Map<String, Map<String, OperationToClazz>> relatedClazzes, List<Object> toMerge, Map<String, Clazz> clazzes ) {
         SecurityOperationCreate securityOperationCreate = operationScanContext.getSecurityOperationCreate();
         SecurityOperation securityOperation = existing.get(securityOperationCreate.getIdForCreate());
         Class<?>[] relatedClasses = operationScanContext.getRelatedClasses();
         if (securityOperation == null) {
-            securityOperation = operationService.addOperation(securityOperationCreate);
+            securityOperation = SecurityOperationService.getSecurityOperation(securityOperationCreate);
             existing.put(securityOperation.getId(), securityOperation);
         }
         if(relatedClasses!=null){
@@ -209,16 +200,15 @@ public class ClassScannerService implements Plugin {
     @Bean
     @Scope(value = ConfigurableBeanFactory.SCOPE_SINGLETON)
     @ConditionalOnMissingBean
-    public Operations initializeOperations(@Qualifier("adminSecurityContext") SecurityContext securityContext, Clazzes clazzes, OperationsClassScanner operationsClassScanner, OperationBuilder operationBuilder, StandardOperationScanner standardOperationScanner) {
+    public Operations initializeOperations(Clazzes clazzes, OperationsClassScanner operationsClassScanner, OperationBuilder operationBuilder, StandardOperationScanner standardOperationScanner, Reflections reflections) {
 
         Map<String, Clazz> clazzMap = clazzes.getClazzes().stream().collect(Collectors.toMap(f -> f.name(), f -> f));
 
-        List<PluginWrapper> startedPlugins = pluginManager.getStartedPlugins().stream().sorted(PluginInit.PLUGIN_COMPARATOR).collect(Collectors.toList());
-        Set<Class<?>> operationClasses = new HashSet<>();
-        operationClasses.addAll(pluginManager.getApplicationContext().getBeansWithAnnotation(OperationsInside.class).values().stream().map(f -> ClassUtils.getUserClass(f.getClass())).collect(Collectors.toSet()));
+        List<PluginWrapper> startedPlugins = pluginManagerUnInjected.getStartedPlugins().stream().sorted(PluginInit.PLUGIN_COMPARATOR).collect(Collectors.toList());
+        Set<Class<?>> operationClasses = new HashSet<>(reflections.getTypesAnnotatedWith(OperationsInside.class).stream().map(f -> ClassUtils.getUserClass(f)).collect(Collectors.toSet()));
         for (PluginWrapper startedPlugin : startedPlugins) {
-            ApplicationContext applicationContext = pluginManager.getApplicationContext(startedPlugin);
-            operationClasses.addAll(applicationContext.getBeansWithAnnotation(OperationsInside.class).values().stream().map(f -> ClassUtils.getUserClass(f.getClass())).collect(Collectors.toSet()));
+            List<? extends Class<?>> pluginOperations = pluginManagerUnInjected.getExtensionClasses(startedPlugin.getPluginId()).stream().map(f->ClassUtils.getUserClass(f)).filter(f->f.isAnnotationPresent(OperationsInside.class)).toList();
+            operationClasses.addAll(pluginOperations);
 
         }
         List<OperationScanContext> scannedOperations = new ArrayList<>();
@@ -233,7 +223,7 @@ public class ClassScannerService implements Plugin {
         List<Object> toMerge = new ArrayList<>();
 
         for (OperationScanContext securityOperationCreate : operationCreateMap.values()) {
-            SecurityOperation securityOperation = operationBuilder.upsertOperationNoMerge(securityOperationCreate, existing, relatedClazzes, toMerge, clazzMap, securityContext);
+            SecurityOperation securityOperation = operationBuilder.upsertOperationNoMerge(securityOperationCreate, existing, relatedClazzes, toMerge, clazzMap);
         }
 
         return new Operations(new ArrayList<>(existing.values()));
@@ -317,44 +307,7 @@ public class ClassScannerService implements Plugin {
         return null;
     }
 
-    private IOperation addRelatedClazz(IOperation ioperation, Class<? extends Baseclass>[] classes) {
-        return new IOperation() {
-            @Override
-            public String Name() {
-                return ioperation.Name();
-            }
 
-            @Override
-            public String Description() {
-                return ioperation.Description();
-            }
-
-            @Override
-            public String Category() {
-                return ioperation.Category();
-            }
-
-            @Override
-            public boolean auditable() {
-                return ioperation.auditable();
-            }
-
-            @Override
-            public Class<? extends Baseclass>[] relatedClazzes() {
-                return classes;
-            }
-
-            @Override
-            public Access access() {
-                return ioperation.access();
-            }
-
-            @Override
-            public Class<? extends Annotation> annotationType() {
-                return IOperation.class;
-            }
-        };
-    }
 
 
 
@@ -365,11 +318,8 @@ public class ClassScannerService implements Plugin {
      *
      * @return list of initialized classes
      */
-    @Transactional
     @Bean
     @ConditionalOnMissingBean
-    @Scope(value = ConfigurableBeanFactory.SCOPE_SINGLETON)
-
     public Clazzes initializeClazzes() {
         return new Clazzes(clazzService.listAllClazzs(new ClazzFilter()));
     }

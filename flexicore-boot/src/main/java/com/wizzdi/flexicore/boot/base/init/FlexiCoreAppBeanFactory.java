@@ -10,7 +10,9 @@ import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.context.ApplicationContext;
 
 import java.nio.file.Path;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 import java.util.Set;
@@ -20,8 +22,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class FlexiCoreAppBeanFactory extends DefaultListableBeanFactory {
 
     private ApplicationContext applicationContext;
-    private FlexiCorePluginManager flexiCorePluginManager;
-    private final AtomicBoolean init = new AtomicBoolean(false);
     private Queue<ApplicationContext> dependenciesContext = new LinkedBlockingQueue<>();
 
 
@@ -43,16 +43,7 @@ public class FlexiCoreAppBeanFactory extends DefaultListableBeanFactory {
 
 
     private void init() {
-        if(isConfigurationFrozen()){
-            if (init.compareAndSet(false, true)) {
-                String pluginPath = getApplicationContext().getEnvironment().getProperty("flexicore.plugins","/home/flexicore/plugins");
-                flexiCorePluginManager = new FlexiCorePluginManager(Path.of(pluginPath), Collections.emptyList());
-                flexiCorePluginManager.setApplicationContext(this.applicationContext);
-                flexiCorePluginManager.init();
-                logger.info("plugins init complete");
-                dependenciesContext.addAll(flexiCorePluginManager.getPluginApplicationContexts());
-            }
-        }
+
 
     }
 
@@ -110,9 +101,13 @@ public class FlexiCoreAppBeanFactory extends DefaultListableBeanFactory {
         return dependenciesContext;
     }
 
-    public FlexiCorePluginManager getFlexiCorePluginManager() {
-        init();
-        return flexiCorePluginManager;
+
+    public void updateContext(Collection<FlexiCoreApplicationContext> toUpdate) {
+        for (FlexiCoreApplicationContext flexiCoreApplicationContext : toUpdate) {
+            if(!dependenciesContext.contains(flexiCoreApplicationContext)){
+                dependenciesContext.add(flexiCoreApplicationContext);
+            }
+        }
     }
 
     @Override

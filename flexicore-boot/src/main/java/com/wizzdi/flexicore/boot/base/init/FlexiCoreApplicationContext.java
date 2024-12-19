@@ -8,6 +8,9 @@ import org.springframework.core.ResolvableType;
 import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
 
+import java.util.List;
+import java.util.Queue;
+
 public class FlexiCoreApplicationContext extends AnnotationConfigApplicationContext {
     private final FlexiCorePluginBeanFactory flexiCorePluginBeanFactory;
     private ApplicationEventMulticaster fcApplicationEventMulticaster;
@@ -76,5 +79,10 @@ public class FlexiCoreApplicationContext extends AnnotationConfigApplicationCont
             }
         }
         super.publishEvent(applicationEvent, eventType);
+    }
+
+    public void updateContexts(Queue<FlexiCoreApplicationContext> pluginsApplicationContexts) {
+        List<FlexiCoreApplicationContext> toUpdate = pluginsApplicationContexts.stream().filter(f -> f != this).toList();
+        getAutowireCapableBeanFactory().updateContext(toUpdate);
     }
 }

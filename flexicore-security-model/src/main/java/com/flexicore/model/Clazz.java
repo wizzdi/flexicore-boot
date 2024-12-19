@@ -10,5 +10,8 @@ package com.flexicore.model;
 
 
 public record Clazz(String name) {
+    public static Clazz ofClass(Class<?> c){
+        return new Clazz(c.getSimpleName());
+    }
 
 }

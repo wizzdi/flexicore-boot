@@ -3,17 +3,16 @@ package com.wizzdi.flexicore.security.data;
 import com.flexicore.model.*;
 import com.wizzdi.flexicore.boot.base.interfaces.Plugin;
 import com.wizzdi.flexicore.security.request.SecurityOperationFilter;
+import com.wizzdi.flexicore.security.response.Operations;
 import org.pf4j.Extension;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
-
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
 
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import com.wizzdi.flexicore.security.request.BasicPropertiesFilter;
 
@@ -23,9 +22,14 @@ public class SecurityOperationRepository implements Plugin {
 
 	private final Map<String,SecurityOperation> securityOperations=new ConcurrentHashMap<>();
 
+	public SecurityOperationRepository( Operations operations) {
+		this.securityOperations.putAll(operations.getOperations().stream().collect(Collectors.toMap(f->f.id(),f->f)));
+	}
+
+
 
 	public List<SecurityOperation> listAllOperations(SecurityOperationFilter securityOperationFilter ) {
-		return streamSecurityOperation(securityOperationFilter).sorted(Comparator.comparing(f->f.name())).toList();
+		return streamSecurityOperation(securityOperationFilter).sorted(Comparator.comparing(f->f.name())).collect(Collectors.toList());
 
 	}
 

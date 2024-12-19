@@ -31,8 +31,7 @@ public class OperationToGroupRepository implements Plugin {
 	private EntityManager em;
 	@Autowired
 	private SecuredBasicRepository securedBasicRepository;
-	@Autowired
-	private SecurityOperationRepository securityOperationRepository;
+
 
 
 	public List<OperationToGroup> listAllOperationToGroups(OperationToGroupFilter operationFilter, SecurityContext securityContext){

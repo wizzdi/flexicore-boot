@@ -25,7 +25,7 @@ public class FlexiCoreExtensionFactory extends SpringExtensionFactory {
 
 	private final FlexiCorePluginManager pluginManager;
 	private final Map<String, FlexiCoreApplicationContext> contextCache = new ConcurrentHashMap<>();
-	private final Queue<ApplicationContext> pluginsApplicationContexts = new LinkedBlockingQueue<>();
+	private final Queue<FlexiCoreApplicationContext> pluginsApplicationContexts = new LinkedBlockingQueue<>();
 	private final Queue<ApplicationContext> allApplicationContext = new LinkedBlockingQueue<>();
 	private final Logger logger = LoggerFactory.getLogger(FlexiCoreExtensionFactory.class);
 
@@ -116,6 +116,14 @@ public class FlexiCoreExtensionFactory extends SpringExtensionFactory {
 	private void addContext(FlexiCoreApplicationContext applicationContext) {
 		pluginsApplicationContexts.add(applicationContext);
 		allApplicationContext.add(applicationContext);
+		applicationContext.updateContexts(pluginsApplicationContexts);
+		for (ApplicationContext pluginsApplicationContext : allApplicationContext) {
+			switch (pluginsApplicationContext){
+				case FlexiCoreAppContext flexiCoreAppContext->flexiCoreAppContext.updateContexts(pluginsApplicationContexts);
+				case  FlexiCoreApplicationContext flexiCoreApplicationContext-> flexiCoreApplicationContext.updateContexts(pluginsApplicationContexts);
+				default -> {}
+			}
+		}
 	}
 
 	private FlexiCoreApplicationContext createApplicationContext(PluginWrapper pluginWrapper) {
@@ -136,7 +144,7 @@ public class FlexiCoreExtensionFactory extends SpringExtensionFactory {
 	}
 
 
-	public Queue<ApplicationContext> getPluginsApplicationContexts() {
+	public Queue<? extends ApplicationContext> getPluginsApplicationContexts() {
 		return pluginsApplicationContexts;
 	}
 

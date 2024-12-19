@@ -11,8 +11,7 @@ import com.flexicore.annotations.AnnotatedClazz;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.ManyToOne;
-
-
+import jakarta.persistence.Transient;
 
 
 @AnnotatedClazz(Category = "Tenancy", Name = "TenantToUser", Description = "baseClass Tenancy")
@@ -32,7 +31,16 @@ public class TenantToUser extends Baseclass {
         return (T) this;
     }
 
+    @Override
+    @ManyToOne(targetEntity = SecurityTenant.class)
+    public SecurityTenant getTenant() {
+        return super.getTenant();
+    }
 
+    @Override
+    public void setTenant(SecurityTenant tenant) {
+        super.setTenant(tenant);
+    }
 
     @ManyToOne(targetEntity = SecurityUser.class)
     public SecurityUser getUser() {

@@ -1,5 +1,6 @@
 package com.wizzdi.flexicore.security.service;
 
+import com.flexicore.annotations.rest.All;
 import com.flexicore.model.Clazz;
 import com.flexicore.model.SecurityOperation;
 import com.wizzdi.flexicore.boot.base.interfaces.Plugin;
@@ -12,6 +13,7 @@ import org.pf4j.Extension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Set;
 
@@ -30,10 +32,13 @@ public class SecurityOperationService implements Plugin {
 
 
 	public SecurityOperation addOperation(SecurityOperationCreate securityOperationCreate){
-		SecurityOperation securityOperation=new SecurityOperation(securityOperationCreate.getIdForCreate(),securityOperationCreate.getName(),securityOperationCreate.getDescription(),securityOperationCreate.getDefaultAccess(),securityOperationCreate.getCategory());
+		SecurityOperation securityOperation= getSecurityOperation(securityOperationCreate);
 		return operationRepository.addOperation(securityOperation);
 	}
 
+	public static SecurityOperation getSecurityOperation(SecurityOperationCreate securityOperationCreate) {
+		return new SecurityOperation(securityOperationCreate.getIdForCreate(), securityOperationCreate.getName(), securityOperationCreate.getDescription(), securityOperationCreate.getDefaultAccess(), securityOperationCreate.getCategory());
+	}
 
 
 	public PaginationResponse<SecurityOperation> getAllOperations(SecurityOperationFilter operationFilter) {
@@ -48,5 +53,14 @@ public class SecurityOperationService implements Plugin {
 
 	public SecurityOperation getByIdOrNull(String operationId) {
 		return operationRepository.listAllOperations(new SecurityOperationFilter().setBasicPropertiesFilter(new BasicPropertiesFilter().setOnlyIds(Set.of(operationId)))).stream().findFirst().orElse(null);
+	}
+	public SecurityOperation getAllOperations(){
+		return getByIdOrNull(ClazzService.getClazzId(All.class));
+	}
+	public SecurityOperation getOperation(Method method){
+		return getByIdOrNull(ClazzService.getIdFromString(method.toString()));
+	}
+	public List<SecurityOperation> findByIds(Set<String> ids){
+		return operationRepository.listAllOperations(new SecurityOperationFilter().setBasicPropertiesFilter(new BasicPropertiesFilter().setOnlyIds(ids)));
 	}
 }

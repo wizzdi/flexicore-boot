@@ -15,7 +15,7 @@ public class FlexiCoreAuthentication extends UsernamePasswordAuthenticationToken
     }
 
 
-    public SecurityContext getSecurityContextBase() {
+    public SecurityContext getSecurityContext() {
         return securityContext;
     }
 }

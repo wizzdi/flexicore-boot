@@ -19,6 +19,7 @@ public class FlexiCorePluginManager extends SpringPluginManager {
 
 	private static final Logger logger = LoggerFactory.getLogger(FlexiCorePluginManager.class);
 	private static final AtomicBoolean init = new AtomicBoolean(false);
+	private static final AtomicBoolean inject=new AtomicBoolean(false);
 	private Iterable<ContextCustomizer> applicationCustomizers;
 
 
@@ -84,23 +85,31 @@ public class FlexiCorePluginManager extends SpringPluginManager {
 	public void init() {
 		if (init.compareAndSet(false, true)) {
 			long start = System.currentTimeMillis();
-			FlexiCoreExtensionFactory extensionFactory = (FlexiCoreExtensionFactory) getExtensionFactory();
-			extensionFactory.init();
 			try {
 				this.loadPlugins();
 			} catch (DependencyResolver.DependenciesWrongVersionException e) {
 				List<DependencyResolver.WrongDependencyVersion> dependencies = e.getDependencies();
-				logger.error("loading plugins failed , wrong versions: " + dependencies.stream().map(f -> getWrongDependencyString(f)).collect(Collectors.joining(System.lineSeparator())), e);
+                logger.error("loading plugins failed , wrong versions: {}", dependencies.stream().map(f -> getWrongDependencyString(f)).collect(Collectors.joining(System.lineSeparator())), e);
 				throw e;
 			}
 			this.startPlugins();
-			AbstractAutowireCapableBeanFactory beanFactory = (AbstractAutowireCapableBeanFactory) getApplicationContext().getAutowireCapableBeanFactory();
-			FlexiCoreExtensionsInjector extensionsInjector = new FlexiCoreExtensionsInjector(this, beanFactory);
-			extensionsInjector.injectExtensions();
-			logger.debug("loading and starting plugins took " + (System.currentTimeMillis() - start) + "ms");
+            logger.debug("loading and starting plugins took {}ms", System.currentTimeMillis() - start);
 
 		}
 
+	}
+
+	public void inject(){
+		if(inject.compareAndSet(false,true)){
+			long start=System.currentTimeMillis();
+			FlexiCoreExtensionFactory extensionFactory = (FlexiCoreExtensionFactory) getExtensionFactory();
+			extensionFactory.init();
+			AbstractAutowireCapableBeanFactory beanFactory = (AbstractAutowireCapableBeanFactory) getApplicationContext().getAutowireCapableBeanFactory();
+			FlexiCoreExtensionsInjector extensionsInjector = new FlexiCoreExtensionsInjector(this, beanFactory);
+			extensionsInjector.injectExtensions();
+
+			logger.debug("injecting plugins took {}ms", System.currentTimeMillis() - start);
+		}
 	}
 
 	private String getWrongDependencyString(DependencyResolver.WrongDependencyVersion wrongDependencyVersion) {

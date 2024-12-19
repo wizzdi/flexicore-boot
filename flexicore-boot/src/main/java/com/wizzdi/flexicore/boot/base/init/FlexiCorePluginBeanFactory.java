@@ -97,4 +97,12 @@ public class FlexiCorePluginBeanFactory extends DefaultListableBeanFactory {
 
         return new FlexiCoreObjectProvider<>(requiredType,beanProvider,dependenciesContext);
     }
+
+    public void updateContext(List<FlexiCoreApplicationContext> toUpdate) {
+        for (FlexiCoreApplicationContext flexiCoreApplicationContext : toUpdate) {
+           if(!dependenciesContext.contains(flexiCoreApplicationContext)){
+               dependenciesContext.add(flexiCoreApplicationContext);
+           }
+        }
+    }
 }

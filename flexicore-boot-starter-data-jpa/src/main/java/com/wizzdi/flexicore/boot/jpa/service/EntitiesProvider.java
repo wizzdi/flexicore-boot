@@ -14,7 +14,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Scope;
 
-import jakarta.persistence.Converter;
 import jakarta.persistence.Entity;
 import java.io.File;
 import java.net.MalformedURLException;
@@ -46,13 +45,14 @@ public class EntitiesProvider {
 	@Bean
 	@Scope(value = ConfigurableBeanFactory.SCOPE_SINGLETON)
 	@Primary
-	public Reflections reflections(){
+	public Reflections reflections(List<EntitiesRootHolder> entitiesRootHolders){
 		ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
 
 		List<URL> entitiesJarsUrls;
 		entitiesJarsUrls = getEntitiesJarsUrls();
 		Map<String, Object> beansWithAnnotation = context.getBeansWithAnnotation(SpringBootApplication.class);
 		entitiesJarsUrls.addAll(beansWithAnnotation.values().stream().map(f -> f.getClass().getProtectionDomain().getCodeSource().getLocation()).collect(Collectors.toSet()));
+		entitiesJarsUrls.addAll(entitiesRootHolders.stream().map(f->f.entitiesRoot()).flatMap(Set::stream).map(f->f.getProtectionDomain().getCodeSource().getLocation()).toList());
 		ConfigurationBuilder configuration = ConfigurationBuilder.build()
 				.addClassLoaders(classLoader)
 				.setUrls(entitiesJarsUrls);
@@ -65,9 +65,7 @@ public class EntitiesProvider {
 	public EntitiesHolder getEntities(Reflections reflections) {
 
 		Set<Class<?>> typesAnnotatedWith = reflections.getTypesAnnotatedWith(Entity.class);
-		Set<Class<?>> converters = new HashSet<>(reflections.getTypesAnnotatedWith(Converter.class));
-		converters.addAll(typesAnnotatedWith);
-		return new EntitiesHolder(converters);
+		return new EntitiesHolder(typesAnnotatedWith);
 	}
 
 

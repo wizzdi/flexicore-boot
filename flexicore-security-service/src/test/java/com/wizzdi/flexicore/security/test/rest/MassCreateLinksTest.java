@@ -1,7 +1,9 @@
 package com.wizzdi.flexicore.security.test.rest;
 
+import com.flexicore.model.Clazz;
 import com.flexicore.model.PermissionGroup;
 import com.flexicore.model.PermissionGroupToBaseclass;
+import com.wizzdi.flexicore.security.request.SecuredHolder;
 import com.wizzdi.flexicore.security.test.app.TestEntity;
 import com.wizzdi.flexicore.security.test.app.TestEntityCreate;
 import com.wizzdi.flexicore.security.test.app.TestEntityService;
@@ -74,13 +76,14 @@ public class MassCreateLinksTest {
 
     @Test
     public void testMassCreate() {
+        List<SecuredHolder> securedHolders=baseclasses.stream().map(f->new SecuredHolder(f,new Clazz(TestEntity.class.getSimpleName()))).toList();
         List<PermissionGroupToBaseclass> permissionGroupToBaseclasses = permissionGroupToBaseclassService.listAllPermissionGroupToBaseclass(new PermissionGroupToBaseclassFilter().setPermissionGroups(Collections.singletonList(permissionGroup)).setSecuredIds(baseclasses), adminSecurityContext);
         Assertions.assertTrue(permissionGroupToBaseclasses.isEmpty());
-        Map<String, Map<String, PermissionGroupToBaseclass>> stringMapMap = permissionGroupToBaseclassService.massCreatePermissionLinks(new PermissionGroupToBaseclassMassCreate().setPermissionGroups(Collections.singletonList(permissionGroup)).setSecuredIds(baseclasses), adminSecurityContext);
+        Map<String, Map<String, PermissionGroupToBaseclass>> stringMapMap = permissionGroupToBaseclassService.massCreatePermissionLinks(new PermissionGroupToBaseclassMassCreate().setPermissionGroups(Collections.singletonList(permissionGroup)).setSecuredHolders(securedHolders), adminSecurityContext);
         Map<String, PermissionGroupToBaseclass> stringPermissionGroupToBaseclassMap = stringMapMap.get(permissionGroup.getId());
         Assertions.assertNotNull(stringPermissionGroupToBaseclassMap);
         Assertions.assertEquals(baseclasses.size(), stringPermissionGroupToBaseclassMap.size());
-        permissionGroupToBaseclassService.massCreatePermissionLinks(new PermissionGroupToBaseclassMassCreate().setPermissionGroups(Collections.singletonList(permissionGroup)).setSecuredIds(baseclasses), adminSecurityContext);
+        permissionGroupToBaseclassService.massCreatePermissionLinks(new PermissionGroupToBaseclassMassCreate().setPermissionGroups(Collections.singletonList(permissionGroup)).setSecuredHolders(securedHolders), adminSecurityContext);
         permissionGroupToBaseclasses = permissionGroupToBaseclassService.listAllPermissionGroupToBaseclass(new PermissionGroupToBaseclassFilter().setPermissionGroups(Collections.singletonList(permissionGroup)).setSecuredIds(baseclasses), adminSecurityContext);
         Assertions.assertEquals(baseclasses.size(), permissionGroupToBaseclasses.size());
     }

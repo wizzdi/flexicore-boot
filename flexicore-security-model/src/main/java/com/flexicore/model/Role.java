@@ -13,6 +13,7 @@ import com.flexicore.annotations.AnnotatedClazz;
 import com.wizzdi.segmantix.api.model.IRole;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Transient;
 
@@ -65,6 +66,16 @@ public class Role extends SecurityEntity implements IRole {
 	}
 
 
+	@Override
+	@ManyToOne(targetEntity = SecurityTenant.class)
+	public SecurityTenant getTenant() {
+		return super.getTenant();
+	}
+
+	@Override
+	public void setTenant(SecurityTenant tenant) {
+		super.setTenant(tenant);
+	}
 
 	@Override
 	public boolean isSuperAdmin() {

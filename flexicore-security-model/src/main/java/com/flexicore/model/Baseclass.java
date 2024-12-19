@@ -6,6 +6,7 @@
  ******************************************************************************/
 package com.flexicore.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.wizzdi.flexicore.boot.rest.views.Views;
 
@@ -25,6 +26,7 @@ public class Baseclass extends Basic  {
 	private SecurityTenant tenant;
 	private String securityId;
 
+	@JsonIgnore
 	@ManyToOne(targetEntity = SecurityTenant.class)
 	public SecurityTenant getTenant() {
 		return tenant;
@@ -37,7 +39,7 @@ public class Baseclass extends Basic  {
 
 
 
-	@JsonView(Views.ForSwaggerOnly.class)
+	@JsonIgnore
 	@ManyToOne(targetEntity = SecurityUser.class)
 	public SecurityUser getCreator() {
 		return creator;
