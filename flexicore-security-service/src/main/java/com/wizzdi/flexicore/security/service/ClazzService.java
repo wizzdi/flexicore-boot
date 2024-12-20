@@ -23,14 +23,6 @@ public class ClazzService implements Plugin {
 	@Autowired
 	private ClazzRepository clazzRepository;
 
-	public static String getClazzId(Class<?> c) {
-		String string = c.getCanonicalName();
-		return getIdFromString(string);
-	}
-
-	public static String getIdFromString(String string) {
-		return UUID.nameUUIDFromBytes(string.getBytes()).toString();
-	}
 
 
 	public PaginationResponse<Clazz> getAllClazzs(ClazzFilter clazzFilter) {

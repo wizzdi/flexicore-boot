@@ -10,8 +10,12 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.wizzdi.flexicore.boot.rest.views.Views;
 
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.MappedSuperclass;
+import jakarta.persistence.OneToMany;
+
+import java.util.List;
 
 
 @MappedSuperclass
@@ -25,6 +29,10 @@ public class Baseclass extends Basic  {
 	@ManyToOne(targetEntity = SecurityTenant.class)
 	private SecurityTenant tenant;
 	private String securityId;
+	@JsonIgnore
+	@OneToMany(targetEntity = PermissionGroupToBaseclass.class)
+	@JoinColumn(name = "securedId")
+	private List<PermissionGroupToBaseclass> relatedPermissionGroups;
 
 	@JsonIgnore
 	@ManyToOne(targetEntity = SecurityTenant.class)
@@ -55,6 +63,20 @@ public class Baseclass extends Basic  {
 
 	public <T extends Baseclass> T setSecurityId(String securityId) {
 		this.securityId = securityId;
+		return (T) this;
+	}
+
+
+
+	@JsonIgnore
+	@OneToMany(targetEntity = PermissionGroupToBaseclass.class)
+	@JoinColumn(name = "securedId")
+	public List<PermissionGroupToBaseclass> getRelatedPermissionGroups() {
+		return relatedPermissionGroups;
+	}
+
+	public <T extends Baseclass> T setRelatedPermissionGroups(List<PermissionGroupToBaseclass> relatedPermissionGroups) {
+		this.relatedPermissionGroups = relatedPermissionGroups;
 		return (T) this;
 	}
 }

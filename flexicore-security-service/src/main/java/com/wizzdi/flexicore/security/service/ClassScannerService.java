@@ -124,15 +124,15 @@ public class ClassScannerService implements Plugin {
     @Bean
     @Qualifier("allOps")
     @ConditionalOnMissingBean
-    public SecurityOperation allOps(Operations operations){
-        return operations.getOperations().stream().filter(f->f.getId().equals(ClazzService.getClazzId(All.class))).findFirst().orElseThrow(()->new RuntimeException("could not find all operation"));
+    public SecurityOperation allOps(SecurityOperationService securityOperationService){
+        return securityOperationService.getAllOperations();
     }
 
     @Bean
     @Qualifier("securityWildcard")
     @ConditionalOnMissingBean
-    public Clazz securityWildcard(Clazzes clazzes){
-        return clazzes.getClazzes().stream().filter(f->f.name().equals(SecurityWildcard.class.getSimpleName())).findFirst().orElseThrow(()->new RuntimeException("could not find SecurityWildcard"));
+    public Clazz securityWildcard(ClazzService clazzService){
+        return clazzService.getWildcardClazz();
     }
 
     @Bean
@@ -243,7 +243,7 @@ public class ClassScannerService implements Plugin {
                 .setDefaultAccess(ioperation.access())
                 .setDescription(ioperation.Description())
                 .setName(ioperation.Name())
-                .setIdForCreate(ClazzService.getClazzId(standardAccess))
+                .setIdForCreate(SecurityOperationService.getStandardAccessId(standardAccess))
                 , null);
     }
 
@@ -295,7 +295,7 @@ public class ClassScannerService implements Plugin {
             if (relatedClasses.length == 0 && method.getReturnType() != null && Basic.class.isAssignableFrom(method.getReturnType())) {
                 relatedClasses =new Class<?>[]{method.getReturnType()};
             }
-            String id = ClazzService.getIdFromString(method.toString());
+            String id = SecurityOperationService.generateUUIDFromStringCompt(method.toString());
             return new OperationScanContext(new SecurityOperationCreate()
                     .setCategory(ioperation.Category().isEmpty() ? detectCategory(ioperation) : ioperation.Category())
                     .setDefaultAccess(ioperation.access())

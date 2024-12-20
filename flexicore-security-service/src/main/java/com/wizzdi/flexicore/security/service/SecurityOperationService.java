@@ -16,6 +16,7 @@ import org.springframework.stereotype.Component;
 import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 
 @Extension
 @Component
@@ -55,12 +56,24 @@ public class SecurityOperationService implements Plugin {
 		return operationRepository.listAllOperations(new SecurityOperationFilter().setBasicPropertiesFilter(new BasicPropertiesFilter().setOnlyIds(Set.of(operationId)))).stream().findFirst().orElse(null);
 	}
 	public SecurityOperation getAllOperations(){
-		return getByIdOrNull(ClazzService.getClazzId(All.class));
+		return getByIdOrNull(getStandardAccessId(All.class));
 	}
 	public SecurityOperation getOperation(Method method){
-		return getByIdOrNull(ClazzService.getIdFromString(method.toString()));
+		return getByIdOrNull(generateUUIDFromStringCompt(method.toString()));
 	}
 	public List<SecurityOperation> findByIds(Set<String> ids){
 		return operationRepository.listAllOperations(new SecurityOperationFilter().setBasicPropertiesFilter(new BasicPropertiesFilter().setOnlyIds(ids)));
 	}
+	public static String getStandardAccessId(Class<?> c){
+	 return  generateUUIDFromStringCompt(c.getCanonicalName());
+	}
+	public static String generateUUIDFromStringCompt(String input) {
+
+		return UUID.nameUUIDFromBytes(input.getBytes()).toString()
+				.replaceAll("-", "")
+				.substring(0, 22);
+
+	}
+
+
 }

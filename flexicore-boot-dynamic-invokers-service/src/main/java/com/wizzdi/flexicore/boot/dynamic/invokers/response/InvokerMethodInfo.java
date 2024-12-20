@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.flexicore.model.Baseclass;
 import com.wizzdi.flexicore.boot.dynamic.invokers.annotations.VirtualField;
 import com.wizzdi.flexicore.security.service.ClazzService;
+import com.wizzdi.flexicore.security.service.SecurityOperationService;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -40,7 +41,7 @@ public class InvokerMethodInfo {
     public InvokerMethodInfo(Method method, com.wizzdi.flexicore.boot.dynamic.invokers.annotations.InvokerMethodInfo invokerMethodInfo) {
 
         name=method.getName();
-        id= ClazzService.getIdFromString(method.toString());
+        id= SecurityOperationService.generateUUIDFromStringCompt(method.toString());
         displayName=invokerMethodInfo!=null&&!invokerMethodInfo.displayName().isEmpty()?invokerMethodInfo.displayName():name;
         description=invokerMethodInfo!=null&&!invokerMethodInfo.description().isEmpty()?invokerMethodInfo.description():"No Description";
         returnTypeClass= method.getReturnType();

@@ -18,6 +18,8 @@ import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Root;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -25,12 +27,14 @@ import java.util.List;
 
 @Component
 public class SecurityProviderImpl implements SecurityLinkProvider {
+    private static final Logger logger= LoggerFactory.getLogger(SecurityProviderImpl.class);
 
     @PersistenceContext
     private EntityManager em;
 
     @Override
     public List<ISecurityLink> getSecurityLinks(ISecurityContext securityContext) {
+        logger.info("fetching links");
         IUser user=securityContext.user();
         List<? extends IRole> roles=securityContext.roles();
         List<? extends ITenant> tenants=securityContext.tenants();

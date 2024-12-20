@@ -72,7 +72,7 @@ public class FlexiCoreV5ToV7Migration {
     }
 
     private static void dropSecurityLinkColumns(Statement select) throws SQLException {
-        String sql="alter table securitylink drop column if exists baseclass_id , drop column if exists clazz_id";
+        String sql="alter table securitylink drop column if exists baseclass_id , drop column if exists clazz_id, drop column if exists operation_id";
         executeSQL(select,sql);
     }
 
@@ -90,15 +90,23 @@ public class FlexiCoreV5ToV7Migration {
             update securityLink set securedType=(string_to_array(clazz.name, '.'))[array_length(string_to_array(clazz.name, '.'), 1)] from clazz where securedType is null and clazz_id=clazz.id;""";
             executeSQL(select,sql);
         }
+
+        {
+            String sql = """
+            update securityLink set operationId=operation_id where operationId is null and not operation_id is null;""";
+            executeSQL(select,sql);
+        }
     }
 
     private static void alterSecurityLink(Statement select) throws SQLException {
         String sql= """
-                alter table securitylink 
+                alter table securitylink
                 add column if not exists securedId varchar(255),
                 add column if not exists securedType varchar(255),
+                add column if not exists operationId varchar(255),
                 drop constraint if exists baseclass_id,
-                drop constraint if exists clazz_id;""";
+                drop constraint if exists clazz_id,
+                drop constraint if exists operation_id;""";
         executeSQL(select,sql);
     }
 

@@ -9,15 +9,20 @@ import com.wizzdi.flexicore.security.request.SoftDeleteOption;
 import com.wizzdi.flexicore.security.configuration.SecurityContext;
 import com.wizzdi.segmantix.service.SecurityRepository;
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.MappedSuperclass;
 import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.Table;
 import jakarta.persistence.TypedQuery;
 import jakarta.persistence.criteria.*;
 import jakarta.persistence.metamodel.EntityType;
+import jakarta.persistence.metamodel.Metamodel;
 import jakarta.persistence.metamodel.SingularAttribute;
 import org.pf4j.Extension;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
@@ -25,13 +30,15 @@ import java.util.stream.Collectors;
 
 @Component
 @Extension
-public class BaseclassRepository implements Plugin {
+public class BaseclassRepository implements Plugin, InitializingBean {
 
 	private static final Logger logger = LoggerFactory.getLogger(BaseclassRepository.class);
 	@PersistenceContext
 	private EntityManager em;
 	@Autowired
 	private SecurityRepository securityRepository;
+	@Value("${flexicore.baseclass.createIndexes:true}")
+	private boolean createIndexes;
 
 
 
@@ -91,7 +98,7 @@ public class BaseclassRepository implements Plugin {
 	}
 
 	public <T extends Baseclass> void addBaseclassPredicates(CriteriaBuilder cb, CommonAbstractCriteria q, From<?, T> r, List<Predicate> predicates, SecurityContext securityContext) {
-		securityRepository.addSecurityPredicates(cb,q,r,predicates,securityContext);
+		securityRepository.addSecurityPredicates(em,cb,q,r,predicates,securityContext);
 	}
 
 	public boolean requiresSecurityPredicates(SecurityContext securityContext) {
@@ -210,7 +217,7 @@ public class BaseclassRepository implements Plugin {
 		CriteriaQuery<T> q=cb.createQuery(c);
 		Root<T> r=q.from(c);
 		List<Predicate> predicates=new ArrayList<>();
-		securityRepository.addSecurityPredicates(cb,q,r,predicates,securityContext);
+		securityRepository.addSecurityPredicates(em,cb,q,r,predicates,securityContext);
 		q.select(r).where(predicates.toArray(Predicate[]::new));
 		TypedQuery<T> query = em.createQuery(q);
 		BasicRepository.addPagination(baseclassFilter,query);
@@ -225,10 +232,46 @@ public class BaseclassRepository implements Plugin {
 		CriteriaQuery<Long> q=cb.createQuery(Long.class);
 		Root<T> r=q.from(c);
 		List<Predicate> predicates=new ArrayList<>();
-		securityRepository.addSecurityPredicates(cb,q,r,predicates,securityContext);
+		securityRepository.addSecurityPredicates(em,cb,q,r,predicates,securityContext);
 		q.select(cb.count(r)).where(predicates.toArray(Predicate[]::new));
 		TypedQuery<Long> query = em.createQuery(q);
 		return query.getSingleResult();
 
+	}
+
+	@Override
+	public void afterPropertiesSet() throws Exception {
+		if(!createIndexes){
+			logger.info("will not create baseclass indexes");
+		}
+		Set<String> tablesForIndexCreation = em.getMetamodel().getEntities().stream().filter(f -> Baseclass.class.isAssignableFrom(f.getJavaType())).map(f -> getTableName(f)).collect(Collectors.toSet());
+		for (String table : tablesForIndexCreation) {
+			String sql="create index if not exists %s on %s (creator_id,tenant_id,securityId,dtype)";
+			sql=sql.formatted(table+"_security_idx",table);
+			logger.debug("creating index: {}",sql);
+			em.createNativeQuery(sql);
+		}
+
+	}
+	public static String getTableName(EntityType<?> entityType) {
+		Class<?> clazz = entityType.getJavaType();
+
+		// Traverse the class hierarchy to find the @Table annotation
+		while (clazz != null) {
+			Table tableAnnotation = clazz.getAnnotation(Table.class);
+			if (tableAnnotation != null && !tableAnnotation.name().isEmpty()) {
+				return tableAnnotation.name(); // Return table name from @Table
+			}
+
+			// Check if it's a mapped superclass
+			if (clazz.isAnnotationPresent(MappedSuperclass.class)) {
+				clazz = clazz.getSuperclass(); // Check superclass
+			} else {
+				break;
+			}
+		}
+
+
+		return entityType.getName(); // Default to entity name if no @Table annotation found
 	}
 }
