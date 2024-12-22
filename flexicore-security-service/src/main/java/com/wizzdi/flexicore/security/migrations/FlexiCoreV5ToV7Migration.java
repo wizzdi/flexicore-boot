@@ -1,27 +1,13 @@
 package com.wizzdi.flexicore.security.migrations;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.lang.reflect.Field;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.text.MessageFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 public class FlexiCoreV5ToV7Migration {
 
@@ -85,6 +71,13 @@ public class FlexiCoreV5ToV7Migration {
             executeSQL(select,sql);
         }
 
+
+        {
+            String sql = """
+            update securityLink set securedType=(string_to_array(clazz.name, '.'))[array_length(string_to_array(clazz.name, '.'), 1)] from baseclass join clazz on clazz.id=baseclass.clazz_id where securedType is null and baseclass.id=baseclass_id;""";
+            executeSQL(select,sql);
+        }
+        //this handles links which where connected with clazz_id
         {
             String sql = """
             update securityLink set securedType=(string_to_array(clazz.name, '.'))[array_length(string_to_array(clazz.name, '.'), 1)] from clazz where securedType is null and clazz_id=clazz.id;""";
@@ -255,5 +248,7 @@ public class FlexiCoreV5ToV7Migration {
         }
 
     }
+
+
 
 }

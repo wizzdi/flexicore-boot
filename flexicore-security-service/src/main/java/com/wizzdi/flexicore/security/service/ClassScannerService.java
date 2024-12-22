@@ -21,7 +21,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Scope;
@@ -239,6 +238,7 @@ public class ClassScannerService implements Plugin {
     private OperationScanContext standardAccess(Class<?> standardAccess) {
         IOperation ioperation = standardAccess.getDeclaredAnnotation(IOperation.class);
         return new OperationScanContext(new SecurityOperationCreate()
+                .setClazz(standardAccess)
                 .setCategory(ioperation.Category().isEmpty() ? detectCategory(ioperation) : ioperation.Category())
                 .setDefaultAccess(ioperation.access())
                 .setDescription(ioperation.Description())
@@ -295,8 +295,9 @@ public class ClassScannerService implements Plugin {
             if (relatedClasses.length == 0 && method.getReturnType() != null && Basic.class.isAssignableFrom(method.getReturnType())) {
                 relatedClasses =new Class<?>[]{method.getReturnType()};
             }
-            String id = SecurityOperationService.generateUUIDFromStringCompt(method.toString());
+            String id = SecurityOperationService.getOperationId(method);
             return new OperationScanContext(new SecurityOperationCreate()
+                    .setMethod(method)
                     .setCategory(ioperation.Category().isEmpty() ? detectCategory(ioperation) : ioperation.Category())
                     .setDefaultAccess(ioperation.access())
                     .setDescription(ioperation.Description())

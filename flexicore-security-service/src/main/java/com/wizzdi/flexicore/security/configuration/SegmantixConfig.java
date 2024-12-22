@@ -12,6 +12,7 @@ import com.wizzdi.segmantix.service.SecurityRepository;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.From;
 import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.JoinType;
 import jakarta.persistence.criteria.Path;
 import org.springframework.cache.Cache;
 import org.springframework.context.annotation.Bean;
@@ -92,7 +93,7 @@ public class SegmantixConfig {
         @Override
         public <T> Path<String> getInstanceGroupPath(From<?, T> r, CriteriaBuilder cb) {
 
-            Join<T, PermissionGroupToBaseclass> links = r.join(PermissionGroupToBaseclass_.relatedPermissionGroups.getName());
+            Join<T, PermissionGroupToBaseclass> links = r.join(PermissionGroupToBaseclass_.relatedPermissionGroups.getName(), JoinType.LEFT);
             return links.get(PermissionGroupToBaseclass_.permissionGroup).get(PermissionGroup_.id);
         }
     }

@@ -6,28 +6,26 @@
  ******************************************************************************/
 package com.flexicore.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.wizzdi.segmantix.api.model.IOperation;
 import com.wizzdi.segmantix.model.Access;
-import com.flexicore.annotations.AnnotatedClazz;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.OneToMany;
-
-import java.util.ArrayList;
-import java.util.List;
+import java.lang.reflect.Method;
 import java.util.Objects;
 
 
 public class SecurityOperation implements IOperation {
+    private final Method method;
+    private final Class<?> clazz;
     private final String id;
     private final String name;
     private final String description;
     private final Access defaultAccess;
     private final String category;
 
-
-    public SecurityOperation(String id, String name, String description, Access defaultAccess, String category) {
+    public SecurityOperation(Method method, Class<?> clazz, String id, String name, String description,
+                             Access defaultAccess, String category) {
+        this.method = method;
+        this.clazz = clazz;
         this.id = id;
         this.name = name;
         this.description = description;
@@ -39,12 +37,28 @@ public class SecurityOperation implements IOperation {
         if (operationId == null) {
             return null;
         }
-        return new SecurityOperation(operationId, null, null, null, null);
+        return new SecurityOperation(null, null, operationId, null, null, null, null);
+    }
+
+    public static SecurityOperation ofMethod(Method method, String id, String name, String description, Access defaultAccess, String category) {
+        return new SecurityOperation(method, null, id, name, description, defaultAccess, category);
+    }
+
+    public static SecurityOperation ofStandardAccess(Class<?> clazz, String id, String name, String description, Access defaultAccess, String category) {
+        return new SecurityOperation(null, clazz, id, name, description, defaultAccess, category);
     }
 
     @Override
     public String getId() {
         return id;
+    }
+
+    public Method method() {
+        return method;
+    }
+
+    public Class<?> clazz() {
+        return clazz;
     }
 
     public String id() {
@@ -72,7 +86,9 @@ public class SecurityOperation implements IOperation {
         if (obj == this) return true;
         if (obj == null || obj.getClass() != this.getClass()) return false;
         var that = (SecurityOperation) obj;
-        return Objects.equals(this.id, that.id) &&
+        return Objects.equals(this.method, that.method) &&
+                Objects.equals(this.clazz, that.clazz) &&
+                Objects.equals(this.id, that.id) &&
                 Objects.equals(this.name, that.name) &&
                 Objects.equals(this.description, that.description) &&
                 Objects.equals(this.defaultAccess, that.defaultAccess) &&
@@ -81,17 +97,20 @@ public class SecurityOperation implements IOperation {
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, description, defaultAccess, category);
+        return Objects.hash(method, clazz, id, name, description, defaultAccess, category);
     }
 
     @Override
     public String toString() {
         return "SecurityOperation[" +
+                "method=" + method + ", " +
+                "clazz=" + clazz + ", " +
                 "id=" + id + ", " +
                 "name=" + name + ", " +
                 "description=" + description + ", " +
                 "defaultAccess=" + defaultAccess + ", " +
                 "category=" + category + ']';
     }
+
 
 }

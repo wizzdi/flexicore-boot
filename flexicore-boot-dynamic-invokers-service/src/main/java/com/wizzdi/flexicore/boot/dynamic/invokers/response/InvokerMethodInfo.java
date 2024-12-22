@@ -41,7 +41,7 @@ public class InvokerMethodInfo {
     public InvokerMethodInfo(Method method, com.wizzdi.flexicore.boot.dynamic.invokers.annotations.InvokerMethodInfo invokerMethodInfo) {
 
         name=method.getName();
-        id= SecurityOperationService.generateUUIDFromStringCompt(method.toString());
+        id= SecurityOperationService.getOperationId(method);
         displayName=invokerMethodInfo!=null&&!invokerMethodInfo.displayName().isEmpty()?invokerMethodInfo.displayName():name;
         description=invokerMethodInfo!=null&&!invokerMethodInfo.description().isEmpty()?invokerMethodInfo.description():"No Description";
         returnTypeClass= method.getReturnType();

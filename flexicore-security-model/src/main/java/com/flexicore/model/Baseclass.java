@@ -10,6 +10,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.wizzdi.flexicore.boot.rest.views.Views;
 
+import jakarta.persistence.ConstraintMode;
+import jakarta.persistence.ForeignKey;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.MappedSuperclass;
@@ -31,7 +33,7 @@ public class Baseclass extends Basic  {
 	private String securityId;
 	@JsonIgnore
 	@OneToMany(targetEntity = PermissionGroupToBaseclass.class)
-	@JoinColumn(name = "securedId")
+	@JoinColumn(name = "securedId",referencedColumnName = "securityId", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
 	private List<PermissionGroupToBaseclass> relatedPermissionGroups;
 
 	@JsonIgnore

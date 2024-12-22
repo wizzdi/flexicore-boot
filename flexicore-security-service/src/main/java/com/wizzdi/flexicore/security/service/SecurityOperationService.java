@@ -1,7 +1,6 @@
 package com.wizzdi.flexicore.security.service;
 
 import com.flexicore.annotations.rest.All;
-import com.flexicore.model.Clazz;
 import com.flexicore.model.SecurityOperation;
 import com.wizzdi.flexicore.boot.base.interfaces.Plugin;
 import com.wizzdi.flexicore.security.data.SecurityOperationRepository;
@@ -38,7 +37,7 @@ public class SecurityOperationService implements Plugin {
 	}
 
 	public static SecurityOperation getSecurityOperation(SecurityOperationCreate securityOperationCreate) {
-		return new SecurityOperation(securityOperationCreate.getIdForCreate(), securityOperationCreate.getName(), securityOperationCreate.getDescription(), securityOperationCreate.getDefaultAccess(), securityOperationCreate.getCategory());
+		return new SecurityOperation(securityOperationCreate.getMethod(),securityOperationCreate.getClazz(),securityOperationCreate.getIdForCreate(), securityOperationCreate.getName(), securityOperationCreate.getDescription(), securityOperationCreate.getDefaultAccess(), securityOperationCreate.getCategory());
 	}
 
 
@@ -59,19 +58,22 @@ public class SecurityOperationService implements Plugin {
 		return getByIdOrNull(getStandardAccessId(All.class));
 	}
 	public SecurityOperation getOperation(Method method){
-		return getByIdOrNull(generateUUIDFromStringCompt(method.toString()));
+		return getByIdOrNull(getOperationId(method));
 	}
 	public List<SecurityOperation> findByIds(Set<String> ids){
 		return operationRepository.listAllOperations(new SecurityOperationFilter().setBasicPropertiesFilter(new BasicPropertiesFilter().setOnlyIds(ids)));
 	}
 	public static String getStandardAccessId(Class<?> c){
-	 return  generateUUIDFromStringCompt(c.getCanonicalName());
+	 return  getOperationId(c.getCanonicalName());
 	}
-	public static String generateUUIDFromStringCompt(String input) {
+	public static String getOperationId(String input) {
 
-		return UUID.nameUUIDFromBytes(input.getBytes()).toString()
-				.replaceAll("-", "")
-				.substring(0, 22);
+		return UUID.nameUUIDFromBytes(input.getBytes()).toString();
+
+	}
+
+	public static String getOperationId(Method method) {
+		return UUID.nameUUIDFromBytes(method.toString().getBytes()).toString();
 
 	}
 

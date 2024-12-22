@@ -8,6 +8,7 @@ import com.wizzdi.flexicore.security.request.BaseclassFilter;
 import com.wizzdi.flexicore.security.response.PaginationResponse;
 import com.wizzdi.flexicore.security.request.BaseclassCreate;
 import org.pf4j.Extension;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
@@ -17,7 +18,7 @@ import java.util.List;
 
 @Component
 @Extension
-public class BaseclassService implements Plugin {
+public class BaseclassService implements Plugin, InitializingBean {
 
 	@Autowired
 	private BasicService basicService;
@@ -78,4 +79,8 @@ public class BaseclassService implements Plugin {
 	}
 
 
+	@Override
+	public void afterPropertiesSet() throws Exception {
+		baseclassRepository.createIndexes();
+	}
 }

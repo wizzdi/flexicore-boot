@@ -17,6 +17,7 @@ import jakarta.persistence.criteria.*;
 import jakarta.persistence.metamodel.EntityType;
 import jakarta.persistence.metamodel.Metamodel;
 import jakarta.persistence.metamodel.SingularAttribute;
+import jakarta.transaction.Transactional;
 import org.pf4j.Extension;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,7 +31,7 @@ import java.util.stream.Collectors;
 
 @Component
 @Extension
-public class BaseclassRepository implements Plugin, InitializingBean {
+public class BaseclassRepository implements Plugin {
 
 	private static final Logger logger = LoggerFactory.getLogger(BaseclassRepository.class);
 	@PersistenceContext
@@ -39,6 +40,9 @@ public class BaseclassRepository implements Plugin, InitializingBean {
 	private SecurityRepository securityRepository;
 	@Value("${flexicore.baseclass.createIndexes:true}")
 	private boolean createIndexes;
+
+	@Value("${flexicore.baseclass.recreateIndexes:false}")
+	private boolean recreateIndexes;
 
 
 
@@ -239,39 +243,73 @@ public class BaseclassRepository implements Plugin, InitializingBean {
 
 	}
 
-	@Override
-	public void afterPropertiesSet() throws Exception {
+
+	@Transactional
+	public void createIndexes() throws Exception {
 		if(!createIndexes){
 			logger.info("will not create baseclass indexes");
 		}
-		Set<String> tablesForIndexCreation = em.getMetamodel().getEntities().stream().filter(f -> Baseclass.class.isAssignableFrom(f.getJavaType())).map(f -> getTableName(f)).collect(Collectors.toSet());
+		Set<String> tablesForIndexCreation = em.getMetamodel().getEntities().stream().filter(f -> Baseclass.class.isAssignableFrom(f.getJavaType())).map(f -> getTableName(f)).filter(f -> f != null).collect(Collectors.toSet());
 		for (String table : tablesForIndexCreation) {
-			String sql="create index if not exists %s on %s (creator_id,tenant_id,securityId,dtype)";
-			sql=sql.formatted(table+"_security_idx",table);
-			logger.debug("creating index: {}",sql);
-			em.createNativeQuery(sql);
+			{
+				String sql = "create index if not exists %s on %s (softdelete,tenant_id,creator_id,securityId,dtype)";
+				String indexName = table + "_security_idx";
+				if (recreateIndexes) {
+					dropIndex(em, indexName);
+				}
+				sql = sql.formatted(indexName, table);
+				logger.debug("creating index: {}", sql);
+				em.createNativeQuery(sql).executeUpdate();
+			}
+
+
+			{
+				String sql = "create index if not exists %s on %s (securityId)";
+				String indexName = table + "_securityId_idx";
+
+				if (recreateIndexes) {
+					dropIndex(em, indexName);
+				}
+				sql = sql.formatted(indexName, table);
+				logger.debug("creating index: {}", sql);
+				em.createNativeQuery(sql).executeUpdate();
+			}
+		}
+		{
+
+			String sql = "create index if not exists permissiongrouptobaseclass_link_idx on permissiongrouptobaseclass (securedId,permissiongroup_id)";
+			logger.debug("creating index: {}", sql);
+			em.createNativeQuery(sql).executeUpdate();
 		}
 
 	}
+
+	private void dropIndex(EntityManager em, String indexName) {
+		String sql = "drop index if exists %s";
+		sql = sql.formatted(indexName);
+		em.createNativeQuery(sql).executeUpdate();
+	}
+
 	public static String getTableName(EntityType<?> entityType) {
 		Class<?> clazz = entityType.getJavaType();
 
 		// Traverse the class hierarchy to find the @Table annotation
-		while (clazz != null) {
-			Table tableAnnotation = clazz.getAnnotation(Table.class);
-			if (tableAnnotation != null && !tableAnnotation.name().isEmpty()) {
-				return tableAnnotation.name(); // Return table name from @Table
-			}
-
-			// Check if it's a mapped superclass
-			if (clazz.isAnnotationPresent(MappedSuperclass.class)) {
-				clazz = clazz.getSuperclass(); // Check superclass
+		Class<?> lastConcreate = null;
+		for (Class<?> current = clazz; current != null; current = current.getSuperclass()) {
+			if (!current.isAnnotationPresent(MappedSuperclass.class)) {
+				lastConcreate = current;
 			} else {
 				break;
 			}
+
 		}
-
-
-		return entityType.getName(); // Default to entity name if no @Table annotation found
+		if (lastConcreate == null) {
+			return null;
+		}
+		Table tableAnnotation = lastConcreate.getAnnotation(Table.class);
+		if (tableAnnotation != null && !tableAnnotation.name().isBlank()) {
+			return tableAnnotation.name();
+		}
+		return lastConcreate.getSimpleName();
 	}
 }
