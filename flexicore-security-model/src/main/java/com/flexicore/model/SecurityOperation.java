@@ -6,6 +6,7 @@
  ******************************************************************************/
 package com.flexicore.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.wizzdi.segmantix.api.model.IOperation;
 import com.wizzdi.segmantix.model.Access;
 
@@ -53,6 +54,7 @@ public class SecurityOperation implements IOperation {
         return id;
     }
 
+    @JsonIgnore
     public Method method() {
         return method;
     }
@@ -78,6 +80,22 @@ public class SecurityOperation implements IOperation {
     }
 
     public String category() {
+        return category;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public Access getDefaultAccess() {
+        return defaultAccess;
+    }
+
+    public String getCategory() {
         return category;
     }
 
