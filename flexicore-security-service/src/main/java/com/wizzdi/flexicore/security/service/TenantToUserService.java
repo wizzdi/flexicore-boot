@@ -44,7 +44,7 @@ public class TenantToUserService implements Plugin {
 		TenantToUser tenantToUser=new TenantToUser();
 		tenantToUser.setId(UUID.randomUUID().toString());
 		updateTenantToUserNoMerge(tenantToUserCreate,tenantToUser);
-		BaseclassService.createSecurityObjectNoMerge(tenantToUser,securityContext);
+		createSecurityObjectNoMerge(tenantToUser,securityContext);
 		return tenantToUser;
 	}
 
@@ -97,6 +97,16 @@ public class TenantToUserService implements Plugin {
 
 	public <T extends Baseclass> List<T> findByIds(Class<T> c, Set<String> requested) {
 		return tenantToUserRepository.findByIds(c, requested);
+	}
+
+	public static <T extends Baseclass> Baseclass createSecurityObjectNoMerge(T subject, SecurityContext securityContext) {
+		subject.setSecurityId(subject.getId());
+		if(securityContext==null){
+			return subject;
+		}
+		subject.setCreator(securityContext.getUser());
+		//TODO:clazz?
+		return subject;
 	}
 
 	public <T> T findByIdOrNull(Class<T> type, String id) {

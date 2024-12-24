@@ -17,7 +17,6 @@ public class BaseclassFilter extends PaginationFilter {
 
     private BasicPropertiesFilter basicPropertiesFilter;
     @ClazzValid
-    @JsonIgnore
     private List<Clazz> clazzes;
 
     public BasicPropertiesFilter getBasicPropertiesFilter() {
@@ -29,7 +28,6 @@ public class BaseclassFilter extends PaginationFilter {
         return (T) this;
     }
 
-    @JsonIgnore
     public List<Clazz> getClazzes() {
         return clazzes;
     }

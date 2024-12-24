@@ -79,6 +79,7 @@ public class BaseclassService implements Plugin, InitializingBean {
 	}
 
 
+
 	@Override
 	public void afterPropertiesSet() throws Exception {
 		baseclassRepository.createIndexes();

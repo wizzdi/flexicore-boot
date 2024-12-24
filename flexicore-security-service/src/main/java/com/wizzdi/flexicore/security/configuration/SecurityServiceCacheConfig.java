@@ -2,6 +2,7 @@ package com.wizzdi.flexicore.security.configuration;
 
 import com.github.benmanes.caffeine.cache.Caffeine;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
@@ -17,13 +18,21 @@ import java.util.concurrent.TimeUnit;
 @Configuration
 @EnableCaching
 public class SecurityServiceCacheConfig {
+    @Value("${wizzdi.cache.default.operationAccessControl.size:100}")
+    private int operationAccessControlSize;
+
+    @Value("${wizzdi.cache.default.dataAccessControl.size:100}")
+    private int dataAccessControlSize;
+
+    @Value("${wizzdi.cache.default.operationToOperationGroup.size:100}")
+    private int operationToOperationGroupSize;
 
     @Bean
     @Qualifier("operationAccessControlCache")
     @ConditionalOnMissingBean(name = "operationAccessControlCacheManager")
     public CacheManager operationAccessControlCacheManager() {
         CaffeineCacheManager cacheManager = new CaffeineCacheManager();
-        cacheManager.setCaffeine(Caffeine.newBuilder().maximumSize(100).expireAfterWrite(15, TimeUnit.MINUTES));
+        cacheManager.setCaffeine(Caffeine.newBuilder().maximumSize(operationAccessControlSize).expireAfterWrite(15, TimeUnit.MINUTES));
         return cacheManager;
     }
 
@@ -32,7 +41,7 @@ public class SecurityServiceCacheConfig {
     @ConditionalOnMissingBean(name = "dataAccessControlCacheManager")
     public CacheManager dataAccessControlCacheManager() {
         CaffeineCacheManager cacheManager = new CaffeineCacheManager();
-        cacheManager.setCaffeine(Caffeine.newBuilder().maximumSize(100).expireAfterWrite(15, TimeUnit.MINUTES));
+        cacheManager.setCaffeine(Caffeine.newBuilder().maximumSize(dataAccessControlSize).expireAfterWrite(15, TimeUnit.MINUTES));
         return cacheManager;
     }
 
@@ -41,7 +50,7 @@ public class SecurityServiceCacheConfig {
     @ConditionalOnMissingBean(name = "operationToOperationGroupCacheManager")
     public CacheManager operationToOperationGroupCacheManager() {
         CaffeineCacheManager cacheManager = new CaffeineCacheManager();
-        cacheManager.setCaffeine(Caffeine.newBuilder().maximumSize(100));
+        cacheManager.setCaffeine(Caffeine.newBuilder().maximumSize(operationToOperationGroupSize));
         return cacheManager;
     }
 

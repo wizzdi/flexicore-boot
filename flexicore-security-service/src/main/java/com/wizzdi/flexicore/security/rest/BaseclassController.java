@@ -3,6 +3,7 @@ package com.wizzdi.flexicore.security.rest;
 import com.flexicore.annotations.IOperation;
 import com.flexicore.annotations.OperationsInside;
 import com.flexicore.model.Baseclass;
+import com.flexicore.model.Clazz;
 import com.wizzdi.flexicore.boot.base.interfaces.Plugin;
 import com.wizzdi.flexicore.security.configuration.SecurityContext;
 import com.wizzdi.flexicore.security.request.BaseclassFilter;
@@ -27,7 +28,8 @@ public class BaseclassController implements Plugin {
     @PostMapping("/getAll")
     public PaginationResponse<?> getAll(@RequestBody @Valid BaseclassFilter baseclassFilter, @RequestAttribute SecurityContext securityContext) {
         if(baseclassFilter.getClazzes()!=null){
-            baseclassFilter.setClazzes(baseclassFilter.getClazzes().stream().filter(f->!Baseclass.class.getCanonicalName().equals(f.name())).toList());
+            Clazz baseclazz=Clazz.ofClass(Baseclass.class);
+            baseclassFilter.setClazzes(baseclassFilter.getClazzes().stream().filter(f->!baseclazz.equals(f)).toList());
         }
         return baseclassService.getAllBaseclass(baseclassFilter, securityContext);
     }

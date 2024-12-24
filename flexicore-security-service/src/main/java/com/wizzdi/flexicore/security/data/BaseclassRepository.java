@@ -65,10 +65,6 @@ public class BaseclassRepository implements Plugin {
 
 	public <T extends Baseclass> void addBaseclassPredicates(BaseclassFilter baseclassFilter, CriteriaBuilder cb, CommonAbstractCriteria q, From<?,T> r, List<Predicate> predicates, SecurityContext securityContext) {
 		addBaseclassPredicates(baseclassFilter.getBasicPropertiesFilter(),cb,q,r,predicates,securityContext);
-		if(baseclassFilter.getClazzes()!=null&&!baseclassFilter.getClazzes().isEmpty()){
-			Set<String> ids=baseclassFilter.getClazzes().stream().map(f->f.name()).collect(Collectors.toSet());
-			predicates.add(r.get(Baseclass_.dtype).in(baseclassFilter.getClazzes()));
-		}
 	}
 
 	public <T extends Baseclass> long countAllBaseclass(Class<T> c,BaseclassFilter baseclassFilter,SecurityContext securityContext){

@@ -26,7 +26,6 @@ public class PermissionGroupToBaseclassFilter extends PaginationFilter {
     private List<PermissionGroup> permissionGroups;
 
     @ClazzValid
-    @JsonIgnore
     private List<Clazz> clazzes;
 
     private Set<String> permissionGroupIds = new HashSet<>();
@@ -73,7 +72,6 @@ public class PermissionGroupToBaseclassFilter extends PaginationFilter {
         return (T) this;
     }
 
-    @JsonIgnore
     public List<Clazz> getClazzes() {
         return clazzes;
     }
