@@ -21,6 +21,7 @@ public class TenantToBaseclass extends SecurityLink implements ITenantSecurityLi
 
 
 	@Override
+	@JsonIgnore(value = false)
 	@ManyToOne(targetEntity = SecurityTenant.class)
 	public SecurityTenant getTenant() {
 		return super.getTenant();

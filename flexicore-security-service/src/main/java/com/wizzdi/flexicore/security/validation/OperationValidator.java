@@ -13,6 +13,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -53,10 +54,11 @@ public class OperationValidator implements ConstraintValidator<OperationValid, O
     private boolean isValidOperationCollection(Collection<?> collection, BeanWrapperImpl objectWrapper, ConstraintValidatorContext constraintValidatorContext) {
 
         Set<String> operationIds = collection.stream().filter(f -> f instanceof String).map(f -> (String) f).collect(Collectors.toSet());
-        List<SecurityOperation> operations = securityOperationRepository.listAllOperations(new SecurityOperationFilter().setBasicPropertiesFilter(new BasicPropertiesFilter().setNames(operationIds)));
+        List<SecurityOperation> operations = operationIds.isEmpty()? Collections.emptyList():securityOperationRepository.listAllOperations(new SecurityOperationFilter().setBasicPropertiesFilter(new BasicPropertiesFilter().setOnlyIds(operationIds)));
         Set<String> validOperationsIds = operations.stream().map(f -> f.name()).collect(Collectors.toSet());
         operationIds.removeAll(validOperationsIds);
         if (!operationIds.isEmpty()) {
+            constraintValidatorContext.buildConstraintViolationWithTemplate("cannot find operations with ids "+operationIds).addPropertyNode(sourceField).addConstraintViolation();
             return false;
         }
         objectWrapper.setPropertyValue(targetField, new ArrayList<>(operations));
@@ -64,8 +66,9 @@ public class OperationValidator implements ConstraintValidator<OperationValid, O
     }
 
     private boolean isValidOperation(String securityOperationId, BeanWrapperImpl objectWrapper, ConstraintValidatorContext constraintValidatorContext) {
-        SecurityOperation operation = securityOperationRepository.listAllOperations(new SecurityOperationFilter().setBasicPropertiesFilter(new BasicPropertiesFilter().setNames(Set.of(securityOperationId)))).stream().findFirst().orElse(null);
+        SecurityOperation operation = securityOperationRepository.listAllOperations(new SecurityOperationFilter().setBasicPropertiesFilter(new BasicPropertiesFilter().setOnlyIds(Set.of(securityOperationId)))).stream().findFirst().orElse(null);
         if (operation == null) {
+            constraintValidatorContext.buildConstraintViolationWithTemplate("cannot find operations with id "+securityOperationId).addPropertyNode(sourceField).addConstraintViolation();
             return false;
         }
         objectWrapper.setPropertyValue(targetField, operation);

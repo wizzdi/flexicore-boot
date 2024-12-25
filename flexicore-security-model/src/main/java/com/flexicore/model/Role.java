@@ -67,6 +67,7 @@ public class Role extends SecurityEntity implements IRole {
 
 
 	@Override
+	@JsonIgnore(value = false)
 	@ManyToOne(targetEntity = SecurityTenant.class)
 	public SecurityTenant getTenant() {
 		return super.getTenant();

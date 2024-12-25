@@ -33,11 +33,7 @@ public class SecurityLinkGroupRepository implements Plugin {
 		Root<SecurityLinkGroup> r=q.from(SecurityLinkGroup.class);
 		List<Predicate> predicates=new ArrayList<>();
 		Join<SecurityLinkGroup, SecurityLink> join = addSecurityLinkGroupPredicates(securityLinkGroupFilter, cb, q, r, predicates, securityContext);
-		q.select(r).where(predicates.toArray(Predicate[]::new));
-		if(securityLinkGroupFilter.getSecurityLinkFilter()!=null&&securityLinkGroupFilter.getSecurityLinkFilter().getSorting()!=null&&join!=null){
-			Order order=securityLinkRepository.getOrder(cb,join,securityLinkGroupFilter.getSecurityLinkFilter().getSorting());
-			q=q.orderBy(order);
-		}
+		q.select(r).where(predicates.toArray(Predicate[]::new)).distinct(true);
 		TypedQuery<SecurityLinkGroup> query = em.createQuery(q);
 		BasicRepository.addPagination(securityLinkGroupFilter,query);
 		return query.getResultList();
@@ -61,7 +57,7 @@ public class SecurityLinkGroupRepository implements Plugin {
 		Root<SecurityLinkGroup> r=q.from(SecurityLinkGroup.class);
 		List<Predicate> predicates=new ArrayList<>();
 		addSecurityLinkGroupPredicates(securityLinkGroupFilter,cb,q,r,predicates,securityContext);
-		q.select(cb.count(r)).where(predicates.toArray(Predicate[]::new));
+		q.select(cb.countDistinct(r)).where(predicates.toArray(Predicate[]::new));
 		TypedQuery<Long> query = em.createQuery(q);
 		return query.getSingleResult();
 

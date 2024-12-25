@@ -2,6 +2,7 @@ package com.wizzdi.flexicore.security.request;
 
 import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.wizzdi.flexicore.security.validation.ClazzValid;
 import com.wizzdi.flexicore.security.validation.OperationValid;
 import com.wizzdi.segmantix.model.Access;
@@ -36,6 +37,7 @@ public class SecurityLinkCreate extends BasicCreate {
     private String permissionGroupId;
 
     @ClazzValid
+    @JsonProperty("clazz")
     private Clazz clazz;
 
     private String operationId;
@@ -101,7 +103,6 @@ public class SecurityLinkCreate extends BasicCreate {
         return (T) this;
     }
 
-    @JsonIgnore
     public Clazz getClazz() {
         return clazz;
     }

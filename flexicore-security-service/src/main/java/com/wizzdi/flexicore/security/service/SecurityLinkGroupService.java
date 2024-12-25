@@ -7,6 +7,7 @@ import com.wizzdi.flexicore.security.data.SecurityLinkGroupRepository;
 import com.wizzdi.flexicore.security.events.BasicUpdated;
 import com.wizzdi.flexicore.security.request.*;
 import com.wizzdi.flexicore.security.response.PaginationResponse;
+import com.wizzdi.flexicore.security.response.SecurityLinkContainer;
 import com.wizzdi.flexicore.security.response.SecurityLinkGroupContainer;
 import org.pf4j.Extension;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,7 +31,8 @@ public class SecurityLinkGroupService implements Plugin {
 	private RoleService roleService;
 	@Autowired
 	private SecurityTenantService securityTenantService;
-
+    @Autowired
+    private SecurityOperationService securityOperationService;
 
 
 	public void merge(Object o){
@@ -114,8 +116,12 @@ public class SecurityLinkGroupService implements Plugin {
 		List<SecurityLinkGroup> linkGroups = paginationResponse.getList();
 		List<SecurityLink> links = linkGroups.isEmpty() ? new ArrayList<>() : securityLinkService.listAllSecurityLinks(new SecurityLinkFilter().setSorting(sorting).setSecurityLinkGroups(linkGroups), securityContext);
 		Map<String, List<SecurityLink>> linksGrouped = links.stream().collect(Collectors.groupingBy(f -> f.getSecurityLinkGroup().getId(), LinkedHashMap::new, Collectors.toList()));
-		List<SecurityLinkGroupContainer> containers = linkGroups.stream().map(f -> new SecurityLinkGroupContainer(f, linksGrouped.getOrDefault(f.getId(), new ArrayList<>()))).toList();
+		List<SecurityLinkGroupContainer> containers = linkGroups.stream().map(f -> new SecurityLinkGroupContainer(f, linksGrouped.getOrDefault(f.getId(), new ArrayList<>()).stream().map(e->toLinkContainer(e)).toList())).toList();
 		return new PaginationResponse<>(containers,securityLinkGroupFilter,paginationResponse.getTotalRecords());
+	}
+
+	private SecurityLinkContainer toLinkContainer(SecurityLink securityLink) {
+		return new SecurityLinkContainer(securityLink.getId(),securityLink.getSecuredId(), securityLink.getSecuredType(),securityLink.getPermissionGroup(),securityLink.getOperationGroup(),securityLink.getSecurityLinkGroup(),securityLink.getAccess(),securityLink.getOperationId()!=null?securityOperationService.getByIdOrNull(securityLink.getOperationId()):null,securityLink.getSecurityEntity());
 	}
 
 	@EventListener

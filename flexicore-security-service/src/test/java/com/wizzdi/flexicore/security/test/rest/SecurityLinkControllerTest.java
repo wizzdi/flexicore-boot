@@ -3,6 +3,9 @@ package com.wizzdi.flexicore.security.test.rest;
 import com.flexicore.model.SecurityLink;
 import com.wizzdi.flexicore.security.request.SecurityLinkFilter;
 import com.wizzdi.flexicore.security.response.PaginationResponse;
+import com.wizzdi.flexicore.security.response.SecurityLinkGroupContainer;
+import com.wizzdi.flexicore.security.service.SecurityLinkGroupService;
+import com.wizzdi.flexicore.security.service.SecurityLinkService;
 import com.wizzdi.flexicore.security.test.app.App;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.*;
@@ -60,6 +63,10 @@ public class SecurityLinkControllerTest {
     private SecurityLink securityLink;
     @Autowired
     private TestRestTemplate restTemplate;
+    @Autowired
+    private SecurityLinkService securityLinkService;
+    @Autowired
+    private SecurityLinkGroupService securityLinkGroupService;
 
     @BeforeAll
     public void init() {
@@ -97,6 +104,24 @@ public class SecurityLinkControllerTest {
         PaginationResponse<SecurityLink> body = securityLinkResponse.getBody();
         Assertions.assertNotNull(body);
         List<SecurityLink> securityLinks = body.getList();
+        Assertions.assertNotEquals(0,securityLinks.size());
+
+
+    }
+
+    @Test
+    @Order(2)
+    public void testListAllSecurityLinkContainers() {
+
+        SecurityLinkFilter request=new SecurityLinkFilter();
+        ParameterizedTypeReference<PaginationResponse<SecurityLinkGroupContainer>> t= new ParameterizedTypeReference<>() {
+        };
+
+        ResponseEntity<PaginationResponse<SecurityLinkGroupContainer>> securityLinkResponse = this.restTemplate.exchange("/securityLinkGroup/getAllContainers", HttpMethod.POST, new HttpEntity<>(request), t);
+        Assertions.assertEquals(200, securityLinkResponse.getStatusCode().value());
+        PaginationResponse<SecurityLinkGroupContainer> body = securityLinkResponse.getBody();
+        Assertions.assertNotNull(body);
+        List<SecurityLinkGroupContainer> securityLinks = body.getList();
         Assertions.assertNotEquals(0,securityLinks.size());
 
 

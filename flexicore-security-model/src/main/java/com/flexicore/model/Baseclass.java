@@ -25,7 +25,7 @@ public class Baseclass extends Basic  {
 
 
 	@ManyToOne(targetEntity = SecurityUser.class)
-	@JsonView(Views.ForSwaggerOnly.class)
+	@JsonIgnore
 	protected SecurityUser creator;
 
 	@ManyToOne(targetEntity = SecurityTenant.class)

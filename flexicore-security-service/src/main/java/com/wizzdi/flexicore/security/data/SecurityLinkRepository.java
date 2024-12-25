@@ -48,18 +48,7 @@ public class SecurityLinkRepository implements Plugin {
 		if(sorting.isEmpty()){
 			return null;
 		}
-		CriteriaBuilder.SimpleCase<String, Object> switchCase = cb.selectCase(r.get(SecurityLink_.dtype));
-		int index=0;
-		for (SecurityLinkOrder securityLinkOrder : sorting) {
-			switch (securityLinkOrder){
-				case ROLE -> switchCase=switchCase.when(RoleToBaseclass.class.getSimpleName(),index);
-				case USER -> switchCase=switchCase.when(UserToBaseclass.class.getSimpleName(),index);
-				case TENANT -> switchCase=switchCase.when(TenantToBaseclass.class.getSimpleName(),index);
-			}
-			index++;
-		}
-		switchCase.otherwise(SecurityLinkOrder.values().length);
-		return cb.asc(switchCase);
+		return cb.asc(r.get(SecurityLink_.dtype));
 	}
 
 	public <T extends SecurityLink> void addSecurityLinkPredicates(SecurityLinkFilter securityLinkFilter, CriteriaBuilder cb, CommonAbstractCriteria q, From<?,T> r, List<Predicate> predicates, SecurityContext securityContext) {
@@ -88,20 +77,26 @@ public class SecurityLinkRepository implements Plugin {
 			Set<String> operationIds=securityLinkFilter.getOperations().stream().map(f->f.getId()).collect(Collectors.toSet());
 			predicates.add(r.get(SecurityLink_.operationId).in(operationIds));
 		}
-		if(securityLinkFilter.getRelevantUsers()!=null&&!securityLinkFilter.getRelevantUsers().isEmpty()){
+		List<SecurityUser> relevantUsers = securityLinkFilter.getRelevantUsers();
+		if(relevantUsers !=null&&!relevantUsers.isEmpty()){
+			Set<String> relevantUsersIds=relevantUsers.stream().map(f->f.getId()).collect(Collectors.toSet());
 			Path<SecurityLink> p = (Path<SecurityLink>) r;
 			Predicate pred=cb.and(
 					cb.equal(r.type(), UserToBaseclass.class),
-					cb.treat(p, UserToBaseclass.class).get(UserToBaseclass_.user).in(securityLinkFilter.getRelevantUsers()));
-			if(securityLinkFilter.getRelevantRoles()!=null&&!securityLinkFilter.getRelevantRoles().isEmpty()){
+					cb.treat(p, UserToBaseclass.class).get(UserToBaseclass_.user).get(SecurityUser_.id).in(relevantUsersIds));
+			List<Role> relevantRoles = securityLinkFilter.getRelevantRoles();
+			if(relevantRoles !=null&&!relevantRoles.isEmpty()){
+				Set<String> relevantRoleIds=relevantRoles.stream().map(f->f.getId()).collect(Collectors.toSet());
 				pred=cb.or(pred,cb.and(
 						cb.equal(r.type(), RoleToBaseclass.class),
-						cb.treat(p, RoleToBaseclass.class).get(RoleToBaseclass_.role).in(securityLinkFilter.getRelevantRoles())));
+						cb.treat(p, RoleToBaseclass.class).get(RoleToBaseclass_.role).get(Role_.id).in(relevantRoleIds)));
 			}
-			if(securityLinkFilter.getRelevantTenants()!=null&&!securityLinkFilter.getRelevantTenants().isEmpty()){
+			List<SecurityTenant> relevantTenants = securityLinkFilter.getRelevantTenants();
+			if(relevantTenants !=null&&!relevantTenants.isEmpty()){
+				Set<String> relevantTenantIds=relevantTenants.stream().map(f->f.getId()).collect(Collectors.toSet());
 				pred=cb.or(pred,cb.and(
 						cb.equal(r.type(), TenantToBaseclass.class),
-						cb.treat(p, TenantToBaseclass.class).get(TenantToBaseclass_.tenant).in(securityLinkFilter.getRelevantTenants())));
+						cb.treat(p, TenantToBaseclass.class).get(TenantToBaseclass_.tenant).get(SecurityTenant_.id).in(relevantTenantIds)));
 			}
 			predicates.add(pred);
 		}

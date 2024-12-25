@@ -6,6 +6,7 @@
  ******************************************************************************/
 package com.flexicore.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.flexicore.annotations.AnnotatedClazz;
 
 
@@ -32,6 +33,7 @@ public class TenantToUser extends Baseclass {
     }
 
     @Override
+    @JsonIgnore(value = false)
     @ManyToOne(targetEntity = SecurityTenant.class)
     public SecurityTenant getTenant() {
         return super.getTenant();
