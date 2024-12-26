@@ -47,6 +47,8 @@ public class PermissionGroupToBaseclassRepository implements Plugin {
 		boolean asc = Optional.ofNullable(permissionGroupToBaseclassFilter.getSorting()).map(f->f.asc()).orElse(true);
 		Path<?> sortPath = switch (sortBy){
 			case BASECLASS_ID -> r.get(PermissionGroupToBaseclass_.securedId);
+			case BASECLASS_NAME -> r.get(PermissionGroupToBaseclass_.name);
+			case BASECLASS_CREATION_DATE -> r.get(PermissionGroupToBaseclass_.securedCreationDate);
 			default-> r.get(PermissionGroupToBaseclass_.securedType);
 		};
         return asc ? cb.asc(sortPath) : cb.desc(sortPath);
@@ -61,7 +63,7 @@ public class PermissionGroupToBaseclassRepository implements Plugin {
 			Set<String> types=permissionGroupToBaseclassFilter.getClazzes().stream().map(f->f.name()).collect(Collectors.toSet());
 			predicates.add(r.get(PermissionGroupToBaseclass_.securedType).in(types));
 		}
-		if (permissionGroupToBaseclassFilter.getPermissionGroups() != null && permissionGroupToBaseclassFilter.getPermissionGroups().isEmpty()) {
+		if (permissionGroupToBaseclassFilter.getPermissionGroups() != null && !permissionGroupToBaseclassFilter.getPermissionGroups().isEmpty()) {
 			predicates.add(r.get(PermissionGroupToBaseclass_.permissionGroup).in(permissionGroupToBaseclassFilter.getPermissionGroups()));
 		}
 	}

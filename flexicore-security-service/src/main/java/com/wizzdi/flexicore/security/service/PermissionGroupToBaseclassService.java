@@ -65,6 +65,11 @@ public class PermissionGroupToBaseclassService implements Plugin {
 			permissionGroupToBaseclass.setSecuredType(permissionGroupToBaseclassCreate.getSecuredType().name());
 			update=true;
 		}
+
+		if(permissionGroupToBaseclassCreate.getSecuredCreationDate()!=null&&!permissionGroupToBaseclassCreate.getSecuredCreationDate().equals(permissionGroupToBaseclass.getSecuredCreationDate())){
+			permissionGroupToBaseclass.setSecuredCreationDate(permissionGroupToBaseclassCreate.getSecuredCreationDate());
+			update=true;
+		}
 		if(permissionGroupToBaseclassCreate.getPermissionGroup()!=null&&(permissionGroupToBaseclass.getPermissionGroup()==null||!permissionGroupToBaseclassCreate.getPermissionGroup().getId().equals(permissionGroupToBaseclass.getPermissionGroup().getId()))){
 			permissionGroupToBaseclass.setPermissionGroup(permissionGroupToBaseclassCreate.getPermissionGroup());
 			update=true;

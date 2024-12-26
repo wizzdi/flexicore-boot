@@ -3,21 +3,33 @@ package com.wizzdi.flexicore.security.service;
 import com.flexicore.model.Baseclass;
 import com.flexicore.model.Basic;
 import com.flexicore.model.OperationToGroup;
+import com.flexicore.model.SecurityOperation;
 import com.wizzdi.flexicore.security.configuration.SecurityContext;
 import com.wizzdi.flexicore.boot.base.interfaces.Plugin;
 import com.wizzdi.flexicore.security.data.OperationToGroupRepository;
+import com.wizzdi.flexicore.security.request.BasicPropertiesFilter;
 import com.wizzdi.flexicore.security.request.OperationToGroupCreate;
 import com.wizzdi.flexicore.security.request.OperationToGroupFilter;
 import com.wizzdi.flexicore.security.request.OperationToGroupUpdate;
+import com.wizzdi.flexicore.security.request.SecurityOperationFilter;
+import com.wizzdi.flexicore.security.response.OperationToGroupContainer;
 import com.wizzdi.flexicore.security.response.PaginationResponse;
+import com.wizzdi.flexicore.security.rest.OperationToGroupController;
 import jakarta.persistence.metamodel.SingularAttribute;
+import jakarta.validation.Valid;
 import org.pf4j.Extension;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
+import org.springframework.web.server.ResponseStatusException;
 
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Extension
 @Component
@@ -27,6 +39,8 @@ public class OperationToGroupService implements Plugin {
 	private BasicService basicService;
 	@Autowired
 	private OperationToGroupRepository operationRepository;
+	@Autowired
+	private SecurityOperationService securityOperationService;
 
 
 	public OperationToGroup createOperationToGroup(OperationToGroupCreate operationToGroupCreate, SecurityContext securityContext){
@@ -132,5 +146,23 @@ public class OperationToGroupService implements Plugin {
 
 	public void massMerge(List<?> toMerge) {
 		operationRepository.massMerge(toMerge);
+	}
+
+    public void setOperations(OperationToGroupFilter operationToGroupFilter) {
+        Set<String> operationIds = new HashSet<>(operationToGroupFilter.getOperationIds());
+        Map<String, SecurityOperation> operations= securityOperationService.listAllOperations(new SecurityOperationFilter().setBasicPropertiesFilter(new BasicPropertiesFilter().setOnlyIds(operationIds))).stream().collect(Collectors.toMap(f->f.getId(), f->f));
+        operationIds.removeAll(operations.keySet());
+        if(!operationIds.isEmpty()){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"no operations with ids %s".formatted(String.join(",", operationIds)));
+        }
+    }
+
+	public PaginationResponse<OperationToGroupContainer> getAllOperationToGroupsContainers(OperationToGroupFilter operationToGroupFilter, SecurityContext securityContext) {
+		PaginationResponse<OperationToGroup> allOperationToGroups = getAllOperationToGroups(operationToGroupFilter, securityContext);
+		List<OperationToGroup> list = allOperationToGroups.getList();
+		Set<String> usedOperations=list.stream().map(f->f.getOperationId()).collect(Collectors.toSet());
+		Map<String,SecurityOperation> map=usedOperations.isEmpty()? Collections.emptyMap():securityOperationService.listAllOperations(new SecurityOperationFilter().setBasicPropertiesFilter(new BasicPropertiesFilter().setOnlyIds(usedOperations))).stream().collect(Collectors.toMap(f->f.getId(), f->f));
+		List<OperationToGroupContainer> containers=list.stream().map(f->new OperationToGroupContainer(f.getId(),f.getOperationGroup(),map.get(f.getOperationId()))).toList();
+		return new PaginationResponse<>(containers,operationToGroupFilter.getPageSize(), allOperationToGroups.getTotalRecords());
 	}
 }

@@ -11,6 +11,7 @@ import com.wizzdi.flexicore.security.request.OperationToGroupCreate;
 import com.wizzdi.flexicore.security.request.OperationToGroupFilter;
 import com.wizzdi.flexicore.security.request.OperationToGroupUpdate;
 import com.wizzdi.flexicore.security.request.SecurityOperationFilter;
+import com.wizzdi.flexicore.security.response.OperationToGroupContainer;
 import com.wizzdi.flexicore.security.response.PaginationResponse;
 import com.wizzdi.flexicore.security.service.OperationToGroupService;
 import com.wizzdi.flexicore.security.service.SecurityOperationService;
@@ -19,17 +20,12 @@ import com.wizzdi.flexicore.security.validation.Update;
 import jakarta.validation.Valid;
 import org.pf4j.Extension;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.List;
-import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 @RestController
 @OperationsInside
@@ -55,14 +51,18 @@ public class OperationToGroupController implements Plugin {
     @PostMapping("/getAll")
     public PaginationResponse<OperationToGroup> getAll(@RequestBody @Valid OperationToGroupFilter operationToGroupFilter, @RequestAttribute SecurityContext securityContext) {
 
-        Set<String> operationIds = operationToGroupFilter.getOperationIds();
-        Map<String,SecurityOperation> operations= securityOperationService.listAllOperations(new SecurityOperationFilter().setBasicPropertiesFilter(new BasicPropertiesFilter().setOnlyIds(operationIds))).stream().collect(Collectors.toMap(f->f.getId(), f->f));
-        operationIds.removeAll(operations.keySet());
-        if(!operationIds.isEmpty()){
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"no operations with ids %s".formatted(String.join(",", operationIds)));
-        }
+        operationService.setOperations(operationToGroupFilter );
 
         return operationService.getAllOperationToGroups(operationToGroupFilter, securityContext);
+    }
+
+    @IOperation(Name = "returns security operation group containers", Description = "returns security operation group containers")
+    @PostMapping("/getAllContainers")
+    public PaginationResponse<OperationToGroupContainer> getAllContainers(@RequestBody @Valid OperationToGroupFilter operationToGroupFilter, @RequestAttribute SecurityContext securityContext) {
+
+        operationService.setOperations(operationToGroupFilter );
+
+        return operationService.getAllOperationToGroupsContainers(operationToGroupFilter, securityContext);
     }
 
     @IOperation(Name = "updates security operation group", Description = "updates security operation group")

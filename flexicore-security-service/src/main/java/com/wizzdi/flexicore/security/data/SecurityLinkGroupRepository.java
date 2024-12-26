@@ -45,6 +45,7 @@ public class SecurityLinkGroupRepository implements Plugin {
 		if(securityLinkGroupFilter.getSecurityLinkFilter()!=null){
 			Join<T,SecurityLink> join=r.join(SecurityLinkGroup_.securityLinks);
 			securityLinkRepository.addSecurityLinkPredicates(securityLinkGroupFilter.getSecurityLinkFilter(),cb,q,join,predicates,securityContext);
+			predicates.add(cb.isFalse(join.get(SecurityLink_.softDelete)));
 			return join;
 		}
 		return null;

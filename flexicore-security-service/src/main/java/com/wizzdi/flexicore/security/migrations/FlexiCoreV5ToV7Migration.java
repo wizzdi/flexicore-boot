@@ -122,6 +122,16 @@ public class FlexiCoreV5ToV7Migration {
             update permissiongrouptobaseclass set securedType=(string_to_array(clazz.name, '.'))[array_length(string_to_array(clazz.name, '.'), 1)] from baseclass join clazz on clazz.id=baseclass.clazz_id where securedType is null and baseclass_id=baseclass.id;""";
             executeSQL(select,sql);
         }
+        {
+            String sql = """
+            update permissiongrouptobaseclass set name=baseclass.name from baseclass where name is null and baseclass_id=baseclass.id;""";
+            executeSQL(select,sql);
+        }
+        {
+            String sql = """
+            update permissiongrouptobaseclass set securedCreationDate=baseclass.creationDate from baseclass where securedCreationDate is null and baseclass_id=baseclass.id;""";
+            executeSQL(select,sql);
+        }
     }
 
     private static void alterPermissionGroupToBaseclass(Statement select) throws SQLException {

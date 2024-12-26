@@ -41,9 +41,11 @@ public class SecurityOperationController implements Plugin {
 
         List<OperationGroup> operationGroups = operationFilter.getOperationGroups();
         if(operationGroups !=null&&!operationGroups.isEmpty()){
-            BasicPropertiesFilter basicPropertiesFilter= Optional.of(operationFilter.getBasicPropertiesFilter()).orElseGet(()->new BasicPropertiesFilter());
+            BasicPropertiesFilter basicPropertiesFilter= Optional.ofNullable(operationFilter.getBasicPropertiesFilter()).orElseGet(()->new BasicPropertiesFilter());
             Set<String> onlyIds=Optional.of(basicPropertiesFilter).map(f->f.getOnlyIds()).orElseGet(()->new HashSet<>());
            onlyIds.addAll(operationToGroupService.listAllOperationToGroups(new OperationToGroupFilter().setOperationGroups(operationGroups),null).stream().map(f->f.getOperationId()).collect(Collectors.toSet()));
+           basicPropertiesFilter.setOnlyIds(onlyIds);
+           operationFilter.setBasicPropertiesFilter(basicPropertiesFilter);
         }
         return operationService.getAllOperations(operationFilter);
     }

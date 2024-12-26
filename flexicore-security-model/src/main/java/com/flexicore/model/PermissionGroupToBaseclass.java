@@ -10,9 +10,12 @@ package com.flexicore.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.wizzdi.segmantix.api.model.IInstanceGroup;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Transient;
+
+import java.time.OffsetDateTime;
 
 
 @Entity
@@ -24,6 +27,9 @@ public class PermissionGroupToBaseclass extends Baseclass  {
 	private PermissionGroup permissionGroup;
 	private String securedId;
 	private String securedType;
+
+	@Column(columnDefinition = "timestamp with time zone")
+	private OffsetDateTime securedCreationDate;
 
 
 
@@ -55,6 +61,16 @@ public class PermissionGroupToBaseclass extends Baseclass  {
 
 	public <T extends PermissionGroupToBaseclass> T setSecuredType(String securedType) {
 		this.securedType = securedType;
+		return (T) this;
+	}
+
+	@Column(columnDefinition = "timestamp with time zone")
+	public OffsetDateTime getSecuredCreationDate() {
+		return securedCreationDate;
+	}
+
+	public <T extends PermissionGroupToBaseclass> T setSecuredCreationDate(OffsetDateTime securedCreationDate) {
+		this.securedCreationDate = securedCreationDate;
 		return (T) this;
 	}
 }

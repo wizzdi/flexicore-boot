@@ -29,7 +29,11 @@ public class SecurityOperationRepository implements Plugin {
 
 
 	public List<SecurityOperation> listAllOperations(SecurityOperationFilter securityOperationFilter ) {
-		return streamSecurityOperation(securityOperationFilter).sorted(Comparator.comparing(f->f.name())).collect(Collectors.toList());
+		Stream<SecurityOperation> stream = streamSecurityOperation(securityOperationFilter).sorted(Comparator.comparing(f -> f.name()));
+		if(securityOperationFilter.getPageSize()!=null&&securityOperationFilter.getCurrentPage()!=null&&securityOperationFilter.getCurrentPage()>-1&&securityOperationFilter.getPageSize()>0){
+			stream=stream.skip((long) securityOperationFilter.getPageSize() *securityOperationFilter.getCurrentPage()).limit(securityOperationFilter.getPageSize());
+		}
+		return stream.collect(Collectors.toList());
 
 	}
 

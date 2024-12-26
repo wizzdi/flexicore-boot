@@ -10,6 +10,8 @@ import com.wizzdi.flexicore.security.validation.Create;
 import com.wizzdi.flexicore.security.validation.IdValid;
 import com.wizzdi.flexicore.security.validation.Update;
 
+import java.time.OffsetDateTime;
+
 @IdValid.List({
         @IdValid(targetField = "permissionGroup", fieldType = PermissionGroup.class, field = "permissionGroupId", groups = {Create.class, Update.class}),
 
@@ -25,6 +27,8 @@ public class PermissionGroupToBaseclassCreate extends BasicCreate {
     private String securedId;
     @ClazzValid
     private Clazz securedType;
+    @JsonIgnore
+    private OffsetDateTime securedCreationDate;
 
     @JsonIgnore
     public PermissionGroup getPermissionGroup() {
@@ -60,6 +64,16 @@ public class PermissionGroupToBaseclassCreate extends BasicCreate {
 
     public <T extends PermissionGroupToBaseclassCreate> T setSecuredType(Clazz securedType) {
         this.securedType = securedType;
+        return (T) this;
+    }
+
+    @JsonIgnore
+    public OffsetDateTime getSecuredCreationDate() {
+        return securedCreationDate;
+    }
+
+    public <T extends PermissionGroupToBaseclassCreate> T setSecuredCreationDate(OffsetDateTime securedCreationDate) {
+        this.securedCreationDate = securedCreationDate;
         return (T) this;
     }
 }

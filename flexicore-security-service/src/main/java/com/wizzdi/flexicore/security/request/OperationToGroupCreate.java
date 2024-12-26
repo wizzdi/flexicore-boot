@@ -10,7 +10,7 @@ import com.wizzdi.flexicore.security.validation.Update;
 import jakarta.validation.constraints.NotNull;
 
 @IdValid.List({
-        @IdValid(targetField = "operationGroup", fieldType = OperationGroup.class, field = "operationGroupId")
+        @IdValid(targetField = "operationGroup", fieldType = OperationGroup.class, field = "operationGroupId",groups = {Create.class, Update.class})
 })
 @OperationValid(sourceField = "operationId",targetField = "operation",groups = {Create.class, Update.class})
 public class OperationToGroupCreate extends BasicCreate {
