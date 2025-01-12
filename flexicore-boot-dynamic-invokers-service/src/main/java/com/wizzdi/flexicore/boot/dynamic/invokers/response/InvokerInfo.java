@@ -20,6 +20,7 @@ public class InvokerInfo {
 	private Class<?> handlingType;
 	private List<InvokerMethodInfo> methods = new ArrayList<>();
 	private String pluginId;
+	private List<Class<?>> handlingTypeImplementedInterfaces=new ArrayList<>();
 
 	public InvokerInfo() {
 	}
@@ -29,6 +30,7 @@ public class InvokerInfo {
 		this.description = other.description;
 		this.displayName = other.displayName;
 		this.handlingType = other.handlingType;
+		this.handlingTypeImplementedInterfaces=other.handlingTypeImplementedInterfaces;
 		this.methods = other.methods.parallelStream().filter(f -> allowedOps.contains(f.getId())).collect(Collectors.toList());
 
 	}
@@ -40,6 +42,7 @@ public class InvokerInfo {
 		displayName = InvokerInfo != null && !InvokerInfo.displayName().isEmpty() ? InvokerInfo.displayName() : invokerClass.getName();
 		description = InvokerInfo != null && !InvokerInfo.description().isEmpty() ? InvokerInfo.description() : "No Description";
 		handlingType = invoker instanceof Invoker ? ((Invoker) invoker).getHandlingClass() : getAutomatically(invokerClass);
+		handlingTypeImplementedInterfaces= Optional.ofNullable(handlingType).stream().map(f->handlingType.getInterfaces()).flatMap(Arrays::stream).toList();
 		this.pluginId=pluginWrapper!=null?pluginWrapper.getPluginId():null;
 
 
@@ -109,6 +112,15 @@ public class InvokerInfo {
 
 	public <T extends InvokerInfo> T setPluginId(String pluginId) {
 		this.pluginId = pluginId;
+		return (T) this;
+	}
+
+	public List<Class<?>> getHandlingTypeImplementedInterfaces() {
+		return handlingTypeImplementedInterfaces;
+	}
+
+	public <T extends InvokerInfo> T setHandlingTypeImplementedInterfaces(List<Class<?>> handlingTypeImplementedInterfaces) {
+		this.handlingTypeImplementedInterfaces = handlingTypeImplementedInterfaces;
 		return (T) this;
 	}
 

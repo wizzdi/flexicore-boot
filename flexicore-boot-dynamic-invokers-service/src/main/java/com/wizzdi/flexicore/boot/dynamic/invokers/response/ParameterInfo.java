@@ -36,6 +36,7 @@ public class ParameterInfo {
     private boolean ignoreSubParameters;
     private String dynamicFilterForField;
     private boolean dynamicFilterForStatic;
+    private boolean isInterface;
 
     public ParameterInfo() {
     }
@@ -60,7 +61,6 @@ public class ParameterInfo {
             this.dynamicFilterForStatic=fieldInfo.dynamicFilterForStatic();
 
         }
-
 
         iterationType = parameter.getType();
         populatePossibleValues();
@@ -113,6 +113,7 @@ public class ParameterInfo {
             this.actionId = fieldInfo.actionId();
 
         }
+        isInterface=idRefType!=null&&idRefType.isInterface();
 
 
     }
@@ -306,6 +307,15 @@ public class ParameterInfo {
 
     public <T extends ParameterInfo> T setDynamicFilterForStatic(boolean dynamicFilterForStatic) {
         this.dynamicFilterForStatic = dynamicFilterForStatic;
+        return (T) this;
+    }
+
+    public boolean isInterface() {
+        return isInterface;
+    }
+
+    public <T extends ParameterInfo> T setInterface(boolean anInterface) {
+        isInterface = anInterface;
         return (T) this;
     }
 

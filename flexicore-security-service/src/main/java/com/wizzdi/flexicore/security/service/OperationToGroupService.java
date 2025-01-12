@@ -23,6 +23,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -155,6 +156,7 @@ public class OperationToGroupService implements Plugin {
         if(!operationIds.isEmpty()){
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"no operations with ids %s".formatted(String.join(",", operationIds)));
         }
+		operationToGroupFilter.setOperations(new ArrayList<>(operations.values()));
     }
 
 	public PaginationResponse<OperationToGroupContainer> getAllOperationToGroupsContainers(OperationToGroupFilter operationToGroupFilter, SecurityContext securityContext) {

@@ -2,6 +2,8 @@ package com.wizzdi.flexicore.boot.dynamic.invokers.response;
 
 import com.wizzdi.flexicore.boot.dynamic.invokers.annotations.Invoker;
 
+import java.util.List;
+
 public class InvokerHolder {
 
     private final InvokerInfo invokerInfo;
@@ -50,6 +52,9 @@ public class InvokerHolder {
         return invokerInfo.setHandlingType(handlingType);
     }
 
+    public List<Class<?>> getHandlingTypeImplementedInterfaces() {
+        return invokerInfo.getHandlingTypeImplementedInterfaces();
+    }
 
     @Override
     public String toString() {
