@@ -23,7 +23,7 @@ public class FlexiCoreV4ToV5Migration {
     private static final List<TypeMigration> toMigrate = List.of(
             new TypeMigration("Clazz", Collections.emptyList()),
             new TypeMigration("SecurityUser", "UserTable", "SecurityUser",  true, Collections.emptyList()),
-            new TypeMigration("SecurityOperation", List.of(new FieldMigration("defaultaccess", "defaultAccess"))),
+            new TypeMigration("SecurityOperation", List.of(new FieldMigration("defaultaccess", "defaultAccess","integer"))),
             new TypeMigration("SecurityTenant", List.of(new FieldMigration("externalId"))),
             new TypeMigration("Role", Collections.emptyList()),
             new TypeMigration("SecurityWildcard", "SecurityWildcard", "SecurityWildcard",  false, Collections.emptyList()),
@@ -59,6 +59,7 @@ public class FlexiCoreV4ToV5Migration {
 
     public static void migrateToFCV5(Statement select, ExternalTypeMigration... classesExtendingUser) throws SQLException {
         Map<String, Set<String>> fields = getFields(select, Set.of("baseclass"));
+        verifyStructure(select,toMigrate);
         Set<String> baseclassFields = fields.computeIfAbsent("baseclass", f -> new HashSet<>());
         List<TypeMigration> additional = getAdditionalTypes(classesExtendingUser);
         migrateTypes(select, additional);
@@ -68,6 +69,102 @@ public class FlexiCoreV4ToV5Migration {
         dropUnnecessaryColumns(select, additional);
         migrateDtypes(select, additional);
     }
+
+    private static void verifyStructure(Statement select, List<TypeMigration> toMigrate) throws SQLException {
+        for (TypeMigration typeMigration : toMigrate) {
+            {
+                String sql = """
+                
+                                    CREATE TABLE IF NOT EXISTS %s ();
+                """;
+                sql=sql.formatted(typeMigration.tableName);
+                logger.info("verify {} exists: {}",typeMigration.tableName,sql);
+                select.execute(sql);
+            }
+            {
+                String sql = """
+                    
+                                        ALTER TABLE %s
+                                            
+                    ADD COLUMN IF NOT EXISTS id VARCHAR(255) PRIMARY KEY,
+                    ADD COLUMN IF NOT EXISTS name VARCHAR(255) ,
+                    ADD COLUMN IF NOT EXISTS description varchar(255),
+                    ADD COLUMN IF NOT EXISTS creationdate timestamp with time zone,
+                    ADD COLUMN IF NOT EXISTS updatedate timestamp with time zone,
+                    ADD COLUMN IF NOT EXISTS softdelete boolean
+                    %s 
+                    """;
+
+                List<FieldStructure> moreFields=typeMigration.fieldMigrations().stream().map(f->new FieldStructure(f.newName,f.sqlType,null)).collect(Collectors.toList());
+                if(typeMigration.hasSecurity){
+                    moreFields.add(new FieldStructure("security_id","varchar(255)","baseclass"));
+                }
+                String additional=moreFields.stream().map(f-> getAddColumnStatement(typeMigration.tableName,f)).collect(Collectors.joining(","));
+                sql=sql.formatted(typeMigration.tableName,additional.isBlank()?"":","+additional);
+                logger.info("verify {} columns exists: {}",typeMigration.tableName,sql);
+                select.execute(sql);
+
+            }
+
+
+        }
+
+        {
+            String sql = """
+                    
+                                        CREATE TABLE IF NOT EXISTS securitylink ();
+                    """;
+            logger.info("verify securitylink table exists");
+            select.execute(sql);
+
+        }
+
+        {
+            String sql = """
+                    
+                                        ALTER TABLE securitylink
+                                        ADD COLUMN IF NOT EXISTS id VARCHAR(255) PRIMARY KEY,
+                            ADD COLUMN IF NOT EXISTS clazz_id varchar(255),
+                            ADD COLUMN IF NOT EXISTS baseclass_id varchar(255) constraint fk_securitylink_baseclass_id references baseclass(id),
+                            ADD COLUMN IF NOT EXISTS operation_id varchar(255);
+                    """;
+            logger.info("verify securitylink columns exists");
+            select.execute(sql);
+
+        }
+        {
+            String sql = """
+                    
+                                        CREATE TABLE IF NOT EXISTS securitylinkgroup ();
+                    """;
+            logger.info("verify securitylink table exists");
+            select.execute(sql);
+
+        }
+
+        {
+            String sql = """
+                    
+                                        ALTER TABLE securitylinkgroup
+                            ADD COLUMN IF NOT EXISTS security_id varchar(255);
+                    """;
+            logger.info("verify securitylink columns exists");
+            select.execute(sql);
+
+        }
+
+    }
+
+    private static String getAddColumnStatement(String tableName,FieldStructure f) {
+        String formatted = "ADD COLUMN IF NOT EXISTS %s %s".formatted(f.name, f.sqlType);
+        if(f.foreignKey!=null){
+            String name="fk_"+tableName+"_"+f.name;
+            formatted=formatted+" CONSTRAINT %s REFERENCES %s (id)".formatted(name,f.foreignKey);
+        }
+        return formatted;
+    }
+
+    record FieldStructure(String name,String sqlType,String foreignKey){}
 
     private static void migrateDtypes(Statement select, List<TypeMigration> additional) throws SQLException {
         {
@@ -317,12 +414,16 @@ public class FlexiCoreV4ToV5Migration {
         return dtype ? MIGRATE_WITH_DTYPE : MIGRATE_WITHOUT_DTYPE;
     }
 
-    public record FieldMigration(String oldName, String newName) {
+    public record FieldMigration(String oldName, String newName,String sqlType) {
         public FieldMigration {
         }
 
         public FieldMigration(String oldName) {
-            this(oldName, oldName);
+            this(oldName, oldName,"varchar(255)");
+        }
+
+        public FieldMigration(String oldName,String newName) {
+            this(oldName, newName,"varchar(255)");
         }
     }
 

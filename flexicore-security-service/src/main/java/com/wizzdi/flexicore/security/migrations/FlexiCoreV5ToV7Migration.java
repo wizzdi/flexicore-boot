@@ -124,7 +124,7 @@ public class FlexiCoreV5ToV7Migration {
         }
         {
             String sql = """
-            update permissiongrouptobaseclass set name=baseclass.name from baseclass where name is null and baseclass_id=baseclass.id;""";
+            update permissiongrouptobaseclass set name=baseclass.name from baseclass where permissiongrouptobaseclass.name is null and baseclass_id=baseclass.id;""";
             executeSQL(select,sql);
         }
         {
@@ -149,6 +149,9 @@ public class FlexiCoreV5ToV7Migration {
 
     private static void updateOperationToGroup(Statement select) throws SQLException {
 
+        if(!fieldExist(select,"operationToGroup","operation_id")){
+           return;
+        }
         {
             String sql = """
             update operationToGroup set operationId=operation_id where operationId is null and not operation_id is
@@ -259,6 +262,16 @@ public class FlexiCoreV5ToV7Migration {
 
     }
 
-
+    private static boolean fieldExist(Statement select,String tableName,String fieldName)  {
+        try {
+            String sql = "select column_name from information_schema.columns where table_name='" + tableName.toLowerCase() + "' and column_name='" + fieldName.toLowerCase() + "'";
+            logger.info("checking if field {} exist SQL: {}", fieldName, sql);
+            return select.executeQuery(sql).next();
+        }
+        catch (Exception e){
+            logger.error("failed checking if field {} exist",fieldName,e);
+            return false;
+        }
+    }
 
 }
