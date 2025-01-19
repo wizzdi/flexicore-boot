@@ -35,7 +35,7 @@ public class User extends SecurityUser {
     private String email;
     private String homeDir;
     private String lastName;
-    @JsonView(Views.Full.class)
+    @JsonIgnore
     private String totpSalt;
 
     private boolean disabled;
@@ -60,9 +60,9 @@ public class User extends SecurityUser {
     private OffsetDateTime emailVerificationTokenValid;
     @Column(columnDefinition = "timestamp with time zone")
     private OffsetDateTime lastVerificationDate;
-    @JsonView(Views.Full.class)
+    @JsonIgnore
     private String totpSecret;
-    @JsonView(Views.Full.class)
+    @JsonIgnore
     @Lob
     private String totpRecoveryCodes;
     private boolean totpEnabled;
@@ -73,7 +73,7 @@ public class User extends SecurityUser {
 
     @Column(name = "phone_number")
     private String phoneNumber;
-    @JsonView(Views.Full.class)
+    @JsonIgnore
     private String password;
 
     @Column(name = "phone_number")
@@ -99,7 +99,7 @@ public class User extends SecurityUser {
         return "ID: " + this.id + "Name " + this.name + " Email: " + this.email + "Phone number: " + this.phoneNumber;
     }
 
-    @JsonView(Views.Full.class)
+    @JsonIgnore
     public String getPassword() {
         return password;
     }
@@ -213,7 +213,7 @@ public class User extends SecurityUser {
         return (T) this;
     }
 
-    @JsonView(Views.Full.class)
+    @JsonIgnore
     public String getTotpSecret() {
         return totpSecret;
     }
@@ -232,7 +232,7 @@ public class User extends SecurityUser {
         return (T) this;
     }
     @Lob
-    @JsonView(Views.Full.class)
+    @JsonIgnore
     public String getTotpRecoveryCodes() {
         return totpRecoveryCodes;
     }
@@ -242,7 +242,7 @@ public class User extends SecurityUser {
         return (T) this;
     }
 
-    @JsonView(Views.Full.class)
+    @JsonIgnore
     public String getTotpSalt() {
         return totpSalt;
     }
