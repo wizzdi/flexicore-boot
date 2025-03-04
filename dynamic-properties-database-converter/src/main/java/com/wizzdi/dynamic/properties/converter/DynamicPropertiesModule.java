@@ -13,7 +13,6 @@ import org.springframework.context.annotation.Configuration;
 public class DynamicPropertiesModule  {
     @Bean
     public JsonConverterImplementationHolder jsonConverterImplementationHolder(JsonConverterImplementation jsonConverterImplementation) throws BeansException {
-        JsonConverter.implementation = jsonConverterImplementation;
         return new JsonConverterImplementationHolder(jsonConverterImplementation);
     }
 }

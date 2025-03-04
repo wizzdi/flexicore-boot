@@ -48,7 +48,7 @@ public class RoleService implements Plugin {
 		Role role=new Role();
 		role.setId(UUID.randomUUID().toString());
 		updateRoleNoMerge(roleCreate,role);
-		BaseclassService.createSecurityObjectNoMerge(role,securityContext);
+		BaseclassService.createSecurityObjectNoMerge(role,false,securityContext);
 		return role;
 	}
 

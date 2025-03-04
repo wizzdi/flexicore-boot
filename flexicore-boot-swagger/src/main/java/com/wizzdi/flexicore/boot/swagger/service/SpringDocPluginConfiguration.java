@@ -18,6 +18,9 @@ import java.util.stream.Collectors;
 
 @Configuration
 public class SpringDocPluginConfiguration {
+	static {
+		io.swagger.v3.core.jackson.ModelResolver.enumsAsRef = true;
+	}
 
 	@Bean
 	@Scope(value = ConfigurableBeanFactory.SCOPE_SINGLETON)

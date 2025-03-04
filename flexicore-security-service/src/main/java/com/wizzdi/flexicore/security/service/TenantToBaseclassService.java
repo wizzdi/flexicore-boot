@@ -47,7 +47,7 @@ public class TenantToBaseclassService implements Plugin {
 		TenantToBaseclass tenantToBaseclass=new TenantToBaseclass();
 		tenantToBaseclass.setId(UUID.randomUUID().toString());
 		updateTenantToBaseclassNoMerge(tenantToBaseclassCreate,tenantToBaseclass);
-		createSecurityObjectNoMerge(tenantToBaseclass,securityContext);
+		BaseclassService.createSecurityObjectNoMerge(tenantToBaseclass,false,securityContext);
 		return tenantToBaseclass;
 	}
 
@@ -83,13 +83,4 @@ public class TenantToBaseclassService implements Plugin {
 		return tenantToBaseclassRepository.listAllTenantToBaseclasss(tenantToBaseclassFilter, securityContext);
 	}
 
-	public static <T extends Baseclass> Baseclass createSecurityObjectNoMerge(T subject, SecurityContext securityContext) {
-		subject.setSecurityId(subject.getId());
-		if(securityContext==null){
-			return subject;
-		}
-		subject.setCreator(securityContext.getUser());
-		//TODO:clazz?
-		return subject;
-	}
 }

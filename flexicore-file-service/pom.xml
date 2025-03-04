@@ -12,6 +12,11 @@
 
     <dependencies>
         <dependency>
+            <groupId>com.wizzdi</groupId>
+            <artifactId>flexicore-boot-security-bearer-jwt</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
             <groupId>org.zeroturnaround</groupId>
             <artifactId>zt-zip</artifactId>
             <exclusions>

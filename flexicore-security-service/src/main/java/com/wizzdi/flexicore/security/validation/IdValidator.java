@@ -2,10 +2,14 @@ package com.wizzdi.flexicore.security.validation;
 
 import com.flexicore.model.Baseclass;
 import com.flexicore.model.Basic;
+import com.flexicore.model.Clazz;
 import com.wizzdi.flexicore.security.configuration.SecurityContext;
 import com.wizzdi.flexicore.security.data.SecuredBasicRepository;
+import com.wizzdi.flexicore.security.service.ClazzService;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanWrapperImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
@@ -23,18 +27,23 @@ import java.util.stream.Collectors;
 public class IdValidator implements ConstraintValidator<IdValid, Object> {
 
     public static final String SECURITY_CONTEXT_ATTRIBUTE_NAME = "securityContext";
+    private static final Logger log = LoggerFactory.getLogger(IdValidator.class);
     private String field;
     private Class<?> fieldType;
+    private String fieldTypeFromField;
     private String targetField;
     @Autowired
     @Lazy
     private SecuredBasicRepository securedBasicRepository;
+    @Autowired
+    private ClazzService clazzService;
 
 
     @Override
     public void initialize(IdValid constraintAnnotation) {
         this.field = constraintAnnotation.field();
         this.fieldType = constraintAnnotation.fieldType();
+        this.fieldTypeFromField= constraintAnnotation.fieldTypeFromField();
         this.targetField = constraintAnnotation.targetField();
     }
 
@@ -44,19 +53,26 @@ public class IdValidator implements ConstraintValidator<IdValid, Object> {
         BeanWrapperImpl objectWrapper = new BeanWrapperImpl(value);
         Object fieldValue = objectWrapper
                 .getPropertyValue(field);
+        Class<?> computedFieldType = getFieldType(objectWrapper);
         if (fieldValue instanceof Collection) {
             Collection<?> collection = (Collection<?>) fieldValue;
             Set<String> ids = collection.stream().filter(f -> f instanceof String).map(f -> (String) f).collect(Collectors.toSet());
             if (!ids.isEmpty()) {
                 Map<String, Basic> basicMap;
-                    if(Baseclass.class.isAssignableFrom(fieldType)){
-                        Class<? extends Baseclass> c = (Class<? extends Baseclass>) fieldType;
+                    if(Baseclass.class.isAssignableFrom(computedFieldType)){
+                        Class<? extends Baseclass> c = (Class<? extends Baseclass>) computedFieldType;
                         basicMap = securedBasicRepository.listByIds(c, ids, securityContext).stream().collect(Collectors.toMap(f -> f.getId(), f -> f, (a, b) -> a));
 
                     }
                     else{
-                        Class<Basic> basicClass = (Class<Basic>) fieldType;
-                        basicMap = securedBasicRepository.findByIds(basicClass, ids).stream().collect(Collectors.toMap(f -> f.getId(), f -> f, (a, b) -> a));
+                        if(Basic.class.isAssignableFrom(computedFieldType)){
+                            Class<Basic> basicClass = (Class<Basic>) computedFieldType;
+                            basicMap = securedBasicRepository.findByIds(basicClass, ids).stream().collect(Collectors.toMap(f -> f.getId(), f -> f, (a, b) -> a));
+                        }
+                        else{
+                            log.warn("will not validate a non Basic type: {}",computedFieldType);
+                            return true;
+                        }
 
                     }
 
@@ -64,7 +80,7 @@ public class IdValidator implements ConstraintValidator<IdValid, Object> {
 
                 ids.removeAll(basicMap.keySet());
                 if (!ids.isEmpty()) {
-                    constraintValidatorContext.buildConstraintViolationWithTemplate("cannot find "+fieldType.getCanonicalName() +" with ids \""+ids+"\"").addPropertyNode(field).addConstraintViolation();
+                    constraintValidatorContext.buildConstraintViolationWithTemplate("cannot find "+ computedFieldType.getCanonicalName() +" with ids \""+ids+"\"").addPropertyNode(field).addConstraintViolation();
                     return false;
                 }
                 objectWrapper.setPropertyValue(targetField, new ArrayList<>(basicMap.values()));
@@ -75,17 +91,23 @@ public class IdValidator implements ConstraintValidator<IdValid, Object> {
                 String id = (String) fieldValue;
                 Basic basic;
 
-                    if(Baseclass.class.isAssignableFrom(fieldType)){
-                        Class<? extends Baseclass> c = (Class<? extends Baseclass>) fieldType;
+                    if(Baseclass.class.isAssignableFrom(computedFieldType)){
+                        Class<? extends Baseclass> c = (Class<? extends Baseclass>) computedFieldType;
                         basic = securedBasicRepository.getByIdOrNull(id, c, securityContext);
                     }
                     else{
-                        Class<Basic> basicClass = (Class<Basic>) fieldType;
-                        basic = securedBasicRepository.findByIdOrNull(basicClass, id);
+                        if(Basic.class.isAssignableFrom(computedFieldType)){
+                            Class<Basic> basicClass = (Class<Basic>) computedFieldType;
+                            basic = securedBasicRepository.findByIdOrNull(basicClass, id);
+                        }
+                        else{
+                            log.warn("will not validate a non Basic type: {}",computedFieldType);
+                            return true;
+                        }
                     }
 
                 if (basic == null) {
-                    constraintValidatorContext.buildConstraintViolationWithTemplate("cannot find "+fieldType.getCanonicalName() +" with id \""+id+"\"").addPropertyNode(field).addConstraintViolation();
+                    constraintValidatorContext.buildConstraintViolationWithTemplate("cannot find "+ computedFieldType.getCanonicalName() +" with id \""+id+"\"").addPropertyNode(field).addConstraintViolation();
                     return false;
                 }
                 objectWrapper.setPropertyValue(targetField, basic);
@@ -93,5 +115,23 @@ public class IdValidator implements ConstraintValidator<IdValid, Object> {
             }
         }
         return true;
+    }
+
+    private Class<?> getFieldType(BeanWrapperImpl objectWrapper) {
+        try {
+            if (fieldTypeFromField.isBlank()) {
+                return fieldType;
+            }
+            Object propertyValue = objectWrapper.getPropertyValue(fieldTypeFromField);
+            return switch (propertyValue) {
+                case Clazz clazz -> clazz.c();
+                case String canonicalClassName -> Class.forName(canonicalClassName);
+                case null, default -> fieldType;
+            };
+        }
+        catch (Throwable e){
+            log.error("failed getting field type for {}.{}",objectWrapper.getRootClass(),fieldTypeFromField);
+        }
+        return fieldType;
     }
 }

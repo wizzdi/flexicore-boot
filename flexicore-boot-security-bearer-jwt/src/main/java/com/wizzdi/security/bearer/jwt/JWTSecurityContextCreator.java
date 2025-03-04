@@ -8,10 +8,13 @@ import com.wizzdi.security.adapter.FlexiCoreAuthentication;
 import com.wizzdi.security.adapter.FlexicoreUserDetails;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
+import org.pf4j.PluginManager;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
+
+import java.util.List;
 
 @Component
 public class JWTSecurityContextCreator {
@@ -25,6 +28,8 @@ public class JWTSecurityContextCreator {
     private   SecurityContextProvider securityContextProvider;
     @Autowired
     private ObjectProvider<SecurityContextCustomizer> securityContextCustomizers;
+    @Autowired
+    private PluginManager pluginManager;
 
     public FlexiCoreAuthentication getSecurityContext(String token){
         Jws<Claims> claimsJws = flexicoreJwtTokenUtil.getClaims(token);
@@ -39,6 +44,10 @@ public class JWTSecurityContextCreator {
         FlexicoreUserDetails userDetails = getUserDetails(securityUser);
         SecurityContext securityContext = securityContextProvider.getSecurityContext(securityUser);
         for (SecurityContextCustomizer securityContextCustomizer : securityContextCustomizers.orderedStream().toList()) {
+            securityContext=securityContextCustomizer.customize(securityContext,claims);
+        }
+        List<SecurityContextCustomizer> extensions = pluginManager.getExtensions(SecurityContextCustomizer.class);
+        for (SecurityContextCustomizer securityContextCustomizer : extensions) {
             securityContext=securityContextCustomizer.customize(securityContext,claims);
         }
         return new FlexiCoreAuthentication(userDetails, securityContext);

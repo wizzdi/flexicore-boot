@@ -40,8 +40,8 @@ public class SecurityQueryTest {
 			.withDatabaseName("flexicore-test")
 			.withUsername("flexicore")
 			.withPassword("flexicore");
-    public static final Clazz TEST_ENTITY_CLAZZ = new Clazz(TestEntity.class.getSimpleName());
-    public static final Clazz SECURITY_WILDCARD_CLAZZ = new Clazz(SecurityWildcard.class.getSimpleName());
+    public static final Clazz TEST_ENTITY_CLAZZ = Clazz.ofClass(TestEntity.class);
+    public static final Clazz SECURITY_WILDCARD_CLAZZ = Clazz.ofClass(SecurityWildcard.class);
 
     static{
 		postgresqlContainer.start();

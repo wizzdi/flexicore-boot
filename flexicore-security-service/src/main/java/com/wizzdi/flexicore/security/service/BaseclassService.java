@@ -68,12 +68,18 @@ public class BaseclassService implements Plugin, InitializingBean {
 	}
 
 	public static <T extends Baseclass> Baseclass createSecurityObjectNoMerge(T subject, SecurityContext securityContext) {
+
+		return createSecurityObjectNoMerge(subject,true,securityContext);
+	}
+	public static <T extends Baseclass> Baseclass createSecurityObjectNoMerge(T subject,boolean updateTenant, SecurityContext securityContext) {
 		subject.setSecurityId(subject.getId());
 		if(securityContext==null){
 			return subject;
 		}
 		subject.setCreator(securityContext.getUser());
-		subject.setTenant(securityContext.getTenantToCreateIn());
+		if(updateTenant||subject.getTenant()==null){
+			subject.setTenant(securityContext.getTenantToCreateIn());
+		}
 		//TODO:clazz?
 		return subject;
 	}

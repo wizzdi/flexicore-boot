@@ -11,7 +11,9 @@ import org.springframework.context.ApplicationContext;
 import java.nio.file.Path;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
@@ -29,6 +31,17 @@ public class FlexiCorePluginManager extends SpringPluginManager {
 	public FlexiCorePluginManager(Path pluginsRoot, Iterable<ContextCustomizer> applicationCustomizers) {
 		super(pluginsRoot);
 		this.applicationCustomizers = applicationCustomizers;
+	}
+
+	@Override
+	public List<Class<?>> getExtensionClasses(String pluginId) {
+		try {
+			return super.getExtensionClasses(pluginId);
+		}
+		catch (Throwable e){
+			logger.error("error while loading plugin {}",pluginId,e);
+			throw new RuntimeException(e);
+		}
 	}
 
 	@Override
@@ -92,6 +105,13 @@ public class FlexiCorePluginManager extends SpringPluginManager {
                 logger.error("loading plugins failed , wrong versions: {}", dependencies.stream().map(f -> getWrongDependencyString(f)).collect(Collectors.joining(System.lineSeparator())), e);
 				throw e;
 			}
+			catch (DependencyResolver.DependenciesNotFoundException e) {
+				Set<String> dependencies = new HashSet<>(e.getDependencies());
+				List<String> requiredBy=plugins.values().stream().filter(f->f.getDescriptor().getDependencies().stream().anyMatch(x->dependencies.contains(x.getPluginId()))).map(f->f.getPluginId()).toList();
+				logger.error("missing dependencies {} required by {}",dependencies,requiredBy);
+				throw e;
+			}
+
 			this.startPlugins();
             logger.debug("loading and starting plugins took {}ms", System.currentTimeMillis() - start);
 

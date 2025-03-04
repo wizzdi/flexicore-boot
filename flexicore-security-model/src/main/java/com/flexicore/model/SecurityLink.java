@@ -20,6 +20,7 @@ public class SecurityLink extends Baseclass implements ISecurityLink {
 
 	private String securedId;
 	private String securedType;
+	private String securedName;
 
 
 	@ManyToOne(targetEntity = PermissionGroup.class)
@@ -128,6 +129,15 @@ public class SecurityLink extends Baseclass implements ISecurityLink {
 
 	public <T extends SecurityLink> T setOperationId(String operationId) {
 		this.operationId = operationId;
+		return (T) this;
+	}
+
+	public String getSecuredName() {
+		return securedName;
+	}
+
+	public <T extends SecurityLink> T setSecuredName(String securedName) {
+		this.securedName = securedName;
 		return (T) this;
 	}
 }

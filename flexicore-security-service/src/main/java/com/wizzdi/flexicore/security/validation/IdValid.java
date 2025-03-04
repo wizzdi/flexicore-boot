@@ -21,6 +21,7 @@ public @interface IdValid {
 
     String field() default "";
     Class<? extends Basic> fieldType() default Basic.class;
+    String fieldTypeFromField() default "";
     String targetField() default "";
     @Target({ ElementType.TYPE })
     @Retention(RetentionPolicy.RUNTIME)

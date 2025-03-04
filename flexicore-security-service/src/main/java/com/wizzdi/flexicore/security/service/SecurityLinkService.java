@@ -69,6 +69,11 @@ public class SecurityLinkService implements Plugin {
 			securityLink.setSecuredType(securityLinkCreate.getClazz().name());
 			updated=true;
 		}
+		if(securityLinkCreate.getSecured() instanceof Baseclass baseclass){
+			if(securityLink.getSecuredName()==null||!baseclass.getName().equals(securityLink.getSecuredName())){
+				securityLink.setSecuredName(baseclass.getName());
+			}
+		}
 		if(securityLinkCreate.getSecurityLinkGroup()!=null&&(securityLink.getSecurityLinkGroup()==null || !securityLinkCreate.getSecurityLinkGroup().getId().equals(securityLink.getSecurityLinkGroup().getId()))){
 			securityLink.setSecurityLinkGroup(securityLinkCreate.getSecurityLinkGroup());
 			updated=true;

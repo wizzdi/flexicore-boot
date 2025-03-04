@@ -18,6 +18,7 @@ import org.apache.commons.lang.StringUtils;
         @IdValid(targetField = "securityLinkGroup",field = "securityLinkGroupId",fieldType = SecurityLinkGroup.class, groups = {Create.class, Update.class}),
         @IdValid(targetField = "operationGroup",field = "operationGroupId",fieldType = OperationGroup.class, groups = {Create.class, Update.class}),
         @IdValid(targetField = "permissionGroup",field = "permissionGroupId",fieldType = PermissionGroup.class, groups = {Create.class, Update.class}),
+        @IdValid(targetField = "secured",field ="securedId",fieldTypeFromField ="clazz",groups = {Create.class,Update.class})
 })
 @OperationValid(targetField = "operation",sourceField = "operationId", groups = {Create.class, Update.class})
 public class SecurityLinkCreate extends BasicCreate {
@@ -30,6 +31,8 @@ public class SecurityLinkCreate extends BasicCreate {
 
     @JsonAlias("baseclassId")
     private String securedId;
+    @JsonIgnore
+    private Object secured;
 
     @JsonIgnore
     private PermissionGroup permissionGroup;
@@ -169,4 +172,13 @@ public class SecurityLinkCreate extends BasicCreate {
         return !StringUtils.isEmpty(operationId)||!StringUtils.isEmpty(operationGroupId);
     }
 
+    @JsonIgnore
+    public Object getSecured() {
+        return secured;
+    }
+
+    public <T extends SecurityLinkCreate> T setSecured(Object secured) {
+        this.secured = secured;
+        return (T) this;
+    }
 }

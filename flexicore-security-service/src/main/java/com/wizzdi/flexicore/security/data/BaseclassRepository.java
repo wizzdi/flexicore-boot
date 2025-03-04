@@ -8,6 +8,7 @@ import com.wizzdi.flexicore.security.request.BasicPropertiesFilter;
 import com.wizzdi.flexicore.security.request.SoftDeleteOption;
 import com.wizzdi.flexicore.security.configuration.SecurityContext;
 import com.wizzdi.segmantix.service.SecurityRepository;
+import jakarta.persistence.Entity;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.MappedSuperclass;
 import jakarta.persistence.PersistenceContext;
@@ -292,7 +293,7 @@ public class BaseclassRepository implements Plugin {
 		// Traverse the class hierarchy to find the @Table annotation
 		Class<?> lastConcreate = null;
 		for (Class<?> current = clazz; current != null; current = current.getSuperclass()) {
-			if (!current.isAnnotationPresent(MappedSuperclass.class)) {
+			if (!current.isAnnotationPresent(MappedSuperclass.class)&&current.isAnnotationPresent(Entity.class)) {
 				lastConcreate = current;
 			} else {
 				break;

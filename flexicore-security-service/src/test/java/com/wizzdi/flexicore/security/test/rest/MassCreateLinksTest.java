@@ -76,7 +76,7 @@ public class MassCreateLinksTest {
 
     @Test
     public void testMassCreate() {
-        List<SecuredHolder> securedHolders=baseclasses.stream().map(f->new SecuredHolder(f,new Clazz(TestEntity.class.getSimpleName()))).toList();
+        List<SecuredHolder> securedHolders=baseclasses.stream().map(f->new SecuredHolder(f,Clazz.ofClass(TestEntity.class))).toList();
         List<PermissionGroupToBaseclass> permissionGroupToBaseclasses = permissionGroupToBaseclassService.listAllPermissionGroupToBaseclass(new PermissionGroupToBaseclassFilter().setPermissionGroups(Collections.singletonList(permissionGroup)).setSecuredIds(baseclasses), adminSecurityContext);
         Assertions.assertTrue(permissionGroupToBaseclasses.isEmpty());
         Map<String, Map<String, PermissionGroupToBaseclass>> stringMapMap = permissionGroupToBaseclassService.massCreatePermissionLinks(new PermissionGroupToBaseclassMassCreate().setPermissionGroups(Collections.singletonList(permissionGroup)).setSecuredHolders(securedHolders), adminSecurityContext);

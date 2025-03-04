@@ -23,7 +23,9 @@ import jakarta.persistence.criteria.*;
 import jakarta.persistence.metamodel.SingularAttribute;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -96,8 +98,13 @@ public class BasicRepository implements Plugin {
         }
     }
 
+    public static List<Order> getSortingOrDefault(List<SortParameter> sortParameters, CriteriaBuilder cb, From<?, ?> r,Order... order) {
+        return Optional.ofNullable(sortParameters)
+                .map(f->getSorting(f,cb,r))
+                .orElse(Arrays.stream(order).toList());
+    }
     public static List<Order> getSorting(List<SortParameter> sortParameters, CriteriaBuilder cb, From<?, ?> r) {
-        return sortParameters.stream().map(f -> getSorting(f, cb, r)).collect(Collectors.toList());
+        return Optional.ofNullable(sortParameters).stream().flatMap(List::stream).map(f -> getSorting(f, cb, r)).collect(Collectors.toList());
     }
 
     public static Order getSorting(SortParameter f, CriteriaBuilder cb, From<?, ?> r) {
@@ -146,7 +153,7 @@ public class BasicRepository implements Plugin {
 
     public <T> T merge(T base, boolean updateDate, boolean propagateEvents) {
         MergingRepository.MergeResult<T> merge = mergingRepository.merge(base, updateDate, propagateEvents);
-        if(propagateEvents){
+        if(propagateEvents&&merge.event()!=null){
            eventPublisher.publishEvent(merge.event());
         }
 

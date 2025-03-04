@@ -1,12 +1,19 @@
 package com.wizzdi.dynamic.properties.converter;
 
+import com.wizzdi.flexicore.boot.jpa.service.EntitiesProvider;
 import jakarta.persistence.Converter;
+import org.springframework.stereotype.Component;
+
 import java.util.Map;
 
 @Converter(autoApply = false)
 public class JsonConverter implements jakarta.persistence.AttributeConverter<Map<String, Object>, Object> {
 
-    static JsonConverterImplementation implementation = null;
+    private final JsonConverterImplementation implementation;
+
+    public JsonConverter() {
+        this.implementation = EntitiesProvider.getContext().getBean(JsonConverterImplementation.class);
+    }
 
     @Override
     public Object convertToDatabaseColumn(Map<String, Object> objectValue) {

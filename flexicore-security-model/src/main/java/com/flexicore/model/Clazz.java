@@ -9,9 +9,12 @@ package com.flexicore.model;
 
 
 
-public record Clazz(String name) {
+public record Clazz(Class<?> c,String name) {
     public static Clazz ofClass(Class<?> c){
-        return new Clazz(c.getSimpleName());
+        return new Clazz(c,c.getSimpleName());
+    }
+    public static Clazz ofName(String name){
+        return new Clazz(null,name);
     }
 
 }

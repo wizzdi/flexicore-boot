@@ -4,10 +4,11 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.flexicore.model.SecurityTenant;
 import com.wizzdi.flexicore.security.validation.Create;
 import com.wizzdi.flexicore.security.validation.IdValid;
+import com.wizzdi.flexicore.security.validation.Update;
 import jakarta.validation.constraints.NotEmpty;
 
 @IdValid.List({
-        @IdValid(targetField = "tenant", fieldType = SecurityTenant.class, field = "tenantId", groups = {Create.class})
+        @IdValid(targetField = "tenant", fieldType = SecurityTenant.class, field = "tenantId", groups = {Create.class, Update.class})
 })
 public class RoleCreate extends SecurityEntityCreate {
 
