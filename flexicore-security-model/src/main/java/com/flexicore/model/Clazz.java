@@ -7,9 +7,9 @@
 package com.flexicore.model;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
-
-public record Clazz(Class<?> c,String name) {
+public record Clazz(@JsonIgnore Class<?> c, String name) {
     public static Clazz ofClass(Class<?> c){
         return new Clazz(c,c.getSimpleName());
     }
@@ -17,4 +17,14 @@ public record Clazz(Class<?> c,String name) {
         return new Clazz(null,name);
     }
 
+    @JsonIgnore
+    @Override
+    public Class<?> c() {
+        return c;
+    }
+
+    @Override
+    public String name() {
+        return name;
+    }
 }

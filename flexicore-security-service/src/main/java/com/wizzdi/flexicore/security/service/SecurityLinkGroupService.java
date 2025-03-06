@@ -121,7 +121,7 @@ public class SecurityLinkGroupService implements Plugin {
 	}
 
 	private SecurityLinkContainer toLinkContainer(SecurityLink securityLink) {
-		return new SecurityLinkContainer(securityLink.getId(),securityLink.getSecuredId(), securityLink.getSecuredType(),securityLink.getPermissionGroup(),securityLink.getOperationGroup(),securityLink.getSecurityLinkGroup(),securityLink.getAccess(),securityLink.getOperationId()!=null?securityOperationService.getByIdOrNull(securityLink.getOperationId()):null,securityLink.getSecurityEntity());
+		return new SecurityLinkContainer(securityLink.getId(),securityLink.getSecuredId(),securityLink.getSecuredName(), securityLink.getSecuredType(),securityLink.getPermissionGroup(),securityLink.getOperationGroup(),securityLink.getSecurityLinkGroup(),securityLink.getAccess(),securityLink.getOperationId()!=null?securityOperationService.getByIdOrNull(securityLink.getOperationId()):null,securityLink.getSecurityEntity());
 	}
 
 	@EventListener
