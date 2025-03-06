@@ -54,7 +54,6 @@ public class DownloadController implements Plugin {
      *
      * @param authenticationkey authentication key
      * @param id id
-     * @param securityContext security context
      * @param offset offset to start reading from
      * @param req request context
      * @param size length to read
