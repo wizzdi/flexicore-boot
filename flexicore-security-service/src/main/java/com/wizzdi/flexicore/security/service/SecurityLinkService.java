@@ -2,21 +2,27 @@ package com.wizzdi.flexicore.security.service;
 
 import com.flexicore.model.Baseclass;
 import com.flexicore.model.SecurityLink;
+import com.flexicore.model.SecurityOperation;
 import com.wizzdi.flexicore.security.configuration.SecurityContext;
 import com.wizzdi.flexicore.boot.base.interfaces.Plugin;
 import com.wizzdi.flexicore.security.data.SecurityLinkRepository;
 import com.wizzdi.flexicore.security.request.*;
 import com.wizzdi.flexicore.security.response.PaginationResponse;
+import jakarta.validation.Valid;
 import org.pf4j.Extension;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Extension
 @Component
-public class SecurityLinkService implements Plugin {
+public class SecurityLinkService implements Plugin, InitializingBean {
 
 	@Autowired
 	private BasicService basicService;
@@ -78,7 +84,30 @@ public class SecurityLinkService implements Plugin {
 			securityLink.setSecurityLinkGroup(securityLinkCreate.getSecurityLinkGroup());
 			updated=true;
 		}
+		String searchString=createSearchString(securityLink);
+		if(!searchString.equals(securityLink.getSearchString())){
+			securityLink.setSearchString(searchString);
+			updated=true;
+		}
 		return updated;
+	}
+
+	private String createSearchString(SecurityLink securityLink) {
+		List<String> l=List.of(
+				getStringOrPlaceHolder(Optional.ofNullable(securityLink.getSecurityEntity()).map(f->f.getName())),
+				getStringOrPlaceHolder(securityLink.getSecuredName()),
+				getStringOrPlaceHolder(securityLink.getSecuredType()),
+				getStringOrPlaceHolder(Optional.ofNullable(securityLink.getOperation()).filter(f->f instanceof SecurityOperation).map(f->(SecurityOperation)f).map(f->f.getName())),
+				getStringOrPlaceHolder(Optional.ofNullable(securityLink.getOperationGroup()).map(f->f.getName())),
+				getStringOrPlaceHolder(Optional.ofNullable(securityLink.getPermissionGroup()).map(f->f.getName()))
+		);
+		return l.stream().map(String::toLowerCase).collect(Collectors.joining("|"));
+	}
+	public String getStringOrPlaceHolder(String s){
+		return s!=null?s:"#";
+	}
+	public String getStringOrPlaceHolder(Optional<String> s){
+		return s.orElse("#");
 	}
 
 	public SecurityLink updateSecurityLink(SecurityLinkUpdate securityLinkUpdate, SecurityContext securityContext) {
@@ -109,5 +138,36 @@ public class SecurityLinkService implements Plugin {
 			securityLinkFilter.setRelevantRoles(roleService.listAllRoles(new RoleFilter().setUsers(securityLinkFilter.getRelevantUsers()),securityContext));
 			securityLinkFilter.setRelevantTenants(securityTenantService.listAllTenants(new SecurityTenantFilter().setUsers(securityLinkFilter.getRelevantUsers()),securityContext));
 		}
+	}
+
+	@Override
+	public void afterPropertiesSet() throws Exception {
+		securityLinkRepository.createSearchIndex();
+	}
+
+	public void refreshSearchString(SecurityLinkFilter securityLinkFilter, SecurityContext securityContext) {
+		List<SecurityLink> list=listAllSecurityLinks(securityLinkFilter,securityContext);
+		for (List<SecurityLink> securityLinks : partition(list, 100)) {
+			List<Object> toMerge=new ArrayList<>();
+			for (SecurityLink securityLink : securityLinks) {
+				if(updateSecurityLinkNoMerge(new SecurityLinkCreate(),securityLink)){
+					toMerge.add(securityLink);
+				}
+
+			}
+			securityLinkRepository.massMerge(toMerge);
+
+		}
+
+	}
+	public static <T> List<List<T>> partition(List<T> list, int size) {
+		if (size <= 0) {
+			throw new IllegalArgumentException("Size must be greater than 0");
+		}
+		List<List<T>> partitions = new ArrayList<>();
+		for (int i = 0; i < list.size(); i += size) {
+			partitions.add(list.subList(i, Math.min(i + size, list.size())));
+		}
+		return partitions;
 	}
 }

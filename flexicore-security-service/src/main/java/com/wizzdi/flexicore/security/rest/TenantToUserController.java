@@ -7,6 +7,7 @@ import com.wizzdi.flexicore.security.configuration.SecurityContext;
 import com.wizzdi.flexicore.boot.base.interfaces.Plugin;
 import com.wizzdi.flexicore.security.request.TenantToUserCreate;
 import com.wizzdi.flexicore.security.request.TenantToUserFilter;
+import com.wizzdi.flexicore.security.request.TenantToUserMassCreate;
 import com.wizzdi.flexicore.security.request.TenantToUserUpdate;
 import com.wizzdi.flexicore.security.response.PaginationResponse;
 import com.wizzdi.flexicore.security.service.TenantToUserService;
@@ -18,6 +19,8 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import jakarta.validation.Valid;
+
+import java.util.List;
 
 @RestController
 @OperationsInside
@@ -33,6 +36,13 @@ public class TenantToUserController implements Plugin {
     public TenantToUser create(@RequestBody @Validated(Create.class) TenantToUserCreate tenantToUserCreate, @RequestAttribute SecurityContext securityContext) {
 
         return tenantToUserService.createTenantToUser(tenantToUserCreate, securityContext);
+    }
+
+    @IOperation(Name = "mass create tenant to user", Description = "mass creates tenant to user")
+    @PostMapping("/massCreate")
+    public List<TenantToUser> massCreate(@RequestBody @Validated(Create.class) TenantToUserMassCreate tenantToUserMassCreate, @RequestAttribute SecurityContext securityContext) {
+
+        return tenantToUserService.massCreateTenantToUser(tenantToUserMassCreate, securityContext);
     }
 
     @IOperation(Name = "get all tenant to user", Description = "get all tenant to user")

@@ -1,12 +1,15 @@
 package com.wizzdi.flexicore.security.service;
 
 import com.flexicore.model.Baseclass;
+import com.flexicore.model.Role;
 import com.flexicore.model.RoleToUser;
+import com.flexicore.model.SecurityUser;
 import com.wizzdi.flexicore.security.configuration.SecurityContext;
 import com.wizzdi.flexicore.boot.base.interfaces.Plugin;
 import com.wizzdi.flexicore.security.data.RoleToUserRepository;
 import com.wizzdi.flexicore.security.request.RoleToUserCreate;
 import com.wizzdi.flexicore.security.request.RoleToUserFilter;
+import com.wizzdi.flexicore.security.request.RoleToUserMassCreate;
 import com.wizzdi.flexicore.security.request.RoleToUserUpdate;
 import com.wizzdi.flexicore.security.response.PaginationResponse;
 import org.pf4j.Extension;
@@ -14,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Extension
 @Component
@@ -93,5 +97,24 @@ public class RoleToUserService implements Plugin {
 
 	public <T> T findByIdOrNull(Class<T> type, String id) {
 		return roleToUserRepository.findByIdOrNull(type, id);
+	}
+
+	public List<RoleToUser> massCreateRoleToUser(RoleToUserMassCreate roleToUserCreate, SecurityContext securityContext) {
+		List<Role> roles=new ArrayList<>(roleToUserCreate.getRoleToUserCreates().stream().map(f->f.getRole()).collect(Collectors.toMap(f->f.getId(),f->f,(a,b)->a)).values());
+		List<SecurityUser> users=new ArrayList<>(roleToUserCreate.getRoleToUserCreates().stream().map(f->f.getSecurityUser()).collect(Collectors.toMap(f->f.getId(), f->f,(a, b)->a)).values());
+		Map<String, Map<String, RoleToUser>> links = listAllRoleToUsers(new RoleToUserFilter().setRoles(roles).setUsers(users), null).stream().collect(Collectors.groupingBy(f -> f.getUser().getId(), Collectors.toMap(f -> f.getRole().getId(), f -> f, (a, b) -> a)));
+		List<Object> toMerge=new ArrayList<>();
+		for (RoleToUserCreate create : roleToUserCreate.getRoleToUserCreates()) {
+			Map<String,RoleToUser> map=links.computeIfAbsent(create.getSecurityUser().getId(),f->new HashMap<>());
+			map.computeIfAbsent(create.getRole().getId(),f->{
+				RoleToUser roleToUser = createRoleToUser(create, securityContext);
+				toMerge.add(roleToUser);
+				return roleToUser;
+			});
+		}
+
+
+		roleToUserRepository.massMerge(toMerge);
+		return links.values().stream().map(f->f.values()).flatMap(Collection::stream).toList();
 	}
 }

@@ -33,6 +33,11 @@ public class SecurityLinkController implements Plugin {
         securityLinkService.setRelevant(securityLinkFilter,securityContext);
         return securityLinkService.getAllSecurityLinks(securityLinkFilter, securityContext);
     }
+    @IOperation(Name = "refresh security link search string", Description = "refresh security link search string")
+    @PostMapping("/refreshSearchString")
+    public void refreshSearchString(@RequestBody @Valid SecurityLinkFilter securityLinkFilter, @RequestAttribute SecurityContext securityContext) {
+        securityLinkService.refreshSearchString(securityLinkFilter, securityContext);
+    }
 
     @IOperation(Name = "updates SecurityLink", Description = "updates SecurityLink")
     @PutMapping("/update")

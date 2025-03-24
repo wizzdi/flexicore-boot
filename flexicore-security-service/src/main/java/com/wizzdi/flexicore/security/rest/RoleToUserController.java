@@ -7,6 +7,7 @@ import com.wizzdi.flexicore.security.configuration.SecurityContext;
 import com.wizzdi.flexicore.boot.base.interfaces.Plugin;
 import com.wizzdi.flexicore.security.request.RoleToUserCreate;
 import com.wizzdi.flexicore.security.request.RoleToUserFilter;
+import com.wizzdi.flexicore.security.request.RoleToUserMassCreate;
 import com.wizzdi.flexicore.security.request.RoleToUserUpdate;
 import com.wizzdi.flexicore.security.response.PaginationResponse;
 import com.wizzdi.flexicore.security.service.RoleToUserService;
@@ -18,6 +19,8 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import jakarta.validation.Valid;
+
+import java.util.List;
 
 @RestController
 @OperationsInside
@@ -33,6 +36,12 @@ public class RoleToUserController implements Plugin {
     public RoleToUser create(@RequestBody @Validated(Create.class) RoleToUserCreate roleToUserCreate, @RequestAttribute SecurityContext securityContext) {
 
         return roleToUserService.createRoleToUser(roleToUserCreate, securityContext);
+    }
+    @IOperation(Name = "mass creates RoleToUser", Description = "mass creates RoleToUser")
+    @PostMapping("/massCreate")
+    public List<RoleToUser> massCreate(@RequestBody @Validated(Create.class) RoleToUserMassCreate roleToUserCreate, @RequestAttribute SecurityContext securityContext) {
+
+        return roleToUserService.massCreateRoleToUser(roleToUserCreate, securityContext);
     }
 
     @IOperation(Name = "returns RoleToUser", Description = "returns RoleToUser")

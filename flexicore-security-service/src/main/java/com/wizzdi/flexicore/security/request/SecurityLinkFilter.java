@@ -51,6 +51,7 @@ public class SecurityLinkFilter extends PaginationFilter {
     private List<SecurityOperation> operations;
     private Set<String> operationIds=new HashSet<>();
     private Set<Access> accesses;
+    private String searchStringLike;
 
     private List<SecurityLinkOrder> sorting;
 
@@ -196,6 +197,15 @@ public class SecurityLinkFilter extends PaginationFilter {
 
     public <T extends SecurityLinkFilter> T setPermissionGroups(List<PermissionGroup> permissionGroups) {
         this.permissionGroups = permissionGroups;
+        return (T) this;
+    }
+
+    public String getSearchStringLike() {
+        return searchStringLike;
+    }
+
+    public <T extends SecurityLinkFilter> T setSearchStringLike(String searchStringLike) {
+        this.searchStringLike = searchStringLike;
         return (T) this;
     }
 }

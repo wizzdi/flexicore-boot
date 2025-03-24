@@ -6,6 +6,7 @@ import com.wizzdi.flexicore.boot.base.interfaces.Plugin;
 import com.wizzdi.flexicore.security.data.TenantToUserRepository;
 import com.wizzdi.flexicore.security.request.TenantToUserCreate;
 import com.wizzdi.flexicore.security.request.TenantToUserFilter;
+import com.wizzdi.flexicore.security.request.TenantToUserMassCreate;
 import com.wizzdi.flexicore.security.request.TenantToUserUpdate;
 import com.wizzdi.flexicore.security.response.PaginationResponse;
 import org.pf4j.Extension;
@@ -13,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Extension
 @Component
@@ -102,5 +104,24 @@ public class TenantToUserService implements Plugin {
 
 	public <T> T findByIdOrNull(Class<T> type, String id) {
 		return tenantToUserRepository.findByIdOrNull(type, id);
+	}
+
+	public List<TenantToUser> massCreateTenantToUser(TenantToUserMassCreate tenantToUserMassCreate, SecurityContext securityContext) {
+		List<SecurityTenant> tenants=new ArrayList<>(tenantToUserMassCreate.getTenantToUserCreates().stream().map(f->f.getTenant()).collect(Collectors.toMap(f->f.getId(), f->f,(a, b)->a)).values());
+		List<SecurityUser> users=new ArrayList<>(tenantToUserMassCreate.getTenantToUserCreates().stream().map(f->f.getUser()).collect(Collectors.toMap(f->f.getId(), f->f,(a, b)->a)).values());
+		Map<String, Map<String, TenantToUser>> links = listAllTenantToUsers(new TenantToUserFilter().setTenants(tenants).setUsers(users), null).stream().collect(Collectors.groupingBy(f -> f.getUser().getId(), Collectors.toMap(f -> f.getTenant().getId(), f -> f, (a, b) -> a)));
+		List<Object> toMerge=new ArrayList<>();
+		for (TenantToUserCreate create : tenantToUserMassCreate.getTenantToUserCreates()) {
+			Map<String, TenantToUser> map=links.computeIfAbsent(create.getUser().getId(), f->new HashMap<>());
+			map.computeIfAbsent(create.getTenant().getId(),f->{
+				TenantToUser tenantToUser = createTenantToUser(create, securityContext);
+				toMerge.add(tenantToUser);
+				return tenantToUser;
+			});
+		}
+
+
+		tenantToUserRepository.massMerge(toMerge);
+		return links.values().stream().map(f->f.values()).flatMap(Collection::stream).toList();
 	}
 }

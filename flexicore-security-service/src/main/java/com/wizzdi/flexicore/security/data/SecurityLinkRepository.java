@@ -6,6 +6,8 @@ import com.wizzdi.flexicore.boot.base.interfaces.Plugin;
 import com.wizzdi.flexicore.security.request.SecurityLinkFilter;
 import com.wizzdi.flexicore.security.request.SecurityLinkOrder;
 import org.pf4j.Extension;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -13,6 +15,8 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.TypedQuery;
 import jakarta.persistence.criteria.*;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -21,6 +25,7 @@ import java.util.stream.Collectors;
 @Component
 @Extension
 public class SecurityLinkRepository implements Plugin {
+	private static final Logger logger= LoggerFactory.getLogger(SecurityLinkRepository.class);
 	@PersistenceContext
 	private EntityManager em;
 	@Autowired
@@ -100,6 +105,11 @@ public class SecurityLinkRepository implements Plugin {
 			}
 			predicates.add(pred);
 		}
+
+		if(securityLinkFilter.getSearchStringLike()!=null){
+			predicates.add(cb.like(r.get(SecurityLink_.searchString),securityLinkFilter.getSearchStringLike().toLowerCase()));
+		}
+
 	}
 
 	public long countAllSecurityLinks(SecurityLinkFilter securityLinkFilter, SecurityContext securityContext){
@@ -130,5 +140,13 @@ public class SecurityLinkRepository implements Plugin {
 
 	public <T extends Baseclass> T getByIdOrNull(String id, Class<T> c, SecurityContext securityContext) {
 		return securedBasicRepository.getByIdOrNull(id, c, securityContext);
+	}
+
+	@Transactional
+	public void createSearchIndex(){
+
+		String sql = "CREATE EXTENSION IF NOT EXISTS pg_trgm; create index if not exists securityLink_search_idx on securityLink using gin (searchString gin_trgm_ops);";
+		logger.debug("creating index: {}", sql);
+		em.createNativeQuery(sql).executeUpdate();
 	}
 }

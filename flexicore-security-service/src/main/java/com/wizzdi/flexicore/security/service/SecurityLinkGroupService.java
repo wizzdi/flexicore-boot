@@ -91,26 +91,28 @@ public class SecurityLinkGroupService implements Plugin {
 
 	public PaginationResponse<SecurityLinkGroupContainer> getAllSecurityLinkGroupContainers(SecurityLinkGroupFilter securityLinkGroupFilter, SecurityContext securityContext) {
 		SecurityLinkFilter securityLinkFilter = securityLinkGroupFilter.getSecurityLinkFilter();
-		List<SecurityLinkOrder> sorting = null;
-		if (securityLinkFilter != null) {
-			sorting=securityLinkFilter.getSorting();
-			List<SecurityUser> relevantUsers = securityLinkFilter.getRelevantUsers();
-			if (relevantUsers != null && !relevantUsers.isEmpty()) {
-				if (securityLinkFilter.getRelevantRoles() == null || securityLinkFilter.getRelevantRoles().isEmpty()) {
-					List<Role> roles = roleService.listAllRoles(new RoleFilter().setUsers(relevantUsers), null);
-					securityLinkFilter.setRelevantRoles(roles);
-				}
-				if (securityLinkFilter.getRelevantTenants() == null || securityLinkFilter.getRelevantTenants().isEmpty()) {
-					List<SecurityTenant> securityTenants = securityTenantService.listAllTenants(new SecurityTenantFilter().setUsers(relevantUsers), null);
-					securityLinkFilter.setRelevantTenants(securityTenants);
-				}
-
-
-			}
-			if (sorting == null || sorting.isEmpty()) {
-				securityLinkFilter.setSorting(Arrays.stream(SecurityLinkOrder.values()).toList());
-			}
+		if(securityLinkFilter==null){
+			securityLinkFilter=new SecurityLinkFilter();
 		}
+		List<SecurityLinkOrder> sorting = null;
+		sorting = securityLinkFilter.getSorting();
+		List<SecurityUser> relevantUsers = securityLinkFilter.getRelevantUsers();
+		if (relevantUsers != null && !relevantUsers.isEmpty()) {
+			if (securityLinkFilter.getRelevantRoles() == null || securityLinkFilter.getRelevantRoles().isEmpty()) {
+				List<Role> roles = roleService.listAllRoles(new RoleFilter().setUsers(relevantUsers), null);
+				securityLinkFilter.setRelevantRoles(roles);
+			}
+			if (securityLinkFilter.getRelevantTenants() == null || securityLinkFilter.getRelevantTenants().isEmpty()) {
+				List<SecurityTenant> securityTenants = securityTenantService.listAllTenants(new SecurityTenantFilter().setUsers(relevantUsers), null);
+				securityLinkFilter.setRelevantTenants(securityTenants);
+			}
+
+
+		}
+		if (sorting == null || sorting.isEmpty()) {
+			securityLinkFilter.setSorting(Arrays.stream(SecurityLinkOrder.values()).toList());
+		}
+
 
 		PaginationResponse<SecurityLinkGroup> paginationResponse = getAllSecurityLinkGroups(securityLinkGroupFilter, securityContext);
 		List<SecurityLinkGroup> linkGroups = paginationResponse.getList();

@@ -36,6 +36,9 @@ public class SecurityLink extends Baseclass implements ISecurityLink {
 
 	@Enumerated(EnumType.STRING)
 	private Access access;
+	@Lob
+	@JsonIgnore
+	private String searchString;
 
 
 
@@ -138,6 +141,17 @@ public class SecurityLink extends Baseclass implements ISecurityLink {
 
 	public <T extends SecurityLink> T setSecuredName(String securedName) {
 		this.securedName = securedName;
+		return (T) this;
+	}
+
+	@JsonIgnore
+	@Lob
+	public String getSearchString() {
+		return searchString;
+	}
+
+	public <T extends SecurityLink> T setSearchString(String searchString) {
+		this.searchString = searchString;
 		return (T) this;
 	}
 }
