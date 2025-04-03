@@ -5,6 +5,7 @@ import com.flexicore.annotations.OperationsInside;
 import com.flexicore.model.SecurityUser;
 import com.wizzdi.flexicore.security.configuration.SecurityContext;
 import com.wizzdi.flexicore.boot.base.interfaces.Plugin;
+import com.wizzdi.flexicore.security.request.SecurityLinkFilter;
 import com.wizzdi.flexicore.security.request.SecurityUserCreate;
 import com.wizzdi.flexicore.security.request.SecurityUserFilter;
 import com.wizzdi.flexicore.security.request.SecurityUserUpdate;
@@ -47,5 +48,10 @@ public class SecurityUserController implements Plugin {
     public SecurityUser update(@RequestBody @Validated(Update.class) SecurityUserUpdate securityUserUpdate, @RequestAttribute SecurityContext securityContext) {
 
         return securityUserService.updateSecurityUser(securityUserUpdate, securityContext);
+    }
+    @IOperation(Name = "refresh user search string", Description = "refresh user search string")
+    @PostMapping("/refreshSearchString")
+    public void refreshSearchString(@RequestBody @Valid SecurityUserFilter securityUserFilter, @RequestAttribute SecurityContext securityContext) {
+        securityUserService.refreshSearchString(securityUserFilter, securityContext);
     }
 }

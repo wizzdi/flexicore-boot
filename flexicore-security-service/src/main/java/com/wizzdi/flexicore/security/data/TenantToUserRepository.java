@@ -47,6 +47,13 @@ public class TenantToUserRepository implements Plugin {
 
 		if(tenantToUserFilter.getUsers()!=null&&!tenantToUserFilter.getUsers().isEmpty()){
 			predicates.add(r.get(TenantToUser_.user).in(tenantToUserFilter.getUsers()));
+		}
+		if(tenantToUserFilter.getTenantNameLike()!=null){
+			predicates.add(cb.like(cb.lower(r.join(TenantToUser_.tenant).get(SecurityTenant_.name)),tenantToUserFilter.getTenantNameLike().toLowerCase()));
+		}
+
+		if(tenantToUserFilter.getUserSearchStringLike()!=null){
+			predicates.add(cb.like(r.join(TenantToUser_.user).get(SecurityUser_.searchString),tenantToUserFilter.getUserSearchStringLike()));
 
 		}
 	}

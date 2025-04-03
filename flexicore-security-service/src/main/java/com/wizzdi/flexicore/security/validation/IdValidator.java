@@ -5,6 +5,7 @@ import com.flexicore.model.Basic;
 import com.flexicore.model.Clazz;
 import com.wizzdi.flexicore.security.configuration.SecurityContext;
 import com.wizzdi.flexicore.security.data.SecuredBasicRepository;
+import com.wizzdi.flexicore.security.request.ClazzFilter;
 import com.wizzdi.flexicore.security.service.ClazzService;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
@@ -124,7 +125,7 @@ public class IdValidator implements ConstraintValidator<IdValid, Object> {
             }
             Object propertyValue = objectWrapper.getPropertyValue(fieldTypeFromField);
             return switch (propertyValue) {
-                case Clazz clazz -> clazz.c();
+                case Clazz clazz -> clazz.c()!=null?clazz.c():clazzService.listAllClazzs(new ClazzFilter()).stream().filter(f->f.name().equals(clazz.name())).findFirst().map(f->f.c()).orElse(null);
                 case String canonicalClassName -> Class.forName(canonicalClassName);
                 case null, default -> fieldType;
             };

@@ -9,6 +9,7 @@ package com.flexicore.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.wizzdi.segmantix.api.model.IUser;
 import jakarta.persistence.Entity;
+import jakarta.persistence.Lob;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
@@ -32,6 +33,10 @@ public class SecurityUser extends SecurityEntity implements IUser {
 	@JsonIgnore
 	@OneToMany(targetEntity = UserToBaseclass.class,mappedBy = "user")
 	private List<UserToBaseclass> userToBaseclasses =new ArrayList<>();
+
+	@Lob
+	@JsonIgnore
+	private String searchString;
 
 	@JsonIgnore
 	@OneToMany(targetEntity = RoleToUser.class,mappedBy = "user")
@@ -63,6 +68,17 @@ public class SecurityUser extends SecurityEntity implements IUser {
 
 	public <T extends SecurityUser> T setTenants(List<TenantToUser> tenants) {
 		this.tenants = tenants;
+		return (T) this;
+	}
+
+	@Lob
+	@JsonIgnore
+	public String getSearchString() {
+		return searchString;
+	}
+
+	public <T extends SecurityUser> T setSearchString(String searchString) {
+		this.searchString = searchString;
 		return (T) this;
 	}
 }

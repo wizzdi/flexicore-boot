@@ -26,6 +26,8 @@ public class RoleToUserFilter extends PaginationFilter {
     @JsonIgnore
     @TypeRetention(SecurityUser.class)
     private List<SecurityUser> users;
+    private String roleNameLike;
+    private String userSearchStringLike;
 
     public Set<String> getRolesIds() {
         return rolesIds;
@@ -71,6 +73,24 @@ public class RoleToUserFilter extends PaginationFilter {
 
     public <T extends RoleToUserFilter> T setBasicPropertiesFilter(BasicPropertiesFilter basicPropertiesFilter) {
         this.basicPropertiesFilter = basicPropertiesFilter;
+        return (T) this;
+    }
+
+    public String getRoleNameLike() {
+        return roleNameLike;
+    }
+
+    public <T extends RoleToUserFilter> T setRoleNameLike(String roleNameLike) {
+        this.roleNameLike = roleNameLike;
+        return (T) this;
+    }
+
+    public String getUserSearchStringLike() {
+        return userSearchStringLike;
+    }
+
+    public <T extends RoleToUserFilter> T setUserSearchStringLike(String userSearchStringLike) {
+        this.userSearchStringLike = userSearchStringLike;
         return (T) this;
     }
 }

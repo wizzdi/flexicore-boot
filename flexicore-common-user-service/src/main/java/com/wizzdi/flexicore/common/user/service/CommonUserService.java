@@ -23,6 +23,8 @@
 package com.wizzdi.flexicore.common.user.service;
 
 
+import com.flexicore.model.SecurityLink;
+import com.flexicore.model.SecurityOperation;
 import com.flexicore.model.SecurityTenant;
 import com.flexicore.model.TenantToUser;
 import com.flexicore.model.User;
@@ -47,154 +49,159 @@ import org.springframework.stereotype.Component;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 
 @Component
-public class CommonUserService  {
+public class CommonUserService {
 
-    private static final Logger logger = LoggerFactory.getLogger(CommonUserService.class);
-
-
-    @Autowired
-    private CommonUserRepository commonUserRepository;
-
-    @Autowired
-    @Lazy
-    private SecurityUserService securityUserService;
+	private static final Logger logger = LoggerFactory.getLogger(CommonUserService.class);
 
 
-    @Autowired
-    @Lazy
-    private TenantToUserService tenantToUserService;
+	@Autowired
+	private CommonUserRepository commonUserRepository;
 
-    @Autowired
-    private PasswordEncoder passwordEncoder;
-
-
-    @Value("${flexicore.users.rootDirPath:/home/flexicore/users/}")
-    private String usersRootHomeDir;
+	@Autowired
+	@Lazy
+	private SecurityUserService securityUserService;
 
 
-    
-    public User createUser(CommonUserCreate commonUserCreate, SecurityContext securityContext) {
-        List<Object> toMerge = new ArrayList<>();
-        SecurityTenant securityTenant =  commonUserCreate.getTenant();
-        User user = createUserNoMerge(commonUserCreate, securityContext);
-        toMerge.add(user);
-        TenantToUserCreate tenantToUserCreate = new TenantToUserCreate().setDefaultTenant(true).setUser(user).setTenant(securityTenant);
-        TenantToUser tenantToUser = tenantToUserService.createTenantToUserNoMerge(tenantToUserCreate, securityContext);
-        toMerge.add(tenantToUser);
-        commonUserRepository.massMerge(toMerge);
-        user.getTenants().add(tenantToUser);
-        return user;
-    }
-    public User createUserPlain(CommonUserCreate commonUserCreate, SecurityContext securityContext) {
-        User user = createUserNoMerge(commonUserCreate, securityContext);
-        commonUserRepository.merge(user);
-        return user;
-    }
+	@Autowired
+	@Lazy
+	private TenantToUserService tenantToUserService;
+
+	@Autowired
+	private PasswordEncoder passwordEncoder;
 
 
-    
-    public User createUserNoMerge(CommonUserCreate createUser, SecurityContext securityContext) {
-        User user = new User();
-        user.setId(UUID.randomUUID().toString());
-        updateUserNoMerge(user, createUser);
-        BaseclassService.createSecurityObjectNoMerge(user, securityContext);
-        return user;
-    }
-
-    public String generateUserHomeDir(User user) {
-        return new File(usersRootHomeDir, user.getName() + user.getId()).getAbsolutePath();
-    }
-
-    
-    public boolean updateUserNoMerge(User user, CommonUserCreate createUser) {
-        boolean update = securityUserService.updateSecurityUserNoMerge(createUser, user);
-        if(user.getHomeDir()==null && createUser.getHomeDir()==null){
-            createUser.setHomeDir(generateUserHomeDir(user));
-        }
-
-        if (createUser.getEmail() != null && !createUser.getEmail().equals(user.getEmail())) {
-            user.setEmail(createUser.getEmail());
-            update = true;
-        }
-        if (createUser.getHomeDir() != null && !createUser.getHomeDir().equals(user.getHomeDir())) {
-            user.setHomeDir(createUser.getHomeDir());
-            update = true;
-        }
-
-        if (createUser.getPhoneNumber() != null && !createUser.getPhoneNumber().equals(user.getPhoneNumber())) {
-            user.setPhoneNumber(createUser.getPhoneNumber());
-            update = true;
-        }
-        if (createUser.getTotpSalt() != null && !createUser.getTotpSalt().equals(user.getTotpSalt())) {
-            user.setTotpSalt(createUser.getTotpSalt());
-            update = true;
-        }
-
-        if (createUser.getUiConfiguration() != null && !createUser.getUiConfiguration().equals(user.getUiConfiguration())) {
-            user.setUiConfiguration(createUser.getUiConfiguration());
-            update = true;
-        }
+	@Value("${flexicore.users.rootDirPath:/home/flexicore/users/}")
+	private String usersRootHomeDir;
 
 
-        if (createUser.getLastName() != null && !createUser.getLastName().equals(user.getLastName())) {
-            user.setLastName(createUser.getLastName());
-            update = true;
-        }
+	public User createUser(CommonUserCreate commonUserCreate, SecurityContext securityContext) {
+		List<Object> toMerge = new ArrayList<>();
+		SecurityTenant securityTenant = commonUserCreate.getTenant();
+		User user = createUserNoMerge(commonUserCreate, securityContext);
+		toMerge.add(user);
+		TenantToUserCreate tenantToUserCreate = new TenantToUserCreate().setDefaultTenant(true).setUser(user).setTenant(securityTenant);
+		TenantToUser tenantToUser = tenantToUserService.createTenantToUserNoMerge(tenantToUserCreate, securityContext);
+		toMerge.add(tenantToUser);
+		commonUserRepository.massMerge(toMerge);
+		user.getTenants().add(tenantToUser);
+		return user;
+	}
 
-        if (createUser.getDisabled() != null && createUser.getDisabled() != user.isDisabled()) {
-            user.setDisabled(createUser.getDisabled());
-            update = true;
-        }
-
-        if (createUser.getApprovingUser() != null && (user.getApprovingUser() == null || !createUser.getApprovingUser().getId().equals(user.getApprovingUser().getId()))) {
-            user.setApprovingUser(createUser.getApprovingUser());
-            update = true;
-        }
-
-        if (createUser.getDateApproved() != null && !createUser.getDateApproved().equals(user.getDateApproved())) {
-            user.setDateApproved(createUser.getDateApproved());
-            update = true;
-        }
-
-
-        if (createUser.getPassword() != null) {
-
-            String hash = passwordEncoder.encode(createUser.getPassword());
-            if (!hash.equals(user.getPassword())) {
-                user.setPassword(hash);
-                update = true;
-            }
-        }
-        return update;
-    }
+	public User createUserPlain(CommonUserCreate commonUserCreate, SecurityContext securityContext) {
+		User user = createUserNoMerge(commonUserCreate, securityContext);
+		commonUserRepository.merge(user);
+		return user;
+	}
 
 
+	public User createUserNoMerge(CommonUserCreate createUser, SecurityContext securityContext) {
+		User user = new User();
+		user.setId(UUID.randomUUID().toString());
+		updateUserNoMerge(user, createUser);
+		BaseclassService.createSecurityObjectNoMerge(user, securityContext);
+		return user;
+	}
+
+	public String generateUserHomeDir(User user) {
+		return new File(usersRootHomeDir, user.getName() + user.getId()).getAbsolutePath();
+	}
+
+
+	public boolean updateUserNoMerge(User user, CommonUserCreate createUser) {
+		boolean update = securityUserService.updateSecurityUserNoMerge(createUser, user);
+		if (user.getHomeDir() == null && createUser.getHomeDir() == null) {
+			createUser.setHomeDir(generateUserHomeDir(user));
+		}
+
+		if (createUser.getEmail() != null && !createUser.getEmail().equals(user.getEmail())) {
+			user.setEmail(createUser.getEmail());
+			update = true;
+		}
+		if (createUser.getHomeDir() != null && !createUser.getHomeDir().equals(user.getHomeDir())) {
+			user.setHomeDir(createUser.getHomeDir());
+			update = true;
+		}
+
+		if (createUser.getPhoneNumber() != null && !createUser.getPhoneNumber().equals(user.getPhoneNumber())) {
+			user.setPhoneNumber(createUser.getPhoneNumber());
+			update = true;
+		}
+		if (createUser.getTotpSalt() != null && !createUser.getTotpSalt().equals(user.getTotpSalt())) {
+			user.setTotpSalt(createUser.getTotpSalt());
+			update = true;
+		}
+
+		if (createUser.getUiConfiguration() != null && !createUser.getUiConfiguration().equals(user.getUiConfiguration())) {
+			user.setUiConfiguration(createUser.getUiConfiguration());
+			update = true;
+		}
+
+
+		if (createUser.getLastName() != null && !createUser.getLastName().equals(user.getLastName())) {
+			user.setLastName(createUser.getLastName());
+			update = true;
+		}
+
+		if (createUser.getDisabled() != null && createUser.getDisabled() != user.isDisabled()) {
+			user.setDisabled(createUser.getDisabled());
+			update = true;
+		}
+
+		if (createUser.getApprovingUser() != null && (user.getApprovingUser() == null || !createUser.getApprovingUser().getId().equals(user.getApprovingUser().getId()))) {
+			user.setApprovingUser(createUser.getApprovingUser());
+			update = true;
+		}
+
+		if (createUser.getDateApproved() != null && !createUser.getDateApproved().equals(user.getDateApproved())) {
+			user.setDateApproved(createUser.getDateApproved());
+			update = true;
+		}
+
+
+		if (createUser.getPassword() != null) {
+
+			String hash = passwordEncoder.encode(createUser.getPassword());
+			if (!hash.equals(user.getPassword())) {
+				user.setPassword(hash);
+				update = true;
+			}
+		}
+		String searchString = securityUserService.getSearchString(user).orElse(null);
+		if (searchString != null && !searchString.equals(user.getSearchString())) {
+			user.setSearchString(searchString);
+			update = true;
+		}
+		return update;
+	}
 
 
 
-    public User updateUser(CommonUserUpdate userUpdate, SecurityContext securityContext) {
-        User user = userUpdate.getUser();
-        if (updateUserNoMerge(user, userUpdate)) {
-            commonUserRepository.merge(user);
-        }
-        return user;
-    }
 
-    
-    public PaginationResponse<User> getAllUsers(CommonUserFilter commonUserFilter, SecurityContext securityContext) {
-        List<User> list = listAllUsers(commonUserFilter, securityContext);
-        long count = commonUserRepository.countAllUsers(commonUserFilter, securityContext);
-        return new PaginationResponse<>(list, commonUserFilter, count);
-    }
+	public User updateUser(CommonUserUpdate userUpdate, SecurityContext securityContext) {
+		User user = userUpdate.getUser();
+		if (updateUserNoMerge(user, userUpdate)) {
+			commonUserRepository.merge(user);
+		}
+		return user;
+	}
 
-    
-    public List<User> listAllUsers(CommonUserFilter commonUserFilter, SecurityContext securityContext) {
-        return commonUserRepository.getAllUsers(commonUserFilter, securityContext);
-    }
+
+	public PaginationResponse<User> getAllUsers(CommonUserFilter commonUserFilter, SecurityContext securityContext) {
+		List<User> list = listAllUsers(commonUserFilter, securityContext);
+		long count = commonUserRepository.countAllUsers(commonUserFilter, securityContext);
+		return new PaginationResponse<>(list, commonUserFilter, count);
+	}
+
+
+	public List<User> listAllUsers(CommonUserFilter commonUserFilter, SecurityContext securityContext) {
+		return commonUserRepository.getAllUsers(commonUserFilter, securityContext);
+	}
 
 
 }

@@ -41,16 +41,27 @@ public class RoleToUserRepository implements Plugin {
 
 	public <T extends RoleToUser> void addRoleToUserPredicates(RoleToUserFilter roleToUserFilter, CriteriaBuilder cb, CommonAbstractCriteria q, From<?,T> r, List<Predicate> predicates, SecurityContext securityContext) {
 		securedBasicRepository.addSecuredBasicPredicates(roleToUserFilter.getBasicPropertiesFilter(),cb,q,r,predicates,securityContext);
+		Join<T, SecurityUser> userJoin=null;
+		Join<T, Role> roleJoin=null;
 		if(roleToUserFilter.getRoles()!=null&&!roleToUserFilter.getRoles().isEmpty()){
 			Set<String> ids=roleToUserFilter.getRoles().stream().map(f->f.getId()).collect(Collectors.toSet());
-			Join<T, Role> join=r.join(RoleToUser_.role);
-			predicates.add(join.get(Role_.id).in(ids));
+			roleJoin=roleJoin!=null?roleJoin:r.join(RoleToUser_.role);
+			predicates.add(roleJoin.get(Role_.id).in(ids));
 		}
 
 		if(roleToUserFilter.getUsers()!=null&&!roleToUserFilter.getUsers().isEmpty()){
 			Set<String> ids=roleToUserFilter.getUsers().stream().map(f->f.getId()).collect(Collectors.toSet());
-			Join<T, SecurityUser> join=r.join(RoleToUser_.user);
-			predicates.add(join.get(SecurityUser_.id).in(ids));
+			userJoin=userJoin!=null?userJoin:r.join(RoleToUser_.user);
+			predicates.add(userJoin.get(SecurityUser_.id).in(ids));
+		}
+		if(roleToUserFilter.getRoleNameLike()!=null){
+			roleJoin=roleJoin!=null?roleJoin:r.join(RoleToUser_.role);
+			predicates.add(cb.like(cb.lower(roleJoin.get(Role_.name)),roleToUserFilter.getRoleNameLike().toLowerCase()));
+		}
+
+		if(roleToUserFilter.getUserSearchStringLike()!=null){
+			userJoin=userJoin!=null?userJoin:r.join(RoleToUser_.user);
+			predicates.add(cb.like(userJoin.get(SecurityUser_.searchString),roleToUserFilter.getUserSearchStringLike()));
 		}
 	}
 

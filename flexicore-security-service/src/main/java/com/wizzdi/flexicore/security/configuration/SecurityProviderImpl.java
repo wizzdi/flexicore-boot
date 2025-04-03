@@ -3,6 +3,7 @@ package com.wizzdi.flexicore.security.configuration;
 import com.flexicore.model.RoleToBaseclass;
 import com.flexicore.model.RoleToBaseclass_;
 import com.flexicore.model.SecurityLink;
+import com.flexicore.model.SecurityLink_;
 import com.flexicore.model.TenantToBaseclass;
 import com.flexicore.model.TenantToBaseclass_;
 import com.flexicore.model.UserToBaseclass;
@@ -45,6 +46,7 @@ public class SecurityProviderImpl implements SecurityLinkProvider {
         Root<RoleToBaseclass> role = cb.treat(r, RoleToBaseclass.class);
         Root<TenantToBaseclass> tenant = cb.treat(r, TenantToBaseclass.class);
         q.select(r).where(
+                cb.isFalse(r.get(SecurityLink_.softDelete)),
                 cb.or(
                         userR.get(UserToBaseclass_.user).in(user),
                         roles.isEmpty()?cb.or():role.get(RoleToBaseclass_.role).in(roles),

@@ -27,6 +27,8 @@ public class TenantToUserFilter extends PaginationFilter {
     @JsonIgnore
     @TypeRetention(SecurityTenant.class)
     private List<SecurityTenant> tenants;
+    private String userSearchStringLike;
+    private String tenantNameLike;
 
     public Set<String> getUserIds() {
         return userIds;
@@ -72,6 +74,24 @@ public class TenantToUserFilter extends PaginationFilter {
 
     public <T extends TenantToUserFilter> T setBasicPropertiesFilter(BasicPropertiesFilter basicPropertiesFilter) {
         this.basicPropertiesFilter = basicPropertiesFilter;
+        return (T) this;
+    }
+
+    public String getUserSearchStringLike() {
+        return userSearchStringLike;
+    }
+
+    public <T extends TenantToUserFilter> T setUserSearchStringLike(String userSearchStringLike) {
+        this.userSearchStringLike = userSearchStringLike;
+        return (T) this;
+    }
+
+    public String getTenantNameLike() {
+        return tenantNameLike;
+    }
+
+    public <T extends TenantToUserFilter> T setTenantNameLike(String tenantNameLike) {
+        this.tenantNameLike = tenantNameLike;
         return (T) this;
     }
 }
