@@ -83,20 +83,23 @@ public class SecurityLinkRepository implements Plugin {
 			predicates.add(r.get(SecurityLink_.operationId).in(operationIds));
 		}
 		List<SecurityUser> relevantUsers = securityLinkFilter.getRelevantUsers();
-		if(relevantUsers !=null&&!relevantUsers.isEmpty()){
-			Set<String> relevantUsersIds=relevantUsers.stream().map(f->f.getId()).collect(Collectors.toSet());
+		List<Role> relevantRoles = securityLinkFilter.getRelevantRoles();
+		List<SecurityTenant> relevantTenants = securityLinkFilter.getRelevantTenants();
+		if((relevantUsers !=null&&!relevantUsers.isEmpty())||(relevantRoles!=null&&!relevantRoles.isEmpty())||(relevantTenants!=null&&!relevantTenants.isEmpty())){
+			Predicate pred=cb.or();
 			Path<SecurityLink> p = (Path<SecurityLink>) r;
-			Predicate pred=cb.and(
-					cb.equal(r.type(), UserToBaseclass.class),
-					cb.treat(p, UserToBaseclass.class).get(UserToBaseclass_.user).get(SecurityUser_.id).in(relevantUsersIds));
-			List<Role> relevantRoles = securityLinkFilter.getRelevantRoles();
+			if(relevantUsers!=null&&!relevantUsers.isEmpty()){
+				Set<String> relevantUsersIds=relevantUsers.stream().map(f->f.getId()).collect(Collectors.toSet());
+				pred=cb.or(pred,cb.and(
+						cb.equal(r.type(), UserToBaseclass.class),
+						cb.treat(p, UserToBaseclass.class).get(UserToBaseclass_.user).get(SecurityUser_.id).in(relevantUsersIds)));
+			}
 			if(relevantRoles !=null&&!relevantRoles.isEmpty()){
 				Set<String> relevantRoleIds=relevantRoles.stream().map(f->f.getId()).collect(Collectors.toSet());
 				pred=cb.or(pred,cb.and(
 						cb.equal(r.type(), RoleToBaseclass.class),
 						cb.treat(p, RoleToBaseclass.class).get(RoleToBaseclass_.role).get(Role_.id).in(relevantRoleIds)));
 			}
-			List<SecurityTenant> relevantTenants = securityLinkFilter.getRelevantTenants();
 			if(relevantTenants !=null&&!relevantTenants.isEmpty()){
 				Set<String> relevantTenantIds=relevantTenants.stream().map(f->f.getId()).collect(Collectors.toSet());
 				pred=cb.or(pred,cb.and(

@@ -149,14 +149,15 @@ public class OperationToGroupService implements Plugin {
 		operationRepository.massMerge(toMerge);
 	}
 
-    public void setOperations(OperationToGroupFilter operationToGroupFilter) {
+    public boolean setOperations(OperationToGroupFilter operationToGroupFilter) {
         Set<String> operationIds = new HashSet<>(operationToGroupFilter.getOperationIds());
-        Map<String, SecurityOperation> operations= securityOperationService.listAllOperations(new SecurityOperationFilter().setBasicPropertiesFilter(new BasicPropertiesFilter().setOnlyIds(operationIds))).stream().collect(Collectors.toMap(f->f.getId(), f->f));
+        Map<String, SecurityOperation> operations= securityOperationService.listAllOperations(new SecurityOperationFilter().setBasicPropertiesFilter(new BasicPropertiesFilter().setNameLike(operationToGroupFilter.getOperationNameLike()).setOnlyIds(operationIds))).stream().collect(Collectors.toMap(f->f.getId(), f->f));
         operationIds.removeAll(operations.keySet());
         if(!operationIds.isEmpty()){
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"no operations with ids %s".formatted(String.join(",", operationIds)));
         }
 		operationToGroupFilter.setOperations(new ArrayList<>(operations.values()));
+		return (!operationIds.isEmpty() || operationToGroupFilter.getOperationNameLike()!=null)&&operations.isEmpty();
     }
 
 	public PaginationResponse<OperationToGroupContainer> getAllOperationToGroupsContainers(OperationToGroupFilter operationToGroupFilter, SecurityContext securityContext) {

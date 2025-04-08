@@ -25,6 +25,7 @@ public class OperationToGroupFilter extends PaginationFilter {
     @JsonIgnore
     private List<OperationGroup> operationGroups;
     private Set<String> operationGroupIds=new HashSet<>();
+    private String operationNameLike;
 
     @JsonIgnore
     public List<SecurityOperation> getOperations() {
@@ -70,6 +71,15 @@ public class OperationToGroupFilter extends PaginationFilter {
 
     public <T extends OperationToGroupFilter> T setBasicPropertiesFilter(BasicPropertiesFilter basicPropertiesFilter) {
         this.basicPropertiesFilter = basicPropertiesFilter;
+        return (T) this;
+    }
+
+    public String getOperationNameLike() {
+        return operationNameLike;
+    }
+
+    public <T extends OperationToGroupFilter> T setOperationNameLike(String operationNameLike) {
+        this.operationNameLike = operationNameLike;
         return (T) this;
     }
 }

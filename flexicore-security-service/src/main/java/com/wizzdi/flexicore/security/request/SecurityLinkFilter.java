@@ -15,6 +15,8 @@ import java.util.Set;
 @IdValid.List({
         @IdValid(field = "securityLinkGroupIds", targetField = "securityLinkGroups", fieldType = SecurityLinkGroup.class),
         @IdValid(field = "relevantUserIds", targetField = "relevantUsers", fieldType = SecurityUser.class),
+        @IdValid(field = "relevantRoleIds", targetField = "relevantRoles", fieldType = Role.class),
+        @IdValid(field = "relevantTenantIds", targetField = "relevantTenants", fieldType = SecurityTenant.class),
 
 })
 @OperationValid(sourceField = "operationIds", targetField = "operations")
@@ -23,6 +25,8 @@ public class SecurityLinkFilter extends PaginationFilter {
     private BasicPropertiesFilter basicPropertiesFilter;
 
     private Set<String> relevantUserIds = new HashSet<>();
+    private Set<String> relevantRoleIds=new HashSet<>();
+    private Set<String> relevantTenantIds=new HashSet<>();
     private Set<String> securityLinkGroupIds = new HashSet<>();
     @JsonIgnore
     private List<SecurityLinkGroup> securityLinkGroups;
@@ -206,6 +210,24 @@ public class SecurityLinkFilter extends PaginationFilter {
 
     public <T extends SecurityLinkFilter> T setSearchStringLike(String searchStringLike) {
         this.searchStringLike = searchStringLike;
+        return (T) this;
+    }
+
+    public Set<String> getRelevantRoleIds() {
+        return relevantRoleIds;
+    }
+
+    public <T extends SecurityLinkFilter> T setRelevantRoleIds(Set<String> relevantRoleIds) {
+        this.relevantRoleIds = relevantRoleIds;
+        return (T) this;
+    }
+
+    public Set<String> getRelevantTenantIds() {
+        return relevantTenantIds;
+    }
+
+    public <T extends SecurityLinkFilter> T setRelevantTenantIds(Set<String> relevantTenantIds) {
+        this.relevantTenantIds = relevantTenantIds;
         return (T) this;
     }
 }

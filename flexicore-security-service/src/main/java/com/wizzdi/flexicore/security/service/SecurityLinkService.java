@@ -3,6 +3,7 @@ package com.wizzdi.flexicore.security.service;
 import com.flexicore.model.Baseclass;
 import com.flexicore.model.SecurityLink;
 import com.flexicore.model.SecurityOperation;
+import com.flexicore.model.SecurityTenant;
 import com.wizzdi.flexicore.security.configuration.SecurityContext;
 import com.wizzdi.flexicore.boot.base.interfaces.Plugin;
 import com.wizzdi.flexicore.security.data.SecurityLinkRepository;
@@ -15,7 +16,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -137,6 +140,10 @@ public class SecurityLinkService implements Plugin, InitializingBean {
 		if(securityLinkFilter.getRelevantUsers()!=null&&!securityLinkFilter.getRelevantUsers().isEmpty()){
 			securityLinkFilter.setRelevantRoles(roleService.listAllRoles(new RoleFilter().setUsers(securityLinkFilter.getRelevantUsers()),securityContext));
 			securityLinkFilter.setRelevantTenants(securityTenantService.listAllTenants(new SecurityTenantFilter().setUsers(securityLinkFilter.getRelevantUsers()),securityContext));
+		}
+		if(securityLinkFilter.getRelevantRoles()!=null){
+			Map<String, SecurityTenant> tenantMap = securityLinkFilter.getRelevantRoles().stream().map(f -> f.getTenant()).collect(Collectors.toMap(f -> f.getId(), f -> f, (a, b) -> a));
+			securityLinkFilter.setRelevantTenants(new ArrayList<>(tenantMap.values()));
 		}
 	}
 

@@ -25,6 +25,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.ArrayList;
 import java.util.Set;
 
 @RestController
@@ -51,7 +52,10 @@ public class OperationToGroupController implements Plugin {
     @PostMapping("/getAll")
     public PaginationResponse<OperationToGroup> getAll(@RequestBody @Valid OperationToGroupFilter operationToGroupFilter, @RequestAttribute SecurityContext securityContext) {
 
-        operationService.setOperations(operationToGroupFilter );
+        if(operationService.setOperations(operationToGroupFilter)){
+            return new PaginationResponse<>(new ArrayList<>(),operationToGroupFilter.getPageSize(),0L);
+        }
+
 
         return operationService.getAllOperationToGroups(operationToGroupFilter, securityContext);
     }
@@ -60,7 +64,9 @@ public class OperationToGroupController implements Plugin {
     @PostMapping("/getAllContainers")
     public PaginationResponse<OperationToGroupContainer> getAllContainers(@RequestBody @Valid OperationToGroupFilter operationToGroupFilter, @RequestAttribute SecurityContext securityContext) {
 
-        operationService.setOperations(operationToGroupFilter );
+        if(operationService.setOperations(operationToGroupFilter)){
+            return new PaginationResponse<>(new ArrayList<>(),operationToGroupFilter.getPageSize(),0L);
+        }
 
         return operationService.getAllOperationToGroupsContainers(operationToGroupFilter, securityContext);
     }
