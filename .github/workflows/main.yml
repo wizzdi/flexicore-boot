@@ -63,13 +63,13 @@ jobs:
       - name: Build Maven Site (including Javadoc)
         # Runs maven-site-plugin and reporting plugins like javadoc
         # Ensure maven-javadoc-plugin is configured in your pom's <reporting> section
-        run: mvn site -DskipTests -Drevision=${{ env.VERSION }} # Skip tests again if site build triggers them
+        run: mvn site site:stage -DskipTests -Drevision=${{ env.VERSION }} # Skip tests again if site build triggers them
 
       - name: Upload GitHub Pages artifact
         # Uploads the generated site from target/site directory
         uses: actions/upload-pages-artifact@v3 # Use latest
         with:
-          path: ./target/site # Default output directory for mvn site
+          path: ./target/staging  # Default output directory for mvn site
   # Separate job for deploying the uploaded artifact to GitHub Pages
   deploy-pages:
     needs: build # Run this job only after the build job completes successfully
