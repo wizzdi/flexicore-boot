@@ -6,7 +6,7 @@ on:
       - master
 # Add permissions for deployment and pages
 permissions:
-  contents: read # Needed for checkout
+  contents: write # Needed for checkout
   packages: write # Needed for mvn deploy to repository
   pages: write    # Needed to deploy to GitHub Pages
   id-token: write # Needed for OIDC token for GitHub Pages deployment
